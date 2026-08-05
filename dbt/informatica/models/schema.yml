@@ -62,10 +62,10 @@ unit_tests:
   - name: router_newgroup1_sends_ssn_null_rows_to_demo_target2
     model: demo_target2
     given:
-      - input: ref('int_m3_exptrans')
+      - input: ref('demo_target2_physical')
         rows:
-          - {title: "Null SSN", gender_code: "M", member_id: 1, social_security_number: null, member_type_code: 1, o_relationship_to_subscriber_code_label: "SELF"}
-          - {title: "Present SSN", gender_code: "F", member_id: 2, social_security_number: 123, member_type_code: 1, o_relationship_to_subscriber_code_label: "SELF"}
+          - {Title: "Null SSN", Gender: "M", Member_Identifier: 1, Soc_Number: null, Type_Code: 1, Relationship_to_Subscriber_Code_Label: "SELF"}
+          - {Title: "Present SSN", Gender: "F", Member_Identifier: 2, Soc_Number: 123, Type_Code: 1, Relationship_to_Subscriber_Code_Label: "SELF"}
     expect:
       rows:
         - {Title: "Null SSN", Gender: "M", Member_Identifier: 1, Soc_Number: null, Type_Code: 1, Relationship_to_Subscriber_Code_Label: "SELF"}
@@ -73,10 +73,10 @@ unit_tests:
   - name: router_newgroup2_sends_ssn_present_rows_to_demo_target21
     model: demo_target21
     given:
-      - input: ref('int_m3_exptrans')
+      - input: ref('demo_target2_physical')
         rows:
-          - {title: "Null SSN", gender_code: "M", member_id: 1, social_security_number: null, member_type_code: 1, o_relationship_to_subscriber_code_label: "SELF"}
-          - {title: "Present SSN", gender_code: "F", member_id: 2, social_security_number: 123, member_type_code: 1, o_relationship_to_subscriber_code_label: "SELF"}
+          - {Title: "Null SSN", Gender: "M", Member_Identifier: 1, Soc_Number: null, Type_Code: 1, Relationship_to_Subscriber_Code_Label: "SELF"}
+          - {Title: "Present SSN", Gender: "F", Member_Identifier: 2, Soc_Number: 123, Type_Code: 1, Relationship_to_Subscriber_Code_Label: "SELF"}
     expect:
       rows:
         - {Title: "Present SSN", Gender: "F", Member_Identifier: 2, Soc_Number: 123, Type_Code: 1, Relationship_to_Subscriber_Code_Label: "SELF"}
