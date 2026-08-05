@@ -1135,17 +1135,17 @@
         </SCHEDULER>
         <TASK DESCRIPTION ="" NAME ="Start" REUSABLE ="NO" TYPE ="Start" VERSIONNUMBER ="1"/>
         <TASK DESCRIPTION ="" NAME ="Failed_Email2" REUSABLE ="NO" TYPE ="Email" VERSIONNUMBER ="1">
-            <ATTRIBUTE NAME ="Email User Name" VALUE ="Anushree.KS@cognizant.com"/>
+            <ATTRIBUTE NAME ="Email User Name" VALUE ="data-eng-alerts@example.com"/>
             <ATTRIBUTE NAME ="Email Subject" VALUE ="Run status"/>
             <ATTRIBUTE NAME ="Email Text" VALUE ="Sessio &apos;s_m_demo_mapping1&apos; failed"/>
         </TASK>
         <TASK DESCRIPTION ="" NAME ="SuccessEmail" REUSABLE ="NO" TYPE ="Email" VERSIONNUMBER ="1">
-            <ATTRIBUTE NAME ="Email User Name" VALUE ="Anushree.KS@cognizant.com"/>
+            <ATTRIBUTE NAME ="Email User Name" VALUE ="data-eng-alerts@example.com"/>
             <ATTRIBUTE NAME ="Email Subject" VALUE ="Run Status"/>
             <ATTRIBUTE NAME ="Email Text" VALUE ="Session s_m_demo_mapping3 executed successfully"/>
         </TASK>
         <TASK DESCRIPTION ="" NAME ="Failed_Email1" REUSABLE ="NO" TYPE ="Email" VERSIONNUMBER ="1">
-            <ATTRIBUTE NAME ="Email User Name" VALUE ="test@gmail.com"/>
+            <ATTRIBUTE NAME ="Email User Name" VALUE ="data-eng-alerts@example.com"/>
             <ATTRIBUTE NAME ="Email Subject" VALUE ="Execution Status"/>
             <ATTRIBUTE NAME ="Email Text" VALUE ="Dataload s_m_demo_mapping2 was failed to execute"/>
         </TASK>
@@ -1162,7 +1162,7 @@
             <ATTRIBUTE NAME ="Decision Name" VALUE ="$s_m_demo_mapping3.Status = 1"/>
         </TASK>
         <TASK DESCRIPTION ="" NAME ="Failed_Email3" REUSABLE ="NO" TYPE ="Email" VERSIONNUMBER ="1">
-            <ATTRIBUTE NAME ="Email User Name" VALUE ="test@gmail.com"/>
+            <ATTRIBUTE NAME ="Email User Name" VALUE ="data-eng-alerts@example.com"/>
             <ATTRIBUTE NAME ="Email Subject" VALUE ="Execution Status"/>
             <ATTRIBUTE NAME ="Email Text" VALUE ="Dataload  s_m_demo_mapping3t was failed to execute"/>
         </TASK>
