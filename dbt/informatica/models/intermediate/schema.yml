@@ -1,0 +1,21 @@
+version: 2
+
+models:
+  - name: int_m2_change_detect
+    columns:
+      - name: new_flag
+        tests:
+          - accepted_values:
+              values: ["Insert"]
+      - name: changed_flag
+        tests:
+          - accepted_values:
+              values: ["Update"]
+
+  - name: int_m3_filtered
+    description: >
+      Legacy EXPTRANS ABORTs when the label is NULL on a filtered-in row; this
+      test enforces the same contract.
+    columns:
+      - name: o_relationship_to_subscriber_code_label
+        tests: [not_null]
