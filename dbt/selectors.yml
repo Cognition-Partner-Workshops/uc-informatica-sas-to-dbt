@@ -1,0 +1,56 @@
+# Contract for future model authors: an order-2 mart must ref() the order-1
+# marts of the same mapping. This preserves TARGETLOADORDER in one invocation.
+# The load-order selectors are diagnostic/enforcement selectors if that
+# contract is ever broken. The informatica tag is a project-wide grouping tag.
+selectors:
+  - name: s_m_demo_mapping2
+    definition:
+      method: tag
+      value: m_demo_mapping2
+
+  - name: s_m_demo_mapping1
+    definition:
+      method: tag
+      value: m_demo_mapping1
+
+  - name: s_m_demo_mapping3
+    definition:
+      method: tag
+      value: m_demo_mapping3
+
+  - name: s_m_demo_mapping2_load_order_1
+    definition:
+      intersection:
+        - method: tag
+          value: m_demo_mapping2
+        - method: tag
+          value: target_load_order_1
+
+  - name: s_m_demo_mapping1_load_order_1
+    definition:
+      intersection:
+        - method: tag
+          value: m_demo_mapping1
+        - method: tag
+          value: target_load_order_1
+
+  - name: s_m_demo_mapping1_load_order_2
+    definition:
+      intersection:
+        - method: tag
+          value: m_demo_mapping1
+        - method: tag
+          value: target_load_order_2
+
+  - name: s_m_demo_mapping3_load_order_1
+    definition:
+      intersection:
+        - method: tag
+          value: m_demo_mapping3
+        - method: tag
+          value: target_load_order_1
+
+  - name: informatica_all
+    definition:
+      method: tag
+      value: informatica

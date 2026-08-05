@@ -1,0 +1,21 @@
+{
+  "account_id": "<ACCOUNT_ID>",
+  "project_id": "<PROJECT_ID>",
+  "environment_id": "<ENVIRONMENT_ID>",
+  "name": "wf_demo_mapping",
+  "description": "Manual/API orchestration for Informatica workflow wf_demo_mapping.",
+  "execute_steps": [
+    "dbt build --selector s_m_demo_mapping2 --fail-fast",
+    "dbt build --selector s_m_demo_mapping1 --fail-fast",
+    "dbt build --selector s_m_demo_mapping3 --fail-fast"
+  ],
+  "triggers": {
+    "schedule": false,
+    "github_webhook": false,
+    "git_provider_webhook": false,
+    "custom_branch": false,
+    "custom_branch_only": false
+  },
+  "job_type": "deploy",
+  "is_active": true
+}
