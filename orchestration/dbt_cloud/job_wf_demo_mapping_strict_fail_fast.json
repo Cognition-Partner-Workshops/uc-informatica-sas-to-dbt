@@ -1,0 +1,21 @@
+{
+  "account_id": "<ACCOUNT_ID>",
+  "project_id": "<PROJECT_ID>",
+  "environment_id": "<ENVIRONMENT_ID>",
+  "name": "wf_demo_mapping_strict_fail_fast",
+  "description": "Recommended strict fail-fast alternative for wf_demo_mapping. This is NOT faithful to the legacy graph: it gates step 2 on step 1 success.",
+  "execute_steps": [
+    "dbt build --selector s_m_demo_mapping2 --fail-fast",
+    "dbt build --selector s_m_demo_mapping1 --fail-fast",
+    "dbt build --selector s_m_demo_mapping3 --fail-fast"
+  ],
+  "triggers": {
+    "schedule": false,
+    "github_webhook": false,
+    "git_provider_webhook": false,
+    "custom_branch": false,
+    "custom_branch_only": false
+  },
+  "job_type": "deploy",
+  "is_active": true
+}
