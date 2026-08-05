@@ -59,3 +59,27 @@ dbt/                               # the target dbt project (created by the migr
 ```
 python3 -m pip install duckdb dbt-duckdb pandas
 ```
+
+### Informatica before-state
+
+The Informatica worker inputs are the deterministic CSVs in
+`legacy/informatica/data/`. They cover `demo_source1` through `demo_source5`, the
+pre-existing `demo_target1` lookup state, and the three reconstructed lookup
+CSVs (`lkp_demo_source1`, `lkp_demo_source2`, `lkp_demo_source3`). Those lookup
+schemas are reconstructed from the lookup transformation ports because the tables
+are not defined anywhere in the PowerCenter export; the generated STM records
+that fact.
+
+The business/run date is pinned to **31JAN2024**. `Use Last Value` lookups are
+made reproducible by selecting the last physical seeded row for duplicate lookup
+keys, and the pre-existing target state includes a duplicate `ID` so the
+`Use Any Value` tie-break is observable. The baseline tool also exposes an
+explicit `--trigger-abort` opt-in that loads a separate bad-row seed set and
+hard-fails on the `ABORT()` path.
+
+Run the before-state tools from the repository root:
+
+```
+python3 tools/informatica_lineage.py
+python3 tools/informatica_baseline.py
+```

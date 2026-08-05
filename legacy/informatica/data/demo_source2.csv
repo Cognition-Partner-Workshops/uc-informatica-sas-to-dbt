@@ -1,0 +1,8 @@
+Title,First_Name,Middle_Name,Last_Name,Member_ID,Member_Suffix,Birth_Date,Gender_Code,Member_Record_Number,Social_Security_Number,Member_Type_Code,Original_Effective_Date,Relationship_to_Subscriber_Code,Relationship_to_Subscriber_Code_Label
+MS,Eli,R,Baker,30001,II,1990-07-12,M,500000,,1,2022-05-01,2,CHILD
+MR,Omar,K,Okafor,30002,,1990-11-16,F,500001,100000037,2,2016-09-01,19,SELF
+MS,Omar,I,Novak,30003,,1998-04-03,M,500002,,2,2016-05-01,18,CHILD
+MS,Ravi,O,Weiss,30004,,1948-12-22,F,500003,100000111,2,2019-02-01,18,OTHER
+MR,Mina,Q,Lee,30005,Jr,1975-06-14,F,500004,,,2020-03-01,3,CHILD
+MS,Tara,S,Young,30006,,1982-11-01,F,500005,100000222,1,2021-07-01,1,SPOUSE
+MR,Nico,T,Singh,30007,,1992-09-30,M,500006,,2,2023-02-14,19,SELF

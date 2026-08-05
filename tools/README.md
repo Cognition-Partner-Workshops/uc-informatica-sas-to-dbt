@@ -29,3 +29,17 @@ Contract for the migration helper tools. Every tool is plain Python 3 (stdlib + 
 - Baselines implement the *legacy semantics as documented in the STM* — if the STM is wrong, the
   parity diff against the dbt build will surface it.
 - Tools must be idempotent and safe to re-run.
+
+
+### Informatica before-state details
+
+Seeds live under `legacy/informatica/data/` and use the pinned business date
+31JAN2024. The three lookup schemas are reconstructed from the lookup
+transformation LOOKUP ports; they are not exported table definitions. For
+repeatability, `Use Last Value` lookup ties select the last physical seeded row,
+while the pre-existing target state uses the highest seeded key for the duplicate
+`ID` so the `Use Any Value` tie-break is observable. The baseline script has an
+explicit `--trigger-abort` opt-in that swaps in a separate bad-row seed set and
+hard-fails on the `ABORT()` path. The lineage tool records connector-based port
+lineage, including positional SQL override bindings and unconnected `:LKP.`
+calls.
