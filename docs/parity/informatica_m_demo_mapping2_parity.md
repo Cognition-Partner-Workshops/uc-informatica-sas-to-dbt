@@ -1,6 +1,6 @@
 # Parity Report
 
-Baseline: `/tmp/tmp.2eAi33zwlq`  |  Actual: `/home/ubuntu/repos/uc-informatica-sas-to-dbt/dbt/informatica/dev.duckdb`
+Baseline: `/tmp/tmp.C91UGW7P2b`  |  Actual: `/home/ubuntu/repos/uc-informatica-sas-to-dbt/dbt/informatica/dev.duckdb`
 
 ## DEMO_TARGET1_INS
 - rows: baseline=4 actual=4

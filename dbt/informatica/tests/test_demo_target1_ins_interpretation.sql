@@ -17,25 +17,40 @@ actual_keys as (
     select Key
     from {{ ref('demo_target1_ins') }}
 ),
+count_check as (
+    select count(*) <> 4 as failed
+    from actual_keys
+),
 count_failure as (
     select 'unexpected insert row count' as failure
-    where (select count(*) from actual_keys) <> 4
+    from count_check
+    where failed
+),
+missing_check as (
+    select count(*) > 0 as failed
+    from (
+        select Key from expected_keys
+        except
+        select Key from actual_keys
+    ) as differences
 ),
 missing_keys as (
     select 'missing expected insert key' as failure
-    where exists (
-        select Key from expected_keys
-        except
+    from missing_check
+    where failed
+),
+unexpected_check as (
+    select count(*) > 0 as failed
+    from (
         select Key from actual_keys
-    )
+        except
+        select Key from expected_keys
+    ) as differences
 ),
 unexpected_keys as (
     select 'unexpected insert key' as failure
-    where exists (
-        select Key from actual_keys
-        except
-        select Key from expected_keys
-    )
+    from unexpected_check
+    where failed
 )
 select failure from count_failure
 union all
