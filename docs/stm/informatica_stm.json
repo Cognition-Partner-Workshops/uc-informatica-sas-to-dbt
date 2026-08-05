@@ -6,6 +6,9 @@
           "ACCT_ID"
         ]
       },
+      "aggregator_ordering_notes": {
+        "agg_TRANS": "The feeding Source Qualifier ORDER BY does not determine row order within the GROUPBY keys. PowerCenter therefore pins no intra-group ordering for non-GROUPBY pass-through ports; the baseline's highest-TX_ID rule is a chosen approximation, not recovered legacy semantics. If the source system emits a different physical row order within an account, the legacy run and dbt model can disagree while the parity check still passes."
+      },
       "lookup_details": [
         {
           "case_sensitive_string_comparison": "NO",
@@ -1961,6 +1964,7 @@
     },
     {
       "aggregator_groupby_ports": {},
+      "aggregator_ordering_notes": {},
       "lookup_details": [
         {
           "case_sensitive_string_comparison": "NO",
@@ -3081,6 +3085,7 @@
     },
     {
       "aggregator_groupby_ports": {},
+      "aggregator_ordering_notes": {},
       "lookup_details": [],
       "misleading_bindings": [],
       "name": "m_demo_mapping3",

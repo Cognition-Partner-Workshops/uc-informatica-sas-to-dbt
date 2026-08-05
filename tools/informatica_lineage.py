@@ -502,6 +502,43 @@ def parse_mapping(mapping, global_sources, global_targets, session):
                 name for name, field in transform["fields"].items()
                 if field.get("expressiontype") == "GROUPBY"
             ]
+    reverse_connectors = {}
+    for connector in connectors:
+        reverse_connectors.setdefault(
+            connector["to_instance"], set()).add(connector["from_instance"])
+    aggregator_ordering_notes = {}
+    for aggregator, groupby in aggregator_groupby.items():
+        upstream = set()
+        pending = [aggregator]
+        while pending:
+            instance = pending.pop()
+            if instance in upstream:
+                continue
+            upstream.add(instance)
+            pending.extend(reverse_connectors.get(instance, ()))
+        overrides_by_instance = {
+            item["transformation"]: item for item in sql_overrides
+        }
+        for source_qualifier in sorted(upstream):
+            override = overrides_by_instance.get(source_qualifier)
+            if not override or not override["order_by"]:
+                continue
+            order_columns = {
+                column for _, column in
+                QUALIFIED_RE.findall(override["order_by"])
+            }
+            if groupby and order_columns <= set(groupby):
+                aggregator_ordering_notes[aggregator] = (
+                    "The feeding Source Qualifier ORDER BY does not determine "
+                    "row order within the GROUPBY keys. PowerCenter therefore "
+                    "pins no intra-group ordering for non-GROUPBY pass-through "
+                    "ports; the baseline's highest-TX_ID rule is a chosen "
+                    "approximation, not recovered legacy semantics. If the "
+                    "source system emits a different physical row order within "
+                    "an account, the legacy run and dbt model can disagree "
+                    "while the parity check still passes."
+                )
+                break
 
     router_details = []
     for instance_name, instance in sorted(instances.items()):
@@ -586,6 +623,7 @@ def parse_mapping(mapping, global_sources, global_targets, session):
         "misleading_bindings": misleading_bindings,
         "router_details": router_details,
         "aggregator_groupby_ports": aggregator_groupby,
+        "aggregator_ordering_notes": aggregator_ordering_notes,
         "unpopulated_target_columns": {
             target: [column["column"] for column in info["columns"]
                      if not column["chain"]]
@@ -728,6 +766,9 @@ def write_md(stm, path):
                 lines.append("- Non-group-by pass-through ports yield the last row "
                              "received per group; with no GROUPBY port, one row is "
                              "returned for the whole input.")
+                if mapping["aggregator_ordering_notes"].get(name):
+                    lines.append("- **Chosen approximation:** " +
+                                 mapping["aggregator_ordering_notes"][name])
             lines.append("")
         notes = []
         for call in mapping["unconnected_lkp_calls"]:

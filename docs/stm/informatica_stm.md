@@ -102,6 +102,7 @@ Ports are rendered in XML order, which is PowerCenter's variable evaluation orde
 - **Transformation Scope**: `All Input`
 - GROUPBY ports: ACCT_ID
 - Non-group-by pass-through ports yield the last row received per group; with no GROUPBY port, one row is returned for the whole input.
+- **Chosen approximation:** The feeding Source Qualifier ORDER BY does not determine row order within the GROUPBY keys. PowerCenter therefore pins no intra-group ordering for non-GROUPBY pass-through ports; the baseline's highest-TX_ID rule is a chosen approximation, not recovered legacy semantics. If the source system emits a different physical row order within an account, the legacy run and dbt model can disagree while the parity check still passes.
 
 ### Transformation `exp_TRANS` (Expression)
 

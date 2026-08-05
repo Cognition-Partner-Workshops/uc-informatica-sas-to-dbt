@@ -4,7 +4,17 @@ This is a ranked list of silent-data-impact risks found while reverse
 engineering `legacy/informatica/wf_demo_mapping.XML`. Line numbers refer to
 the checked-in XML export.
 
+**Basis categories.** Each risk below labels its basis as either **recovered
+legacy semantics** (behavior defined by the XML/PowerCenter export) or a
+**chosen approximation** (behavior left undefined by the export, for which
+the baseline adopts a deterministic rule). A few risks contain both; those
+parts are labelled separately. Passing parity proves that dbt matches our
+baseline, not that it matches every possible legacy run where PowerCenter
+left an ordering or error-materialization choice undefined.
+
 ## R1 — SQL-override position changes `CR8_DT`
+
+**Basis.** Recovered legacy semantics.
 
 **XML evidence.** XML line 580 contains the literal
 `SYSTIMESTAMP` in the `sq_demo_source4` SQL override. XML line 792 contains
@@ -27,6 +37,8 @@ CAST('2024-01-31 00:00:00' AS TIMESTAMP) AS CR8_DT
 business timestamp for every output row; error severity.
 
 ## R2 — SQL-override position 14 is a discarded `STRCMP`
+
+**Basis.** Recovered legacy semantics.
 
 **XML evidence.** XML line 580 contains the literal
 `STRCMP(demo_source4.ACCT_STAT_CD,demo_source3.TX_TYPE_CD)` as select item 14.
@@ -51,6 +63,11 @@ no downstream connector and that target6's value is sourced only through the
 lookup described in R3.
 
 ## R3 — Target6 transaction type comes from an unconnected lookup
+
+**Basis.** Recovered legacy semantics for the lookup call, RETURN port, and
+source; **chosen approximation** for which duplicate lookup row is “last”
+because the export does not define that row order. A different duplicate-row
+order can change the returned transaction type while parity still passes.
 
 **XML evidence.** XML line 608 contains
 `EXPRESSION =":LKP.lkp_TRANS1(ACCT_ID)"` and `NAME ="o_ACCT_ID"`.
@@ -80,6 +97,12 @@ last_value(lkp_demo_source3.TX_TYPE_CD)
 
 ## R4 — Aggregator pass-through ports are last-row values
 
+**Basis.** Recovered legacy semantics for grouping and last-row pass-through;
+**chosen approximation** for the highest-`TX_ID` tie-break because the export
+does not define intra-group physical row order. If the source system emits a
+different physical row order within an account, the legacy run and dbt model
+can disagree while the parity check still passes.
+
 **XML evidence.** XML line 452 contains
 `EXPRESSIONTYPE ="GROUPBY"`. XML line 454 contains
 `EXPRESSION ="SUM(TX_AMT)"`; the remaining Aggregator ports are pass-through
@@ -102,6 +125,8 @@ QUALIFY ROW_NUMBER() OVER (PARTITION BY ACCT_ID ORDER BY TX_ID DESC) = 1
 pass-through values to the documented highest-`TX_ID` baseline row.
 
 ## R5 — Router default and NULL rows are discarded
+
+**Basis.** Recovered legacy semantics.
 
 **XML evidence.** The router group definitions include the literal
 `NAME ="DEFAULT1"` at XML line 670. The default output port
@@ -130,6 +155,8 @@ target6 row; error severity.
 
 ## R6 — Router groups are independent, not an if/else chain
 
+**Basis.** Recovered legacy semantics.
+
 **XML evidence.** XML line 807 contains
 `FROMFIELD ="o_ACCT_DESC1" FROMINSTANCE ="rtr_TRANS"` and
 `TOINSTANCE ="agg_TRANS"`; separate router output connectors occur elsewhere
@@ -155,6 +182,8 @@ required; separately assert router output counts by group and permit a row to
 occur in more than one branch.
 
 ## R7 — `MD5_src` and `MD5_tgt` are not comparable change hashes
+
+**Basis.** Recovered legacy semantics.
 
 **XML evidence.** XML line 177 contains
 `AES_DECRYPT(LEAD_CO_MNE1, SUBSTR(SHORT_NAME,1,3), 256)`.
@@ -183,6 +212,8 @@ real MD5-vs-MD5 comparison.
 
 ## R8 — IIF without ELSE yields NULL and drives data-driven routing
 
+**Basis.** Recovered legacy semantics.
+
 **XML evidence.** XML line 176 contains
 `IIF(ISNULL(Key),&apos;Insert&apos;)` and XML line 179 contains
 `IIF(NOT ISNULL(Key) AND  (MD5_tgt != MD5_src),&apos;Update&apos;)`;
@@ -208,6 +239,8 @@ values appear in the routing ports.
 
 ## R9 — Unconnected UPDATE ports preserve existing values
 
+**Basis.** Recovered legacy semantics.
+
 **XML evidence.** XML line 88 contains `NAME ="CREATED_BY"` and XML line 89
 contains `NAME ="CREATED_TIME"`. A grep of the complete connector block for
 `TOINSTANCE ="demo_target1_UPD"` with either target field returns no match.
@@ -231,6 +264,8 @@ assert `CREATED_*` preservation. Baseline CSVs are row images, not merged
 table state.
 
 ## R10 — Target instances share physical tables
+
+**Basis.** Recovered legacy semantics.
 
 **XML evidence.** XML line 345 contains
 `NAME ="demo_target1_UPD" TRANSFORMATION_NAME ="demo_target1"` and XML line
@@ -256,6 +291,8 @@ instances for each physical target.
 
 ## R11 — Source qualifier WHERE filter is not a Filter transformation
 
+**Basis.** Recovered legacy semantics.
+
 **XML evidence.** Line 916 contains the `SQ_demo_source2` override ending in
 `where demo_source2.Member_Type_Code is not null`.
 
@@ -276,6 +313,8 @@ WHERE Member_Type_Code IS NOT NULL
 `Member_Type_Code`; error severity.
 
 ## R12 — ABORT is a hard failure, not a filter or NULL fill
+
+**Basis.** Recovered legacy semantics.
 
 **XML evidence.** XML line 942 contains the passthrough
 `NAME ="Relationship_to_Subscriber_Code_Label"`; XML line 943 contains
@@ -305,6 +344,12 @@ rows must fail the run, not filter rows or fill NULLs.
 
 ## R13 — Sell-start expression's incompatible date conversion yields NULL
 
+**Basis.** Recovered legacy semantics for the incompatible `TO_DATE` mask and
+its transformation-error behavior; **chosen approximation** for materializing
+the rejected result as NULL in the baseline. A dbt implementation that
+materializes NULL can match the baseline while differing from a run that
+rejects the row.
+
 **XML evidence.** XML line 662 defines
 `TO_DATE(TO_CHAR(SYSDATE),'DD/MM/YYYY')` on `o_SELL_ST_DT`; XML line 805
 contains `FROMFIELD ="o_SELL_ST_DT"` and `TOFIELD ="SELL_ST_DT"`. The port is
@@ -327,6 +372,11 @@ if any non-NULL value appears.
 
 ## R14 — Sell-end date mask disagrees with the flat-file format
 
+**Basis.** Recovered legacy semantics for the source format and mismatched
+mask; **chosen approximation** for representing the resulting rejected value
+as NULL in the baseline. The consequence is that parity does not prove the
+dbt error/materialization policy matches PowerCenter.
+
 **XML evidence.** XML line 663 uses
 `TO_DATE(SELL_ED_DT,&apos;DD/MM/YYYY&apos;)`. XML line 50 declares
 `NAME ="Datetime Format" VALUE ="A  19 mm/dd/yyyy hh24:mi:ss"`.
@@ -348,6 +398,8 @@ baseline, including dates where day and month are both <= 12 and dates that
 must error under the legacy mask.
 
 ## R15 — `$Target` lookup reads pre-run target state
+
+**Basis.** Recovered legacy semantics.
 
 **XML evidence.** XML line 287 contains
 `NAME ="Connection Information" VALUE ="$Target"`. XML line 386 contains
@@ -372,6 +424,11 @@ fixture and assert lookup values do not include rows inserted in the same run.
 
 ## R16 — `Use Last Value` requires deterministic deduplication
 
+**Basis.** Recovered legacy semantics for the `Use Last Value` policy;
+**chosen approximation** for the duplicate-row ordering because the export
+does not define which physical row is last. A different order can change the
+lookup result while parity still passes.
+
 **XML evidence.** XML lines 498, 536, and 624 each contain
 `NAME ="Lookup policy on multiple match" VALUE ="Use Last Value"` for the
 three lookup transformations.
@@ -392,6 +449,11 @@ QUALIFY ROW_NUMBER() OVER (PARTITION BY key ORDER BY legacy_row_order DESC) = 1
 keys to the last-row fixture.
 
 ## R17 — Lookup comparisons are case-insensitive with explicit NULL ordering
+
+**Basis.** Recovered legacy semantics for case-insensitive comparison;
+**chosen approximation** for mapping `Null Is Highest Value` onto warehouse
+SQL ordering. Different NULL placement changes duplicate selection and can
+produce different results from a legacy run.
 
 **XML evidence.** XML line 646 contains
 `NAME ="Case Sensitive String Comparison" VALUE ="NO"`; line 647 contains
@@ -416,6 +478,8 @@ reconciliation fixtures.
 
 ## R18 — Same-named target columns come from different lookup tables
 
+**Basis.** Recovered legacy semantics.
+
 **XML evidence.** XML line 832 contains
 `FROMFIELD ="FIRST_NM" FROMINSTANCE ="lkp_TRANS2"` and XML line 833 contains
 `FROMFIELD ="CRDT_SCORE" FROMINSTANCE ="lkp_TRANS3"`. XML line 797 contains
@@ -439,6 +503,12 @@ lkp_demo_source2.CRDT_SCORE
 lookup values and reconcile target5 to the lookup values.
 
 ## R19 — Sequence generators have live current values and cycling semantics
+
+**Basis.** Recovered legacy semantics for current values and cycling;
+**chosen approximation** for cycle-boundary behavior because the baseline
+does not reproduce an actual PowerCenter sequence-cache boundary. The
+consequence is that parity covers the seeded range, not every possible
+wraparound execution.
 
 **XML evidence.** XML line 429 contains `NAME ="SEQ_GEN"`; line 435 contains
 `NAME ="Current Value" VALUE ="281"` and line 436 contains
@@ -467,6 +537,8 @@ Assert cycle behavior at the boundary.
 
 ## R20 — Updates retain lookup keys; inserts generate keys
 
+**Basis.** Recovered legacy semantics.
+
 **XML evidence.** XML line 392 contains
 `FROMFIELD ="Key" FROMINSTANCE ="LKPTRANS"` into `EXPTRANS`, and XML line 423
 contains `FROMFIELD ="Key3" FROMINSTANCE ="RTRTRANS"` into `UPDTRANS`. XML
@@ -491,6 +563,8 @@ insert keys do not overwrite them.
 
 ## R21 — Port precision truncates before the target
 
+**Basis.** Recovered legacy semantics.
+
 **XML evidence.** XML line 55 contains `NAME ="PRODUCT_ID"` and
 `PRECISION ="256"`; line 659 contains `NAME ="PRODUCT_ID"` and
 `PRECISION ="8"`. XML line 99 contains `NAME ="ACCT_DESC"` and
@@ -514,6 +588,8 @@ SUBSTR(RTRIM(ACCT_DESC), 1, 10) AS ACCT_DESC
 truncated port values, not only target-column casts.
 
 ## R22 — Expression output names are misleading
+
+**Basis.** Recovered legacy semantics.
 
 **XML evidence.** XML line 606 contains `EXPRESSION ="RTRIM(ACCT_TYP)"`;
 line 607 contains `EXPRESSION ="LTRIM(CRDT_LN)"`; line 479 contains
@@ -540,6 +616,8 @@ expression and include values that distinguish trimming direction.
 
 ## R23 — Unconnected target columns remain NULL
 
+**Basis.** Recovered legacy semantics.
+
 **XML evidence.** XML line 92 contains `NAME ="ACTIVE_FLAG"`, line 93
 contains `NAME ="START_DATE"`, and line 94 contains `NAME ="END_DATE"`. Grep
 of all target connector `TOFIELD` values returns no match for those three
@@ -564,6 +642,12 @@ update row images.
 
 ## R24 — Sorted input makes last-row selection order-sensitive
 
+**Basis.** Recovered legacy semantics for sorted input and last-row
+pass-through; **chosen approximation** for the highest-`TX_ID` tie-break
+because the export does not define intra-group physical row order. If the
+source system emits a different physical row order within an account, the
+legacy run and dbt model can disagree while the parity check still passes.
+
 **XML evidence.** XML line 457 contains `NAME ="Sorted Input" VALUE ="YES"`.
 XML line 580 contains `ORDER BY` and `demo_source4.ACCT_ID` in the SQL
 override.
@@ -584,6 +668,8 @@ ROW_NUMBER() OVER (PARTITION BY ACCT_ID ORDER BY TX_ID DESC) = 1
 highest `TX_ID` within an account. Do not rely on warehouse input order.
 
 ## R25 — Flat-file reader settings change parsing
+
+**Basis.** Recovered legacy semantics.
 
 **XML evidence.** XML line 7 contains
 `CONSECDELIMITERSASONE ="NO"` and `SKIPROWS ="1"`; line 46 contains
@@ -612,6 +698,8 @@ delimiters, and date parsing separately for both readers.
 
 ## R26 — `ERROR()` rejection differs from `ABORT()`
 
+**Basis.** Recovered legacy semantics.
+
 **XML evidence.** XML line 176 contains
 `DEFAULTVALUE ="ERROR(&apos;transformation error&apos;)"`; line 179 contains
 the same default. XML line 1114 contains `NAME ="Stop on errors" VALUE ="0"`;
@@ -635,6 +723,8 @@ the mapping3 ABORT condition; assert rejection/continuation for the former
 and hard session failure for the latter.
 
 ## R27 — Workflow order and target load order are semantic
+
+**Basis.** Recovered legacy semantics.
 
 **XML evidence.** XML line 1469 contains
 `CONDITION ="$Decision2.Condition = 1"` and `TOTASK ="s_m_demo_mapping3"`;
