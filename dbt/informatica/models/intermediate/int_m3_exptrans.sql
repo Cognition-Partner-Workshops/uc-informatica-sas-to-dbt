@@ -1,3 +1,8 @@
+-- SQ_demo_source2 SQL override filter plus EXPTRANS ports. The legacy
+-- o_Relationship_to_Subscriber_Code_Label port ABORTs the session on a NULL
+-- label: a hard run failure, enforced by the error-severity singular test
+-- exptrans_o_relationship_to_subscriber_code_label_abort, never a null-fill
+-- and never a filter.
 select
     title,
     first_name,
