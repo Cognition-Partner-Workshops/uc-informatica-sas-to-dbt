@@ -63,6 +63,15 @@ comparator, with the baseline scoped to the two `m_demo_mapping2` targets:
 
 Overall result: **PARITY VERIFIED** (exit code 0).
 
+Post-merge build results:
+
+- DuckDB: `PASS=47`, `ERROR=0`; parity **PARITY VERIFIED**.
+- Snowflake: `PASS=49`, `ERROR=0`; parity **PARITY VERIFIED**.
+- The upstream interpretation tests
+  `test_demo_target1_ins_interpretation` and
+  `test_demo_target1_upd_interpretation` ran on Snowflake unmodified and
+  passed.
+
 ## Engine observations
 
 All six dbt relations matched DuckDB row-for-row after normalizing Snowflake
@@ -93,3 +102,25 @@ both engines, so its behavior also remained equivalent.
 The baseline CSV writer renders midnight timestamps as `YYYY-MM-DD`, while
 DuckDB query results render them as `YYYY-MM-DD 00:00:00`; this is display
 formatting only and is normalized by the repository parity comparison helper.
+
+## Reproducing / cleanup
+
+Export the Snowflake connection settings, keeping the private key outside the
+repository:
+
+```sh
+export SNOWFLAKE_ACCOUNT=...
+export SNOWFLAKE_USER=...
+export SNOWFLAKE_ROLE=...
+export SNOWFLAKE_WAREHOUSE=...
+export SNOWFLAKE_DATABASE=...
+export SNOWFLAKE_SCHEMA=dbt_informatica
+export SNOWFLAKE_PRIVATE_KEY_PATH=/path/to/private_key.p8
+bash scripts/parity_m_demo_mapping2_snowflake.sh
+```
+
+After the run, remove the isolated namespace with:
+
+```sql
+drop schema if exists devin_migration_demo.dbt_informatica cascade;
+```
