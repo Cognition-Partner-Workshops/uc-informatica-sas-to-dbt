@@ -1,0 +1,92 @@
+version: 2
+
+models:
+  - name: demo_target2
+    columns:
+      - name: Member_Identifier
+        tests:
+          - not_null
+          - unique
+      - name: Relationship_to_Subscriber_Code_Label
+        tests:
+          - not_null
+      - name: Gender
+        tests:
+          # The gender domain is seed-derived and is not defined in the XML.
+          - accepted_values:
+              arguments:
+                values: ["M", "F"]
+              config:
+                severity: warn
+
+  - name: demo_target21
+    columns:
+      - name: Member_Identifier
+        tests:
+          - not_null
+          - unique
+      - name: Relationship_to_Subscriber_Code_Label
+        tests:
+          - not_null
+      - name: Soc_Number
+        tests:
+          - not_null
+      - name: Gender
+        tests:
+          # The gender domain is seed-derived and is not defined in the XML.
+          - accepted_values:
+              arguments:
+                values: ["M", "F"]
+              config:
+                severity: warn
+
+  - name: demo_target2_physical
+    columns:
+      - name: Member_Identifier
+        tests:
+          - not_null
+          - unique
+
+unit_tests:
+  - name: sq_override_drops_null_member_type_code
+    model: int_m3_exptrans
+    given:
+      - input: ref('stg_demo_source2')
+        rows:
+          - {title: "Keep", member_id: 1, member_type_code: 1}
+          - {title: "Drop", member_id: 2, member_type_code: null}
+    expect:
+      rows:
+        - {title: "Keep", member_id: 1, member_type_code: 1}
+
+  - name: router_newgroup1_sends_ssn_null_rows_to_demo_target2
+    model: demo_target2
+    given:
+      - input: ref('int_m3_exptrans')
+        rows:
+          - {title: "Null SSN", gender_code: "M", member_id: 1, social_security_number: null, member_type_code: 1, o_relationship_to_subscriber_code_label: "SELF"}
+          - {title: "Present SSN", gender_code: "F", member_id: 2, social_security_number: 123, member_type_code: 1, o_relationship_to_subscriber_code_label: "SELF"}
+    expect:
+      rows:
+        - {Title: "Null SSN", Gender: "M", Member_Identifier: "1", Soc_Number: null, Type_Code: "1", Relationship_to_Subscriber_Code_Label: "SELF"}
+
+  - name: router_newgroup2_sends_ssn_present_rows_to_demo_target21
+    model: demo_target21
+    given:
+      - input: ref('int_m3_exptrans')
+        rows:
+          - {title: "Null SSN", gender_code: "M", member_id: 1, social_security_number: null, member_type_code: 1, o_relationship_to_subscriber_code_label: "SELF"}
+          - {title: "Present SSN", gender_code: "F", member_id: 2, social_security_number: 123, member_type_code: 1, o_relationship_to_subscriber_code_label: "SELF"}
+    expect:
+      rows:
+        - {Title: "Present SSN", Gender: "F", Member_Identifier: "2", Soc_Number: "123", Type_Code: "1", Relationship_to_Subscriber_Code_Label: "SELF"}
+
+  - name: guarded_label_null_survives_exptrans_for_abort_test
+    model: int_m3_exptrans
+    given:
+      - input: ref('stg_demo_source2')
+        rows:
+          - {title: "Null label", member_id: 1, member_type_code: 1, relationship_to_subscriber_code_label: null}
+    expect:
+      rows:
+        - {title: "Null label", member_id: 1, member_type_code: 1, relationship_to_subscriber_code_label: null, o_relationship_to_subscriber_code_label: null}

@@ -1,0 +1,8 @@
+informatica:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: dbt/informatica/dev.duckdb
+      schema: main
+      threads: 1
