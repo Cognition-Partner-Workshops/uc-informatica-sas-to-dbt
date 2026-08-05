@@ -6,3 +6,13 @@ informatica_m_demo_mapping2:
       path: dbt/informatica/dev.duckdb
       schema: main
       threads: 1
+    snowflake:
+      type: snowflake
+      account: "{{ env_var('SNOWFLAKE_ACCOUNT') }}"
+      user: "{{ env_var('SNOWFLAKE_USER', 'devin_demo') }}"
+      role: "{{ env_var('SNOWFLAKE_ROLE', 'devin_migration_demo') }}"
+      warehouse: "{{ env_var('SNOWFLAKE_WAREHOUSE', 'devin_demo_wh') }}"
+      database: "{{ env_var('SNOWFLAKE_DATABASE', 'devin_migration_demo') }}"
+      schema: "{{ env_var('SNOWFLAKE_SCHEMA', 'dbt_informatica') }}"
+      private_key_path: "{{ env_var('SNOWFLAKE_PRIVATE_KEY_PATH') }}"
+      threads: 1

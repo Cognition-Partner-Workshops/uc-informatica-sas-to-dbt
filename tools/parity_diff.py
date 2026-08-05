@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Row-level parity diff between a legacy baseline and the dbt build output.
+"""Row-level parity diff between a legacy baseline and a dbt build output.
 
 Usage:
   python3 tools/parity_diff.py --baseline baseline/sas --actual dbt/sas/dev.duckdb \
@@ -10,7 +10,10 @@ Usage:
 
 Baseline: a directory of CSV files, one per legacy target (<TARGET>.csv).
 Actual:   either a DuckDB database file (tables looked up by target name, case-insensitive,
-          optionally in --schema) or a directory of CSVs with matching names.
+          optionally in --schema), a Snowflake database selected with
+          ``--actual snowflake --schema <schema>``, or a directory of CSVs with
+          matching names. Snowflake connection settings use the SNOWFLAKE_*
+          environment variables documented in tools/README.md.
 Keys:     JSON mapping target name -> list of key columns used to align rows.
 
 Exit code 0 only if every target matches: identical row counts, identical values in every
@@ -60,6 +63,63 @@ def load_baseline(path: str) -> dict:
 
 
 def load_actual(path: str, schema: str) -> dict:
+    if path.lower() == "snowflake":
+        import snowflake.connector
+        from cryptography.hazmat.primitives import serialization
+
+        required = [
+            "SNOWFLAKE_ACCOUNT",
+            "SNOWFLAKE_USER",
+            "SNOWFLAKE_ROLE",
+            "SNOWFLAKE_WAREHOUSE",
+            "SNOWFLAKE_DATABASE",
+            "SNOWFLAKE_PRIVATE_KEY_PATH",
+        ]
+        missing = [name for name in required if not os.environ.get(name)]
+        if missing:
+            raise RuntimeError(
+                "missing Snowflake environment variables: " + ", ".join(missing)
+            )
+        if not schema:
+            raise RuntimeError("--schema is required when --actual snowflake")
+
+        with open(os.environ["SNOWFLAKE_PRIVATE_KEY_PATH"], "rb") as key_file:
+            key = serialization.load_pem_private_key(key_file.read(), password=None)
+        private_key = key.private_bytes(
+            serialization.Encoding.DER,
+            serialization.PrivateFormat.PKCS8,
+            serialization.NoEncryption(),
+        )
+        con = snowflake.connector.connect(
+            account=os.environ["SNOWFLAKE_ACCOUNT"],
+            user=os.environ["SNOWFLAKE_USER"],
+            role=os.environ["SNOWFLAKE_ROLE"],
+            warehouse=os.environ["SNOWFLAKE_WAREHOUSE"],
+            database=os.environ["SNOWFLAKE_DATABASE"],
+            schema=schema,
+            private_key=private_key,
+        )
+        out = {}
+        cursor = con.cursor()
+        cursor.execute(
+            """
+            select table_name
+            from information_schema.tables
+            where table_schema = %s
+              and table_type = 'BASE TABLE'
+            order by table_name
+            """,
+            (schema.upper(),),
+        )
+        tables = [row[0] for row in cursor.fetchall()]
+        for table in tables:
+            cursor.execute(f'select * from "{table}"')
+            rows = cursor.fetchall()
+            columns = [description[0] for description in cursor.description]
+            out[table.upper()] = normalize(pd.DataFrame(rows, columns=columns))
+        cursor.close()
+        con.close()
+        return out
     if os.path.isdir(path):
         return load_baseline(path)
     import duckdb

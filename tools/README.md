@@ -21,7 +21,7 @@ Contract for the migration helper tools. Every tool is plain Python 3 (stdlib + 
 
 | Tool | Input | Output |
 |---|---|---|
-| `parity_diff.py` | `--baseline <dir> --actual <duckdb path or dir> --keys <spec>` | `docs/parity/<track>_parity.md` — row counts, column-by-column compares (numeric tolerance 1e-6, date normalization), per-key row diffs; exit code 0 only on full parity |
+| `parity_diff.py` | `--baseline <dir> --actual <duckdb path, snowflake, or dir> --schema <schema> --keys <spec>` | `docs/parity/<track>_parity.md` — row counts, column-by-column compares (numeric tolerance 1e-6, date normalization), per-key row diffs; exit code 0 only on full parity |
 
 ## Rules
 
@@ -43,3 +43,24 @@ explicit `--trigger-abort` opt-in that swaps in a separate bad-row seed set and
 hard-fails on the `ABORT()` path. The lineage tool records connector-based port
 lineage, including positional SQL override bindings and unconnected `:LKP.`
 calls.
+
+### Snowflake parity run
+
+The Snowflake dbt target reads the two required seed CSVs from
+`dbt/informatica/seeds/` (linked to `legacy/informatica/data/`) and writes to
+the configured namespace. Export these connection settings before running dbt
+(the private key itself must never be stored in the repository):
+
+```sh
+export SNOWFLAKE_ACCOUNT=...
+export SNOWFLAKE_USER=...
+export SNOWFLAKE_ROLE=...
+export SNOWFLAKE_WAREHOUSE=...
+export SNOWFLAKE_DATABASE=...
+export SNOWFLAKE_SCHEMA=...
+export SNOWFLAKE_PRIVATE_KEY_PATH=/path/to/private_key.p8
+```
+
+For Snowflake parity, use `--actual snowflake --schema <schema>`. The parity
+tool reads the same account, user, role, warehouse, database, and private key
+path environment variables as the dbt profile.
