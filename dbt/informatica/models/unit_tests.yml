@@ -67,7 +67,7 @@ unit_tests:
           - {ACCT_ID: 1002, ACCT_TYP: 'SB', ACCT_DESC: 'Account 1002 ledger', CRDT_LN: '48000', CR8_DT: '2024-01-31 00:00:00', CLSR_DT: null, ACCT_STAT_CD: 'D', TX_ID: 5003, LAST_NM: 'SILVA', TX_DTTM: '2024-01-14 05:49:00', TX_AMT: -1238.81, BAL_AMT: 91291.88, CUST_ID: 70032, o_acc_trim: 'SB', o_crdt_trim: '48000', o_ACCT_DESC: 'Account 1002 ledger', o_ACCT_ID: 'DR', FIRST_NM: 'OMAR', CRDT_SCORE: 677, router_group: 'demo_target6_GRP'}
     expect:
       rows:
-        - {ACCT_ID: 1001, ACCT_TYP: 'SB', ACCT_DESC: 'Account 1001 ledger', CR8_DT: '2024-01-31 00:00:00', CRDT_LN: 8000, CLSR_DT: '2025-06-30', ACCT_STAT_CD: 'A', TX_ID: 5002, ACCT_KEY: 281, TX_DTTM: '2024-01-15 11:00:00', TX_AMT: 2031.24, TX_TYPE_CD: 'DR'}
+        - {ACCT_ID: 1001, ACCT_TYP: 'SB', ACCT_DESC: 'Account 1001 ledger', CR8_DT: '2024-01-31 00:00:00', CRDT_LN: 8000, CLSR_DT: '2025-06-30', ACCT_STAT_CD: 'A', TX_ID: 5002, ACCT_KEY: 281, TX_DTTM: '2024-01-15 11:00:00', TX_AMT: 2031.2399999999998, TX_TYPE_CD: 'DR'}
         - {ACCT_ID: 1002, ACCT_TYP: 'SB', ACCT_DESC: 'Account 1002 ledger', CR8_DT: '2024-01-31 00:00:00', CRDT_LN: 48000, CLSR_DT: null, ACCT_STAT_CD: 'D', TX_ID: 5003, ACCT_KEY: 282, TX_DTTM: '2024-01-14 05:49:00', TX_AMT: -1238.81, TX_TYPE_CD: 'DR'}
 
   - name: m1_target3_date_parsing

@@ -5,9 +5,9 @@ with grouped as (
             partition by r.ACCT_ID
             order by r.TX_ID desc
         ) as __pass_through_rank,
-        round(sum(r.TX_AMT) over (
+        sum(r.TX_AMT) over (
             partition by r.ACCT_ID
-        ), 2) as __sum_tx_amt,
+        ) as __sum_tx_amt,
         dense_rank() over (
             order by r.ACCT_ID
         ) as __acct_rank
