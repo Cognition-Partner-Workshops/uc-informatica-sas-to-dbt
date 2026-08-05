@@ -1,0 +1,33 @@
+version: 2
+
+sources:
+  - name: ora_dw
+    schema: ora_dw
+    description: "Seed CSVs loaded by tools/sas_load_raw.py"
+    tables:
+      - name: cust_accounts
+      - name: cust_demographics
+      - name: bureau_scores
+      - name: payment_history
+      - name: collateral
+      - name: loan_details
+  - name: raw_bank
+    schema: raw_bank
+    description: "Seed CSVs loaded by tools/sas_load_raw.py"
+    tables:
+      - name: txn_feed_20240131
+      - name: daily_rates
+  - name: raw_ins
+    schema: raw_ins
+    description: "Seed CSVs loaded by tools/sas_load_raw.py"
+    tables:
+      - name: policies
+      - name: claims
+      - name: premiums
+      - name: claims_feed_20240131
+      - name: fraud_indicators
+  - name: curated_src
+    schema: curated_src
+    description: "Seed CSVs loaded by tools/sas_load_raw.py"
+    tables:
+      - name: daily_transactions

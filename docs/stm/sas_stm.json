@@ -1,0 +1,2456 @@
+{
+  "run_date": "31JAN2024",
+  "programs": [
+    {
+      "program": "claims_processing",
+      "purpose": "Ingest new claims from feed, validate against policy data, apply auto-adjudication rules, route for manual review, and update claims register.",
+      "declared_inputs": [
+        "RAW_INS.CLAIMS_FEED_YYYYMMDD",
+        "RAW_INS.POLICIES",
+        "TERA_DW.FRAUD_INDICATORS"
+      ],
+      "declared_outputs": [
+        "STG_INS.CLAIMS_REGISTER",
+        "STG_INS.CLAIMS_REVIEW_QUEUE",
+        "STG_INS.FRAUD_ALERTS"
+      ],
+      "macro": {
+        "name": "claims_processing",
+        "parameters": [
+          {
+            "name": "proc_date",
+            "default": "&CURR_DT"
+          }
+        ]
+      },
+      "inputs": [
+        "RAW_INS.&feed_ds",
+        "RAW_INS.POLICIES",
+        "STG_INS.CLAIMS_REGISTER",
+        "STG_INS.CLAIMS_REVIEW_QUEUE",
+        "STG_INS.FRAUD_ALERTS",
+        "TERA_DW.FRAUD_INDICATORS"
+      ],
+      "feed_dataset_patterns": [
+        "CLAIMS_FEED_YYYYMMDD"
+      ],
+      "persistent_outputs": [
+        "STG_INS.CLAIMS_REGISTER",
+        "STG_INS.CLAIMS_REVIEW_QUEUE",
+        "STG_INS.FRAUD_ALERTS"
+      ],
+      "steps": [
+        {
+          "type": "data_step",
+          "outputs": [
+            "WORK.CLAIMS_VALID",
+            "WORK.CLAIMS_INVALID"
+          ],
+          "output_options": {
+            "WORK.CLAIMS_VALID": "label=\"Validated Claims\"",
+            "WORK.CLAIMS_INVALID": "label=\"Invalid Claims\""
+          },
+          "sources": [
+            "RAW_INS.&FEED_DS"
+          ],
+          "by": null,
+          "retain": [],
+          "hash_lookups": [
+            {
+              "object": "h_pol",
+              "declare": "dataset: \"RAW_INS.POLICIES(where=(STATUS='ACTIVE'))\"",
+              "key": [
+                "POLICY_ID"
+              ],
+              "data": [
+                "POLICY_TYPE",
+                "EFFECTIVE_DATE",
+                "EXPIRATION_DATE",
+                "SUM_INSURED",
+                "DEDUCTIBLE"
+              ]
+            }
+          ],
+          "formats": {
+            "EFFECTIVE_DATE": "date9.",
+            "EXPIRATION_DATE": "date9."
+          },
+          "lengths": {
+            "VALIDATION_ERROR": "$200",
+            "POLICY_TYPE": "$10",
+            "DEDUCTIBLE": "8"
+          },
+          "drop": [
+            "VALIDATION_ERROR",
+            "RC"
+          ],
+          "keep": [],
+          "derived_columns": [
+            {
+              "column": "RC",
+              "expression": "h_pol.find()",
+              "condition": null
+            },
+            {
+              "column": "VALIDATION_ERROR",
+              "expression": "catx(' ', 'Policy not found or inactive:', POLICY_ID)",
+              "condition": "rc ne 0"
+            },
+            {
+              "column": "VALIDATION_ERROR",
+              "expression": "catx(' ', 'Loss date', put(LOSS_DATE, date9.), 'outside policy period', put(EFFECTIVE_DATE, date9.), '-', put(EXPIRATION_DATE, date9.))",
+              "condition": "LOSS_DATE < EFFECTIVE_DATE or LOSS_DATE > EXPIRATION_DATE"
+            },
+            {
+              "column": "VALIDATION_ERROR",
+              "expression": "catx(' ', 'Claimed amount', put(CLAIMED_AMOUNT, dollar18.2), 'exceeds sum insured', put(SUM_INSURED, dollar18.2))",
+              "condition": "CLAIMED_AMOUNT > SUM_INSURED"
+            }
+          ],
+          "conditional_outputs": [
+            {
+              "target": "WORK.CLAIMS_INVALID",
+              "condition": "rc ne 0"
+            },
+            {
+              "target": "WORK.CLAIMS_INVALID",
+              "condition": "LOSS_DATE < EFFECTIVE_DATE or LOSS_DATE > EXPIRATION_DATE"
+            },
+            {
+              "target": "WORK.CLAIMS_INVALID",
+              "condition": "CLAIMED_AMOUNT > SUM_INSURED"
+            },
+            {
+              "target": "WORK.CLAIMS_VALID",
+              "condition": null
+            }
+          ],
+          "merge": false
+        },
+        {
+          "type": "proc_sql_create",
+          "output": "WORK.FRAUD_CHECK",
+          "from": "WORK.CLAIMS_VALID c",
+          "joins": [
+            {
+              "type": "left",
+              "table": "TERA_DW.FRAUD_INDICATORS f",
+              "on": "c.POLICY_ID = f.POLICY_ID and c.CLAIMANT_ID = f.CLAIMANT_ID"
+            }
+          ],
+          "where": null,
+          "group_by": null,
+          "having": null,
+          "order_by": null,
+          "columns": [
+            {
+              "column": "C.*",
+              "expression": "pass-through (all columns)"
+            },
+            {
+              "column": "FRAUD_SCORE",
+              "expression": "f.FRAUD_SCORE"
+            },
+            {
+              "column": "INDICATOR_FLAGS",
+              "expression": "f.INDICATOR_FLAGS"
+            },
+            {
+              "column": "FRAUD_RISK",
+              "expression": "case when f.FRAUD_SCORE >= 80 then 'HIGH' when f.FRAUD_SCORE >= 50 then 'MEDIUM' else 'LOW' end"
+            }
+          ]
+        },
+        {
+          "type": "data_step",
+          "outputs": [
+            "WORK.FRAUD_ALERTS"
+          ],
+          "output_options": {},
+          "sources": [
+            "WORK.FRAUD_CHECK"
+          ],
+          "by": null,
+          "retain": [],
+          "hash_lookups": [],
+          "formats": {
+            "ALERT_DATE": "date9."
+          },
+          "lengths": {},
+          "drop": [],
+          "keep": [],
+          "derived_columns": [
+            {
+              "column": "ALERT_REASON",
+              "expression": "catx('; ', catx(' ', 'Fraud score:', put(FRAUD_SCORE, 4.)), INDICATOR_FLAGS)",
+              "condition": null
+            },
+            {
+              "column": "ALERT_DATE",
+              "expression": "\"&proc_date\"d",
+              "condition": null
+            }
+          ],
+          "conditional_outputs": [],
+          "merge": false,
+          "where": "FRAUD_RISK = 'HIGH'"
+        },
+        {
+          "type": "data_step",
+          "outputs": [
+            "WORK.AUTO_ADJUDICATED",
+            "WORK.MANUAL_REVIEW"
+          ],
+          "output_options": {
+            "WORK.AUTO_ADJUDICATED": "label=\"Auto-Adjudicated Claims\"",
+            "WORK.MANUAL_REVIEW": "label=\"Claims for Manual Review\""
+          },
+          "sources": [
+            "WORK.FRAUD_CHECK"
+          ],
+          "by": null,
+          "retain": [],
+          "hash_lookups": [],
+          "formats": {},
+          "lengths": {
+            "ADJUDICATION_RESULT": "$20",
+            "ADJUDICATION_REASON": "$200",
+            "APPROVED_AMOUNT": "8"
+          },
+          "drop": [],
+          "keep": [],
+          "derived_columns": [
+            {
+              "column": "ADJUDICATION_RESULT",
+              "expression": "'DENY'",
+              "condition": "FRAUD_RISK = 'HIGH'"
+            },
+            {
+              "column": "ADJUDICATION_REASON",
+              "expression": "'High fraud risk - SIU referral'",
+              "condition": "FRAUD_RISK = 'HIGH'"
+            },
+            {
+              "column": "APPROVED_AMOUNT",
+              "expression": "0",
+              "condition": "FRAUD_RISK = 'HIGH'"
+            },
+            {
+              "column": "ADJUDICATION_RESULT",
+              "expression": "'APPR'",
+              "condition": "FRAUD_RISK = 'LOW' and CLAIMED_AMOUNT <= 5000 and POLICY_TYPE in ('AUTO','HOME','RENT')"
+            },
+            {
+              "column": "ADJUDICATION_REASON",
+              "expression": "'Auto-approved: low risk, small claim'",
+              "condition": "FRAUD_RISK = 'LOW' and CLAIMED_AMOUNT <= 5000 and POLICY_TYPE in ('AUTO','HOME','RENT')"
+            },
+            {
+              "column": "APPROVED_AMOUNT",
+              "expression": "max(0, CLAIMED_AMOUNT - DEDUCTIBLE)",
+              "condition": "FRAUD_RISK = 'LOW' and CLAIMED_AMOUNT <= 5000 and POLICY_TYPE in ('AUTO','HOME','RENT')"
+            },
+            {
+              "column": "ADJUDICATION_RESULT",
+              "expression": "'APPR'",
+              "condition": "FRAUD_RISK = 'LOW' and CLAIMED_AMOUNT <= SUM_INSURED * 0.25 and CLAIMED_AMOUNT <= 50000"
+            },
+            {
+              "column": "ADJUDICATION_REASON",
+              "expression": "'Auto-approved: within 25% of sum insured'",
+              "condition": "FRAUD_RISK = 'LOW' and CLAIMED_AMOUNT <= SUM_INSURED * 0.25 and CLAIMED_AMOUNT <= 50000"
+            },
+            {
+              "column": "APPROVED_AMOUNT",
+              "expression": "max(0, CLAIMED_AMOUNT - DEDUCTIBLE)",
+              "condition": "FRAUD_RISK = 'LOW' and CLAIMED_AMOUNT <= SUM_INSURED * 0.25 and CLAIMED_AMOUNT <= 50000"
+            },
+            {
+              "column": "ADJUDICATION_RESULT",
+              "expression": "'PEND'",
+              "condition": null
+            },
+            {
+              "column": "ADJUDICATION_REASON",
+              "expression": "catx('; ', ifc(FRAUD_RISK='MEDIUM', 'Medium fraud risk', ''), ifc(CLAIMED_AMOUNT > 50000, 'Large claim', ''), ifc(CLAIMED_AMOUNT > SUM_INSURED * 0.25, 'Exceeds 25% threshold', ''))",
+              "condition": null
+            },
+            {
+              "column": "APPROVED_AMOUNT",
+              "expression": ".",
+              "condition": null
+            }
+          ],
+          "conditional_outputs": [
+            {
+              "target": "WORK.MANUAL_REVIEW",
+              "condition": "FRAUD_RISK = 'HIGH'"
+            },
+            {
+              "target": "WORK.AUTO_ADJUDICATED",
+              "condition": "FRAUD_RISK = 'LOW' and CLAIMED_AMOUNT <= 5000 and POLICY_TYPE in ('AUTO','HOME','RENT')"
+            },
+            {
+              "target": "WORK.AUTO_ADJUDICATED",
+              "condition": "FRAUD_RISK = 'LOW' and CLAIMED_AMOUNT <= SUM_INSURED * 0.25 and CLAIMED_AMOUNT <= 50000"
+            },
+            {
+              "target": "WORK.MANUAL_REVIEW",
+              "condition": null
+            }
+          ],
+          "merge": false
+        },
+        {
+          "type": "data_step",
+          "outputs": [
+            "WORK.CLAIMS_COMBINED"
+          ],
+          "output_options": {},
+          "sources": [
+            "WORK.AUTO_ADJUDICATED",
+            "WORK.MANUAL_REVIEW"
+          ],
+          "by": null,
+          "retain": [],
+          "hash_lookups": [],
+          "formats": {
+            "PROCESSING_DATE": "date9.",
+            "CLAIM_STATUS": "$CLMSTAT."
+          },
+          "lengths": {},
+          "drop": [],
+          "keep": [],
+          "derived_columns": [
+            {
+              "column": "PROCESSING_DATE",
+              "expression": "\"&proc_date\"d",
+              "condition": null
+            },
+            {
+              "column": "CLAIM_STATUS",
+              "expression": "ADJUDICATION_RESULT",
+              "condition": null
+            }
+          ],
+          "conditional_outputs": [],
+          "merge": false
+        },
+        {
+          "type": "proc_append",
+          "output": "STG_INS.CLAIMS_REGISTER",
+          "from": "WORK.CLAIMS_COMBINED",
+          "force": true
+        },
+        {
+          "type": "proc_append",
+          "output": "STG_INS.CLAIMS_REVIEW_QUEUE",
+          "from": "WORK.MANUAL_REVIEW",
+          "force": true
+        },
+        {
+          "type": "proc_append",
+          "output": "STG_INS.FRAUD_ALERTS",
+          "from": "WORK.FRAUD_ALERTS",
+          "force": true
+        }
+      ],
+      "notes": [
+        "The hash object loads RAW_INS.POLICIES filtered to STATUS='ACTIVE'; a failed FIND (rc ne 0) covers both unknown and inactive policies. POLICY_ID is unique in the seed data so hash duplicate-key handling is not exercised.",
+        "TERA_DW.FRAUD_INDICATORS is seeded as legacy/sas/data/csv/raw_ins/FRAUD_INDICATORS.csv (the insurance seed directory stands in for the Teradata libref).",
+        "The `drop VALIDATION_ERROR rc;` statement applies to both step-1 outputs; WORK.CLAIMS_INVALID is WORK-only and not persisted.",
+        "Adjudication rules are sequential with RETURN \u2014 first match wins. DENY (high fraud) rows go to the manual-review queue, not the auto-adjudicated set.",
+        "$CLMSTAT. on CLAIM_STATUS is a display format; codes are stored. The migration adds an explicit CLAIM_STATUS_DESC column via a seed lookup implementing the format."
+      ]
+    },
+    {
+      "program": "credit_risk_scoring",
+      "purpose": "Apply the approved credit risk scorecard model to the current portfolio, produce PD/LGD/EAD estimates, and update risk ratings. Uses logistic regression coefficients from the validated model (Model ID: CRM-2023-Q4-v2).",
+      "declared_inputs": [
+        "STG_BANK.CUST_ACCOUNTS_DAILY",
+        "ORA_DW.BUREAU_SCORES",
+        "ORA_DW.PAYMENT_HISTORY",
+        "ORA_DW.COLLATERAL"
+      ],
+      "declared_outputs": [
+        "CURATED.RISK_SCORES",
+        "CURATED.RISK_MIGRATION",
+        "REPORTS.RISK_SUMMARY"
+      ],
+      "macro": {
+        "name": "credit_risk_scoring",
+        "parameters": [
+          {
+            "name": "score_date",
+            "default": "&CURR_DT"
+          },
+          {
+            "name": "model_id",
+            "default": "CRM-2023-Q4-v2"
+          }
+        ]
+      },
+      "inputs": [
+        "CURATED.RISK_MIGRATION",
+        "CURATED.RISK_SCORES",
+        "ORA_DW.BUREAU_SCORES",
+        "ORA_DW.COLLATERAL",
+        "ORA_DW.PAYMENT_HISTORY",
+        "STG_BANK.CUST_ACCOUNTS_DAILY"
+      ],
+      "feed_dataset_patterns": [],
+      "persistent_outputs": [
+        "CURATED.RISK_MIGRATION",
+        "CURATED.RISK_SCORES",
+        "REPORTS.RISK_SUMMARY"
+      ],
+      "steps": [
+        {
+          "type": "proc_sql_create",
+          "output": "WORK.SCORE_INPUT",
+          "from": "STG_BANK.CUST_ACCOUNTS_DAILY a",
+          "joins": [
+            {
+              "type": "left",
+              "table": "ORA_DW.BUREAU_SCORES b",
+              "on": "a.CUSTOMER_ID = b.CUSTOMER_ID and b.SCORE_DATE = (select max(SCORE_DATE) from ORA_DW.BUREAU_SCORES"
+            },
+            {
+              "type": "left",
+              "table": "ORA_DW.PAYMENT_HISTORY p",
+              "on": "a.ACCOUNT_ID = p.ACCOUNT_ID"
+            },
+            {
+              "type": "left",
+              "table": "ORA_DW.COLLATERAL c",
+              "on": "a.ACCOUNT_ID = c.ACCOUNT_ID"
+            }
+          ],
+          "where": "CUSTOMER_ID = b.CUSTOMER_ID and SCORE_DATE <= \"&score_date\"d)",
+          "group_by": null,
+          "having": null,
+          "order_by": null,
+          "columns": [
+            {
+              "column": "ACCOUNT_ID",
+              "expression": "a.ACCOUNT_ID"
+            },
+            {
+              "column": "CUSTOMER_ID",
+              "expression": "a.CUSTOMER_ID"
+            },
+            {
+              "column": "ACCOUNT_TYPE",
+              "expression": "a.ACCOUNT_TYPE"
+            },
+            {
+              "column": "CURRENT_BALANCE",
+              "expression": "a.CURRENT_BALANCE"
+            },
+            {
+              "column": "CREDIT_LIMIT",
+              "expression": "a.CREDIT_LIMIT"
+            },
+            {
+              "column": "ACCT_AGE_MONTHS",
+              "expression": "a.ACCT_AGE_MONTHS"
+            },
+            {
+              "column": "DAYS_INACTIVE",
+              "expression": "a.DAYS_INACTIVE"
+            },
+            {
+              "column": "UTILIZATION_PCT",
+              "expression": "a.UTILIZATION_PCT"
+            },
+            {
+              "column": "CUSTOMER_SEGMENT",
+              "expression": "a.CUSTOMER_SEGMENT"
+            },
+            {
+              "column": "REGION_CODE",
+              "expression": "a.REGION_CODE"
+            },
+            {
+              "column": "FICO_SCORE",
+              "expression": "b.FICO_SCORE"
+            },
+            {
+              "column": "VANTAGE_SCORE",
+              "expression": "b.VANTAGE_SCORE"
+            },
+            {
+              "column": "BUREAU_INQS_6MO",
+              "expression": "b.BUREAU_INQS_6MO"
+            },
+            {
+              "column": "BUREAU_TRADES_OPEN",
+              "expression": "b.BUREAU_TRADES_OPEN"
+            },
+            {
+              "column": "BUREAU_DEROGS",
+              "expression": "b.BUREAU_DEROGS"
+            },
+            {
+              "column": "BUREAU_UTIL_PCT",
+              "expression": "b.BUREAU_UTIL_PCT"
+            },
+            {
+              "column": "BUREAU_OLDEST_TRADE_MO",
+              "expression": "b.BUREAU_OLDEST_TRADE_MO"
+            },
+            {
+              "column": "PMT_ONTIME_12MO",
+              "expression": "p.PMT_ONTIME_12MO"
+            },
+            {
+              "column": "PMT_LATE_30_12MO",
+              "expression": "p.PMT_LATE_30_12MO"
+            },
+            {
+              "column": "PMT_LATE_60_12MO",
+              "expression": "p.PMT_LATE_60_12MO"
+            },
+            {
+              "column": "PMT_LATE_90_12MO",
+              "expression": "p.PMT_LATE_90_12MO"
+            },
+            {
+              "column": "MAX_DAYS_PAST_DUE_EVER",
+              "expression": "p.MAX_DAYS_PAST_DUE_EVER"
+            },
+            {
+              "column": "MONTHS_SINCE_LAST_DPD",
+              "expression": "p.MONTHS_SINCE_LAST_DPD"
+            },
+            {
+              "column": "AVG_PMT_RATIO_12MO",
+              "expression": "p.AVG_PMT_RATIO_12MO"
+            },
+            {
+              "column": "COLLATERAL_VALUE",
+              "expression": "c.COLLATERAL_VALUE"
+            },
+            {
+              "column": "LAST_APPRAISAL_DATE",
+              "expression": "c.LAST_APPRAISAL_DATE"
+            },
+            {
+              "column": "LTV",
+              "expression": "case when c.COLLATERAL_VALUE > 0 then a.CURRENT_BALANCE / c.COLLATERAL_VALUE else . end"
+            }
+          ]
+        },
+        {
+          "type": "data_step",
+          "outputs": [
+            "WORK.SCORED"
+          ],
+          "output_options": {},
+          "sources": [
+            "WORK.SCORE_INPUT"
+          ],
+          "by": null,
+          "retain": [],
+          "hash_lookups": [],
+          "formats": {
+            "PD": "percent8.4",
+            "LGD": "percent8.4",
+            "EAD": "dollar18.2",
+            "EXPECTED_LOSS": "dollar18.2",
+            "SCORE_DATE": "date9.",
+            "SCORE_TIMESTAMP": "datetime20."
+          },
+          "lengths": {},
+          "drop": [
+            "INTERCEPT",
+            "WOE_FICO",
+            "WOE_UTIL",
+            "WOE_DPD",
+            "WOE_AGE",
+            "WOE_LTV",
+            "LOG_ODDS"
+          ],
+          "keep": [],
+          "derived_columns": [
+            {
+              "column": "INTERCEPT",
+              "expression": "-3.2145",
+              "condition": null
+            },
+            {
+              "column": "WOE_FICO",
+              "expression": "-1.204",
+              "condition": "FICO_SCORE >= 760"
+            },
+            {
+              "column": "WOE_FICO",
+              "expression": "-0.812",
+              "condition": "ELSE FICO_SCORE >= 720"
+            },
+            {
+              "column": "WOE_FICO",
+              "expression": "-0.356",
+              "condition": "ELSE FICO_SCORE >= 680"
+            },
+            {
+              "column": "WOE_FICO",
+              "expression": "0.198",
+              "condition": "ELSE FICO_SCORE >= 640"
+            },
+            {
+              "column": "WOE_FICO",
+              "expression": "0.654",
+              "condition": "ELSE FICO_SCORE >= 600"
+            },
+            {
+              "column": "WOE_FICO",
+              "expression": "1.102",
+              "condition": "NOT (ELSE FICO_SCORE >= 600)"
+            },
+            {
+              "column": "WOE_FICO",
+              "expression": "0.198",
+              "condition": "NOT (not missing(FICO_SCORE))"
+            },
+            {
+              "column": "WOE_UTIL",
+              "expression": "-0.956",
+              "condition": "UTILIZATION_PCT <= 10"
+            },
+            {
+              "column": "WOE_UTIL",
+              "expression": "-0.521",
+              "condition": "ELSE UTILIZATION_PCT <= 30"
+            },
+            {
+              "column": "WOE_UTIL",
+              "expression": "-0.102",
+              "condition": "ELSE UTILIZATION_PCT <= 50"
+            },
+            {
+              "column": "WOE_UTIL",
+              "expression": "0.334",
+              "condition": "ELSE UTILIZATION_PCT <= 70"
+            },
+            {
+              "column": "WOE_UTIL",
+              "expression": "0.789",
+              "condition": "ELSE UTILIZATION_PCT <= 90"
+            },
+            {
+              "column": "WOE_UTIL",
+              "expression": "1.245",
+              "condition": "NOT (ELSE UTILIZATION_PCT <= 90)"
+            },
+            {
+              "column": "WOE_UTIL",
+              "expression": "0",
+              "condition": "NOT (not missing(UTILIZATION_PCT))"
+            },
+            {
+              "column": "WOE_DPD",
+              "expression": "-0.678",
+              "condition": "PMT_LATE_90_12MO = 0"
+            },
+            {
+              "column": "WOE_DPD",
+              "expression": "0.445",
+              "condition": "ELSE PMT_LATE_90_12MO = 1"
+            },
+            {
+              "column": "WOE_DPD",
+              "expression": "1.567",
+              "condition": "NOT (ELSE PMT_LATE_90_12MO = 1)"
+            },
+            {
+              "column": "WOE_DPD",
+              "expression": "0",
+              "condition": "NOT (not missing(PMT_LATE_90_12MO))"
+            },
+            {
+              "column": "WOE_AGE",
+              "expression": "-0.534",
+              "condition": "ACCT_AGE_MONTHS >= 120"
+            },
+            {
+              "column": "WOE_AGE",
+              "expression": "-0.289",
+              "condition": "ELSE ACCT_AGE_MONTHS >= 60"
+            },
+            {
+              "column": "WOE_AGE",
+              "expression": "0.045",
+              "condition": "ELSE ACCT_AGE_MONTHS >= 24"
+            },
+            {
+              "column": "WOE_AGE",
+              "expression": "0.456",
+              "condition": "NOT (ELSE ACCT_AGE_MONTHS >= 24)"
+            },
+            {
+              "column": "WOE_AGE",
+              "expression": "0",
+              "condition": "NOT (not missing(ACCT_AGE_MONTHS))"
+            },
+            {
+              "column": "WOE_LTV",
+              "expression": "-0.712",
+              "condition": "LTV <= 0.60"
+            },
+            {
+              "column": "WOE_LTV",
+              "expression": "-0.234",
+              "condition": "ELSE LTV <= 0.80"
+            },
+            {
+              "column": "WOE_LTV",
+              "expression": "0.356",
+              "condition": "ELSE LTV <= 1.00"
+            },
+            {
+              "column": "WOE_LTV",
+              "expression": "0.889",
+              "condition": "NOT (ELSE LTV <= 1.00)"
+            },
+            {
+              "column": "WOE_LTV",
+              "expression": "0",
+              "condition": "NOT (not missing(LTV))"
+            },
+            {
+              "column": "WOE_LTV",
+              "expression": "0",
+              "condition": "NOT (ACCOUNT_TYPE in ('MTG','AUTO','HELC'))"
+            },
+            {
+              "column": "LOG_ODDS",
+              "expression": "INTERCEPT + 0.412 * WOE_FICO + 0.198 * WOE_UTIL + 0.289 * WOE_DPD + 0.067 * WOE_AGE + 0.134 * WOE_LTV",
+              "condition": null
+            },
+            {
+              "column": "PD",
+              "expression": "1 / (1 + exp(-LOG_ODDS))",
+              "condition": null
+            },
+            {
+              "column": "LGD",
+              "expression": "max(0, min(1, (LTV - 0.5) * 0.8))",
+              "condition": "not missing(LTV)"
+            },
+            {
+              "column": "LGD",
+              "expression": "0.40",
+              "condition": "NOT (not missing(LTV))"
+            },
+            {
+              "column": "LGD",
+              "expression": "0.75",
+              "condition": "ELSE ACCOUNT_TYPE = 'CC'"
+            },
+            {
+              "column": "LGD",
+              "expression": "0.50",
+              "condition": "NOT (ELSE ACCOUNT_TYPE = 'CC')"
+            },
+            {
+              "column": "EAD",
+              "expression": "CURRENT_BALANCE + 0.50 * (CREDIT_LIMIT - CURRENT_BALANCE)",
+              "condition": "ACCOUNT_TYPE in ('CC','LOC','HELC')"
+            },
+            {
+              "column": "EAD",
+              "expression": "CURRENT_BALANCE",
+              "condition": "NOT (ACCOUNT_TYPE in ('CC','LOC','HELC'))"
+            },
+            {
+              "column": "EXPECTED_LOSS",
+              "expression": "PD * LGD * EAD",
+              "condition": null
+            },
+            {
+              "column": "NEW_RISK_RATING",
+              "expression": "1",
+              "condition": "PD < 0.005"
+            },
+            {
+              "column": "NEW_RISK_RATING",
+              "expression": "2",
+              "condition": "ELSE PD < 0.01"
+            },
+            {
+              "column": "NEW_RISK_RATING",
+              "expression": "3",
+              "condition": "ELSE PD < 0.03"
+            },
+            {
+              "column": "NEW_RISK_RATING",
+              "expression": "4",
+              "condition": "ELSE PD < 0.07"
+            },
+            {
+              "column": "NEW_RISK_RATING",
+              "expression": "5",
+              "condition": "ELSE PD < 0.15"
+            },
+            {
+              "column": "NEW_RISK_RATING",
+              "expression": "6",
+              "condition": "ELSE PD < 0.30"
+            },
+            {
+              "column": "NEW_RISK_RATING",
+              "expression": "7",
+              "condition": "NOT (ELSE PD < 0.30)"
+            },
+            {
+              "column": "SCORE_DATE",
+              "expression": "\"&score_date\"d",
+              "condition": null
+            },
+            {
+              "column": "MODEL_ID",
+              "expression": "\"&model_id\"",
+              "condition": null
+            },
+            {
+              "column": "SCORE_TIMESTAMP",
+              "expression": "datetime()",
+              "condition": null
+            }
+          ],
+          "conditional_outputs": [],
+          "merge": false
+        },
+        {
+          "type": "proc_sql_create",
+          "output": "WORK.RISK_MIGRATION",
+          "from": "WORK.SCORED s",
+          "joins": [
+            {
+              "type": "inner",
+              "table": "STG_BANK.CUST_ACCOUNTS_DAILY a",
+              "on": "s.ACCOUNT_ID = a.ACCOUNT_ID"
+            }
+          ],
+          "where": "a.SNAPSHOT_DATE = \"&score_date\"d and (a.RISK_RATING ne s.NEW_RISK_RATING or a.RISK_RATING is null)",
+          "group_by": null,
+          "having": null,
+          "order_by": null,
+          "columns": [
+            {
+              "column": "SCORE_DATE",
+              "expression": "\"&score_date\"d"
+            },
+            {
+              "column": "ACCOUNT_ID",
+              "expression": "a.ACCOUNT_ID"
+            },
+            {
+              "column": "PREV_RATING",
+              "expression": "a.RISK_RATING"
+            },
+            {
+              "column": "CURR_RATING",
+              "expression": "s.NEW_RISK_RATING"
+            },
+            {
+              "column": "MIGRATION_DIRECTION",
+              "expression": "case when a.RISK_RATING is null then 'NEW' when s.NEW_RISK_RATING < a.RISK_RATING then 'UPGRADE' when s.NEW_RISK_RATING > a.RISK_RATING then 'DOWNGRADE' else 'STABLE' end"
+            },
+            {
+              "column": "PD",
+              "expression": "s.PD"
+            },
+            {
+              "column": "EXPECTED_LOSS",
+              "expression": "s.EXPECTED_LOSS"
+            }
+          ]
+        },
+        {
+          "type": "proc_append",
+          "output": "CURATED.RISK_SCORES",
+          "from": "WORK.SCORED",
+          "force": true
+        },
+        {
+          "type": "proc_append",
+          "output": "CURATED.RISK_MIGRATION",
+          "from": "WORK.RISK_MIGRATION",
+          "force": true
+        },
+        {
+          "type": "proc_means",
+          "from": "WORK.SCORED",
+          "class": [
+            "ACCOUNT_TYPE",
+            "NEW_RISK_RATING"
+          ],
+          "vars": [
+            "PD",
+            "LGD",
+            "EAD",
+            "EXPECTED_LOSS"
+          ],
+          "output": "REPORTS.RISK_SUMMARY",
+          "output_options": "drop=_TYPE_ _FREQ_",
+          "stats": [
+            {
+              "stat": "n",
+              "var": "",
+              "as": "N_ACCOUNTS"
+            },
+            {
+              "stat": "mean",
+              "var": "PD",
+              "as": "AVG_PD"
+            },
+            {
+              "stat": "mean",
+              "var": "LGD",
+              "as": "AVG_LGD"
+            },
+            {
+              "stat": "sum",
+              "var": "EAD",
+              "as": "TOTAL_EAD"
+            },
+            {
+              "stat": "sum",
+              "var": "EXPECTED_LOSS",
+              "as": "TOTAL_EL"
+            }
+          ],
+          "nway": true
+        }
+      ],
+      "notes": [
+        "Bureau join picks the latest SCORE_DATE per customer on or before the score date via a correlated subquery.",
+        "WOE defaults for missing inputs: FICO\u21920.198, UTIL\u21920, DPD\u21920, AGE\u21920, LTV\u21920 (and LTV WOE applies only to MTG/AUTO/HELC).",
+        "SCORE_TIMESTAMP = datetime() is non-deterministic and excluded from the baseline and migrated model.",
+        "REPORTS.RISK_SUMMARY is PROC MEANS NWAY by ACCOUNT_TYPE \u00d7 NEW_RISK_RATING; N_ACCOUNTS is the n of the first analysis variable (PD, never missing here)."
+      ]
+    },
+    {
+      "program": "daily_transaction_processing",
+      "purpose": "Ingest daily transaction feed, validate, classify, compute running balances, detect anomalies, and load to curated layer.",
+      "declared_inputs": [
+        "RAW_BANK.TXN_FEED_YYYYMMDD",
+        "STG_BANK.CUST_ACCOUNTS_DAILY",
+        "BANKING.FORMATS"
+      ],
+      "declared_outputs": [
+        "CURATED.DAILY_TRANSACTIONS",
+        "CURATED.TXN_ANOMALIES",
+        "CURATED.RUNNING_BALANCES"
+      ],
+      "macro": {
+        "name": "daily_transaction_processing",
+        "parameters": [
+          {
+            "name": "txn_date",
+            "default": "&CURR_DT"
+          }
+        ]
+      },
+      "inputs": [
+        "CURATED.DAILY_TRANSACTIONS",
+        "CURATED.RUNNING_BALANCES",
+        "CURATED.TXN_ANOMALIES",
+        "RAW_BANK.&txn_ds",
+        "STG_BANK.CUST_ACCOUNTS_DAILY"
+      ],
+      "feed_dataset_patterns": [
+        "TXN_FEED_YYYYMMDD"
+      ],
+      "persistent_outputs": [
+        "CURATED.DAILY_TRANSACTIONS",
+        "CURATED.RUNNING_BALANCES",
+        "CURATED.TXN_ANOMALIES"
+      ],
+      "steps": [
+        {
+          "type": "data_step",
+          "outputs": [
+            "WORK.TXN_VALIDATED",
+            "WORK.TXN_REJECTED"
+          ],
+          "output_options": {
+            "WORK.TXN_VALIDATED": "label=\"Validated Transactions\"",
+            "WORK.TXN_REJECTED": "label=\"Rejected Transactions\""
+          },
+          "sources": [
+            "RAW_BANK.&TXN_DS"
+          ],
+          "by": null,
+          "retain": [],
+          "hash_lookups": [],
+          "formats": {},
+          "lengths": {
+            "REJECT_REASON": "$200"
+          },
+          "drop": [
+            "REJECT_REASON"
+          ],
+          "keep": [],
+          "derived_columns": [
+            {
+              "column": "REJECT_REASON",
+              "expression": "'Missing TRANSACTION_ID'",
+              "condition": "missing(TRANSACTION_ID)"
+            },
+            {
+              "column": "REJECT_REASON",
+              "expression": "'Missing ACCOUNT_ID'",
+              "condition": "missing(ACCOUNT_ID)"
+            },
+            {
+              "column": "REJECT_REASON",
+              "expression": "'Missing TRANSACTION_AMOUNT'",
+              "condition": "missing(TRANSACTION_AMOUNT)"
+            },
+            {
+              "column": "REJECT_REASON",
+              "expression": "catx(' ', 'Amount exceeds threshold:', put(TRANSACTION_AMOUNT, dollar18.2))",
+              "condition": "abs(TRANSACTION_AMOUNT) > 10000000"
+            },
+            {
+              "column": "REJECT_REASON",
+              "expression": "catx(' ', 'Invalid transaction type:', TRANSACTION_TYPE)",
+              "condition": "TRANSACTION_TYPE not in ('DEP','WDR','TRF','PMT','FEE','INT','ADJ','REV','CHG','REF')"
+            },
+            {
+              "column": "REJECT_REASON",
+              "expression": "catx(' ', 'Future dated:', put(TRANSACTION_DATE, date9.))",
+              "condition": "TRANSACTION_DATE > \"&txn_date\"d"
+            }
+          ],
+          "conditional_outputs": [
+            {
+              "target": "WORK.TXN_REJECTED",
+              "condition": "missing(TRANSACTION_ID)"
+            },
+            {
+              "target": "WORK.TXN_REJECTED",
+              "condition": "missing(ACCOUNT_ID)"
+            },
+            {
+              "target": "WORK.TXN_REJECTED",
+              "condition": "missing(TRANSACTION_AMOUNT)"
+            },
+            {
+              "target": "WORK.TXN_REJECTED",
+              "condition": "abs(TRANSACTION_AMOUNT) > 10000000"
+            },
+            {
+              "target": "WORK.TXN_REJECTED",
+              "condition": "TRANSACTION_TYPE not in ('DEP','WDR','TRF','PMT','FEE','INT','ADJ','REV','CHG','REF')"
+            },
+            {
+              "target": "WORK.TXN_REJECTED",
+              "condition": "TRANSACTION_DATE > \"&txn_date\"d"
+            },
+            {
+              "target": "WORK.TXN_VALIDATED",
+              "condition": null
+            }
+          ],
+          "merge": false
+        },
+        {
+          "type": "proc_sql_create",
+          "output": "WORK.TXN_ENRICHED",
+          "from": "WORK.TXN_VALIDATED t",
+          "joins": [
+            {
+              "type": "left",
+              "table": "STG_BANK.CUST_ACCOUNTS_DAILY a",
+              "on": "t.ACCOUNT_ID = a.ACCOUNT_ID"
+            }
+          ],
+          "where": null,
+          "group_by": null,
+          "having": null,
+          "order_by": "t.ACCOUNT_ID, t.TRANSACTION_DATE, t.TRANSACTION_ID",
+          "columns": [
+            {
+              "column": "T.*",
+              "expression": "pass-through (all columns)"
+            },
+            {
+              "column": "ACCOUNT_TYPE",
+              "expression": "a.ACCOUNT_TYPE"
+            },
+            {
+              "column": "CUSTOMER_ID",
+              "expression": "a.CUSTOMER_ID"
+            },
+            {
+              "column": "CUSTOMER_SEGMENT",
+              "expression": "a.CUSTOMER_SEGMENT"
+            },
+            {
+              "column": "REGION_CODE",
+              "expression": "a.REGION_CODE"
+            },
+            {
+              "column": "BRANCH_ID",
+              "expression": "a.BRANCH_ID"
+            },
+            {
+              "column": "PRE_TXN_BALANCE",
+              "expression": "a.CURRENT_BALANCE"
+            },
+            {
+              "column": "POST_TXN_BALANCE",
+              "expression": "case when t.TRANSACTION_TYPE in ('DEP','INT','REF','REV') then a.CURRENT_BALANCE + t.TRANSACTION_AMOUNT when t.TRANSACTION_TYPE in ('WDR','PMT','FEE','CHG') then a.CURRENT_BALANCE - abs(t.TRANSACTION_AMOUNT) when t.TRANSACTION_TYPE in ('TRF','ADJ') then a.CURRENT_BALANCE + t.TRANSACTION_AMOUNT else a.CURRENT_BALANCE end"
+            },
+            {
+              "column": "RISK_RATING",
+              "expression": "a.RISK_RATING"
+            }
+          ]
+        },
+        {
+          "type": "data_step",
+          "outputs": [
+            "WORK.TXN_WITH_BALANCE"
+          ],
+          "output_options": {},
+          "sources": [
+            "WORK.TXN_ENRICHED"
+          ],
+          "by": "ACCOUNT_ID TRANSACTION_DATE TRANSACTION_ID",
+          "retain": [
+            "RUNNING_BALANCE"
+          ],
+          "hash_lookups": [],
+          "formats": {
+            "RUNNING_BALANCE": "dollar18.2"
+          },
+          "lengths": {},
+          "drop": [],
+          "keep": [],
+          "derived_columns": [
+            {
+              "column": "RUNNING_BALANCE",
+              "expression": "PRE_TXN_BALANCE",
+              "condition": "first.ACCOUNT_ID"
+            },
+            {
+              "column": "RUNNING_BALANCE",
+              "expression": "RUNNING_BALANCE + TRANSACTION_AMOUNT",
+              "condition": "TRANSACTION_TYPE in ('DEP','INT','REF','REV')"
+            },
+            {
+              "column": "RUNNING_BALANCE",
+              "expression": "RUNNING_BALANCE - abs(TRANSACTION_AMOUNT)",
+              "condition": "ELSE TRANSACTION_TYPE in ('WDR','PMT','FEE','CHG')"
+            },
+            {
+              "column": "RUNNING_BALANCE",
+              "expression": "RUNNING_BALANCE + TRANSACTION_AMOUNT",
+              "condition": "ELSE TRANSACTION_TYPE in ('TRF','ADJ')"
+            }
+          ],
+          "conditional_outputs": [],
+          "merge": false
+        },
+        {
+          "type": "proc_sql_create",
+          "output": "WORK.TXN_STATS",
+          "from": "CURATED.DAILY_TRANSACTIONS where",
+          "joins": [],
+          "where": "TRANSACTION_DATE >= intnx('day', \"&txn_date\"d, -90)",
+          "group_by": "ACCOUNT_ID",
+          "having": null,
+          "order_by": null,
+          "columns": [
+            {
+              "column": "ACCOUNT_ID",
+              "expression": "ACCOUNT_ID"
+            },
+            {
+              "column": "AVG_TXN_AMT",
+              "expression": "mean(abs(TRANSACTION_AMOUNT))"
+            },
+            {
+              "column": "STD_TXN_AMT",
+              "expression": "std(abs(TRANSACTION_AMOUNT))"
+            },
+            {
+              "column": "TXN_COUNT",
+              "expression": "count(*)"
+            }
+          ]
+        },
+        {
+          "type": "proc_sql_create",
+          "output": "WORK.TXN_ANOMALIES",
+          "from": "WORK.TXN_WITH_BALANCE e",
+          "joins": [
+            {
+              "type": "left",
+              "table": "WORK.TXN_STATS s",
+              "on": "e.ACCOUNT_ID = s.ACCOUNT_ID"
+            }
+          ],
+          "where": null,
+          "group_by": null,
+          "having": "ANOMALY_TYPE ne ''",
+          "order_by": null,
+          "columns": [
+            {
+              "column": "E.*",
+              "expression": "pass-through (all columns)"
+            },
+            {
+              "column": "AVG_TXN_AMT",
+              "expression": "s.AVG_TXN_AMT"
+            },
+            {
+              "column": "STD_TXN_AMT",
+              "expression": "s.STD_TXN_AMT"
+            },
+            {
+              "column": "Z_SCORE",
+              "expression": "case when s.STD_TXN_AMT > 0 then (abs(e.TRANSACTION_AMOUNT) - s.AVG_TXN_AMT) / s.STD_TXN_AMT else . end"
+            },
+            {
+              "column": "ANOMALY_TYPE",
+              "expression": "case when calculated Z_SCORE > 3 then 'HIGH_AMOUNT' when e.RUNNING_BALANCE < 0 then 'OVERDRAFT' when e.TRANSACTION_TYPE = 'WDR' and abs(e.TRANSACTION_AMOUNT) > e.PRE_TXN_BALANCE * 0.9 then 'LARGE_WITHDRAWAL' when missing(e.CUSTOMER_ID) then 'ORPHAN_ACCOUNT' else '' end"
+            }
+          ]
+        },
+        {
+          "type": "proc_append",
+          "output": "CURATED.DAILY_TRANSACTIONS",
+          "from": "WORK.TXN_WITH_BALANCE",
+          "force": true
+        },
+        {
+          "type": "proc_append",
+          "output": "CURATED.TXN_ANOMALIES",
+          "from": "WORK.TXN_ANOMALIES",
+          "force": true
+        },
+        {
+          "type": "data_step",
+          "outputs": [
+            "CURATED.RUNNING_BALANCES"
+          ],
+          "output_options": {},
+          "sources": [
+            "WORK.TXN_WITH_BALANCE"
+          ],
+          "by": null,
+          "retain": [],
+          "hash_lookups": [],
+          "formats": {},
+          "lengths": {},
+          "drop": [],
+          "keep": [
+            "ACCOUNT_ID",
+            "TRANSACTION_DATE",
+            "TRANSACTION_ID",
+            "RUNNING_BALANCE"
+          ],
+          "derived_columns": [],
+          "conditional_outputs": [],
+          "merge": false
+        }
+      ],
+      "notes": [
+        "PROC SQL uses SAS missing-value ordering: a missing RUNNING_BALANCE satisfies `RUNNING_BALANCE < 0`, so transactions on accounts absent from the snapshot (null balances) are classified OVERDRAFT \u2014 the ORPHAN_ACCOUNT branch is unreachable for them. The migrated SQL reproduces this with explicit IS NULL handling.",
+        "Z-score statistics are computed from CURATED.DAILY_TRANSACTIONS *before* the day's feed is appended, i.e. from history only. STD() in PROC SQL is the sample standard deviation.",
+        "PROC APPEND FORCE drops the enrichment columns not present in the existing CURATED.DAILY_TRANSACTIONS structure, so the final curated table keeps only the 10 original feed columns.",
+        "Validation rules are sequential with RETURN: a row is rejected by the first failing rule only."
+      ]
+    },
+    {
+      "program": "load_customer_accounts",
+      "purpose": "Extract customer account data from Oracle DW, apply business rules, compute derived metrics, and load into the staging layer for downstream reporting.",
+      "declared_inputs": [
+        "ORA_DW.CUST_ACCOUNTS",
+        "ORA_DW.CUST_DEMOGRAPHICS",
+        "RAW_BANK.DAILY_RATES"
+      ],
+      "declared_outputs": [
+        "STG_BANK.CUST_ACCOUNTS_DAILY",
+        "STG_BANK.ACCT_EXCEPTIONS"
+      ],
+      "macro": {
+        "name": "load_customer_accounts",
+        "parameters": [
+          {
+            "name": "run_date",
+            "default": "&CURR_DT"
+          },
+          {
+            "name": "region",
+            "default": "ALL"
+          }
+        ]
+      },
+      "inputs": [
+        "ORA_DW.CUST_ACCOUNTS",
+        "ORA_DW.CUST_DEMOGRAPHICS",
+        "STG_BANK.ACCT_EXCEPTIONS",
+        "STG_BANK.CUST_ACCOUNTS_DAILY"
+      ],
+      "feed_dataset_patterns": [],
+      "persistent_outputs": [
+        "STG_BANK.ACCT_EXCEPTIONS",
+        "STG_BANK.CUST_ACCOUNTS_DAILY"
+      ],
+      "steps": [
+        {
+          "type": "proc_sql_create",
+          "output": "WORK.ACCT_RAW",
+          "from": "ORA_DW.CUST_ACCOUNTS a",
+          "joins": [
+            {
+              "type": "inner",
+              "table": "ORA_DW.CUST_DEMOGRAPHICS d",
+              "on": "a.CUSTOMER_ID = d.CUSTOMER_ID"
+            }
+          ],
+          "where": "a.ACCOUNT_STATUS not in ('W', 'C') and a.OPEN_DATE <= \"&run_date\"d %if &region ne ALL %then %do",
+          "group_by": null,
+          "having": null,
+          "order_by": null,
+          "columns": [
+            {
+              "column": "ACCOUNT_ID",
+              "expression": "a.ACCOUNT_ID"
+            },
+            {
+              "column": "CUSTOMER_ID",
+              "expression": "a.CUSTOMER_ID"
+            },
+            {
+              "column": "ACCOUNT_TYPE",
+              "expression": "a.ACCOUNT_TYPE"
+            },
+            {
+              "column": "ACCOUNT_STATUS",
+              "expression": "a.ACCOUNT_STATUS"
+            },
+            {
+              "column": "OPEN_DATE",
+              "expression": "a.OPEN_DATE"
+            },
+            {
+              "column": "CLOSE_DATE",
+              "expression": "a.CLOSE_DATE"
+            },
+            {
+              "column": "CURRENT_BALANCE",
+              "expression": "a.CURRENT_BALANCE"
+            },
+            {
+              "column": "AVAILABLE_BALANCE",
+              "expression": "a.AVAILABLE_BALANCE"
+            },
+            {
+              "column": "CREDIT_LIMIT",
+              "expression": "a.CREDIT_LIMIT"
+            },
+            {
+              "column": "INTEREST_RATE",
+              "expression": "a.INTEREST_RATE"
+            },
+            {
+              "column": "BRANCH_ID",
+              "expression": "a.BRANCH_ID"
+            },
+            {
+              "column": "OFFICER_ID",
+              "expression": "a.OFFICER_ID"
+            },
+            {
+              "column": "LAST_ACTIVITY_DATE",
+              "expression": "a.LAST_ACTIVITY_DATE"
+            },
+            {
+              "column": "FIRST_NAME",
+              "expression": "d.FIRST_NAME"
+            },
+            {
+              "column": "LAST_NAME",
+              "expression": "d.LAST_NAME"
+            },
+            {
+              "column": "SSN_HASH",
+              "expression": "d.SSN_HASH"
+            },
+            {
+              "column": "DATE_OF_BIRTH",
+              "expression": "d.DATE_OF_BIRTH"
+            },
+            {
+              "column": "CUSTOMER_SEGMENT",
+              "expression": "d.CUSTOMER_SEGMENT"
+            },
+            {
+              "column": "RISK_RATING",
+              "expression": "d.RISK_RATING"
+            },
+            {
+              "column": "REGION_CODE",
+              "expression": "d.REGION_CODE"
+            },
+            {
+              "column": "PRIMARY_EMAIL",
+              "expression": "d.PRIMARY_EMAIL"
+            },
+            {
+              "column": "PHONE_NUMBER",
+              "expression": "d.PHONE_NUMBER"
+            }
+          ]
+        },
+        {
+          "type": "data_step",
+          "outputs": [
+            "STG_BANK.CUST_ACCOUNTS_DAILY",
+            "WORK.ACCT_EXCEPTIONS"
+          ],
+          "output_options": {
+            "STG_BANK.CUST_ACCOUNTS_DAILY": "label=\"Daily Customer Account Snapshot\"",
+            "WORK.ACCT_EXCEPTIONS": "label=\"Account Data Quality Exceptions\""
+          },
+          "sources": [
+            "WORK.ACCT_RAW"
+          ],
+          "by": null,
+          "retain": [],
+          "hash_lookups": [],
+          "formats": {
+            "ACCOUNT_TYPE": "$ACCTTYPE.",
+            "ACCOUNT_STATUS": "$ACCTSTAT.",
+            "RISK_RATING": "RISKRATE.",
+            "CUSTOMER_SEGMENT": "$CUSTSEG.",
+            "REGION_CODE": "$REGION.",
+            "CURRENT_BALANCE": "dollar18.2",
+            "AVAILABLE_BALANCE": "dollar18.2",
+            "CREDIT_LIMIT": "dollar18.2",
+            "OPEN_DATE": "date9.",
+            "CLOSE_DATE": "date9.",
+            "LAST_ACTIVITY_DATE": "date9.",
+            "LOAD_TIMESTAMP": "datetime20."
+          },
+          "lengths": {
+            "EXCEPTION_CODE": "$10",
+            "EXCEPTION_DESC": "$200"
+          },
+          "drop": [
+            "EXCEPTION_CODE",
+            "EXCEPTION_DESC"
+          ],
+          "keep": [],
+          "derived_columns": [
+            {
+              "column": "ACCT_AGE_MONTHS",
+              "expression": "intck('month', OPEN_DATE, \"&run_date\"d)",
+              "condition": null
+            },
+            {
+              "column": "DAYS_INACTIVE",
+              "expression": "\"&run_date\"d - LAST_ACTIVITY_DATE",
+              "condition": null
+            },
+            {
+              "column": "UTILIZATION_PCT",
+              "expression": "(CURRENT_BALANCE / CREDIT_LIMIT) * 100",
+              "condition": "ACCOUNT_TYPE in ('CC', 'LOC', 'HELC') and CREDIT_LIMIT > 0"
+            },
+            {
+              "column": "UTILIZATION_PCT",
+              "expression": ".",
+              "condition": "NOT (ACCOUNT_TYPE in ('CC', 'LOC', 'HELC') and CREDIT_LIMIT > 0)"
+            },
+            {
+              "column": "DORMANCY_FLAG",
+              "expression": "'Y'",
+              "condition": "DAYS_INACTIVE > 365 and ACCOUNT_STATUS = 'A'"
+            },
+            {
+              "column": "DORMANCY_FLAG",
+              "expression": "'N'",
+              "condition": "NOT (DAYS_INACTIVE > 365 and ACCOUNT_STATUS = 'A')"
+            },
+            {
+              "column": "HIGH_BALANCE_FLAG",
+              "expression": "'Y'",
+              "condition": "CURRENT_BALANCE >= 250000"
+            },
+            {
+              "column": "HIGH_BALANCE_FLAG",
+              "expression": "'N'",
+              "condition": "NOT (CURRENT_BALANCE >= 250000)"
+            },
+            {
+              "column": "EXCEPTION_CODE",
+              "expression": "'NEG_BAL'",
+              "condition": "ACCOUNT_TYPE in ('CHK', 'SAV', 'MMA', 'CD') and CURRENT_BALANCE < 0"
+            },
+            {
+              "column": "EXCEPTION_DESC",
+              "expression": "catx(' ', 'Negative balance', put(CURRENT_BALANCE, dollar18.2), 'on deposit account', ACCOUNT_ID)",
+              "condition": "ACCOUNT_TYPE in ('CHK', 'SAV', 'MMA', 'CD') and CURRENT_BALANCE < 0"
+            },
+            {
+              "column": "EXCEPTION_CODE",
+              "expression": "'HIGH_UTIL'",
+              "condition": "UTILIZATION_PCT > 95"
+            },
+            {
+              "column": "EXCEPTION_DESC",
+              "expression": "catx(' ', 'Utilization at', put(UTILIZATION_PCT, 5.1), '%', 'for account', ACCOUNT_ID)",
+              "condition": "UTILIZATION_PCT > 95"
+            },
+            {
+              "column": "EXCEPTION_CODE",
+              "expression": "'NO_RISK'",
+              "condition": "RISK_RATING = ."
+            },
+            {
+              "column": "EXCEPTION_DESC",
+              "expression": "catx(' ', 'Missing risk rating for customer', CUSTOMER_ID)",
+              "condition": "RISK_RATING = ."
+            },
+            {
+              "column": "SNAPSHOT_DATE",
+              "expression": "\"&run_date\"d",
+              "condition": null
+            },
+            {
+              "column": "LOAD_TIMESTAMP",
+              "expression": "datetime()",
+              "condition": null
+            }
+          ],
+          "conditional_outputs": [
+            {
+              "target": "WORK.ACCT_EXCEPTIONS",
+              "condition": "ACCOUNT_TYPE in ('CHK', 'SAV', 'MMA', 'CD') and CURRENT_BALANCE < 0"
+            },
+            {
+              "target": "WORK.ACCT_EXCEPTIONS",
+              "condition": "UTILIZATION_PCT > 95"
+            },
+            {
+              "target": "WORK.ACCT_EXCEPTIONS",
+              "condition": "RISK_RATING = ."
+            },
+            {
+              "target": "STG_BANK.CUST_ACCOUNTS_DAILY",
+              "condition": null
+            }
+          ],
+          "merge": false
+        },
+        {
+          "type": "data_step",
+          "outputs": [
+            "QUALITY",
+            "EXCEPTIONS",
+            "FOUND"
+          ],
+          "output_options": {},
+          "sources": [],
+          "by": null,
+          "retain": [],
+          "hash_lookups": [],
+          "formats": {},
+          "lengths": {},
+          "drop": [],
+          "keep": [],
+          "derived_columns": [],
+          "conditional_outputs": [
+            {
+              "target": "OUT=WORK.ACCT_SUMMARY(DROP=_TYPE_",
+              "condition": null
+            }
+          ]
+        },
+        {
+          "type": "proc_sql_insert",
+          "output": "STG_BANK.ACCT_EXCEPTIONS",
+          "from": "WORK.ACCT_EXCEPTIONS",
+          "columns": [
+            {
+              "column": "*",
+              "expression": "pass-through (all columns)"
+            }
+          ]
+        },
+        {
+          "type": "proc_means",
+          "from": "STG_BANK.CUST_ACCOUNTS_DAILY",
+          "class": [
+            "ACCOUNT_TYPE",
+            "REGION_CODE"
+          ],
+          "vars": [
+            "CURRENT_BALANCE",
+            "UTILIZATION_PCT",
+            "ACCT_AGE_MONTHS"
+          ],
+          "output": "WORK.ACCT_SUMMARY",
+          "output_options": "drop=_TYPE_ _FREQ_",
+          "stats": [
+            {
+              "stat": "n",
+              "var": "",
+              "as": "N_ACCOUNTS"
+            },
+            {
+              "stat": "sum",
+              "var": "CURRENT_BALANCE",
+              "as": "TOTAL_BALANCE"
+            },
+            {
+              "stat": "mean",
+              "var": "CURRENT_BALANCE",
+              "as": "AVG_BALANCE"
+            },
+            {
+              "stat": "mean",
+              "var": "UTILIZATION_PCT",
+              "as": "AVG_UTILIZATION"
+            },
+            {
+              "stat": "mean",
+              "var": "ACCT_AGE_MONTHS",
+              "as": "AVG_AGE_MONTHS"
+            }
+          ],
+          "nway": true
+        }
+      ],
+      "notes": [
+        "The `drop EXCEPTION_CODE EXCEPTION_DESC;` statement is a DATA-step statement (not a dataset option), so it applies to *both* output datasets \u2014 WORK.ACCT_EXCEPTIONS therefore does NOT contain the exception code/description columns; exception rows are copies of the account row at the time each rule fires.",
+        "Exception rows are output *before* SNAPSHOT_DATE / LOAD_TIMESTAMP are assigned, so those columns are missing (null) on exception rows.",
+        "LOAD_TIMESTAMP = datetime() is wall-clock and non-deterministic; it is excluded from the baseline and the migrated model.",
+        "RAW_BANK.DAILY_RATES is declared as an input in the program header but never referenced in the code.",
+        "An account row can fire multiple exception rules (e.g. HIGH_UTIL and NO_RISK), producing multiple identical rows in ACCT_EXCEPTIONS (identical because the code/description columns are dropped)."
+      ]
+    },
+    {
+      "program": "monthly_regulatory_reporting",
+      "purpose": "Produce monthly regulatory aggregations for: - Risk-Weighted Assets (RWA) by category - Capital Adequacy Ratios (CET1, Tier 1, Total Capital) - Loan Loss Provision coverage - Liquidity Coverage Ratio (LCR) inputs - Delinquency aging and charge-off summaries",
+      "declared_inputs": [
+        "CURATED.DAILY_TRANSACTIONS",
+        "STG_BANK.CUST_ACCOUNTS_DAILY",
+        "ORA_DW.LOAN_DETAILS",
+        "ORA_DW.COLLATERAL"
+      ],
+      "declared_outputs": [
+        "REPORTS.MONTHLY_RWA",
+        "REPORTS.CAPITAL_ADEQUACY",
+        "REPORTS.DELINQUENCY_AGING",
+        "REPORTS.LLP_COVERAGE"
+      ],
+      "macro": {
+        "name": "monthly_regulatory_reporting",
+        "parameters": [
+          {
+            "name": "report_month",
+            "default": "&PREV_YM"
+          }
+        ]
+      },
+      "inputs": [
+        "ORA_DW.LOAN_DETAILS",
+        "STG_BANK.CUST_ACCOUNTS_DAILY"
+      ],
+      "feed_dataset_patterns": [],
+      "persistent_outputs": [
+        "REPORTS.CAPITAL_ADEQUACY",
+        "REPORTS.DELINQUENCY_AGING",
+        "REPORTS.LLP_COVERAGE",
+        "REPORTS.MONTHLY_RWA"
+      ],
+      "steps": [
+        {
+          "type": "proc_sql_create",
+          "output": "REPORTS.MONTHLY_RWA",
+          "from": "STG_BANK.CUST_ACCOUNTS_DAILY a",
+          "joins": [
+            {
+              "type": "left",
+              "table": "ORA_DW.LOAN_DETAILS l",
+              "on": "a.ACCOUNT_ID = l.ACCOUNT_ID"
+            }
+          ],
+          "where": "a.SNAPSHOT_DATE = \"&month_end\"d",
+          "group_by": "1, 2, 3, 4",
+          "having": null,
+          "order_by": "ACCOUNT_TYPE, CUSTOMER_SEGMENT",
+          "columns": [
+            {
+              "column": "REPORT_MONTH",
+              "expression": "\"&report_month\""
+            },
+            {
+              "column": "ACCOUNT_TYPE",
+              "expression": "ACCOUNT_TYPE"
+            },
+            {
+              "column": "CUSTOMER_SEGMENT",
+              "expression": "CUSTOMER_SEGMENT"
+            },
+            {
+              "column": "RISK_WEIGHT",
+              "expression": "case when ACCOUNT_TYPE in ('CHK','SAV','MMA') then 0.00 when ACCOUNT_TYPE = 'CD' then 0.00 when ACCOUNT_TYPE = 'MTG' and LTV <= 0.80 then 0.35 when ACCOUNT_TYPE = 'MTG' and LTV > 0.80 then 0.50 when ACCOUNT_TYPE = 'HELC' then 0.50 when ACCOUNT_TYPE in ('AUTO','PERS') then 0.75 when ACCOUNT_TYPE = 'CC' then 0.75 when ACCOUNT_TYPE = 'LOC' then 1.00 else 1.00 end"
+            },
+            {
+              "column": "N_ACCOUNTS",
+              "expression": "count(*)"
+            },
+            {
+              "column": "TOTAL_EXPOSURE",
+              "expression": "sum(CURRENT_BALANCE)"
+            },
+            {
+              "column": "RWA",
+              "expression": "sum(CURRENT_BALANCE * calculated RISK_WEIGHT)"
+            }
+          ]
+        },
+        {
+          "type": "proc_sql_create",
+          "output": "REPORTS.DELINQUENCY_AGING",
+          "from": "STG_BANK.CUST_ACCOUNTS_DAILY a",
+          "joins": [
+            {
+              "type": "left",
+              "table": "ORA_DW.LOAN_DETAILS l",
+              "on": "a.ACCOUNT_ID = l.ACCOUNT_ID"
+            }
+          ],
+          "where": "a.SNAPSHOT_DATE = \"&month_end\"d and a.ACCOUNT_TYPE in ('MTG','AUTO','PERS','CC','LOC','HELC')",
+          "group_by": "1, 2, 3, 4",
+          "having": null,
+          "order_by": "ACCOUNT_TYPE, REGION_CODE, case when calculated DELINQ_BUCKET = 'Current' then 0 when calculated DELINQ_BUCKET = '1-29' then 1 when calculated DELINQ_BUCKET = '30-59' then 2 when calculated DELINQ_BUCKET = '60-89' then 3 when calculated DELINQ_BUCKET = '90-119' then 4 when calculated DELINQ_BUCKET = '120-179' then 5 when calculated DELINQ_BUCKET = '180+' then 6 else 7 end",
+          "columns": [
+            {
+              "column": "REPORT_MONTH",
+              "expression": "\"&report_month\""
+            },
+            {
+              "column": "ACCOUNT_TYPE",
+              "expression": "ACCOUNT_TYPE"
+            },
+            {
+              "column": "REGION_CODE",
+              "expression": "REGION_CODE"
+            },
+            {
+              "column": "DELINQ_BUCKET",
+              "expression": "case when DAYS_PAST_DUE = 0 then 'Current' when DAYS_PAST_DUE between 1 and 29 then '1-29' when DAYS_PAST_DUE between 30 and 59 then '30-59' when DAYS_PAST_DUE between 60 and 89 then '60-89' when DAYS_PAST_DUE between 90 and 119 then '90-119' when DAYS_PAST_DUE between 120 and 179 then '120-179' when DAYS_PAST_DUE >= 180 then '180+' else 'Unknown' end"
+            },
+            {
+              "column": "N_ACCOUNTS",
+              "expression": "count(*)"
+            },
+            {
+              "column": "TOTAL_BALANCE",
+              "expression": "sum(CURRENT_BALANCE)"
+            },
+            {
+              "column": "TOTAL_PAST_DUE",
+              "expression": "sum(PAST_DUE_AMOUNT)"
+            }
+          ]
+        },
+        {
+          "type": "proc_sql_create",
+          "output": "REPORTS.LLP_COVERAGE",
+          "from": "STG_BANK.CUST_ACCOUNTS_DAILY a",
+          "joins": [
+            {
+              "type": "inner",
+              "table": "ORA_DW.LOAN_DETAILS l",
+              "on": "a.ACCOUNT_ID = l.ACCOUNT_ID"
+            }
+          ],
+          "where": "a.SNAPSHOT_DATE = \"&month_end\"d and a.ACCOUNT_TYPE in ('MTG','AUTO','PERS','CC','LOC','HELC')",
+          "group_by": "1, 2",
+          "having": null,
+          "order_by": null,
+          "columns": [
+            {
+              "column": "REPORT_MONTH",
+              "expression": "\"&report_month\""
+            },
+            {
+              "column": "ACCOUNT_TYPE",
+              "expression": "a.ACCOUNT_TYPE"
+            },
+            {
+              "column": "N_LOANS",
+              "expression": "count(*)"
+            },
+            {
+              "column": "GROSS_LOANS",
+              "expression": "sum(a.CURRENT_BALANCE)"
+            },
+            {
+              "column": "TOTAL_ALLOWANCE",
+              "expression": "sum(l.ALLOWANCE_AMT)"
+            },
+            {
+              "column": "COVERAGE_PCT",
+              "expression": "case when sum(a.CURRENT_BALANCE) > 0 then sum(l.ALLOWANCE_AMT) / sum(a.CURRENT_BALANCE) * 100 else 0 end"
+            },
+            {
+              "column": "NPL_BALANCE",
+              "expression": "sum(case when l.DAYS_PAST_DUE >= 90 then a.CURRENT_BALANCE else 0 end)"
+            },
+            {
+              "column": "NPL_COVERAGE_PCT",
+              "expression": "case when calculated NPL_BALANCE > 0 then sum(l.ALLOWANCE_AMT) / calculated NPL_BALANCE * 100 else 0 end"
+            }
+          ]
+        },
+        {
+          "type": "proc_sql_create",
+          "output": "REPORTS.CAPITAL_ADEQUACY",
+          "from": "REPORTS.MONTHLY_RWA",
+          "joins": [],
+          "where": null,
+          "group_by": null,
+          "having": null,
+          "order_by": null,
+          "columns": [
+            {
+              "column": "REPORT_MONTH",
+              "expression": "\"&report_month\""
+            },
+            {
+              "column": "TOTAL_RWA",
+              "expression": "sum(RWA)"
+            },
+            {
+              "column": "CET1_CAPITAL",
+              "expression": "50000000"
+            },
+            {
+              "column": "TIER1_CAPITAL",
+              "expression": "65000000"
+            },
+            {
+              "column": "TOTAL_CAPITAL",
+              "expression": "80000000"
+            },
+            {
+              "column": "CET1_RATIO",
+              "expression": "case when sum(RWA) > 0 then 50000000 / sum(RWA) * 100 else . end"
+            },
+            {
+              "column": "TIER1_RATIO",
+              "expression": "case when sum(RWA) > 0 then 65000000 / sum(RWA) * 100 else . end"
+            },
+            {
+              "column": "TOTAL_CAPITAL_RATIO",
+              "expression": "case when sum(RWA) > 0 then 80000000 / sum(RWA) * 100 else . end"
+            },
+            {
+              "column": "CET1_STATUS",
+              "expression": "case when sum(RWA) = 0 then 'PASS' when 50000000/sum(RWA)*100 >= 4.5 then 'PASS' else 'FAIL' end"
+            },
+            {
+              "column": "TIER1_STATUS",
+              "expression": "case when sum(RWA) = 0 then 'PASS' when 65000000/sum(RWA)*100 >= 6.0 then 'PASS' else 'FAIL' end"
+            },
+            {
+              "column": "TOTAL_CAPITAL_STATUS",
+              "expression": "case when sum(RWA) = 0 then 'PASS' when 80000000/sum(RWA)*100 >= 8.0 then 'PASS' else 'FAIL' end"
+            }
+          ]
+        }
+      ],
+      "notes": [
+        "SAS missing-value ordering: `LTV <= 0.80` is TRUE when LTV is missing, so MTG accounts without a LOAN_DETAILS match get risk weight 0.35.",
+        "DAYS_PAST_DUE missing (no LOAN_DETAILS row) falls through every aging bucket to 'Unknown' (missing is not =0 and not >=1).",
+        "The ORDER BY clauses affect display order only and are irrelevant to row-level parity."
+      ]
+    },
+    {
+      "program": "policy_valuation",
+      "purpose": "Calculate in-force policy metrics, premium adequacy, loss ratios, and reserve estimates for the insurance book of business.",
+      "declared_inputs": [
+        "RAW_INS.POLICIES",
+        "RAW_INS.CLAIMS",
+        "RAW_INS.PREMIUMS",
+        "TERA_DW.ACTUARIAL_TABLES"
+      ],
+      "declared_outputs": [
+        "STG_INS.POLICY_VALUATION",
+        "REPORTS.LOSS_RATIO_SUMMARY",
+        "REPORTS.RESERVE_ADEQUACY"
+      ],
+      "macro": {
+        "name": "policy_valuation",
+        "parameters": [
+          {
+            "name": "val_date",
+            "default": "&CURR_DT"
+          },
+          {
+            "name": "lob",
+            "default": "ALL"
+          }
+        ]
+      },
+      "inputs": [
+        "RAW_INS.CLAIMS",
+        "RAW_INS.POLICIES",
+        "RAW_INS.PREMIUMS",
+        "STG_INS.POLICY_VALUATION"
+      ],
+      "feed_dataset_patterns": [],
+      "persistent_outputs": [
+        "REPORTS.LOSS_RATIO_SUMMARY",
+        "STG_INS.POLICY_VALUATION"
+      ],
+      "steps": [
+        {
+          "type": "proc_sql_create",
+          "output": "WORK.INFORCE",
+          "from": "RAW_INS.POLICIES p",
+          "joins": [],
+          "where": "p.STATUS = 'ACTIVE' and p.EFFECTIVE_DATE <= \"&val_date\"d and p.EXPIRATION_DATE >= \"&val_date\"d %if &lob ne ALL %then %do",
+          "group_by": null,
+          "having": null,
+          "order_by": null,
+          "columns": [
+            {
+              "column": "POLICY_ID",
+              "expression": "p.POLICY_ID"
+            },
+            {
+              "column": "CUSTOMER_ID",
+              "expression": "p.CUSTOMER_ID"
+            },
+            {
+              "column": "POLICY_TYPE",
+              "expression": "p.POLICY_TYPE"
+            },
+            {
+              "column": "EFFECTIVE_DATE",
+              "expression": "p.EFFECTIVE_DATE"
+            },
+            {
+              "column": "EXPIRATION_DATE",
+              "expression": "p.EXPIRATION_DATE"
+            },
+            {
+              "column": "ANNUAL_PREMIUM",
+              "expression": "p.ANNUAL_PREMIUM"
+            },
+            {
+              "column": "SUM_INSURED",
+              "expression": "p.SUM_INSURED"
+            },
+            {
+              "column": "DEDUCTIBLE",
+              "expression": "p.DEDUCTIBLE"
+            },
+            {
+              "column": "RISK_CATEGORY",
+              "expression": "p.RISK_CATEGORY"
+            },
+            {
+              "column": "UNDERWRITING_CLASS",
+              "expression": "p.UNDERWRITING_CLASS"
+            },
+            {
+              "column": "AGENT_ID",
+              "expression": "p.AGENT_ID"
+            },
+            {
+              "column": "BRANCH_CODE",
+              "expression": "p.BRANCH_CODE"
+            },
+            {
+              "column": "POLICY_AGE_MONTHS",
+              "expression": "intck('month', p.EFFECTIVE_DATE, \"&val_date\"d)"
+            },
+            {
+              "column": "MONTHS_TO_EXPIRY",
+              "expression": "intck('month', \"&val_date\"d, p.EXPIRATION_DATE)"
+            },
+            {
+              "column": "RENEWAL_DUE_FLAG",
+              "expression": "case when p.EXPIRATION_DATE <= intnx('month', \"&val_date\"d, 3) then 'Y' else 'N' end"
+            },
+            {
+              "column": "YTD_EARNED_PREMIUM",
+              "expression": "p.ANNUAL_PREMIUM / 12 * min(12, intck('month', max(p.EFFECTIVE_DATE, intnx('year', \"&val_date\"d, 0, 'B')), min(\"&val_date\"d, p.EXPIRATION_DATE)))"
+            }
+          ]
+        },
+        {
+          "type": "proc_sql_create",
+          "output": "WORK.CLAIMS_EXP",
+          "from": "RAW_INS.CLAIMS c",
+          "joins": [],
+          "where": "c.LOSS_DATE >= intnx('month', \"&val_date\"d, -12) and c.LOSS_DATE <= \"&val_date\"d",
+          "group_by": "c.POLICY_ID",
+          "having": null,
+          "order_by": null,
+          "columns": [
+            {
+              "column": "POLICY_ID",
+              "expression": "c.POLICY_ID"
+            },
+            {
+              "column": "NUM_CLAIMS",
+              "expression": "count(distinct c.CLAIM_ID)"
+            },
+            {
+              "column": "TOTAL_INCURRED",
+              "expression": "sum(c.INCURRED_AMOUNT)"
+            },
+            {
+              "column": "TOTAL_PAID",
+              "expression": "sum(c.PAID_AMOUNT)"
+            },
+            {
+              "column": "TOTAL_RESERVED",
+              "expression": "sum(c.RESERVED_AMOUNT)"
+            },
+            {
+              "column": "LAST_CLAIM_DATE",
+              "expression": "max(c.LOSS_DATE)"
+            },
+            {
+              "column": "OPEN_RESERVES",
+              "expression": "sum(case when c.CLAIM_STATUS in ('OPEN','INV','ADJ','PEND') then c.RESERVED_AMOUNT else 0 end)"
+            },
+            {
+              "column": "DENIED_CLAIMS",
+              "expression": "sum(case when c.CLAIM_STATUS = 'DENY' then 1 else 0 end)"
+            }
+          ]
+        },
+        {
+          "type": "proc_sql_create",
+          "output": "WORK.PREMIUM_COLL",
+          "from": "RAW_INS.PREMIUMS where",
+          "joins": [],
+          "where": "PAYMENT_DATE >= intnx('year', \"&val_date\"d, 0, 'B') and PAYMENT_DATE <= \"&val_date\"d",
+          "group_by": "POLICY_ID",
+          "having": null,
+          "order_by": null,
+          "columns": [
+            {
+              "column": "POLICY_ID",
+              "expression": "POLICY_ID"
+            },
+            {
+              "column": "COLLECTED_PREMIUM",
+              "expression": "sum(PREMIUM_AMOUNT)"
+            },
+            {
+              "column": "RETURNED_PREMIUM",
+              "expression": "sum(case when PAYMENT_STATUS = 'RETURNED' then PREMIUM_AMOUNT else 0 end)"
+            },
+            {
+              "column": "LAST_PAYMENT_DATE",
+              "expression": "max(PAYMENT_DATE)"
+            },
+            {
+              "column": "LATE_PAYMENTS",
+              "expression": "count(case when PAYMENT_STATUS = 'LATE' then 1 end)"
+            }
+          ]
+        },
+        {
+          "type": "data_step",
+          "outputs": [
+            "STG_INS.POLICY_VALUATION"
+          ],
+          "output_options": {
+            "STG_INS.POLICY_VALUATION": "label=\"Monthly Policy Valuation &val_ym\""
+          },
+          "sources": [
+            "WORK.INFORCE",
+            "WORK.CLAIMS_EXP",
+            "WORK.PREMIUM_COLL"
+          ],
+          "by": "POLICY_ID",
+          "retain": [],
+          "hash_lookups": [],
+          "formats": {
+            "POLICY_TYPE": "$POLTYPE.",
+            "RISK_CATEGORY": "$RISKCAT.",
+            "LOSS_RATIO": "percent8.2",
+            "COMBINED_RATIO": "percent8.2",
+            "IBNR_ESTIMATE": "dollar18.2",
+            "TOTAL_RESERVE": "dollar18.2",
+            "VALUATION_DATE": "date9."
+          },
+          "lengths": {},
+          "drop": [],
+          "keep": [],
+          "derived_columns": [
+            {
+              "column": "LOSS_RATIO",
+              "expression": "coalesce(TOTAL_INCURRED, 0) / YTD_EARNED_PREMIUM",
+              "condition": "YTD_EARNED_PREMIUM > 0"
+            },
+            {
+              "column": "LOSS_RATIO",
+              "expression": ".",
+              "condition": "NOT (YTD_EARNED_PREMIUM > 0)"
+            },
+            {
+              "column": "COMBINED_RATIO",
+              "expression": "LOSS_RATIO + 0.30",
+              "condition": "YTD_EARNED_PREMIUM > 0"
+            },
+            {
+              "column": "COMBINED_RATIO",
+              "expression": ".",
+              "condition": "NOT (YTD_EARNED_PREMIUM > 0)"
+            },
+            {
+              "column": "PREMIUM_ADEQUATE",
+              "expression": "'N'",
+              "condition": "COMBINED_RATIO = ."
+            },
+            {
+              "column": "PREMIUM_ADEQUATE",
+              "expression": "'N'",
+              "condition": "ELSE COMBINED_RATIO > 1.0"
+            },
+            {
+              "column": "PREMIUM_ADEQUATE",
+              "expression": "'Y'",
+              "condition": "NOT (ELSE COMBINED_RATIO > 1.0)"
+            },
+            {
+              "column": "IBNR_ESTIMATE",
+              "expression": "max(0, YTD_EARNED_PREMIUM * 0.15 - coalesce(TOTAL_PAID, 0))",
+              "condition": null
+            },
+            {
+              "column": "TOTAL_RESERVE",
+              "expression": "coalesce(OPEN_RESERVES, 0) + IBNR_ESTIMATE",
+              "condition": null
+            },
+            {
+              "column": "VALUATION_DATE",
+              "expression": "\"&val_date\"d",
+              "condition": null
+            }
+          ],
+          "conditional_outputs": [],
+          "merge": true
+        },
+        {
+          "type": "proc_means",
+          "from": "STG_INS.POLICY_VALUATION",
+          "class": [
+            "POLICY_TYPE"
+          ],
+          "vars": [
+            "YTD_EARNED_PREMIUM",
+            "TOTAL_INCURRED",
+            "TOTAL_PAID",
+            "TOTAL_RESERVE",
+            "IBNR_ESTIMATE"
+          ],
+          "output": "REPORTS.LOSS_RATIO_SUMMARY",
+          "output_options": "drop=_TYPE_ _FREQ_",
+          "stats": [
+            {
+              "stat": "n",
+              "var": "",
+              "as": "N_POLICIES"
+            },
+            {
+              "stat": "sum",
+              "var": "YTD_EARNED_PREMIUM",
+              "as": "TOTAL_EARNED"
+            },
+            {
+              "stat": "sum",
+              "var": "TOTAL_INCURRED",
+              "as": "TOTAL_INCURRED"
+            },
+            {
+              "stat": "sum",
+              "var": "TOTAL_PAID",
+              "as": "TOTAL_PAID"
+            },
+            {
+              "stat": "sum",
+              "var": "TOTAL_RESERVE",
+              "as": "TOTAL_RESERVES"
+            },
+            {
+              "stat": "sum",
+              "var": "IBNR_ESTIMATE",
+              "as": "TOTAL_IBNR"
+            }
+          ],
+          "nway": true
+        },
+        {
+          "type": "data_step",
+          "outputs": [
+            "REPORTS.LOSS_RATIO_SUMMARY"
+          ],
+          "output_options": {},
+          "sources": [
+            "REPORTS.LOSS_RATIO_SUMMARY"
+          ],
+          "by": null,
+          "retain": [],
+          "hash_lookups": [],
+          "formats": {
+            "AGG_LOSS_RATIO": "percent8.2",
+            "AGG_COMBINED_RATIO": "percent8.2",
+            "TOTAL_EARNED": "dollar20.2",
+            "TOTAL_INCURRED": "dollar20.2",
+            "TOTAL_PAID": "dollar20.2",
+            "TOTAL_RESERVES": "dollar20.2",
+            "TOTAL_IBNR": "dollar20.2"
+          },
+          "lengths": {},
+          "drop": [],
+          "keep": [],
+          "derived_columns": [
+            {
+              "column": "AGG_LOSS_RATIO",
+              "expression": "TOTAL_INCURRED / TOTAL_EARNED",
+              "condition": "TOTAL_EARNED > 0"
+            },
+            {
+              "column": "AGG_COMBINED_RATIO",
+              "expression": "AGG_LOSS_RATIO + 0.30",
+              "condition": "TOTAL_EARNED > 0"
+            }
+          ],
+          "conditional_outputs": [],
+          "merge": false
+        }
+      ],
+      "notes": [
+        "YTD_EARNED_PREMIUM uses intck('month', max(EFFECTIVE_DATE, 01JAN2024), min(31JAN2024, EXPIRATION_DATE)) \u2014 month-boundary counting makes this 0 for every policy at the January valuation date, so YTD_EARNED_PREMIUM = 0, LOSS_RATIO and COMBINED_RATIO are missing, PREMIUM_ADEQUATE = 'N' for all rows and IBNR_ESTIMATE = 0. This is the faithful legacy semantics for run date 31JAN2024; the loss-ratio band logic only produces non-missing ratios for valuation dates later in the fiscal year.",
+        "REPORTS.RESERVE_ADEQUACY is listed in the program header but never created anywhere in the code; it is not a real output.",
+        "The MERGE is 1:1 by POLICY_ID (all inputs are aggregated or unique per policy); `if a` keeps in-force policies only.",
+        "AGG_LOSS_RATIO / AGG_COMBINED_RATIO stay missing because TOTAL_EARNED sums to 0 (the `if TOTAL_EARNED > 0` guard fails).",
+        "$POLTYPE./$RISKCAT. are display formats; migrated as explicit *_DESC columns via seed lookups."
+      ]
+    }
+  ],
+  "formats": {
+    "$ACCTTYPE": {
+      "source_file": "legacy/sas/formats/banking_formats.sas",
+      "mapping": {
+        "CHK": "Checking",
+        "SAV": "Savings",
+        "MMA": "Money Market",
+        "CD": "Certificate of Deposit",
+        "IRA": "Individual Retirement",
+        "LOC": "Line of Credit",
+        "MTG": "Mortgage",
+        "AUTO": "Auto Loan",
+        "PERS": "Personal Loan",
+        "CC": "Credit Card",
+        "HELC": "Home Equity LOC",
+        "OTHER": "Unknown"
+      }
+    },
+    "$ACCTSTAT": {
+      "source_file": "legacy/sas/formats/banking_formats.sas",
+      "mapping": {
+        "A": "Active",
+        "C": "Closed",
+        "D": "Dormant",
+        "F": "Frozen",
+        "R": "Restricted",
+        "S": "Suspended",
+        "P": "Pending",
+        "W": "Written Off",
+        "OTHER": "Unknown"
+      }
+    },
+    "RISKRATE": {
+      "source_file": "legacy/sas/formats/banking_formats.sas",
+      "mapping": {
+        "1": "Minimal Risk",
+        "2": "Low Risk",
+        "3": "Moderate Risk",
+        "4": "Elevated Risk",
+        "5": "High Risk",
+        "6": "Very High Risk",
+        "7": "Loss Expected",
+        "OTHER": "Not Rated"
+      }
+    },
+    "$TXNCAT": {
+      "source_file": "legacy/sas/formats/banking_formats.sas",
+      "mapping": {
+        "DEP": "Deposit",
+        "WDR": "Withdrawal",
+        "TRF": "Transfer",
+        "PMT": "Payment",
+        "FEE": "Fee",
+        "INT": "Interest",
+        "ADJ": "Adjustment",
+        "REV": "Reversal",
+        "CHG": "Charge",
+        "REF": "Refund",
+        "OTHER": "Other"
+      }
+    },
+    "DELQBKT": {
+      "source_file": "legacy/sas/formats/banking_formats.sas",
+      "mapping": {
+        "0": "Current",
+        "1-29": "1-29 Days",
+        "30-59": "30-59 Days",
+        "60-89": "60-89 Days",
+        "90-119": "90-119 Days",
+        "120-179": "120-179 Days",
+        "180-HIGH": "180+ Days"
+      }
+    },
+    "BALRANGE": {
+      "source_file": "legacy/sas/formats/banking_formats.sas",
+      "mapping": {
+        "LOW-<0": "Negative",
+        "0": "Zero",
+        "0<-<1000": "$0-$999",
+        "1000-<5000": "$1K-$4,999",
+        "5000-<25000": "$5K-$24,999",
+        "25000-<100000": "$25K-$99,999",
+        "100000-<500000": "$100K-$499,999",
+        "500000-HIGH": "$500K+"
+      }
+    },
+    "$REGION": {
+      "source_file": "legacy/sas/formats/banking_formats.sas",
+      "mapping": {
+        "NE": "Northeast",
+        "SE": "Southeast",
+        "MW": "Midwest",
+        "SW": "Southwest",
+        "W": "West",
+        "NW": "Northwest",
+        "HQ": "Headquarters",
+        "OTHER": "Unknown"
+      }
+    },
+    "$CUSTSEG": {
+      "source_file": "legacy/sas/formats/banking_formats.sas",
+      "mapping": {
+        "RET": "Retail",
+        "PREM": "Premium",
+        "PB": "Private Banking",
+        "SMB": "Small Business",
+        "COMM": "Commercial",
+        "CORP": "Corporate",
+        "OTHER": "Unclassified"
+      }
+    },
+    "$LNPURP": {
+      "source_file": "legacy/sas/formats/banking_formats.sas",
+      "mapping": {
+        "PURCH": "Purchase",
+        "REFI": "Refinance",
+        "CASHOUT": "Cash-Out Refinance",
+        "CONST": "Construction",
+        "RENO": "Renovation",
+        "CONSOL": "Debt Consolidation",
+        "EDUC": "Education",
+        "MEDIC": "Medical",
+        "OTHER": "Other"
+      }
+    },
+    "$POLTYPE": {
+      "source_file": "legacy/sas/formats/insurance_formats.sas",
+      "mapping": {
+        "WL": "Whole Life",
+        "TL": "Term Life",
+        "UL": "Universal Life",
+        "VL": "Variable Life",
+        "AUTO": "Auto Insurance",
+        "HOME": "Homeowners",
+        "RENT": "Renters",
+        "UMBR": "Umbrella",
+        "HLTH": "Health",
+        "DNTL": "Dental",
+        "VIS": "Vision",
+        "DISAB": "Disability",
+        "LTCI": "Long-Term Care",
+        "OTHER": "Unknown"
+      }
+    },
+    "$CLMSTAT": {
+      "source_file": "legacy/sas/formats/insurance_formats.sas",
+      "mapping": {
+        "NEW": "New",
+        "OPEN": "Open",
+        "INV": "Under Investigation",
+        "ADJ": "Adjusting",
+        "PEND": "Pending Approval",
+        "APPR": "Approved",
+        "DENY": "Denied",
+        "PAID": "Paid",
+        "CLOS": "Closed",
+        "REOP": "Reopened",
+        "SUSP": "Suspended",
+        "LITI": "In Litigation",
+        "OTHER": "Unknown"
+      }
+    },
+    "$RISKCAT": {
+      "source_file": "legacy/sas/formats/insurance_formats.sas",
+      "mapping": {
+        "STD": "Standard",
+        "PREF": "Preferred",
+        "SPRM": "Super Preferred",
+        "SUB": "Substandard",
+        "DEC": "Declined",
+        "OTHER": "Unrated"
+      }
+    },
+    "$COVTYPE": {
+      "source_file": "legacy/sas/formats/insurance_formats.sas",
+      "mapping": {
+        "COMP": "Comprehensive",
+        "COLL": "Collision",
+        "LIAB": "Liability",
+        "PIP": "Personal Injury Protection",
+        "UMBI": "Uninsured Motorist BI",
+        "UMPD": "Uninsured Motorist PD",
+        "MED": "Medical Payments",
+        "TOW": "Towing",
+        "RENT": "Rental Reimbursement",
+        "OTHER": "Other"
+      }
+    },
+    "LOSSRANGE": {
+      "source_file": "legacy/sas/formats/insurance_formats.sas",
+      "mapping": {
+        "LOW-<0": "Recovery",
+        "0": "No Loss",
+        "0<-<5000": "$0-$4,999",
+        "5000-<25000": "$5K-$24,999",
+        "25000-<100000": "$25K-$99,999",
+        "100000-<500000": "$100K-$499,999",
+        "500000-HIGH": "$500K+"
+      }
+    }
+  }
+}

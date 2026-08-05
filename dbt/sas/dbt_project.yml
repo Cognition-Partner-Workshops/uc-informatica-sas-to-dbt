@@ -1,0 +1,36 @@
+name: sas_migration
+version: "1.0.0"
+config-version: 2
+
+profile: sas_migration
+
+model-paths: ["models"]
+seed-paths: ["seeds"]
+test-paths: ["tests"]
+
+target-path: "target"
+clean-targets: ["target", "dbt_packages"]
+
+vars:
+  run_date: "2024-01-31"
+  report_month: "202401"
+  model_id: "CRM-2023-Q4-v2"
+  year_start: "2024-01-01"
+  claims_window_start: "2023-01-01"
+  renewal_horizon_end: "2024-04-01"
+  txn_history_days: 90
+
+models:
+  sas_migration:
+    staging:
+      +materialized: view
+    intermediate:
+      +materialized: view
+    marts:
+      +materialized: table
+
+seeds:
+  sas_migration:
+    fmt_risk_rating:
+      +column_types:
+        code: integer
