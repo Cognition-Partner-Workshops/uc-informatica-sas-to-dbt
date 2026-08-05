@@ -1,0 +1,43 @@
+version: 2
+
+models:
+  - name: demo_target6
+    columns:
+      - name: ACCT_ID
+        tests:
+          - not_null
+          - unique
+      - name: ACCT_KEY
+        tests:
+          - not_null
+          - unique
+      - name: ACCT_TYP
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['SB']
+      - name: ACCT_STAT_CD
+        tests:
+          - accepted_values:
+              arguments:
+                values: ['A', 'D', 'P']
+      - name: TX_TYPE_CD
+        tests:
+          - accepted_values:
+              arguments:
+                values: ['DR', 'TR', 'CR', 'NA']
+
+  - name: demo_target5
+    columns:
+      - name: ACCT_ID
+        tests:
+          - not_null
+          - unique
+
+  - name: demo_target3
+    columns:
+      - name: PRODUCT_ID
+        tests:
+          - not_null
+          - unique
