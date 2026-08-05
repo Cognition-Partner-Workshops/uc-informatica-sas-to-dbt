@@ -31,9 +31,7 @@
         "STG_INS.FRAUD_ALERTS",
         "TERA_DW.FRAUD_INDICATORS"
       ],
-      "feed_dataset_patterns": [
-        "CLAIMS_FEED_YYYYMMDD"
-      ],
+      "feed_dataset_patterns": [],
       "persistent_outputs": [
         "STG_INS.CLAIMS_REGISTER",
         "STG_INS.CLAIMS_REVIEW_QUEUE",
@@ -413,7 +411,7 @@
             {
               "type": "left",
               "table": "ORA_DW.BUREAU_SCORES b",
-              "on": "a.CUSTOMER_ID = b.CUSTOMER_ID and b.SCORE_DATE = (select max(SCORE_DATE) from ORA_DW.BUREAU_SCORES"
+              "on": "a.CUSTOMER_ID = b.CUSTOMER_ID and b.SCORE_DATE = (select max(SCORE_DATE) from ORA_DW.BUREAU_SCORES where CUSTOMER_ID = b.CUSTOMER_ID and SCORE_DATE <= \"&score_date\"d)"
             },
             {
               "type": "left",
@@ -426,7 +424,7 @@
               "on": "a.ACCOUNT_ID = c.ACCOUNT_ID"
             }
           ],
-          "where": "CUSTOMER_ID = b.CUSTOMER_ID and SCORE_DATE <= \"&score_date\"d)",
+          "where": "a.SNAPSHOT_DATE = \"&score_date\"d and a.ACCOUNT_TYPE in ('MTG','AUTO','PERS','CC','LOC','HELC')",
           "group_by": null,
           "having": null,
           "order_by": null,
@@ -961,9 +959,7 @@
         "RAW_BANK.&txn_ds",
         "STG_BANK.CUST_ACCOUNTS_DAILY"
       ],
-      "feed_dataset_patterns": [
-        "TXN_FEED_YYYYMMDD"
-      ],
+      "feed_dataset_patterns": [],
       "persistent_outputs": [
         "CURATED.DAILY_TRANSACTIONS",
         "CURATED.RUNNING_BALANCES",
@@ -1160,7 +1156,7 @@
         {
           "type": "proc_sql_create",
           "output": "WORK.TXN_STATS",
-          "from": "CURATED.DAILY_TRANSACTIONS where",
+          "from": "CURATED.DAILY_TRANSACTIONS",
           "joins": [],
           "where": "TRANSACTION_DATE >= intnx('day', \"&txn_date\"d, -90)",
           "group_by": "ACCOUNT_ID",
@@ -1265,7 +1261,7 @@
         "PROC SQL uses SAS missing-value ordering: a missing RUNNING_BALANCE satisfies `RUNNING_BALANCE < 0`, so transactions on accounts absent from the snapshot (null balances) are classified OVERDRAFT \u2014 the ORPHAN_ACCOUNT branch is unreachable for them. The migrated SQL reproduces this with explicit IS NULL handling.",
         "Z-score statistics are computed from CURATED.DAILY_TRANSACTIONS *before* the day's feed is appended, i.e. from history only. STD() in PROC SQL is the sample standard deviation.",
         "PROC APPEND FORCE drops the enrichment columns not present in the existing CURATED.DAILY_TRANSACTIONS structure, so the final curated table keeps only the 10 original feed columns.",
-        "Validation rules are sequential with RETURN: a row is rejected by the first failing rule only."
+        "Validation rules are sequential with RETURN: a row is rejected by the first failing rule only. A missing TRANSACTION_DATE sorts low in SAS so it is NOT rejected by the future-date rule; the baseline and dbt models reproduce this with explicit IS NULL handling."
       ]
     },
     {
@@ -1316,10 +1312,10 @@
               "on": "a.CUSTOMER_ID = d.CUSTOMER_ID"
             }
           ],
-          "where": "a.ACCOUNT_STATUS not in ('W', 'C') and a.OPEN_DATE <= \"&run_date\"d %if &region ne ALL %then %do",
+          "where": "a.ACCOUNT_STATUS not in ('W', 'C') and a.OPEN_DATE <= \"&run_date\"d and d.REGION_CODE = \"&region\"",
           "group_by": null,
           "having": null,
-          "order_by": null,
+          "order_by": "a.CUSTOMER_ID, a.ACCOUNT_ID",
           "columns": [
             {
               "column": "ACCOUNT_ID",
@@ -1553,30 +1549,6 @@
           "merge": false
         },
         {
-          "type": "data_step",
-          "outputs": [
-            "QUALITY",
-            "EXCEPTIONS",
-            "FOUND"
-          ],
-          "output_options": {},
-          "sources": [],
-          "by": null,
-          "retain": [],
-          "hash_lookups": [],
-          "formats": {},
-          "lengths": {},
-          "drop": [],
-          "keep": [],
-          "derived_columns": [],
-          "conditional_outputs": [
-            {
-              "target": "OUT=WORK.ACCT_SUMMARY(DROP=_TYPE_",
-              "condition": null
-            }
-          ]
-        },
-        {
           "type": "proc_sql_insert",
           "output": "STG_BANK.ACCT_EXCEPTIONS",
           "from": "WORK.ACCT_EXCEPTIONS",
@@ -1636,7 +1608,8 @@
         "Exception rows are output *before* SNAPSHOT_DATE / LOAD_TIMESTAMP are assigned, so those columns are missing (null) on exception rows.",
         "LOAD_TIMESTAMP = datetime() is wall-clock and non-deterministic; it is excluded from the baseline and the migrated model.",
         "RAW_BANK.DAILY_RATES is declared as an input in the program header but never referenced in the code.",
-        "An account row can fire multiple exception rules (e.g. HIGH_UTIL and NO_RISK), producing multiple identical rows in ACCT_EXCEPTIONS (identical because the code/description columns are dropped)."
+        "An account row can fire multiple exception rules (e.g. HIGH_UTIL and NO_RISK), producing multiple identical rows in ACCT_EXCEPTIONS (identical because the code/description columns are dropped).",
+        "SAS missing-value ordering: a missing CURRENT_BALANCE satisfies `CURRENT_BALANCE < 0` (NEG_BAL exception fires) and a missing OPEN_DATE satisfies `OPEN_DATE <= run_date` (row is kept); the baseline and dbt models reproduce this with explicit IS NULL handling."
       ]
     },
     {
@@ -1924,10 +1897,10 @@
           "output": "WORK.INFORCE",
           "from": "RAW_INS.POLICIES p",
           "joins": [],
-          "where": "p.STATUS = 'ACTIVE' and p.EFFECTIVE_DATE <= \"&val_date\"d and p.EXPIRATION_DATE >= \"&val_date\"d %if &lob ne ALL %then %do",
+          "where": "p.STATUS = 'ACTIVE' and p.EFFECTIVE_DATE <= \"&val_date\"d and p.EXPIRATION_DATE >= \"&val_date\"d and p.POLICY_TYPE = \"&lob\"",
           "group_by": null,
           "having": null,
-          "order_by": null,
+          "order_by": "p.POLICY_ID",
           "columns": [
             {
               "column": "POLICY_ID",
@@ -2042,7 +2015,7 @@
         {
           "type": "proc_sql_create",
           "output": "WORK.PREMIUM_COLL",
-          "from": "RAW_INS.PREMIUMS where",
+          "from": "RAW_INS.PREMIUMS",
           "joins": [],
           "where": "PAYMENT_DATE >= intnx('year', \"&val_date\"d, 0, 'B') and PAYMENT_DATE <= \"&val_date\"d",
           "group_by": "POLICY_ID",

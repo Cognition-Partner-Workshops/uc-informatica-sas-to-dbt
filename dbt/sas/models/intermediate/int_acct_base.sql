@@ -44,4 +44,5 @@ inner join {{ ref('stg_cust_demographics') }} d
     on a.customer_id = d.customer_id
 cross join run r
 where a.account_status not in ('W', 'C')
-  and a.open_date <= r.run_date
+  -- SAS missing-value ordering: a missing OPEN_DATE satisfies "<= run_date"
+  and (a.open_date <= r.run_date or a.open_date is null)

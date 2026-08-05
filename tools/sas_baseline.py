@@ -90,7 +90,7 @@ def build(con, formats):
     from ora_dw.cust_accounts a
     inner join ora_dw.cust_demographics d on a.CUSTOMER_ID = d.CUSTOMER_ID
     where a.ACCOUNT_STATUS not in ('W','C')
-      and a.OPEN_DATE <= {RUN_DATE}
+      and (a.OPEN_DATE <= {RUN_DATE} or a.OPEN_DATE is null)  -- SAS missing sorts low
     order by a.CUSTOMER_ID, a.ACCOUNT_ID
     """)
 
@@ -110,7 +110,8 @@ def build(con, formats):
     steps["ACCT_EXCEPTIONS"] = """
     select b.*, cast(null as date) as SNAPSHOT_DATE
     from acct_base b
-    where b.ACCOUNT_TYPE in ('CHK','SAV','MMA','CD') and b.CURRENT_BALANCE < 0
+    where b.ACCOUNT_TYPE in ('CHK','SAV','MMA','CD')
+      and (b.CURRENT_BALANCE < 0 or b.CURRENT_BALANCE is null)  -- SAS missing < 0
     union all
     select b.*, cast(null as date)
     from acct_base b
@@ -134,7 +135,7 @@ def build(con, formats):
       and TRANSACTION_AMOUNT is not null
       and abs(TRANSACTION_AMOUNT) <= 10000000
       and TRANSACTION_TYPE in ('DEP','WDR','TRF','PMT','FEE','INT','ADJ','REV','CHG','REF')
-      and TRANSACTION_DATE <= {RUN_DATE}
+      and (TRANSACTION_DATE <= {RUN_DATE} or TRANSACTION_DATE is null)  -- SAS missing sorts low
     """)
 
     con.execute("""

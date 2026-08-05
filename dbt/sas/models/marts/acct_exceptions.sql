@@ -4,7 +4,9 @@
 -- when exception rows are output (so it is null here).
 select b.*, cast(null as date) as snapshot_date
 from {{ ref('int_acct_base') }} b
-where b.account_type in ('CHK', 'SAV', 'MMA', 'CD') and b.current_balance < 0
+-- SAS missing-value ordering: a missing balance satisfies "< 0"
+where b.account_type in ('CHK', 'SAV', 'MMA', 'CD')
+  and (b.current_balance < 0 or b.current_balance is null)
 
 union all
 

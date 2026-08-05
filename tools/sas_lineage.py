@@ -50,6 +50,11 @@ AMBIGUITY_NOTES = {
         "An account row can fire multiple exception rules (e.g. HIGH_UTIL and "
         "NO_RISK), producing multiple identical rows in ACCT_EXCEPTIONS "
         "(identical because the code/description columns are dropped).",
+        "SAS missing-value ordering: a missing CURRENT_BALANCE satisfies "
+        "`CURRENT_BALANCE < 0` (NEG_BAL exception fires) and a missing "
+        "OPEN_DATE satisfies `OPEN_DATE <= run_date` (row is kept); the "
+        "baseline and dbt models reproduce this with explicit IS NULL "
+        "handling.",
     ],
     "daily_transaction_processing": [
         "PROC SQL uses SAS missing-value ordering: a missing RUNNING_BALANCE "
@@ -64,7 +69,9 @@ AMBIGUITY_NOTES = {
         "existing CURATED.DAILY_TRANSACTIONS structure, so the final curated "
         "table keeps only the 10 original feed columns.",
         "Validation rules are sequential with RETURN: a row is rejected by "
-        "the first failing rule only.",
+        "the first failing rule only. A missing TRANSACTION_DATE sorts low "
+        "in SAS so it is NOT rejected by the future-date rule; the baseline "
+        "and dbt models reproduce this with explicit IS NULL handling.",
     ],
     "credit_risk_scoring": [
         "Bureau join picks the latest SCORE_DATE per customer on or before "
@@ -125,9 +132,24 @@ AMBIGUITY_NOTES = {
 
 BLOCK_COMMENT = re.compile(r"/\*.*?\*/", re.S)
 
+# Macro control/log statements whose text must not be mistaken for SAS code
+# (e.g. `%put ... data quality exceptions found;` looks like a DATA statement).
+# `%if ... %then %do;` / `%end;` wrappers are removed so that the SQL they
+# guard stays part of the surrounding statement.
+MACRO_STMT = re.compile(
+    r"%(?:put|let)\b[^;]*;"
+    r"|%if\b[^;]*?%then\s*%do\s*;"
+    r"|%if\b[^;]*?%then\b"
+    r"|%else\s*%do\s*;"
+    r"|%else\b"
+    r"|%end\s*;"
+    r"|%do\s*;",
+    re.I | re.S,
+)
+
 
 def strip_comments(text):
-    return BLOCK_COMMENT.sub(" ", text)
+    return MACRO_STMT.sub(" ", BLOCK_COMMENT.sub(" ", text))
 
 
 def parse_header(text):
@@ -215,7 +237,46 @@ def parse_select_items(select_clause):
     return cols
 
 
-SQL_KEYWORDS = r"(?:inner\s+join|left\s+join|right\s+join|full\s+join|join|where|group\s+by|having|order\s+by)"
+# Clause keywords recognized only at paren depth 0 so that predicates inside
+# correlated subqueries / dataset options are not mistaken for the outer
+# statement's clauses. Longest alternatives first.
+CLAUSE_PATTERNS = [
+    ("join", re.compile(r"(?:(?:inner|left|right|full)\s+)?join\b", re.I)),
+    ("where", re.compile(r"where\b", re.I)),
+    ("group_by", re.compile(r"group\s+by\b", re.I)),
+    ("having", re.compile(r"having\b", re.I)),
+    ("order_by", re.compile(r"order\s+by\b", re.I)),
+]
+
+
+def _depth0_clause_spans(text):
+    """Return [(start, end, kind)] for clause keywords at paren depth 0."""
+    spans, depth, quote, i, n = [], 0, None, 0, len(text)
+    while i < n:
+        ch = text[i]
+        if quote:
+            if ch == quote:
+                quote = None
+            i += 1
+            continue
+        if ch in "'\"":
+            quote = ch
+        elif ch == "(":
+            depth += 1
+        elif ch == ")":
+            depth -= 1
+        elif depth == 0 and (i == 0 or not (text[i - 1].isalnum() or text[i - 1] == "_")):
+            for kind, pat in CLAUSE_PATTERNS:
+                m = pat.match(text, i)
+                if m:
+                    spans.append((i, m.end(), kind))
+                    i = m.end()
+                    break
+            else:
+                i += 1
+            continue
+        i += 1
+    return spans
 
 
 def parse_sql_create(stmt):
@@ -225,33 +286,34 @@ def parse_sql_create(stmt):
         return None
     target, select_clause, rest = m.group(1).upper(), m.group(2), m.group(3)
 
-    def cut(pattern):
-        mm = re.search(pattern, rest_holder[0], re.I | re.S)
-        if not mm:
-            return None
-        val = rest_holder[0][mm.end():]
-        nxt = re.search(r"\b" + SQL_KEYWORDS + r"\b", val, re.I)
-        clause = val[:nxt.start()] if nxt else val
-        rest_holder[0] = rest_holder[0][:mm.start()] + (val[nxt.start():] if nxt else "")
-        return norm(clause)
+    spans = _depth0_clause_spans(rest)
+    segments = []  # (kind, keyword_text, clause_text)
+    prev_end, prev = 0, ("from", "from")
+    for start, end, kind in spans:
+        segments.append((prev[0], prev[1], rest[prev_end:start]))
+        prev_end, prev = end, (kind, rest[start:end])
+    segments.append((prev[0], prev[1], rest[prev_end:]))
 
-    rest_holder = [rest]
-    joins = []
-    for jm in re.finditer(r"\b(inner|left|right|full)?\s*join\s+([\w.()'\"=<> ]+?)\s+on\s+(.*?)(?=\b(?:inner|left|right|full)?\s*join\b|\bwhere\b|\bgroup\s+by\b|\bhaving\b|\border\s+by\b|$)",
-                          rest, re.I | re.S):
-        table_alias = norm(jm.group(2))
-        joins.append({
-            "type": (jm.group(1) or "inner").lower(),
-            "table": table_alias,
-            "on": norm(jm.group(3)),
-        })
-    base_m = re.match(r"\s*([\w.]+)(?:\s+(?:as\s+)?(\w+))?", rest)
-    base = norm(base_m.group(0)) if base_m else norm(rest)
+    base, joins, clauses = None, [], {}
+    for kind, kw, clause in segments:
+        if kind == "from":
+            base = norm(clause)
+        elif kind == "join":
+            jm = re.match(r"\s*(\S+(?:\([^)]*\))?(?:\s+(?:as\s+)?\w+)?)\s+on\s+(.*)$",
+                          clause, re.I | re.S)
+            jtype = re.match(r"(inner|left|right|full)?", kw, re.I).group(1)
+            joins.append({
+                "type": (jtype or "inner").lower(),
+                "table": norm(jm.group(1)) if jm else norm(clause),
+                "on": norm(jm.group(2)) if jm else "",
+            })
+        else:
+            clauses[kind] = norm(clause)
 
-    where = cut(r"\bwhere\b")
-    group_by = cut(r"\bgroup\s+by\b")
-    having = cut(r"\bhaving\b")
-    order_by = cut(r"\border\s+by\b")
+    where = clauses.get("where")
+    group_by = clauses.get("group_by")
+    having = clauses.get("having")
+    order_by = clauses.get("order_by")
 
     return {
         "type": "proc_sql_create",
