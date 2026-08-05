@@ -1,0 +1,29 @@
+version: 2
+
+sources:
+  - name: informatica_m1
+    tables:
+      - name: demo_source3
+        config:
+          external_location: "read_csv('legacy/informatica/data/demo_source3.csv', header=true, columns={'TX_ID':'BIGINT','ACCT_ID':'BIGINT','FIRST_NM':'VARCHAR','LAST_NM':'VARCHAR','TX_DTTM':'TIMESTAMP','TX_AMT':'DOUBLE','TX_TYPE_CD':'VARCHAR','BAL_AMT':'DOUBLE','TX_DESC':'VARCHAR','CRDT_SCORE':'BIGINT','CUST_ID':'BIGINT'})"
+          formatter: oldstyle
+      - name: demo_source4
+        config:
+          external_location: "read_csv('legacy/informatica/data/demo_source4.csv', header=true, columns={'ACCT_ID':'BIGINT','ACCT_TYP':'VARCHAR','ACCT_DESC':'VARCHAR','CRDT_LN':'VARCHAR','CR8_DT':'DATE','CLSR_DT':'DATE','ACCT_STAT_CD':'VARCHAR'})"
+          formatter: oldstyle
+      - name: demo_source5
+        config:
+          external_location: "read_csv('legacy/informatica/data/demo_source5.csv', header=true, columns={'PRODUCT_ID':'VARCHAR','PRODUCT_NM':'VARCHAR','PRODUCT_NO':'VARCHAR','COLOR':'VARCHAR','STD_COST':'VARCHAR','LIST_PRICE':'VARCHAR','SELL_ST_DT':'VARCHAR','SELL_ED_DT':'VARCHAR'})"
+          formatter: oldstyle
+      - name: lkp_demo_source1
+        config:
+          external_location: "(SELECT ROW_NUMBER() OVER () AS __seed_row, * FROM read_csv('legacy/informatica/data/lkp_demo_source1.csv', header=true, columns={'ACCT_ID':'BIGINT','CUST_ID':'BIGINT','FIRST_NM':'VARCHAR','LAST_NM':'VARCHAR','CUST_ADDR':'VARCHAR','CUST_PHN':'VARCHAR','CUST_EML_ADDR':'VARCHAR','AGE':'VARCHAR','DOB':'VARCHAR','CUST_TYP':'VARCHAR'}))"
+          formatter: oldstyle
+      - name: lkp_demo_source2
+        config:
+          external_location: "(SELECT ROW_NUMBER() OVER () AS __seed_row, * FROM read_csv('legacy/informatica/data/lkp_demo_source2.csv', header=true, columns={'CUST_ID':'BIGINT','CRDT_SCORE':'BIGINT','MAX_CRDT_SCORE':'BIGINT','MIN_CRDT_SCORE':'BIGINT','MAX_CRDT_LMT':'BIGINT','CURR_CRDT_BAL_AMT':'DOUBLE','AVG_INC_AMT':'DOUBLE'}))"
+          formatter: oldstyle
+      - name: lkp_demo_source3
+        config:
+          external_location: "(SELECT ROW_NUMBER() OVER () AS __seed_row, * FROM read_csv('legacy/informatica/data/lkp_demo_source3.csv', header=true, columns={'ACCT_ID':'BIGINT','TX_TYPE_CD':'VARCHAR','TX_TYPE_DESC':'VARCHAR'}))"
+          formatter: oldstyle
