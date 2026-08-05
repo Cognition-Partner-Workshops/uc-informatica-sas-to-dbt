@@ -1,0 +1,67 @@
+name: wf_demo_mapping
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  wf_demo_mapping:
+    runs-on: ubuntu-latest
+    env:
+      NOTIFICATION_RECIPIENT: data-eng-alerts@example.com
+      NOTIFICATION_TODO: "TODO: replace this placeholder with the approved notification channel"
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Install dbt-duckdb
+        run: python -m pip install dbt-duckdb
+
+      # Faithful legacy behavior: step 1 failure is reported but does not
+      # prevent step 2 because Decision1 -> s_m_demo_mapping1 is unconditional.
+      # --fail-fast is intentionally omitted: this default must preserve the
+      # cross-step legacy asymmetry; within-step dbt failures remain dbt errors.
+      - name: s_m_demo_mapping2
+        id: s_m_demo_mapping2
+        continue-on-error: true
+        run: dbt build --selector s_m_demo_mapping2 --project-dir dbt/informatica --profiles-dir dbt/informatica
+
+      - name: Failed_Email1 placeholder
+        if: always() && steps.s_m_demo_mapping2.outcome == 'failure'
+        run: |
+          echo "TODO notify ${NOTIFICATION_RECIPIENT}: Dataload s_m_demo_mapping2 was failed to execute"
+
+      # Explicit always() preserves the unconditional Decision1 link after
+      # the continued step-1 failure.
+      - name: s_m_demo_mapping1
+        id: s_m_demo_mapping1
+        if: always()
+        run: dbt build --selector s_m_demo_mapping1 --project-dir dbt/informatica --profiles-dir dbt/informatica
+
+      - name: Failed_Email2 placeholder
+        if: always() && steps.s_m_demo_mapping1.outcome == 'failure'
+        run: |
+          echo "TODO notify ${NOTIFICATION_RECIPIENT}: Sessio 's_m_demo_mapping1' failed"
+
+      # Step 3 is reached only through Decision2.Condition = 1.
+      - name: s_m_demo_mapping3
+        id: s_m_demo_mapping3
+        if: steps.s_m_demo_mapping1.outcome == 'success'
+        run: dbt build --selector s_m_demo_mapping3 --project-dir dbt/informatica --profiles-dir dbt/informatica
+
+      - name: Failed_Email3 placeholder
+        if: always() && steps.s_m_demo_mapping3.outcome == 'failure'
+        run: |
+          echo "TODO notify ${NOTIFICATION_RECIPIENT}: Dataload  s_m_demo_mapping3t was failed to execute"
+
+      - name: SuccessEmail placeholder
+        if: steps.s_m_demo_mapping3.outcome == 'success'
+        run: |
+          echo "TODO notify ${NOTIFICATION_RECIPIENT}: Session s_m_demo_mapping3 executed successfully"

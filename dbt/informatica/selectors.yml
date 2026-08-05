@@ -1,0 +1,80 @@
+# Contract for future model authors: an order-2 mart must ref() the order-1
+# marts of the same mapping. This preserves TARGETLOADORDER in one invocation.
+# A tag-based selector such as tag:m_demo_mappingN is the preferred future
+# shape once models carry mapping tags. Name-based selectors are used today
+# because the real branch models carry no mapping tags.
+selectors:
+  - name: s_m_demo_mapping2
+    definition:
+      union:
+        - method: fqn
+          value: demo_target1
+          parents: true
+        - method: fqn
+          value: demo_target1_ins
+          parents: true
+        - method: fqn
+          value: demo_target1_upd
+          parents: true
+
+  - name: s_m_demo_mapping1
+    definition:
+      union:
+        - method: fqn
+          value: demo_target3
+          parents: true
+        - method: fqn
+          value: demo_target5
+          parents: true
+        - method: fqn
+          value: demo_target6
+          parents: true
+
+  - name: s_m_demo_mapping3
+    definition:
+      union:
+        - method: fqn
+          value: demo_target2
+          parents: true
+        - method: fqn
+          value: demo_target21
+          parents: true
+        - method: fqn
+          value: demo_target2_physical
+          parents: true
+
+  - name: s_m_demo_mapping2_load_order_1
+    definition:
+      union:
+        - method: fqn
+          value: demo_target1_upd
+          parents: true
+        - method: fqn
+          value: demo_target1_ins
+          parents: true
+
+  - name: s_m_demo_mapping1_load_order_1
+    definition:
+      union:
+        - method: fqn
+          value: demo_target5
+          parents: true
+        - method: fqn
+          value: demo_target6
+          parents: true
+
+  - name: s_m_demo_mapping1_load_order_2
+    definition:
+      method: fqn
+      value: demo_target3
+      parents: true
+
+  - name: s_m_demo_mapping3_load_order_1
+    definition:
+      union:
+        - method: fqn
+          value: demo_target21
+          parents: true
+        - method: fqn
+          value: demo_target2
+          parents: true
