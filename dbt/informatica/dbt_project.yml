@@ -16,8 +16,6 @@ models:
       +materialized: view
     marts:
       +materialized: table
-      demo_target2_physical:
-        +materialized: view
 
 seeds:
   informatica_migration:

@@ -68,7 +68,7 @@ unit_tests:
           - {title: "Present SSN", gender_code: "F", member_id: 2, social_security_number: 123, member_type_code: 1, o_relationship_to_subscriber_code_label: "SELF"}
     expect:
       rows:
-        - {Title: "Null SSN", Gender: "M", Member_Identifier: "1", Soc_Number: null, Type_Code: "1", Relationship_to_Subscriber_Code_Label: "SELF"}
+        - {Title: "Null SSN", Gender: "M", Member_Identifier: 1, Soc_Number: null, Type_Code: 1, Relationship_to_Subscriber_Code_Label: "SELF"}
 
   - name: router_newgroup2_sends_ssn_present_rows_to_demo_target21
     model: demo_target21
@@ -79,7 +79,7 @@ unit_tests:
           - {title: "Present SSN", gender_code: "F", member_id: 2, social_security_number: 123, member_type_code: 1, o_relationship_to_subscriber_code_label: "SELF"}
     expect:
       rows:
-        - {Title: "Present SSN", Gender: "F", Member_Identifier: "2", Soc_Number: "123", Type_Code: "1", Relationship_to_Subscriber_Code_Label: "SELF"}
+        - {Title: "Present SSN", Gender: "F", Member_Identifier: 2, Soc_Number: 123, Type_Code: 1, Relationship_to_Subscriber_Code_Label: "SELF"}
 
   - name: guarded_label_null_survives_exptrans_for_abort_test
     model: int_m3_exptrans
