@@ -5,3 +5,5 @@ dbt/target/
 dbt/dbt_packages/
 dbt/logs/
 logs/
+dbt/sas/target/
+dbt/sas/logs/

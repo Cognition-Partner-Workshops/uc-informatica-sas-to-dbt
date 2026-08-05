@@ -1,0 +1,13 @@
+code,label
+NEW,New
+OPEN,Open
+INV,Under Investigation
+ADJ,Adjusting
+PEND,Pending Approval
+APPR,Approved
+DENY,Denied
+PAID,Paid
+CLOS,Closed
+REOP,Reopened
+SUSP,Suspended
+LITI,In Litigation

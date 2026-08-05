@@ -1,0 +1,14 @@
+code,label
+WL,Whole Life
+TL,Term Life
+UL,Universal Life
+VL,Variable Life
+AUTO,Auto Insurance
+HOME,Homeowners
+RENT,Renters
+UMBR,Umbrella
+HLTH,Health
+DNTL,Dental
+VIS,Vision
+DISAB,Disability
+LTCI,Long-Term Care
