@@ -7,7 +7,7 @@ select
     cast(LIST_PRICE as bigint) as LIST_PRICE,
     -- TO_CHAR(SYSDATE) renders the pinned date as MM/DD/YYYY; parsing that
     -- string as DD/MM/YYYY makes 31 an invalid month, yielding NULL.
-    cast(null as varchar) as SELL_ST_DT,
+    cast(null as date) as SELL_ST_DT,
     try_cast(
         substr(SELL_ED_DT, 7, 4) || '-' ||
         substr(SELL_ED_DT, 4, 2) || '-' ||
