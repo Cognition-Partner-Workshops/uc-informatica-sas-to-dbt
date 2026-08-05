@@ -502,6 +502,9 @@ def parse_mapping(mapping, global_sources, global_targets, session):
                 name for name, field in transform["fields"].items()
                 if field.get("expressiontype") == "GROUPBY"
             ]
+    overrides_by_instance = {
+        item["transformation"]: item for item in sql_overrides
+    }
     reverse_connectors = {}
     for connector in connectors:
         reverse_connectors.setdefault(
@@ -516,9 +519,6 @@ def parse_mapping(mapping, global_sources, global_targets, session):
                 continue
             upstream.add(instance)
             pending.extend(reverse_connectors.get(instance, ()))
-        overrides_by_instance = {
-            item["transformation"]: item for item in sql_overrides
-        }
         for source_qualifier in sorted(upstream):
             override = overrides_by_instance.get(source_qualifier)
             if not override or not override["order_by"]:
@@ -529,14 +529,15 @@ def parse_mapping(mapping, global_sources, global_targets, session):
             }
             if groupby and order_columns <= set(groupby):
                 aggregator_ordering_notes[aggregator] = (
-                    "The feeding Source Qualifier ORDER BY does not determine "
-                    "row order within the GROUPBY keys. PowerCenter therefore "
-                    "pins no intra-group ordering for non-GROUPBY pass-through "
-                    "ports; the baseline's highest-TX_ID rule is a chosen "
-                    "approximation, not recovered legacy semantics. If the "
-                    "source system emits a different physical row order within "
-                    "an account, the legacy run and dbt model can disagree "
-                    "while the parity check still passes."
+                    f"The feeding Source Qualifier ORDER BY "
+                    f"`{override['order_by']}` does not determine row order "
+                    f"within GROUPBY ports `{', '.join(groupby)}`. PowerCenter "
+                    "therefore leaves 'last row per group' unspecified for "
+                    "non-GROUPBY pass-through ports; any deterministic rule "
+                    "the baseline adopts is a chosen approximation, not "
+                    "recovered legacy semantics. A different physical row "
+                    "order within a group can make the legacy run and the "
+                    "dbt model disagree while parity still passes."
                 )
                 break
 
