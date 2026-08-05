@@ -133,7 +133,7 @@ def mapping1(con):
                o_acc_trim  AS ACCT_TYP,
                o_ACCT_DESC AS ACCT_DESC,
                CR8_DT,
-               o_crdt_trim AS CRDT_LN,
+               CAST(o_crdt_trim AS BIGINT) AS CRDT_LN,
                CLSR_DT,
                ACCT_STAT_CD,
                TX_ID,
@@ -146,7 +146,9 @@ def mapping1(con):
     save(t6, "demo_target6")
 
     t3 = con.execute("""
-        SELECT PRODUCT_ID, PRODUCT_NM, PRODUCT_NO, COLOR, STD_COST, LIST_PRICE,
+        SELECT PRODUCT_ID, PRODUCT_NM, PRODUCT_NO, COLOR,
+               CAST(STD_COST AS BIGINT) AS STD_COST,
+               CAST(LIST_PRICE AS BIGINT) AS LIST_PRICE,
                CAST(NULL AS DATE) AS SELL_ST_DT,
                CAST(SUBSTR(SELL_ED_DT,7,4) || '-' || SUBSTR(SELL_ED_DT,4,2)
                     || '-' || SUBSTR(SELL_ED_DT,1,2) AS DATE) AS SELL_ED_DT

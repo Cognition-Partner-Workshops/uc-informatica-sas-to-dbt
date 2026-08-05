@@ -7,7 +7,8 @@
         "sq_demo_source4 selects STRCMP(ACCT_STAT_CD, TX_TYPE_CD) into the TX_TYPE_CD port but that port is never connected downstream \u2014 a no-op.",
         "exp_TRANS2.o_SELL_ST_DT = TO_DATE(TO_CHAR(SYSDATE),'DD/MM/YYYY') is self-inconsistent: TO_CHAR(SYSDATE) renders MM/DD/YYYY HH24:MI:SS, which cannot be parsed with format DD/MM/YYYY (month 31 is invalid on the run date 2024-01-31). The port yields NULL for every row.",
         "The aggregator agg_TRANS only aggregates SUM(TX_AMT); all other ports are pass-through, which in PowerCenter returns the LAST row per ACCT_ID group. Determinism is defined as last-by-TX_ID within each ACCT_ID.",
-        "Router group DEFAULT1 is not connected to any target: rows with NULL ACCT_TYP satisfy neither condition and are dropped."
+        "Router group DEFAULT1 is not connected to any target: rows with NULL ACCT_TYP satisfy neither condition and are dropped.",
+        "demo_target3 declares PRODUCT_ID and PRODUCT_NO as number(15), but the source ports are strings and the synthesized product codes are alphanumeric; they are carried as strings in the migration. STD_COST, LIST_PRICE and demo_target6.CRDT_LN are numeric in the target definitions and are cast to numbers on load (PowerCenter's implicit string-to-number conversion)."
       ],
       "sources": [
         "demo_source3",
@@ -355,13 +356,15 @@
                 "rtr_TRANS.o_ACCT_ID1 [router group demo_target6_GRP WHERE ACCT_TYP = 'SB']",
                 "exp_TRANS1.o_ACCT_ID",
                 "exp_TRANS.o_ACCT_ID = :LKP.lkp_TRANS1(ACCT_ID)",
+                "lkp_TRANS1 [unconnected lookup lkp_demo_source3.TX_TYPE_CD ON ACCT_ID =  IN_ACCT_ID]",
                 "sq_demo_source4.ACCT_ID",
                 "demo_source4.ACCT_ID"
               ],
               "column": "TX_TYPE_CD",
               "rule": "agg_TRANS.o_ACCT_ID",
               "sources": [
-                "demo_source4.ACCT_ID"
+                "demo_source4.ACCT_ID",
+                "lkp_demo_source3.TX_TYPE_CD (lookup)"
               ]
             }
           ],

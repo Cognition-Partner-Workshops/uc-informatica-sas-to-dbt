@@ -86,7 +86,7 @@ Business/run date is pinned to **2024-01-31** for all SYSDATE / SYSTIMESTAMP ref
 | demo_target6 | ACCT_KEY | SEQ_GEN.NEXTVAL [sequence start=1 increment=1 current=281 cycle=YES] | SEQ_GEN (generated) |
 | demo_target6 | TX_DTTM | agg_TRANS.TX_DTTM → rtr_TRANS.TX_DTTM1 [router group demo_target6_GRP WHERE ACCT_TYP = 'SB'] → exp_TRANS1.TX_DTTM → exp_TRANS.TX_DTTM → sq_demo_source4.TX_DTTM → demo_source3.TX_DTTM | demo_source3.TX_DTTM |
 | demo_target6 | TX_AMT | agg_TRANS.o_TX_AMT = SUM(TX_AMT) → rtr_TRANS.TX_AMT1 [router group demo_target6_GRP WHERE ACCT_TYP = 'SB'] → exp_TRANS1.TX_AMT → exp_TRANS.TX_AMT → sq_demo_source4.TX_AMT → demo_source3.TX_AMT | demo_source3.TX_AMT |
-| demo_target6 | TX_TYPE_CD | agg_TRANS.o_ACCT_ID → rtr_TRANS.o_ACCT_ID1 [router group demo_target6_GRP WHERE ACCT_TYP = 'SB'] → exp_TRANS1.o_ACCT_ID → exp_TRANS.o_ACCT_ID = :LKP.lkp_TRANS1(ACCT_ID) → sq_demo_source4.ACCT_ID → demo_source4.ACCT_ID | demo_source4.ACCT_ID |
+| demo_target6 | TX_TYPE_CD | agg_TRANS.o_ACCT_ID → rtr_TRANS.o_ACCT_ID1 [router group demo_target6_GRP WHERE ACCT_TYP = 'SB'] → exp_TRANS1.o_ACCT_ID → exp_TRANS.o_ACCT_ID = :LKP.lkp_TRANS1(ACCT_ID) → lkp_TRANS1 [unconnected lookup lkp_demo_source3.TX_TYPE_CD ON ACCT_ID =  IN_ACCT_ID] → sq_demo_source4.ACCT_ID → demo_source4.ACCT_ID | demo_source4.ACCT_ID; lkp_demo_source3.TX_TYPE_CD (lookup) |
 
 ### Notes (faithful anomalies, not fixed)
 
@@ -95,6 +95,7 @@ Business/run date is pinned to **2024-01-31** for all SYSDATE / SYSTIMESTAMP ref
 - exp_TRANS2.o_SELL_ST_DT = TO_DATE(TO_CHAR(SYSDATE),'DD/MM/YYYY') is self-inconsistent: TO_CHAR(SYSDATE) renders MM/DD/YYYY HH24:MI:SS, which cannot be parsed with format DD/MM/YYYY (month 31 is invalid on the run date 2024-01-31). The port yields NULL for every row.
 - The aggregator agg_TRANS only aggregates SUM(TX_AMT); all other ports are pass-through, which in PowerCenter returns the LAST row per ACCT_ID group. Determinism is defined as last-by-TX_ID within each ACCT_ID.
 - Router group DEFAULT1 is not connected to any target: rows with NULL ACCT_TYP satisfy neither condition and are dropped.
+- demo_target3 declares PRODUCT_ID and PRODUCT_NO as number(15), but the source ports are strings and the synthesized product codes are alphanumeric; they are carried as strings in the migration. STD_COST, LIST_PRICE and demo_target6.CRDT_LN are numeric in the target definitions and are cast to numbers on load (PowerCenter's implicit string-to-number conversion).
 
 ## Mapping `m_demo_mapping2`
 

@@ -53,6 +53,12 @@ ANOMALY_NOTES = {
         "Determinism is defined as last-by-TX_ID within each ACCT_ID.",
         "Router group DEFAULT1 is not connected to any target: rows with NULL "
         "ACCT_TYP satisfy neither condition and are dropped.",
+        "demo_target3 declares PRODUCT_ID and PRODUCT_NO as number(15), but the "
+        "source ports are strings and the synthesized product codes are "
+        "alphanumeric; they are carried as strings in the migration. STD_COST, "
+        "LIST_PRICE and demo_target6.CRDT_LN are numeric in the target "
+        "definitions and are cast to numbers on load (PowerCenter's implicit "
+        "string-to-number conversion).",
     ],
     "m_demo_mapping2": [
         "EXPTRANS.MD5_src = AES_DECRYPT(LEAD_CO_MNE1, SUBSTR(SHORT_NAME,1,3), 256) "
@@ -233,6 +239,19 @@ def parse_mapping(m, global_sources, global_targets):
         expr = fld.get("expression")
         if expr and expr != field:
             steps.append(f"{instance_name}.{field} = {expr}")
+            for lkp_name in re.findall(r":LKP\.(\w+)", expr):
+                lt = transforms.get(lkp_name)
+                if lt is None:
+                    continue
+                attrs = lt["attributes"]
+                ret = next((fn for fn, fi in lt["fields"].items()
+                            if "RETURN" in (fi.get("porttype") or "")), None)
+                steps.append(
+                    f"{lkp_name} [unconnected lookup "
+                    f"{attrs.get('Lookup table name')}.{ret} "
+                    f"ON {attrs.get('Lookup condition')}]")
+                sources.append(
+                    f"{attrs.get('Lookup table name')}.{ret} (lookup)")
             refs = [tok for tok in dict.fromkeys(IDENT_RE.findall(expr))
                     if tok in tr["fields"] and tok != field]
             for ref in refs:

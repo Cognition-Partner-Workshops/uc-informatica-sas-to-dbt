@@ -16,7 +16,7 @@ select
     o_acc_trim   as "ACCT_TYP",
     o_acct_desc  as "ACCT_DESC",
     cr8_dt       as "CR8_DT",
-    o_crdt_trim  as "CRDT_LN",
+    cast(o_crdt_trim as bigint) as "CRDT_LN",
     clsr_dt      as "CLSR_DT",
     acct_stat_cd as "ACCT_STAT_CD",
     tx_id        as "TX_ID",
