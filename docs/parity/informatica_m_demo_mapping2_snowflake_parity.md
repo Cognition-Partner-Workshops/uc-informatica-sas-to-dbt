@@ -1,6 +1,6 @@
 # Parity Report
 
-Baseline: `/tmp/tmp.OhSHBJhv6Q`  |  Actual: `/home/ubuntu/repos/uc-informatica-sas-to-dbt/dbt/informatica/dev.duckdb`
+Baseline: `/tmp/tmp.aqilhz9JhC`  |  Actual: `snowflake`
 
 ## DEMO_TARGET1_INS
 - rows: baseline=4 actual=4

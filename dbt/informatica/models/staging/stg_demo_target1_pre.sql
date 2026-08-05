@@ -13,4 +13,4 @@ select
     ACTIVE_FLAG,
     START_DATE,
     END_DATE
-from {{ source('legacy_informatica_m2', 'demo_target1_pre') }}
+from {% if target.type == 'duckdb' %}{{ source('legacy_informatica_m2', 'demo_target1_pre') }}{% else %}{{ ref('demo_target1_pre') }}{% endif %}
