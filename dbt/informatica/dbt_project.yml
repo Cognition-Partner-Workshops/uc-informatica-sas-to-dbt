@@ -1,0 +1,124 @@
+name: informatica_migration
+version: "1.0.0"
+config-version: 2
+profile: informatica
+
+model-paths: ["models"]
+seed-paths: ["../../legacy/informatica/data"]
+target-path: "target"
+clean-targets: ["target", "dbt_packages"]
+
+vars:
+  # All SYSDATE / SYSTIMESTAMP references in the legacy mappings are pinned
+  # to this business date for deterministic parity.
+  business_date: "2024-01-31"
+
+models:
+  informatica_migration:
+    +materialized: table
+    staging:
+      +materialized: view
+    intermediate:
+      +materialized: view
+
+seeds:
+  informatica_migration:
+    +quote_columns: true
+    demo_source1:
+      +column_types:
+        LEAD_CO_MNE: varchar
+        BRANCH_CO_MNE: varchar
+        MIS_DATE: varchar
+        ID: varchar
+        DESCRIPTION: varchar
+        SHORT_NAME: varchar
+    demo_target1:
+      +column_types:
+        Key: double
+        LEAD_CO_MNE: varchar
+        BRANCH_CO_MNE: varchar
+        MIS_DATE: varchar
+        ID: varchar
+        DESCRIPTION: varchar
+        SHORT_NAME: varchar
+        CREATED_BY: varchar
+        CREATED_TIME: timestamp
+        UPDATED_BY: varchar
+        UPDATED_TIME: timestamp
+        ACTIVE_FLAG: varchar
+        START_DATE: timestamp
+        END_DATE: timestamp
+    demo_source3:
+      +column_types:
+        TX_ID: bigint
+        ACCT_ID: bigint
+        FIRST_NM: varchar
+        LAST_NM: varchar
+        TX_DTTM: timestamp
+        TX_AMT: double
+        TX_TYPE_CD: varchar
+        BAL_AMT: double
+        TX_DESC: varchar
+        CRDT_SCORE: bigint
+        CUST_ID: bigint
+    demo_source4:
+      +column_types:
+        ACCT_ID: bigint
+        ACCT_TYP: varchar
+        ACCT_DESC: varchar
+        CRDT_LN: varchar
+        CR8_DT: date
+        CLSR_DT: date
+        ACCT_STAT_CD: varchar
+    demo_source5:
+      +column_types:
+        PRODUCT_ID: varchar
+        PRODUCT_NM: varchar
+        PRODUCT_NO: varchar
+        COLOR: varchar
+        STD_COST: varchar
+        LIST_PRICE: varchar
+        SELL_ST_DT: varchar
+        SELL_ED_DT: varchar
+    demo_source2:
+      +column_types:
+        Title: varchar
+        First_Name: varchar
+        Middle_Name: varchar
+        Last_Name: varchar
+        Member_ID: double
+        Member_Suffix: varchar
+        Birth_Date: timestamp
+        Gender_Code: varchar
+        Member_Record_Number: double
+        Social_Security_Number: double
+        Member_Type_Code: double
+        Original_Effective_Date: timestamp
+        Relationship_to_Subscriber_Code: double
+        Relationship_to_Subscriber_Code_Label: varchar
+    lkp_demo_source1:
+      +column_types:
+        ACCT_ID: bigint
+        CUST_ID: bigint
+        FIRST_NM: varchar
+        LAST_NM: varchar
+        CUST_ADDR: varchar
+        CUST_PHN: varchar
+        CUST_EML_ADDR: varchar
+        AGE: varchar
+        DOB: varchar
+        CUST_TYP: varchar
+    lkp_demo_source2:
+      +column_types:
+        CUST_ID: bigint
+        CRDT_SCORE: bigint
+        MAX_CRDT_SCORE: bigint
+        MIN_CRDT_SCORE: bigint
+        MAX_CRDT_LMT: bigint
+        CURR_CRDT_BAL_AMT: double
+        AVG_INC_AMT: double
+    lkp_demo_source3:
+      +column_types:
+        ACCT_ID: bigint
+        TX_TYPE_CD: varchar
+        TX_TYPE_DESC: varchar

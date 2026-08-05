@@ -1,0 +1,10 @@
+informatica:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      # Run dbt from the repo root:
+      #   dbt build --project-dir dbt/informatica --profiles-dir dbt/informatica
+      path: dbt/informatica/dev.duckdb
+      schema: main
+      threads: 1

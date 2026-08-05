@@ -1,0 +1,81 @@
+version: 2
+
+models:
+  - name: demo_target6
+    description: m_demo_mapping1 savings-account aggregate (router group ACCT_TYP = 'SB').
+    columns:
+      - name: ACCT_ID
+        tests: [not_null, unique]
+      - name: ACCT_KEY
+        tests: [not_null, unique]
+      - name: ACCT_TYP
+        tests:
+          - not_null
+          - accepted_values:
+              values: ["SB"]
+      - name: ACCT_STAT_CD
+        tests:
+          - accepted_values:
+              values: ["A", "C", "D"]
+
+  - name: demo_target5
+    description: m_demo_mapping1 non-savings transactions (router group ACCT_TYP != 'SB').
+    columns:
+      - name: ACCT_ID
+        tests: [not_null]
+      - name: BAL_AMT
+        tests: [not_null, unique]
+
+  - name: demo_target3
+    description: m_demo_mapping1 product dimension from demo_source5.
+    columns:
+      - name: PRODUCT_ID
+        tests: [not_null, unique]
+      - name: PRODUCT_NO
+        tests: [not_null, unique]
+
+  - name: demo_target1_ins
+    description: m_demo_mapping2 Insert router branch of the demo_target1 SCD load.
+    columns:
+      - name: Key
+        tests: [not_null, unique]
+      - name: ID
+        tests: [not_null, unique]
+      - name: CREATED_BY
+        tests:
+          - accepted_values:
+              values: ["IDWUSER"]
+
+  - name: demo_target1_upd
+    description: >
+      m_demo_mapping2 Update router branch. Empty by faithful reproduction of
+      the legacy change-detection expressions (md5_src is always NULL).
+    columns:
+      - name: ID
+        tests: [unique]
+
+  - name: demo_target2
+    description: m_demo_mapping3 members without a Social Security Number.
+    columns:
+      - name: Member_Identifier
+        tests: [not_null, unique]
+      - name: Gender
+        tests:
+          - accepted_values:
+              values: ["M", "F"]
+      - name: Relationship_to_Subscriber_Code_Label
+        tests: [not_null]
+
+  - name: demo_target21
+    description: m_demo_mapping3 members with a Social Security Number.
+    columns:
+      - name: Member_Identifier
+        tests: [not_null, unique]
+      - name: Soc_Number
+        tests: [not_null, unique]
+      - name: Gender
+        tests:
+          - accepted_values:
+              values: ["M", "F"]
+      - name: Relationship_to_Subscriber_Code_Label
+        tests: [not_null]

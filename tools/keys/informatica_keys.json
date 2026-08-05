@@ -1,0 +1,9 @@
+{
+  "demo_target6": ["ACCT_ID"],
+  "demo_target5": ["ACCT_ID", "BAL_AMT"],
+  "demo_target3": ["PRODUCT_ID"],
+  "demo_target1_INS": ["ID"],
+  "demo_target1_UPD": ["ID"],
+  "demo_target2": ["Member_Identifier"],
+  "demo_target21": ["Member_Identifier"]
+}
