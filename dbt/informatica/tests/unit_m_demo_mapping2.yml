@@ -1,0 +1,78 @@
+version: 2
+
+unit_tests:
+  - name: unmatched_source_row_is_insert_only
+    model: int_demo_mapping2_lookup
+    given:
+      - input: ref('stg_demo_source1')
+        rows:
+          - {LEAD_CO_MNE: BNK04, BRANCH_CO_MNE: BR104, MIS_DATE: '2024-01-31', ID: REC00004, DESCRIPTION: 'General ledger account 4', SHORT_NAME: GL0004}
+      - input: ref('stg_demo_target1_pre')
+        rows: []
+    expect:
+      rows:
+        - {ID: REC00004, lookup_Key: null, New_Flag: Insert, Changed_Flag: null}
+
+  - name: matched_source_row_is_update_only
+    model: int_demo_mapping2_lookup
+    given:
+      - input: ref('stg_demo_source1')
+        rows:
+          - {LEAD_CO_MNE: BNK01, BRANCH_CO_MNE: BR101, MIS_DATE: '2024-01-31', ID: REC00001, DESCRIPTION: 'General ledger account 1', SHORT_NAME: GL0001}
+      - input: ref('stg_demo_target1_pre')
+        rows:
+          - {Key: 1, LEAD_CO_MNE: BNK01, BRANCH_CO_MNE: BR101, MIS_DATE: '2024-01-31', ID: REC00001, DESCRIPTION: 'Existing account 1', SHORT_NAME: GL0001}
+    expect:
+      rows:
+        - {ID: REC00001, lookup_Key: 1, New_Flag: null, Changed_Flag: Update}
+
+  - name: duplicate_lookup_id_uses_highest_key
+    model: int_demo_mapping2_lookup
+    given:
+      - input: ref('stg_demo_source1')
+        rows:
+          - {LEAD_CO_MNE: BNK02, BRANCH_CO_MNE: BR102, MIS_DATE: '2024-01-31', ID: REC00002, DESCRIPTION: 'General ledger account 2', SHORT_NAME: GL0002}
+      - input: ref('stg_demo_target1_pre')
+        rows:
+          - {Key: 2, LEAD_CO_MNE: BNK02, BRANCH_CO_MNE: BR102, MIS_DATE: '2024-01-31', ID: REC00002, DESCRIPTION: 'Existing account 2 old key', SHORT_NAME: GL0002}
+          - {Key: 99, LEAD_CO_MNE: BNK02, BRANCH_CO_MNE: BR102, MIS_DATE: '2024-01-31', ID: REC00002, DESCRIPTION: 'Existing account 2 new key', SHORT_NAME: GL0002}
+    expect:
+      rows:
+        - {ID: REC00002, lookup_Key: 99, New_Flag: null, Changed_Flag: Update}
+
+  - name: iif_flags_are_null_when_conditions_are_false
+    model: int_demo_mapping2_lookup
+    given:
+      - input: ref('stg_demo_source1')
+        rows:
+          - {LEAD_CO_MNE: BNK04, BRANCH_CO_MNE: BR104, MIS_DATE: '2024-01-31', ID: REC00004, DESCRIPTION: 'General ledger account 4', SHORT_NAME: GL0004}
+          - {LEAD_CO_MNE: BNK01, BRANCH_CO_MNE: BR101, MIS_DATE: '2024-01-31', ID: REC00001, DESCRIPTION: 'General ledger account 1', SHORT_NAME: GL0001}
+      - input: ref('stg_demo_target1_pre')
+        rows:
+          - {Key: 1, LEAD_CO_MNE: BNK01, BRANCH_CO_MNE: BR101, MIS_DATE: '2024-01-31', ID: REC00001, DESCRIPTION: 'Existing account 1', SHORT_NAME: GL0001}
+    expect:
+      rows:
+        - {ID: REC00001, lookup_Key: 1, New_Flag: null, Changed_Flag: Update}
+        - {ID: REC00004, lookup_Key: null, New_Flag: Insert, Changed_Flag: null}
+
+  - name: insert_payload_uses_sequence_var_and_lexicographic_id_order
+    model: demo_target1_ins
+    given:
+      - input: ref('int_demo_mapping2_lookup')
+        rows:
+          - {LEAD_CO_MNE: BNK10, BRANCH_CO_MNE: BR110, MIS_DATE: '2024-01-31', ID: REC00010, DESCRIPTION: Account 10, SHORT_NAME: GL0010, New_Flag: Insert, o_CREATED_BY: IDWUSER, o_CREATED_TIME: '2024-01-31 00:00:00'}
+          - {LEAD_CO_MNE: BNK02, BRANCH_CO_MNE: BR102, MIS_DATE: '2024-01-31', ID: REC00002, DESCRIPTION: Account 2, SHORT_NAME: GL0002, New_Flag: Insert, o_CREATED_BY: IDWUSER, o_CREATED_TIME: '2024-01-31 00:00:00'}
+    expect:
+      rows:
+        - {Key: 57, ID: REC00002, CREATED_BY: IDWUSER, UPDATED_BY: null, UPDATED_TIME: null, ACTIVE_FLAG: null, START_DATE: null, END_DATE: null}
+        - {Key: 58, ID: REC00010, CREATED_BY: IDWUSER, UPDATED_BY: null, UPDATED_TIME: null, ACTIVE_FLAG: null, START_DATE: null, END_DATE: null}
+
+  - name: update_payload_uses_lookup_key_and_only_update_columns
+    model: demo_target1_upd
+    given:
+      - input: ref('int_demo_mapping2_lookup')
+        rows:
+          - {LEAD_CO_MNE: BNK02, BRANCH_CO_MNE: BR102, MIS_DATE: '2024-01-31', ID: REC00002, DESCRIPTION: Account 2, SHORT_NAME: GL0002, lookup_Key: 99, Changed_Flag: Update, o_UPDATED_BY: IDWUSER, o_UPDATED_TIME: '2024-01-31 00:00:00'}
+    expect:
+      rows:
+        - {Key: 99, ID: REC00002, UPDATED_BY: IDWUSER, UPDATED_TIME: '2024-01-31 00:00:00', CREATED_BY: null, CREATED_TIME: null, ACTIVE_FLAG: null, START_DATE: null, END_DATE: null}

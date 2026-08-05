@@ -1,0 +1,119 @@
+version: 2
+
+models:
+  - name: stg_demo_source1
+    columns:
+      - name: ID
+        tests:
+          - not_null
+  - name: stg_demo_target1_pre
+    columns:
+      - name: Key
+        tests:
+          - not_null
+      - name: ID
+        tests:
+          - not_null
+  - name: int_demo_mapping2_lookup
+    columns:
+      - name: ID
+        tests:
+          - not_null
+      - name: New_Flag
+        tests:
+          - accepted_values:
+              arguments:
+                values: ['Insert']
+                quote: true
+              config:
+                where: "New_Flag is not null"
+      - name: Changed_Flag
+        tests:
+          - accepted_values:
+              arguments:
+                values: ['Update']
+                quote: true
+              config:
+                where: "Changed_Flag is not null"
+  - name: demo_target1_ins
+    columns:
+      - name: Key
+        tests:
+          - not_null
+          - unique
+      - name: ID
+        tests:
+          - not_null
+          - unique
+      - name: LEAD_CO_MNE
+        tests:
+          - not_null
+      - name: BRANCH_CO_MNE
+        tests:
+          - not_null
+      - name: MIS_DATE
+        tests:
+          - not_null
+      - name: DESCRIPTION
+        tests:
+          - not_null
+      - name: SHORT_NAME
+        tests:
+          - not_null
+      - name: CREATED_BY
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['IDWUSER']
+      - name: CREATED_TIME
+        tests:
+          - not_null
+      - name: UPDATED_BY
+      - name: UPDATED_TIME
+      - name: ACTIVE_FLAG
+      - name: START_DATE
+      - name: END_DATE
+  - name: demo_target1_upd
+    columns:
+      - name: Key
+        tests:
+          - not_null
+      - name: LEAD_CO_MNE
+        tests:
+          - not_null
+      - name: BRANCH_CO_MNE
+        tests:
+          - not_null
+      - name: MIS_DATE
+        tests:
+          - not_null
+      - name: ID
+        tests:
+          - not_null
+      - name: DESCRIPTION
+        tests:
+          - not_null
+      - name: SHORT_NAME
+        tests:
+          - not_null
+      - name: UPDATED_BY
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['IDWUSER']
+      - name: UPDATED_TIME
+        tests:
+          - not_null
+      - name: CREATED_BY
+      - name: CREATED_TIME
+      - name: ACTIVE_FLAG
+      - name: START_DATE
+      - name: END_DATE
+  - name: demo_target1
+    columns:
+      - name: Key
+        tests:
+          - not_null
+          - unique

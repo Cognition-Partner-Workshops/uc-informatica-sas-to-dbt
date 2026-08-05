@@ -1,0 +1,8 @@
+informatica_m_demo_mapping2:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: dbt/informatica/dev.duckdb
+      schema: main
+      threads: 1
