@@ -1,0 +1,56 @@
+name: informatica_migration
+version: "1.0"
+config-version: 2
+
+profile: informatica
+
+model-paths: ["models"]
+seed-paths: ["seeds"]
+test-paths: ["tests"]
+
+models:
+  informatica_migration:
+    staging:
+      +materialized: view
+    intermediate:
+      +materialized: view
+    marts:
+      +materialized: table
+
+seeds:
+  informatica_migration:
+    +quote_columns: true
+    demo_source2:
+      +enabled: "{{ not var('abort_demo', false) }}"
+      +column_types:
+        Title: varchar
+        First_Name: varchar
+        Middle_Name: varchar
+        Last_Name: varchar
+        Member_ID: double
+        Member_Suffix: varchar
+        Birth_Date: date
+        Gender_Code: varchar
+        Member_Record_Number: double
+        Social_Security_Number: double
+        Member_Type_Code: double
+        Original_Effective_Date: date
+        Relationship_to_Subscriber_Code: double
+        Relationship_to_Subscriber_Code_Label: varchar
+    demo_source2_abort:
+      +enabled: "{{ var('abort_demo', false) }}"
+      +column_types:
+        Title: varchar
+        First_Name: varchar
+        Middle_Name: varchar
+        Last_Name: varchar
+        Member_ID: double
+        Member_Suffix: varchar
+        Birth_Date: date
+        Gender_Code: varchar
+        Member_Record_Number: double
+        Social_Security_Number: double
+        Member_Type_Code: double
+        Original_Effective_Date: date
+        Relationship_to_Subscriber_Code: double
+        Relationship_to_Subscriber_Code_Label: varchar
