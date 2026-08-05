@@ -1,0 +1,90 @@
+version: 2
+
+sources:
+  - name: legacy_informatica_m2
+    description: Legacy Informatica m_demo_mapping2 CSV inputs.
+    tables:
+      - name: demo_source1
+        description: Source rows entering SQ_demo_source1.
+        config:
+          formatter: oldstyle
+          external_location: >-
+            read_csv(
+              'legacy/informatica/data/demo_source1.csv',
+              header=true,
+              columns={
+                'LEAD_CO_MNE':'VARCHAR',
+                'BRANCH_CO_MNE':'VARCHAR',
+                'MIS_DATE':'VARCHAR',
+                'ID':'VARCHAR',
+                'DESCRIPTION':'VARCHAR',
+                'SHORT_NAME':'VARCHAR'
+              }
+            )
+        columns:
+          - name: LEAD_CO_MNE
+            data_type: varchar
+          - name: BRANCH_CO_MNE
+            data_type: varchar
+          - name: MIS_DATE
+            data_type: varchar
+          - name: ID
+            data_type: varchar
+          - name: DESCRIPTION
+            data_type: varchar
+          - name: SHORT_NAME
+            data_type: varchar
+      - name: demo_target1_pre
+        description: Pre-existing demo_target1 state used by LKPTRANS.
+        config:
+          formatter: oldstyle
+          external_location: >-
+            read_csv(
+              'legacy/informatica/data/demo_target1.csv',
+              header=true,
+              columns={
+                'Key':'DOUBLE',
+                'LEAD_CO_MNE':'VARCHAR',
+                'BRANCH_CO_MNE':'VARCHAR',
+                'MIS_DATE':'VARCHAR',
+                'ID':'VARCHAR',
+                'DESCRIPTION':'VARCHAR',
+                'SHORT_NAME':'VARCHAR',
+                'CREATED_BY':'VARCHAR',
+                'CREATED_TIME':'TIMESTAMP',
+                'UPDATED_BY':'VARCHAR',
+                'UPDATED_TIME':'TIMESTAMP',
+                'ACTIVE_FLAG':'VARCHAR',
+                'START_DATE':'TIMESTAMP',
+                'END_DATE':'TIMESTAMP'
+              }
+            )
+        columns:
+          - name: Key
+            data_type: double
+          - name: LEAD_CO_MNE
+            data_type: varchar
+          - name: BRANCH_CO_MNE
+            data_type: varchar
+          - name: MIS_DATE
+            data_type: varchar
+          - name: ID
+            data_type: varchar
+          - name: DESCRIPTION
+            data_type: varchar
+          - name: SHORT_NAME
+            data_type: varchar
+          - name: CREATED_BY
+            data_type: varchar
+          - name: CREATED_TIME
+            data_type: timestamp
+          - name: UPDATED_BY
+            data_type: varchar
+          - name: UPDATED_TIME
+            data_type: timestamp
+          - name: ACTIVE_FLAG
+            data_type: varchar
+          - name: START_DATE
+            data_type: timestamp
+          - name: END_DATE
+            data_type: timestamp

@@ -1,0 +1,25 @@
+name: informatica_m_demo_mapping2
+version: "1.0.0"
+config-version: 2
+
+profile: informatica_m_demo_mapping2
+
+vars:
+  m2_seq_current_value: 57
+  business_date: "2024-01-31"
+
+model-paths: ["models"]
+test-paths: ["tests"]
+target-path: target
+clean-targets:
+  - target
+  - dbt_packages
+
+models:
+  informatica_m_demo_mapping2:
+    staging:
+      +materialized: view
+    intermediate:
+      +materialized: view
+    marts:
+      +materialized: table
