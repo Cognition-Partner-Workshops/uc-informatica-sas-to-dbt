@@ -1,0 +1,103 @@
+version: 2
+
+models:
+  - name: stg_demo_source1
+    description: "Recovered source layer for demo_source1."
+    config:
+      tags: ["informatica", "s_m_demo_mapping2"]
+    columns:
+      - name: ID
+        description: "RECOVERED: demo_source1 SOURCEFIELD ID."
+        tests: [not_null]
+      - name: LEAD_CO_MNE
+        description: "RECOVERED: demo_source1 SOURCEFIELD LEAD_CO_MNE."
+      - name: BRANCH_CO_MNE
+        description: "RECOVERED: demo_source1 SOURCEFIELD BRANCH_CO_MNE."
+      - name: MIS_DATE
+        description: "RECOVERED: demo_source1 SOURCEFIELD MIS_DATE."
+      - name: DESCRIPTION
+        description: "RECOVERED: demo_source1 SOURCEFIELD DESCRIPTION."
+      - name: SHORT_NAME
+        description: "RECOVERED: demo_source1 SOURCEFIELD SHORT_NAME."
+  - name: stg_demo_source2
+    description: "Recovered source layer for demo_source2."
+    config:
+      tags: ["informatica", "s_m_demo_mapping3"]
+    columns:
+      - name: Member_ID
+        description: "RECOVERED: demo_source2 SOURCEFIELD Member_ID."
+        tests: [not_null]
+      - name: Member_Type_Code
+        description: "RECOVERED: demo_source2 SOURCEFIELD Member_Type_Code."
+  - name: stg_demo_source3
+    description: "Recovered source layer for demo_source3."
+    config:
+      tags: ["informatica", "s_m_demo_mapping1"]
+    columns:
+      - name: TX_ID
+        description: "RECOVERED: demo_source3 SOURCEFIELD TX_ID."
+        tests: [not_null]
+      - name: ACCT_ID
+        description: "RECOVERED: demo_source3 SOURCEFIELD ACCT_ID."
+  - name: stg_demo_source4
+    description: "Recovered source layer for demo_source4."
+    config:
+      tags: ["informatica", "s_m_demo_mapping1"]
+    columns:
+      - name: ACCT_ID
+        description: "RECOVERED: demo_source4 SOURCEFIELD ACCT_ID."
+        tests: [not_null]
+      - name: CRDT_LN
+        description: "RECOVERED: demo_source4 SOURCEFIELD CRDT_LN remains VARCHAR."
+  - name: stg_demo_source5
+    description: "Recovered source layer for demo_source5."
+    config:
+      tags: ["informatica", "s_m_demo_mapping1"]
+    columns:
+      - name: PRODUCT_ID
+        description: "RECOVERED: demo_source5 SOURCEFIELD PRODUCT_ID."
+        tests: [not_null]
+      - name: SELL_ST_DT
+        description: "RECOVERED: demo_source5 SOURCEFIELD SELL_ST_DT remains DD/MM/YYYY VARCHAR."
+  - name: stg_lkp_demo_source1
+    description: "Lookup source resolved to one deterministic last-value row per ACCT_ID."
+    config:
+      tags: ["informatica", "s_m_demo_mapping1"]
+    columns:
+      - name: ACCT_ID
+        description: "RECOVERED: lookup condition ACCT_ID = IN_ACCT_ID; DECISION: deterministic last-row surrogate."
+        tests: [not_null, unique]
+      - name: FIRST_NM
+        description: "RECOVERED: lkp_TRANS2 lookup output FIRST_NM."
+      - name: CUST_TYP
+        description: "RECOVERED: lkp_demo_source1 lookup field CUST_TYP."
+  - name: stg_lkp_demo_source2
+    description: "Lookup source resolved to one deterministic last-value row per CUST_ID."
+    config:
+      tags: ["informatica", "s_m_demo_mapping1"]
+    columns:
+      - name: CUST_ID
+        description: "RECOVERED: lookup condition CUST_ID = IN_CUST_ID; DECISION: deterministic last-row surrogate."
+        tests: [not_null, unique]
+      - name: CRDT_SCORE
+        description: "RECOVERED: lkp_TRANS3 lookup output CRDT_SCORE."
+  - name: stg_lkp_demo_source3
+    description: "Lookup source resolved to one deterministic last-value row per ACCT_ID."
+    config:
+      tags: ["informatica", "s_m_demo_mapping1"]
+    columns:
+      - name: ACCT_ID
+        description: "RECOVERED: lookup condition ACCT_ID = IN_ACCT_ID; DECISION: deterministic last-row surrogate."
+        tests: [not_null, unique]
+      - name: TX_TYPE_CD
+        description: "RECOVERED: lkp_TRANS1 lookup output TX_TYPE_CD."
+  - name: stg_demo_target1
+    description: "Pre-existing target lookup state resolved to one row per ID."
+    config:
+      tags: ["informatica", "s_m_demo_mapping2"]
+    columns:
+      - name: ID
+        description: "RECOVERED: LKPTRANS lookup key ID = ID1."
+        tests: [not_null, unique]
+      - name: KEY
+        description: "RECOVERED: LKPTRANS lookup output Key; DECISION: highest-key deterministic Use Any Value resolution."

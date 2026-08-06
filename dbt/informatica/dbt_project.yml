@@ -1,0 +1,124 @@
+name: informatica_migration
+version: 1.0.0
+config-version: 2
+
+profile: informatica_migration
+
+model-paths: ["models"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+test-paths: ["tests"]
+
+vars:
+  business_date: "2024-01-31"
+
+models:
+  informatica_migration:
+    staging:
+      +materialized: view
+    intermediate:
+      +materialized: view
+    marts:
+      +materialized: table
+
+seeds:
+  informatica_migration:
+    +quote_columns: false
+    demo_source1:
+      +column_types:
+        LEAD_CO_MNE: VARCHAR
+        BRANCH_CO_MNE: VARCHAR
+        MIS_DATE: VARCHAR
+        ID: VARCHAR
+        DESCRIPTION: VARCHAR
+        SHORT_NAME: VARCHAR
+    demo_source2:
+      +column_types:
+        Title: VARCHAR
+        First_Name: VARCHAR
+        Middle_Name: VARCHAR
+        Last_Name: VARCHAR
+        Member_ID: DOUBLE
+        Member_Suffix: VARCHAR
+        Birth_Date: TIMESTAMP
+        Gender_Code: VARCHAR
+        Member_Record_Number: DOUBLE
+        Social_Security_Number: DOUBLE
+        Member_Type_Code: DOUBLE
+        Original_Effective_Date: TIMESTAMP
+        Relationship_to_Subscriber_Code: DOUBLE
+        Relationship_to_Subscriber_Code_Label: VARCHAR
+    demo_source3:
+      +column_types:
+        TX_ID: BIGINT
+        ACCT_ID: BIGINT
+        FIRST_NM: VARCHAR
+        LAST_NM: VARCHAR
+        TX_DTTM: TIMESTAMP
+        TX_AMT: DOUBLE
+        TX_TYPE_CD: VARCHAR
+        BAL_AMT: DOUBLE
+        TX_DESC: VARCHAR
+        CRDT_SCORE: BIGINT
+        CUST_ID: BIGINT
+    demo_source4:
+      +column_types:
+        ACCT_ID: BIGINT
+        ACCT_TYP: VARCHAR
+        ACCT_DESC: VARCHAR
+        CRDT_LN: VARCHAR
+        CR8_DT: DATE
+        CLSR_DT: DATE
+        ACCT_STAT_CD: VARCHAR
+    demo_source5:
+      +column_types:
+        PRODUCT_ID: VARCHAR
+        PRODUCT_NM: VARCHAR
+        PRODUCT_NO: VARCHAR
+        COLOR: VARCHAR
+        STD_COST: VARCHAR
+        LIST_PRICE: VARCHAR
+        SELL_ST_DT: VARCHAR
+        SELL_ED_DT: VARCHAR
+    lkp_demo_source1:
+      +column_types:
+        ACCT_ID: BIGINT
+        CUST_ID: BIGINT
+        FIRST_NM: VARCHAR
+        LAST_NM: VARCHAR
+        CUST_ADDR: VARCHAR
+        CUST_PHN: VARCHAR
+        CUST_EML_ADDR: VARCHAR
+        AGE: VARCHAR
+        DOB: VARCHAR
+        CUST_TYP: VARCHAR
+    lkp_demo_source2:
+      +column_types:
+        CUST_ID: BIGINT
+        CRDT_SCORE: BIGINT
+        MAX_CRDT_SCORE: BIGINT
+        MIN_CRDT_SCORE: BIGINT
+        MAX_CRDT_LMT: BIGINT
+        CURR_CRDT_BAL_AMT: DOUBLE
+        AVG_INC_AMT: DOUBLE
+    lkp_demo_source3:
+      +column_types:
+        ACCT_ID: BIGINT
+        TX_TYPE_CD: VARCHAR
+        TX_TYPE_DESC: VARCHAR
+    demo_target1:
+      +column_types:
+        Key: DOUBLE
+        LEAD_CO_MNE: VARCHAR
+        BRANCH_CO_MNE: VARCHAR
+        MIS_DATE: VARCHAR
+        ID: VARCHAR
+        DESCRIPTION: VARCHAR
+        SHORT_NAME: VARCHAR
+        CREATED_BY: VARCHAR
+        CREATED_TIME: TIMESTAMP
+        UPDATED_BY: VARCHAR
+        UPDATED_TIME: TIMESTAMP
+        ACTIVE_FLAG: VARCHAR
+        START_DATE: TIMESTAMP
+        END_DATE: TIMESTAMP

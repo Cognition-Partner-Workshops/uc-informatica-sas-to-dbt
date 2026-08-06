@@ -1,0 +1,21 @@
+selectors:
+  - name: session_s_m_demo_mapping2
+    description: "The s_m_demo_mapping2 session, including its staging and child models."
+    definition:
+      method: tag
+      value: s_m_demo_mapping2
+  - name: session_s_m_demo_mapping1
+    description: "The s_m_demo_mapping1 session, including its staging and child models."
+    definition:
+      method: tag
+      value: s_m_demo_mapping1
+  - name: session_s_m_demo_mapping3
+    description: "The s_m_demo_mapping3 session, including its staging and child models."
+    definition:
+      method: tag
+      value: s_m_demo_mapping3
+  - name: workflow_wf_demo_mapping
+    description: "All models in the recovered Informatica workflow."
+    definition:
+      method: tag
+      value: informatica

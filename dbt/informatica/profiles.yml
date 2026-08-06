@@ -1,0 +1,18 @@
+informatica_migration:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: dev.duckdb
+      schema: main
+      threads: 4
+    snowflake:
+      type: snowflake
+      account: YD76133.us-east-2.aws
+      user: devin_demo
+      role: devin_migration_demo
+      warehouse: devin_demo_wh
+      database: devin_migration_demo
+      schema: "{{ env_var('SNOWFLAKE_SCHEMA', 'DBT_INFORMATICA_20260806') }}"
+      private_key_path: "{{ env_var('SNOWFLAKE_PRIVATE_KEY_PATH') }}"
+      threads: 4

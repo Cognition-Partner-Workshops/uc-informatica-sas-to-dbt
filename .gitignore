@@ -1,4 +1,6 @@
-baseline/
+baseline/*
+!baseline/informatica/
+!baseline/informatica/*.csv
 *.duckdb
 __pycache__/
 dbt/target/
