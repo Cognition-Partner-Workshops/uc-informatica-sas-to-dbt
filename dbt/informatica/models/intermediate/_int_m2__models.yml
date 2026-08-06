@@ -1,0 +1,54 @@
+version: 2
+
+models:
+  - name: int_m2__exptrans
+    description: "RECOVERED: EXPTRANS lookup enrichment and audit expressions for m_demo_mapping2; defect-preserving matched-row update detection."
+    columns:
+      - name: ID
+        description: "RECOVERED: source ID used by LKPTRANS."
+        tests: [not_null]
+      - name: Key
+        description: "RECOVERED: LKPTRANS target-state key, null for inserts."
+      - name: New_Flag
+        description: "RECOVERED: Insert router flag when the lookup key is null."
+      - name: Changed_Flag
+        description: "RECOVERED + defect: Update for every matched row because MD5_tgt and decrypted MD5_src are incomparable."
+      - name: o_CREATED_BY
+        description: "RECOVERED: literal IDWUSER."
+        tests:
+          - accepted_values:
+              arguments:
+                values: ['IDWUSER']
+      - name: o_UPDATED_BY
+        description: "RECOVERED: literal IDWUSER."
+        tests:
+          - accepted_values:
+              arguments:
+                values: ['IDWUSER']
+  - name: int_m2__rtr_insert
+    description: "RECOVERED: Insert router branch with deterministic sequence assignment."
+    columns:
+      - name: Key
+        description: "RECOVERED: SEQTRANS NEXTVAL; DECISION: 56 plus row_number ordered by ID."
+        tests: [not_null]
+      - name: ID
+        description: "RECOVERED: source ID."
+        tests: [not_null]
+  - name: int_m2__rtr_upd
+    description: "RECOVERED: Update router branch carrying lookup keys."
+    columns:
+      - name: Key
+        description: "RECOVERED: LKPTRANS Key, not SEQTRANS."
+        tests: [not_null]
+      - name: ID
+        description: "RECOVERED: source ID."
+        tests: [not_null]
+  - name: int_m2__updtrans
+    description: "RECOVERED: DD_UPDATE-marked update rows passed through UPDTRANS."
+    columns:
+      - name: Key
+        description: "RECOVERED: LKPTRANS Key."
+        tests: [not_null]
+      - name: ID
+        description: "RECOVERED: source ID."
+        tests: [not_null]
