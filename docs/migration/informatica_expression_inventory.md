@@ -23,8 +23,21 @@ Confidence split below is over all 105 inventory rows; the three deliberate omis
 |---|---:|---:|
 | HIGH | 69 | 65.7% |
 | MEDIUM | 13 | 12.4% |
-| LOW | 20 | 19.0% |
+| LOW rows | 20 | 19.0% |
 | NOT MIGRATED | 3 | 2.9% |
+
+The 20 LOW rows collapse to **9 distinct LOW decisions**. This is the review-unit view: the ten `agg_TRANS` ports are one last-row tie-break decision, each sequence generator's Start/Current pair is one ordering decision, and each lookup condition is one winner/policy decision.
+
+| Distinct LOW decision | Inventory rows | XML lines |
+|---|---:|---|
+| Aggregator last-row pass-through tie-break (`TX_ID DESC`) | 10 | 443, 445–453 |
+| Mapping1 sequence-generator ordering (`SEQ_GEN`) | 2 | 432, 435 |
+| Mapping2 sequence-generator ordering (`SEQTRANS`) | 2 | 317, 320 |
+| Mapping1 lookup winner/policy (`lkp_TRANS1`, `lkp_TRANS2`, `lkp_TRANS3`) | 3 | 499, 537, 625 |
+| Mapping2 lookup winner/policy (`LKPTRANS`) | 1 | 286 |
+| AES decrypt sentinel for `MD5_src` | 1 | 177 |
+| Informatica NULL-as-empty concat for `MD5_tgt` | 1 | 178 |
+| **Total** | **20 rows / 9 decisions** | — |
 
 Expression counts by mapping (the 89 expression rows only):
 
@@ -36,44 +49,24 @@ Expression counts by mapping (the 89 expression rows only):
 
 ## 2. Review these first
 
-Every LOW item precedes MEDIUM items. XML lines are direct references for manual review.
+The LOW review list is grouped by distinct judgement call rather than repeated per port. The 20 LOW inventory rows map to 9 decisions; the XML lines under each group identify every affected port. MEDIUM rows follow individually, ordered by review blast radius.
 
-1. **LOW — `m_demo_mapping2` / `EXPTRANS.MD5_src` (XML line 177)** — AES_DECRYPT plaintext is unrecoverable; a wrong sentinel/decryption choice would alter match/update classification, and current controls only prove seven final target values. Read `AES_DECRYPT(LEAD_CO_MNE1, SUBSTR(SHORT_NAME,1,3), 256)`; lands in `int_m2__exptrans.MD5_src`.
-2. **LOW — `m_demo_mapping2` / `EXPTRANS.MD5_tgt` (XML line 178)** — NULL-concat portability is a judgement call; a wrong NULL treatment would change MD5_tgt/Changed_Flag, but current seeds contain no NULL in these five source ports. Read `MD5(LEAD_CO_MNE || BRANCH_CO_MNE || MIS_DATE || DESCRIPTION || SHORT_NAME)`; lands in `int_m2__exptrans.MD5_tgt`.
-3. **LOW — `m_demo_mapping2` / `LKPTRANS.Lookup condition` (XML line 286)** — Lookup policy/row winner depends on warehouse ordering; a wrong winner changes lookup-derived fields, while duplicate-key fixtures provide only one expected final winner. Read `ID = ID1`; lands in `stg_demo_target1 / int_m2__exptrans join`.
-4. **LOW — `m_demo_mapping2` / `SEQTRANS.Start Value` (XML line 317)** — Sequence state is recovered but row assignment order is a portability decision; a wrong ordering changes keys, and current parity only checks the deterministic seeded rows. Read `0`; lands in `int_m2__rtr_insert.Key / demo_target1_INS.Key`.
-5. **LOW — `m_demo_mapping2` / `SEQTRANS.Current Value` (XML line 320)** — Sequence state is recovered but row assignment order is a portability decision; a wrong ordering changes keys, and current parity only checks the deterministic seeded rows. Read `57`; lands in `int_m2__rtr_insert.Key / demo_target1_INS.Key`.
-6. **LOW — `m_demo_mapping1` / `SEQ_GEN.Start Value` (XML line 432)** — Sequence state is recovered but row assignment order is a portability decision; a wrong ordering changes keys, and current parity only checks the deterministic seeded rows. Read `1`; lands in `demo_target6.ACCT_KEY`.
-7. **LOW — `m_demo_mapping1` / `SEQ_GEN.Current Value` (XML line 435)** — Sequence state is recovered but row assignment order is a portability decision; a wrong ordering changes keys, and current parity only checks the deterministic seeded rows. Read `281`; lands in `demo_target6.ACCT_KEY`.
-8. **LOW — `m_demo_mapping1` / `agg_TRANS.o_ACCT_DESC` (XML line 443)** — Aggregator LAST-row pass-through is inferred with a TX_ID tie-break; a wrong tie-break changes non-aggregate columns, and current data has no tied TX_ID within an account. Read `o_ACCT_DESC`; lands in `int_m1__agg_TRANS.o_ACCT_DESC / demo_target6.ACCT_DESC`.
-9. **LOW — `m_demo_mapping1` / `agg_TRANS.o_crdt_trim` (XML line 445)** — Aggregator LAST-row pass-through is inferred with a TX_ID tie-break; a wrong tie-break changes non-aggregate columns, and current data has no tied TX_ID within an account. Read `o_crdt_trim`; lands in `int_m1__agg_TRANS.o_crdt_trim / demo_target6.CRDT_LN`.
-10. **LOW — `m_demo_mapping1` / `agg_TRANS.CLSR_DT` (XML line 446)** — Aggregator LAST-row pass-through is inferred with a TX_ID tie-break; a wrong tie-break changes non-aggregate columns, and current data has no tied TX_ID within an account. Read `CLSR_DT`; lands in `int_m1__agg_TRANS.CLSR_DT / demo_target6.CLSR_DT`.
-11. **LOW — `m_demo_mapping1` / `agg_TRANS.TX_ID` (XML line 447)** — Aggregator LAST-row pass-through is inferred with a TX_ID tie-break; a wrong tie-break changes non-aggregate columns, and current data has no tied TX_ID within an account. Read `TX_ID`; lands in `int_m1__agg_TRANS.TX_ID / demo_target6.TX_ID`.
-12. **LOW — `m_demo_mapping1` / `agg_TRANS.ACCT_STAT_CD` (XML line 448)** — Aggregator LAST-row pass-through is inferred with a TX_ID tie-break; a wrong tie-break changes non-aggregate columns, and current data has no tied TX_ID within an account. Read `ACCT_STAT_CD`; lands in `int_m1__agg_TRANS.ACCT_STAT_CD / demo_target6.ACCT_STAT_CD`.
-13. **LOW — `m_demo_mapping1` / `agg_TRANS.TX_DTTM` (XML line 449)** — Aggregator LAST-row pass-through is inferred with a TX_ID tie-break; a wrong tie-break changes non-aggregate columns, and current data has no tied TX_ID within an account. Read `TX_DTTM`; lands in `int_m1__agg_TRANS.TX_DTTM / demo_target6.TX_DTTM`.
-14. **LOW — `m_demo_mapping1` / `agg_TRANS.CR8_DT` (XML line 450)** — Aggregator LAST-row pass-through is inferred with a TX_ID tie-break; a wrong tie-break changes non-aggregate columns, and current data has no tied TX_ID within an account. Read `CR8_DT`; lands in `int_m1__agg_TRANS.CR8_DT / demo_target6.CR8_DT`.
-15. **LOW — `m_demo_mapping1` / `agg_TRANS.o_ACCT_ID` (XML line 451)** — Aggregator LAST-row pass-through is inferred with a TX_ID tie-break; a wrong tie-break changes non-aggregate columns, and current data has no tied TX_ID within an account. Read `o_ACCT_ID`; lands in `int_m1__agg_TRANS.o_ACCT_ID / demo_target6.TX_TYPE_CD`.
-16. **LOW — `m_demo_mapping1` / `agg_TRANS.ACCT_ID` (XML line 452)** — Aggregator LAST-row pass-through is inferred with a TX_ID tie-break; a wrong tie-break changes non-aggregate columns, and current data has no tied TX_ID within an account. Read `ACCT_ID`; lands in `int_m1__agg_TRANS.ACCT_ID / demo_target6.ACCT_ID`.
-17. **LOW — `m_demo_mapping1` / `agg_TRANS.o_acc_trim` (XML line 453)** — Aggregator LAST-row pass-through is inferred with a TX_ID tie-break; a wrong tie-break changes non-aggregate columns, and current data has no tied TX_ID within an account. Read `o_acc_trim`; lands in `int_m1__agg_TRANS.o_acc_trim / demo_target6.ACCT_TYP`.
-18. **LOW — `m_demo_mapping1` / `lkp_TRANS2.Lookup condition` (XML line 499)** — Lookup policy/row winner depends on warehouse ordering; a wrong winner changes lookup-derived fields, while duplicate-key fixtures provide only one expected final winner. Read `ACCT_ID = IN_ACCT_ID`; lands in `stg_lkp_demo_source1 / int_m1__exp_TRANS1.FIRST_NM`.
+1. **LOW decision — aggregator last-row pass-through tie-break (10 rows)** — XML lines **443, 445–453** (`o_ACCT_DESC`, `o_crdt_trim`, `CLSR_DT`, `TX_ID`, `ACCT_STAT_CD`, `TX_DTTM`, `CR8_DT`, `o_ACCT_ID`, `ACCT_ID`, `o_acc_trim`). A wrong `TX_ID DESC` winner changes all pass-through values emitted with the aggregate row; current data has no tied `TX_ID` within an account, so parity would not expose the tie-break error. Lands in `int_m1__agg_TRANS` and primarily `demo_target6`.
+2. **LOW decision — mapping1 sequence-generator ordering (2 rows)** — XML lines **432, 435** (`SEQ_GEN.Start Value`, `SEQ_GEN.Current Value`). A wrong row ordering changes `demo_target6.ACCT_KEY`; current controls only exercise the deterministic seeded ordering. Lands in `demo_target6.ACCT_KEY`.
+3. **LOW decision — mapping2 sequence-generator ordering (2 rows)** — XML lines **317, 320** (`SEQTRANS.Start Value`, `SEQTRANS.Current Value`). A wrong insert ordering changes generated keys; current controls only exercise the deterministic seeded ordering. Lands in `int_m2__rtr_insert.Key` and `demo_target1_INS.Key`.
+4. **LOW decision — mapping1 lookup winners/policies (3 rows)** — XML lines **499, 537, 625** (`lkp_TRANS2`, `lkp_TRANS1`, `lkp_TRANS3` conditions). A wrong duplicate-key winner changes lookup-derived `FIRST_NM`, `o_ACCT_ID`, or `CRDT_SCORE`; the controls provide only the selected expected winner and do not independently prove warehouse tie behavior. Lands in `int_m1__exp_TRANS` / `int_m1__exp_TRANS1` and mapping1 targets.
+5. **LOW decision — mapping2 lookup winner/policy (1 row)** — XML line **286** (`LKPTRANS.Lookup condition`). A wrong state-row winner changes `Key` or `LEAD_CO_MNE1`; the duplicate-key fixture provides only one expected winner and does not independently prove tie behavior. Lands in `stg_demo_target1` / `int_m2__exptrans`.
+6. **LOW decision — AES decrypt sentinel (1 row)** — XML line **177** (`MD5_src`). A wrong sentinel or attempted decryption changes the comparison path; current controls prove only final target values and cannot recover the encrypted plaintext. Lands in `int_m2__exptrans.MD5_src`.
+7. **LOW decision — Informatica NULL-as-empty concatenation (1 row)** — XML line **178** (`MD5_tgt`). A wrong NULL treatment changes the digest and Update routing when a source operand is NULL; current seeds contain no NULL in these five operands, so parity would not catch it. Lands in `int_m2__exptrans.MD5_tgt`.
 
-19. **LOW — `m_demo_mapping1` / `lkp_TRANS1.Lookup condition` (XML line 537)** — Lookup policy/row winner depends on warehouse ordering; a wrong winner changes lookup-derived fields, while duplicate-key fixtures provide only one expected final winner. Read `ACCT_ID =  IN_ACCT_ID`; lands in `stg_lkp_demo_source3 / int_m1__exp_TRANS.o_ACCT_ID`.
-20. **LOW — `m_demo_mapping1` / `lkp_TRANS3.Lookup condition` (XML line 625)** — Lookup policy/row winner depends on warehouse ordering; a wrong winner changes lookup-derived fields, while duplicate-key fixtures provide only one expected final winner. Read `CUST_ID = IN_CUST_ID`; lands in `stg_lkp_demo_source2 / int_m1__exp_TRANS1.CRDT_SCORE`.
-21. **MEDIUM — `m_demo_mapping2` / `EXPTRANS.MIS_DATE` (XML line 166)** — Every baseline output value is constant or NULL; a wrong implementation producing the same degenerate value would pass parity. Read `MIS_DATE`; lands in `int_m2__exptrans.MIS_DATE`.
-22. **MEDIUM — `m_demo_mapping2` / `EXPTRANS.o_CREATED_BY` (XML line 180)** — Every baseline output value is constant or NULL; a wrong implementation producing the same degenerate value would pass parity. Read `'IDWUSER'`; lands in `int_m2__exptrans.o_CREATED_BY`.
-23. **MEDIUM — `m_demo_mapping2` / `EXPTRANS.o_CREATED_TIME` (XML line 181)** — Every baseline output value is constant or NULL; a wrong implementation producing the same degenerate value would pass parity. Read `SYSDATE`; lands in `int_m2__exptrans.o_CREATED_TIME`.
-24. **MEDIUM — `m_demo_mapping2` / `EXPTRANS.o_UPDATED_BY` (XML line 182)** — Every baseline output value is constant or NULL; a wrong implementation producing the same degenerate value would pass parity. Read `'IDWUSER'`; lands in `int_m2__exptrans.o_UPDATED_BY`.
-25. **MEDIUM — `m_demo_mapping2` / `EXPTRANS.o_UPDATED_TIME` (XML line 183)** — Every baseline output value is constant or NULL; a wrong implementation producing the same degenerate value would pass parity. Read `SYSDATE`; lands in `int_m2__exptrans.o_UPDATED_TIME`.
-26. **MEDIUM — `m_demo_mapping1` / `exp_TRANS1.CLSR_DT` (XML line 464)** — Every baseline output value is constant or NULL; a wrong implementation producing the same degenerate value would pass parity. Read `CLSR_DT`; lands in `int_m1__exp_TRANS1.CLSR_DT`.
-27. **MEDIUM — `m_demo_mapping1` / `exp_TRANS1.CR8_DT` (XML line 474)** — Every baseline output value is constant or NULL; a wrong implementation producing the same degenerate value would pass parity. Read `CR8_DT`; lands in `int_m1__exp_TRANS1.CR8_DT`.
-28. **MEDIUM — `m_demo_mapping1` / `exp_TRANS1.o_acc_trim` (XML line 475)** — Every baseline output value is constant or NULL; a wrong implementation producing the same degenerate value would pass parity. Read `o_acc_trim`; lands in `int_m1__exp_TRANS1.o_acc_trim`.
-29. **MEDIUM — `m_demo_mapping1` / `exp_TRANS1.o_ACCT_ID` (XML line 477)** — Every baseline output value is constant or NULL; a wrong implementation producing the same value would pass parity. Read `o_ACCT_ID`; lands in `int_m1__exp_TRANS1.o_ACCT_ID`.
-30. **MEDIUM — `m_demo_mapping1` / `exp_TRANS2.o_SELL_ST_DT` (XML line 662)** — Every baseline output value is constant or NULL; a wrong implementation producing the same degenerate value would pass parity. Read `TO_DATE(TO_CHAR(SYSDATE),'DD/MM/YYYY')`; lands in `int_m1__exp_TRANS2.o_SELL_ST_DT / demo_target3.SELL_ST_DT`.
-31. **MEDIUM — `m_demo_mapping3` / `EXPTRANS.Member_Suffix` (XML line 934)** — Every baseline output value is constant or NULL; a wrong implementation producing the same degenerate value would pass parity. Read `Member_Suffix`; lands in `int_m3__exptrans.Member_Suffix`.
-32. **MEDIUM — `m_demo_mapping3` / `EXPTRANS.Gender_Code` (XML line 936)** — Every baseline output value is constant or NULL; a wrong implementation producing the same degenerate value would pass parity. Read `Gender_Code`; lands in `int_m3__exptrans.Gender_Code`.
-33. **MEDIUM — `m_demo_mapping3` / `EXPTRANS.o_Relationship_to_Subscriber_Code_Label` (XML line 943)** — Only the abort fixture exercises the null branch; a wrong hard-failure implementation would be caught only by that fixture, not the normal-seed parity rows. Read `iif(ISNULL(Relationship_to_Subscriber_Code_Label),ABORT(...))`; lands in `int_m3__exptrans.o_Relationship_to_Subscriber_Code_Label`.
+MEDIUM review entries:
 
-The densest transformation instances by expression count are listed in the volume section; they are useful review starting points, but volume is not risk.
+8. **MEDIUM — mapping2 `EXPTRANS.MIS_DATE` (XML line 166)** — Every baseline value is constant or NULL; a wrong implementation producing the same degenerate value would pass parity. Lands in `int_m2__exptrans.MIS_DATE`.
+9. **MEDIUM — mapping2 audit constants/timestamps (XML lines 180–183)** — `o_CREATED_BY`, `o_CREATED_TIME`, `o_UPDATED_BY`, and `o_UPDATED_TIME` are constant or pinned; a wrong implementation producing the same values would pass parity. Lands in `int_m2__exptrans` audit ports.
+10. **MEDIUM — mapping1 `exp_TRANS1` weakly exercised ports (XML lines 464, 474–477)** — `CLSR_DT`, `CR8_DT`, `o_acc_trim`, and `o_ACCT_ID` are constant, NULL, or one-row/weakly varied in controls; a wrong implementation can pass because the observed values do not distinguish alternatives. Lands in `int_m1__exp_TRANS1`.
+11. **MEDIUM — mapping1 pinned business date (XML line 662)** — `o_SELL_ST_DT` is all NULL; a wrong date expression would pass the current parity rows. Lands in `int_m1__exp_TRANS2.o_SELL_ST_DT` / `demo_target3.SELL_ST_DT`.
+12. **MEDIUM — mapping3 `Member_Suffix` and `Gender_Code` (XML lines 934, 936)** — baseline cardinality is weak; a wrong pass-through can produce the same observed values. Lands in `int_m3__exptrans`.
+13. **MEDIUM — mapping3 ABORT branch (XML line 943)** — only the abort fixture exercises the NULL branch; a wrong hard-failure implementation would be caught by the fixture but not normal-seed parity. Lands in `int_m3__exptrans.o_Relationship_to_Subscriber_Code_Label`.
 
 ## 3. Full inventory
 

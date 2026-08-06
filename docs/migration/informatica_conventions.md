@@ -12,6 +12,17 @@ a header comment block for each non-trivial column:
 
 Email tasks are out of scope: dbt has no equivalent notification task.
 
+## Mapping1 router discard
+
+**DEFECT (recovered):** mapping1's `rtr_TRANS` has connected groups
+`demo_target6_GRP` with `ACCT_TYP = 'SB'` and `demo_target5_GRP` with
+`ACCT_TYP != 'SB'` (XML lines 668–669), followed by an unconnected
+`DEFAULT1` group (XML line 670). A NULL `ACCT_TYP` makes both SQL predicates
+evaluate UNKNOWN, so the row is routed to `DEFAULT1` and discarded. This is
+the mechanism observed for `ACCT_ID=1005`: its source `ACCT_TYP` is NULL.
+There is no non-NULL fall-through for these complementary predicates: every
+non-NULL value is either equal to `SB` or not equal to `SB`.
+
 ## Layers and names
 
 The dbt project lives at `dbt/informatica/` and is named

@@ -3,8 +3,10 @@
 /*
   RECOVERED: connected router output group demo_target5_GRP uses
   ACCT_TYP != 'SB'.
-  RECOVERED: NULL ACCT_TYP makes this predicate UNKNOWN and is routed to
-  DEFAULT1, which has no connector; DEFAULT1 is intentionally discarded.
+  RECOVERED: NULL ACCT_TYP makes both complementary router predicates
+  UNKNOWN, so the row is routed to DEFAULT1 (XML lines 668-670), which has
+  no connector and is intentionally discarded. Every non-NULL ACCT_TYP
+  satisfies exactly one of the two connected predicates.
 */
 select *
 from {{ ref('int_m1__exp_TRANS1') }}
