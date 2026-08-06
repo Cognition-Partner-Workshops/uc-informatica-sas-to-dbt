@@ -31,8 +31,9 @@ def main() -> int:
         if not source.is_file():
             print(f"missing legacy seed: {source}", file=sys.stderr)
             return 1
+        drifted = destination.exists() and source.read_bytes() != destination.read_bytes()
         shutil.copyfile(source, destination)
-        if source.read_bytes() != destination.read_bytes():
+        if drifted:
             mismatches.append(filename)
     if mismatches:
         print("seed drift detected: " + ", ".join(mismatches), file=sys.stderr)
