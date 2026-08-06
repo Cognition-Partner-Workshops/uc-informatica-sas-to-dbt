@@ -6,9 +6,19 @@
   Member_Identifier, Member_Suffix, Date_of_Birth, Member_Number, Soc_Number,
   Type_Code, Relationship_to_Subscriber_Code,
   Relationship_to_Subscriber_Code_Label, Effective_Date.
-  DECISION: Although demo_target2 and demo_target21 share physical table
-  demo_target2 in the legacy session, retain two dbt models as required by
-  the milestone and represent each target instance independently.
+  RECOVERED: the export holds one target DEFINITION, TARGET NAME="demo_target2"
+  DATABASETYPE="Oracle", and two INSTANCEs of it, NAME="demo_target2" and
+  NAME="demo_target21", both TRANSFORMATION_NAME="demo_target2" and both
+  TARGETLOADORDER ORDER="1". Each instance is fed by its own router group and
+  has its own SESSIONEXTENSION Relational Writer with its own reject file
+  (demo_target21.bad for this instance, demo_target211.bad for demo_target21),
+  so the legacy writes one physical Oracle table, demo_target2, from two
+  writers.
+  DECISION: dbt has no equivalent of two models writing one relation, so each
+  target instance is modelled as its own table. Rejected alternative: a single
+  unioned model carrying a group/instance discriminator, which changes the
+  shape of the delivered object and cannot be compared per instance against
+  the baseline.
 */
 select
     Title,
