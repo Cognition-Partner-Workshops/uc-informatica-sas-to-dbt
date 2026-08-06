@@ -162,3 +162,6 @@ For Snowflake evidence, run
 queries, and `scripts/parity_snowflake.py` for the unmodified comparator
 against exported Snowflake tables. The complete evidence is recorded in
 `docs/evidence/snowflake_verification.md`.
+
+For a worksheet-oriented source-to-target map and live Snowflake examples,
+see the [Snowflake walkthrough](informatica_snowflake_walkthrough.md).

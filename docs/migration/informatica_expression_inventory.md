@@ -2,6 +2,9 @@
 
 Ground truth: `legacy/informatica/wf_demo_mapping.XML` (1594 lines), parsed programmatically with Python expat. This report changes documentation only; no model SQL, legacy artifact, comparator, baseline, published parity, or published evidence file was changed.
 
+For a live, worksheet-oriented source-boundary and Snowflake walkthrough of
+the mapped expressions, see the [Snowflake walkthrough](informatica_snowflake_walkthrough.md).
+
 ## 1. Headline counts
 
 | Measure | Count |
