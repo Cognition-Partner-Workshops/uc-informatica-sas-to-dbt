@@ -8,6 +8,9 @@
   RECOVERED + defect: the legacy MD5_src local variable decrypts lookup
   LEAD_CO_MNE1 while MD5_tgt hashes source fields, so their value spaces are
   incomparable and every matched row is an Update.
+  RECOVERED: Informatica string concatenation treats NULL operands as empty
+  strings, so the five source ports are coalesced to empty strings before the
+  MD5_tgt digest is calculated.
   DECISION: AES_DECRYPT over the lookup column has no portable equivalent and
   its plaintext is unrecoverable, so MD5_src uses the 'LEGACY_AES_VALUE'
   sentinel. It cannot equal the hexadecimal MD5 digest, preserving the
@@ -26,8 +29,9 @@ with operands as (
         case when p.Key is null then 'Insert' else null end as New_Flag,
         'LEGACY_AES_VALUE' as MD5_src,
         md5(
-            s.LEAD_CO_MNE || s.BRANCH_CO_MNE || s.MIS_DATE ||
-            s.DESCRIPTION || s.SHORT_NAME
+            coalesce(s.LEAD_CO_MNE, '') || coalesce(s.BRANCH_CO_MNE, '') ||
+            coalesce(s.MIS_DATE, '') || coalesce(s.DESCRIPTION, '') ||
+            coalesce(s.SHORT_NAME, '')
         ) as MD5_tgt,
         'IDWUSER' as o_CREATED_BY,
         {{ business_timestamp() }} as o_CREATED_TIME,

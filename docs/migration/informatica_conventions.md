@@ -144,7 +144,7 @@ dbt build --target dev
 ```
 
 Snowflake requires `SNOWFLAKE_PRIVATE_KEY_PATH`; the key is never committed.
-The schema defaults to `DBT_INFORMATICA_20260806` and can be overridden with
+The schema defaults to `DBT_INFORMATICA_RUN20260806` and can be overridden with
 `SNOWFLAKE_SCHEMA`.
 
 The unmodified `tools/parity_diff.py` comparator requires `pandas<3` because

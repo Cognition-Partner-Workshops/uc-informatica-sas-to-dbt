@@ -41,7 +41,7 @@ def synchronize_ordinal_seed(source: Path, destination: Path) -> bool:
         row + [str(seed_row)]
         for seed_row, row in enumerate(source_rows[1:], start=1)
     ]
-    drifted = True
+    drifted = False
     if destination.exists():
         actual_rows = read_csv(destination)
         stripped_rows = [row[:-1] for row in actual_rows[1:]]
