@@ -2,96 +2,111 @@ version: 2
 
 models:
   - name: demo_target2
+    description: "Recovered demo_target2 target instance for RTRTRANS NEWGROUP1."
     columns:
       - name: Title
+        description: "RECOVERED: demo_target2 TARGETFIELD Title; DECISION: accepted domain inferred from observed baseline values because XML declares no domain."
         tests:
-          - not_null
           - accepted_values:
               arguments:
                 values: ['MR', 'MS']
       - name: Gender
+        description: "RECOVERED: demo_target2 TARGETFIELD Gender; DECISION: accepted domain inferred from observed baseline values because XML declares no domain."
         tests:
-          - not_null
           - accepted_values:
               arguments:
                 values: ['F', 'M']
       - name: First_Name
-        tests: [not_null]
+        description: "RECOVERED: demo_target2 TARGETFIELD First_Name; target definition declares NULLABLE=\"NULL\"."
       - name: Middle_Name
-        tests: [not_null]
+        description: "RECOVERED: demo_target2 TARGETFIELD Middle_Name; target definition declares NULLABLE=\"NULL\"."
       - name: Last_Name
-        tests: [not_null]
+        description: "RECOVERED: demo_target2 TARGETFIELD Last_Name; target definition declares NULLABLE=\"NULL\"."
       - name: Member_Identifier
+        description: "RECOVERED: demo_target2 TARGETFIELD Member_Identifier is NULLABLE=NOTNULL and KEYTYPE=PRIMARY KEY."
         tests: [not_null, unique]
+      - name: Member_Suffix
+        description: "RECOVERED: demo_target2 TARGETFIELD Member_Suffix; target definition declares NULLABLE=\"NULL\"."
       - name: Date_of_Birth
-        tests: [not_null]
+        description: "RECOVERED: demo_target2 TARGETFIELD Date_of_Birth; target definition declares NULLABLE=\"NULL\"."
       - name: Member_Number
-        tests: [not_null]
-      - name: Type_Code
-        tests:
-          - not_null
-          - accepted_values:
-              arguments:
-                values: [1.0, 2.0]
-      - name: Relationship_to_Subscriber_Code
-        tests:
-          - not_null
-          - accepted_values:
-              arguments:
-                values: [1.0, 2.0, 18.0, 19.0]
-      - name: Relationship_to_Subscriber_Code_Label
-        tests:
-          - not_null
-          - accepted_values:
-              arguments:
-                values: ['CHILD', 'OTHER', 'SELF', 'SPOUSE']
-      - name: Effective_Date
-        tests: [not_null]
-  - name: demo_target21
-    columns:
-      - name: Title
-        tests:
-          - not_null
-          - accepted_values:
-              arguments:
-                values: ['MR', 'MS']
-      - name: Gender
-        tests:
-          - not_null
-          - accepted_values:
-              arguments:
-                values: ['F', 'M']
-      - name: First_Name
-        tests: [not_null]
-      - name: Middle_Name
-        tests: [not_null]
-      - name: Last_Name
-        tests: [not_null]
-      - name: Member_Identifier
-        tests: [not_null, unique]
-      - name: Date_of_Birth
-        tests: [not_null]
-      - name: Member_Number
-        tests: [not_null]
+        description: "RECOVERED: demo_target2 TARGETFIELD Member_Number; target definition declares NULLABLE=\"NULL\"."
       - name: Soc_Number
-        tests: [not_null]
+        description: "RECOVERED: demo_target2 TARGETFIELD Soc_Number; DECISION: singular test asserts NULL because NEWGROUP1 requires a NULL source SSN."
       - name: Type_Code
+        description: "RECOVERED: demo_target2 TARGETFIELD Type_Code is guaranteed by the SQ override filter; DECISION: accepted domain inferred from observed baseline values because XML declares no domain."
         tests:
           - not_null
           - accepted_values:
               arguments:
                 values: [1.0, 2.0]
       - name: Relationship_to_Subscriber_Code
+        description: "RECOVERED: demo_target2 TARGETFIELD Relationship_to_Subscriber_Code; target definition declares NULLABLE=\"NULL\"; DECISION: accepted domain inferred from observed baseline values because XML declares no domain."
         tests:
-          - not_null
           - accepted_values:
               arguments:
                 values: [1.0, 2.0, 18.0, 19.0]
       - name: Relationship_to_Subscriber_Code_Label
+        description: "RECOVERED: demo_target2 TARGETFIELD Relationship_to_Subscriber_Code_Label is guaranteed by the EXPTRANS ABORT; DECISION: accepted domain inferred from observed baseline values because XML declares no domain."
         tests:
           - not_null
           - accepted_values:
               arguments:
                 values: ['CHILD', 'OTHER', 'SELF', 'SPOUSE']
       - name: Effective_Date
+        description: "RECOVERED: demo_target2 TARGETFIELD Effective_Date; target definition declares NULLABLE=\"NULL\"."
+  - name: demo_target21
+    description: "Recovered demo_target21 target instance for RTRTRANS NEWGROUP2; physical legacy table is demo_target2."
+    columns:
+      - name: Title
+        description: "RECOVERED: demo_target21 TARGETFIELD Title; DECISION: accepted domain inferred from observed baseline values because XML declares no domain."
+        tests:
+          - accepted_values:
+              arguments:
+                values: ['MR', 'MS']
+      - name: Gender
+        description: "RECOVERED: demo_target21 TARGETFIELD Gender; DECISION: accepted domain inferred from observed baseline values because XML declares no domain."
+        tests:
+          - accepted_values:
+              arguments:
+                values: ['F', 'M']
+      - name: First_Name
+        description: "RECOVERED: demo_target21 TARGETFIELD First_Name; target definition declares NULLABLE=\"NULL\"."
+      - name: Middle_Name
+        description: "RECOVERED: demo_target21 TARGETFIELD Middle_Name; target definition declares NULLABLE=\"NULL\"."
+      - name: Last_Name
+        description: "RECOVERED: demo_target21 TARGETFIELD Last_Name; target definition declares NULLABLE=\"NULL\"."
+      - name: Member_Identifier
+        description: "RECOVERED: demo_target21 TARGETFIELD Member_Identifier is NULLABLE=NOTNULL and KEYTYPE=PRIMARY KEY."
+        tests: [not_null, unique]
+      - name: Member_Suffix
+        description: "RECOVERED: demo_target21 TARGETFIELD Member_Suffix; target definition declares NULLABLE=\"NULL\"."
+      - name: Date_of_Birth
+        description: "RECOVERED: demo_target21 TARGETFIELD Date_of_Birth; target definition declares NULLABLE=\"NULL\"."
+      - name: Member_Number
+        description: "RECOVERED: demo_target21 TARGETFIELD Member_Number; target definition declares NULLABLE=\"NULL\"."
+      - name: Soc_Number
+        description: "RECOVERED: demo_target21 TARGETFIELD Soc_Number is guaranteed non-null by RTRTRANS NEWGROUP2."
         tests: [not_null]
+      - name: Type_Code
+        description: "RECOVERED: demo_target21 TARGETFIELD Type_Code is guaranteed by the SQ override filter; DECISION: accepted domain inferred from observed baseline values because XML declares no domain."
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [1.0, 2.0]
+      - name: Relationship_to_Subscriber_Code
+        description: "RECOVERED: demo_target21 TARGETFIELD Relationship_to_Subscriber_Code; target definition declares NULLABLE=\"NULL\"; DECISION: accepted domain inferred from observed baseline values because XML declares no domain."
+        tests:
+          - accepted_values:
+              arguments:
+                values: [1.0, 2.0, 18.0, 19.0]
+      - name: Relationship_to_Subscriber_Code_Label
+        description: "RECOVERED: demo_target21 TARGETFIELD Relationship_to_Subscriber_Code_Label is guaranteed by the EXPTRANS ABORT; DECISION: accepted domain inferred from observed baseline values because XML declares no domain."
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['CHILD', 'OTHER', 'SELF', 'SPOUSE']
+      - name: Effective_Date
+        description: "RECOVERED: demo_target21 TARGETFIELD Effective_Date; target definition declares NULLABLE=\"NULL\"."

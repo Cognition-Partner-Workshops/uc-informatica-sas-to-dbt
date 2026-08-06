@@ -25,8 +25,6 @@ select
     Original_Effective_Date,
     Relationship_to_Subscriber_Code,
     Relationship_to_Subscriber_Code_Label,
-    case
-        when Relationship_to_Subscriber_Code_Label is null then null
-        else Relationship_to_Subscriber_Code_Label
-    end as o_Relationship_to_Subscriber_Code_Label
+    Relationship_to_Subscriber_Code_Label
+        as o_Relationship_to_Subscriber_Code_Label
 from {{ ref('int_m3__sq_demo_source2') }}
