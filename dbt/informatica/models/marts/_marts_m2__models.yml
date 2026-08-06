@@ -2,7 +2,7 @@ version: 2
 
 models:
   - name: demo_target1_ins
-    description: "RECOVERED: m_demo_mapping2 Insert target instance, emitted as a dbt table."
+    description: "RECOVERED: m_demo_mapping2 Insert target instance, emitted as a dbt table. DECISION: demo_target1 is one target definition with two instances writing one physical table; dbt has no two-writers-to-one-table concept, so this instance is a separate model. Rejected alternative: a unioned model with an invented row-operation column, which would break per-instance parity against the two baseline CSVs."
     columns:
       - name: Key
         description: "RECOVERED: SEQTRANS-generated insert key."
@@ -46,7 +46,7 @@ models:
       - name: END_DATE
         description: "RECOVERED: unconnected target port; typed NULL."
   - name: demo_target1_upd
-    description: "RECOVERED: m_demo_mapping2 Update target instance, emitted as a dbt table."
+    description: "RECOVERED: m_demo_mapping2 Update target instance, emitted as a dbt table. DECISION: demo_target1 is one target definition with two instances writing one physical table; dbt has no two-writers-to-one-table concept, so this instance is a separate model. Rejected alternative: a unioned model with an invented row-operation column, which would break per-instance parity against the two baseline CSVs."
     columns:
       - name: Key
         description: "RECOVERED: LKPTRANS target-state key."
