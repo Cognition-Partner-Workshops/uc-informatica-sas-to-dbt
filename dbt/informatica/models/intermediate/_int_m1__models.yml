@@ -1,0 +1,146 @@
+version: 2
+
+models:
+  - name: int_m1__sq_demo_source4
+    description: "RECOVERED: positional Source Qualifier override for mapping 1."
+    columns:
+      - name: ACCT_ID
+        description: "RECOVERED: source4 account ID."
+      - name: ACCT_TYP
+        description: "RECOVERED: source4 account type."
+      - name: ACCT_DESC
+        description: "RECOVERED: source4 account description."
+      - name: CRDT_LN
+        description: "RECOVERED: source4 credit line."
+      - name: CR8_DT
+        description: "RECOVERED: positional SYSTIMESTAMP binding, not source4 CR8_DT."
+      - name: CLSR_DT
+        description: "RECOVERED: source4 close date."
+      - name: ACCT_STAT_CD
+        description: "RECOVERED: source4 account status."
+      - name: TX_ID
+        description: "RECOVERED: source3 transaction ID."
+      - name: LAST_NM
+        description: "RECOVERED: source3 last name."
+      - name: TX_DTTM
+        description: "RECOVERED: source3 transaction timestamp."
+      - name: TX_AMT
+        description: "RECOVERED: source3 transaction amount."
+      - name: BAL_AMT
+        description: "RECOVERED: source3 balance amount."
+      - name: CUST_ID
+        description: "RECOVERED: source3 customer ID."
+  - name: int_m1__exp_TRANS
+    description: "RECOVERED: mapping 1 exp_TRANS expression stage."
+    columns:
+      - name: ACCT_ID
+        description: "RECOVERED: account ID pass-through."
+      - name: ACCT_TYP
+        description: "RECOVERED: account type pass-through."
+      - name: o_acc_trim
+        description: "RECOVERED: RTRIM(ACCT_TYP)."
+      - name: o_crdt_trim
+        description: "RECOVERED: LTRIM(CRDT_LN)."
+      - name: o_ACCT_ID
+        description: "RECOVERED: unconnected lkp_TRANS1 return TX_TYPE_CD."
+      - name: CR8_DT
+        description: "RECOVERED: positional SQ timestamp."
+      - name: CLSR_DT
+        description: "RECOVERED: close date pass-through."
+      - name: ACCT_STAT_CD
+        description: "RECOVERED: account status pass-through."
+      - name: TX_ID
+        description: "RECOVERED: transaction ID pass-through."
+      - name: LAST_NM
+        description: "RECOVERED: last name pass-through."
+      - name: TX_DTTM
+        description: "RECOVERED: transaction timestamp pass-through."
+      - name: TX_AMT
+        description: "RECOVERED: transaction amount pass-through."
+      - name: BAL_AMT
+        description: "RECOVERED: balance pass-through."
+      - name: ACCT_DESC
+        description: "RECOVERED: account description pass-through."
+      - name: CUST_ID
+        description: "RECOVERED: customer ID pass-through."
+  - name: int_m1__exp_TRANS1
+    description: "RECOVERED: mapping 1 expression and connected lookup stage."
+    columns:
+      - name: ACCT_ID
+        description: "RECOVERED: account ID."
+      - name: FIRST_NM
+        description: "RECOVERED: lkp_TRANS2 FIRST_NM by ACCT_ID."
+      - name: CRDT_SCORE
+        description: "RECOVERED: lkp_TRANS3 CRDT_SCORE by CUST_ID."
+      - name: o_ACCT_DESC
+        description: "RECOVERED: RTRIM(ACCT_DESC)."
+      - name: o_acc_trim
+        description: "RECOVERED: exp_TRANS trimmed account type."
+      - name: o_crdt_trim
+        description: "RECOVERED: exp_TRANS trimmed credit line."
+      - name: o_ACCT_ID
+        description: "RECOVERED: exp_TRANS lookup return value."
+      - name: CR8_DT
+        description: "RECOVERED: timestamp pass-through."
+      - name: CLSR_DT
+        description: "RECOVERED: close date pass-through."
+      - name: ACCT_STAT_CD
+        description: "RECOVERED: status pass-through."
+      - name: TX_ID
+        description: "RECOVERED: transaction ID."
+      - name: LAST_NM
+        description: "RECOVERED: source3 last name."
+      - name: TX_DTTM
+        description: "RECOVERED: transaction timestamp."
+      - name: TX_AMT
+        description: "RECOVERED: transaction amount."
+      - name: BAL_AMT
+        description: "RECOVERED: source3 balance."
+  - name: int_m1__rtr_TRANS_demo_target6_GRP
+    description: "RECOVERED: router connected group for demo_target6."
+  - name: int_m1__rtr_TRANS_demo_target5_GRP
+    description: "RECOVERED: router connected group for demo_target5."
+  - name: int_m1__agg_TRANS
+    description: "RECOVERED: ACCT_ID aggregator for the demo_target6 router group."
+    columns:
+      - name: ACCT_ID
+        description: "RECOVERED: sole GROUP BY port."
+      - name: o_TX_AMT
+        description: "RECOVERED: SUM(TX_AMT)."
+      - name: o_ACCT_DESC
+        description: "RECOVERED: aggregator pass-through; DECISION: highest TX_ID row."
+      - name: o_acc_trim
+        description: "RECOVERED: aggregator pass-through; DECISION: highest TX_ID row."
+      - name: o_crdt_trim
+        description: "RECOVERED: aggregator pass-through; DECISION: highest TX_ID row."
+      - name: CLSR_DT
+        description: "RECOVERED: aggregator pass-through; DECISION: highest TX_ID row."
+      - name: TX_ID
+        description: "RECOVERED: aggregator pass-through; DECISION: highest TX_ID row."
+      - name: ACCT_STAT_CD
+        description: "RECOVERED: aggregator pass-through; DECISION: highest TX_ID row."
+      - name: TX_DTTM
+        description: "RECOVERED: aggregator pass-through; DECISION: highest TX_ID row."
+      - name: CR8_DT
+        description: "RECOVERED: aggregator pass-through; DECISION: highest TX_ID row."
+      - name: o_ACCT_ID
+        description: "RECOVERED: aggregator pass-through; DECISION: highest TX_ID row."
+  - name: int_m1__exp_TRANS2
+    description: "RECOVERED: mapping 1 flat-file product expression stage."
+    columns:
+      - name: PRODUCT_ID
+        description: "RECOVERED: product ID pass-through."
+      - name: PRODUCT_NM
+        description: "RECOVERED: product name pass-through."
+      - name: PRODUCT_NO
+        description: "RECOVERED: product number pass-through."
+      - name: COLOR
+        description: "RECOVERED: color pass-through."
+      - name: STD_COST
+        description: "RECOVERED: VARCHAR standard cost pass-through."
+      - name: LIST_PRICE
+        description: "RECOVERED: VARCHAR list price pass-through."
+      - name: o_SELL_ST_DT
+        description: "RECOVERED: legacy TO_DATE/TO_CHAR defect yields NULL."
+      - name: o_SELL_ED_DT
+        description: "RECOVERED: DD/MM/YYYY SELL_ED_DT conversion."

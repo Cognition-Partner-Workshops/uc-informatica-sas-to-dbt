@@ -1,0 +1,97 @@
+version: 2
+
+models:
+  - name: demo_target3
+    description: "RECOVERED: mapping 1 product target."
+    columns:
+      - name: PRODUCT_ID
+        description: "RECOVERED: product key pass-through."
+        tests: [not_null, unique]
+      - name: PRODUCT_NM
+        description: "RECOVERED: product name pass-through."
+        tests: [not_null]
+      - name: PRODUCT_NO
+        description: "RECOVERED: product number pass-through."
+        tests: [not_null]
+      - name: COLOR
+        description: "RECOVERED: color pass-through."
+        tests: [not_null]
+      - name: STD_COST
+        description: "RECOVERED: VARCHAR standard cost pass-through."
+        tests: [not_null]
+      - name: LIST_PRICE
+        description: "RECOVERED: VARCHAR list price pass-through."
+        tests: [not_null]
+      - name: SELL_ST_DT
+        description: "RECOVERED: DATE port whose legacy expression yields NULL; int_m1__exp_TRANS2 emits cast(null as date). Parity comparison requires pandas<3 as an environment requirement, not a modeling decision."
+      - name: SELL_ED_DT
+        description: "RECOVERED: parsed DD/MM/YYYY end date."
+        tests: [not_null]
+  - name: demo_target5
+    description: "RECOVERED: mapping 1 non-SB account target."
+    columns:
+      - name: ACCT_ID
+        description: "RECOVERED: account key."
+        tests: [not_null, unique]
+      - name: FIRST_NM
+        description: "RECOVERED: connected lkp_TRANS2 first name; recovered lookup state covers every routed ACCT_ID, so the connected lookup never misses."
+        tests: [not_null]
+      - name: LAST_NM
+        description: "RECOVERED: source3 last name."
+        tests: [not_null]
+      - name: BAL_AMT
+        description: "RECOVERED: source3 balance amount."
+        tests: [not_null]
+      - name: CRDT_SCORE
+        description: "RECOVERED: connected lkp_TRANS3 credit score; recovered lookup state covers every routed CUST_ID, so the connected lookup never misses."
+        tests: [not_null]
+  - name: demo_target6
+    description: "RECOVERED: mapping 1 SB account aggregated target."
+    columns:
+      - name: ACCT_ID
+        description: "RECOVERED: account key."
+        tests: [not_null, unique]
+      - name: ACCT_TYP
+        description: "RECOVERED: o_acc_trim; router guarantees SB."
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['SB']
+      - name: ACCT_DESC
+        description: "RECOVERED: trimmed account description."
+        tests: [not_null]
+      - name: CR8_DT
+        description: "RECOVERED: SYSTIMESTAMP positional binding."
+        tests: [not_null]
+      - name: CRDT_LN
+        description: "RECOVERED: left-trimmed credit line."
+        tests: [not_null]
+      - name: CLSR_DT
+        description: "RECOVERED: source4 close date."
+      - name: ACCT_STAT_CD
+        description: "RECOVERED: source4 account status domain."
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['A', 'D', 'P']
+      - name: TX_ID
+        description: "RECOVERED: highest-TX_ID last-row pass-through."
+        tests: [not_null]
+      - name: ACCT_KEY
+        description: "DECISION: sequence current value 281 represented by dense rank."
+        tests: [not_null, unique]
+      - name: TX_DTTM
+        description: "RECOVERED: highest-TX_ID last-row timestamp."
+        tests: [not_null]
+      - name: TX_AMT
+        description: "RECOVERED: SUM(TX_AMT)."
+        tests: [not_null]
+      - name: TX_TYPE_CD
+        description: "RECOVERED: unconnected lookup return via o_ACCT_ID."
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['DR', 'CR', 'TR', 'NA']
