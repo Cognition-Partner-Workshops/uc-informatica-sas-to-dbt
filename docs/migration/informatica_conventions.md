@@ -69,6 +69,55 @@ The actual duplicate winners prove the rule matches the baseline:
 * `demo_target1`, `ID=REC00002`: `Key DESC, SEED_ROW DESC` selects key `99`,
   matching the baseline's highest-key winner and physical-row tie-break rule.
 
+## Datatype authority and legacy target-definition defects
+
+**DEFECT (recovered):** the XML target definitions contain datatype metadata
+that contradicts both the transformation ports and the values produced by the
+mapping. The verified XML evidence includes:
+
+```text
+demo_target6.TX_AMT: TARGETFIELD datatype=number(p,s),
+PRECISION=38, SCALE=0
+demo_target5.BAL_AMT: TARGETFIELD datatype=number(p,s),
+PRECISION=38, SCALE=0
+demo_target5.FIRST_NM/LAST_NM: TARGETFIELD datatype=varchar2,
+PRECISION=38
+demo_target3.PRODUCT_ID/PRODUCT_NO: TARGETFIELD datatype=number,
+PRECISION=15, SCALE=0
+demo_target6.CRDT_LN: TARGETFIELD datatype=number,
+PRECISION=38, SCALE=0
+```
+
+These declarations are demonstrably inconsistent with the recovered data:
+
+* The mapping's aggregator produces `demo_target6.TX_AMT =
+  2031.2399999999998`, while honoring XML scale zero would truncate it to
+  `2031`.
+* `demo_target5.BAL_AMT` is `86284.15`, which also contradicts scale zero.
+* `demo_target3.PRODUCT_ID` contains `PRD0001` and `PRODUCT_NO` contains
+  `P001`, neither of which is numeric. The `SQ_demo_source5` ports declare
+  `PRODUCT_ID`, `PRODUCT_NM`, `PRODUCT_NO`, `STD_COST`, and `LIST_PRICE` as
+  `string`.
+* `demo_target6.CRDT_LN` is passed through from source text such as
+  `  8000` using the mapping's trim expression, so it is a string port despite
+  the numeric target declaration.
+
+**DECISION:** the authority for a mart column's datatype is the transformation
+port type plus the baseline control, not the target definition's declared
+Oracle type. Following the contradictory target declarations would truncate
+two numeric values and reject non-numeric values in another column. This is a
+legacy defect reproduced and documented, not corrected in the migrated SQL.
+
+## Snowflake MINUS limitation
+
+**LIMITATION:** `scripts/load_baseline_snowflake.py` derives each baseline
+table's column types from the matching migrated table's
+`INFORMATION_SCHEMA.COLUMNS`. This is the right choice for making a
+value-level Snowflake `MINUS` meaningful, but it means the warehouse-side
+`MINUS` proves values, not declared types. The DuckDB comparator and dbt tests
+provide the remaining validation; a zero-row `MINUS` must not be interpreted
+as proof that the declared datatypes match.
+
 ## Workflow equivalence
 
 The recovered workflow is sequential:
