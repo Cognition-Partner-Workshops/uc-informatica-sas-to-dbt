@@ -98,5 +98,11 @@ Snowflake requires `SNOWFLAKE_PRIVATE_KEY_PATH`; the key is never committed.
 The schema defaults to `DBT_INFORMATICA_20260806` and can be overridden with
 `SNOWFLAKE_SCHEMA`.
 
+The unmodified `tools/parity_diff.py` comparator requires `pandas<3` because
+an all-NULL DATE column can be normalized differently under pandas 3. This is
+an environment requirement of the comparator, not a modelling constraint.
+Use the pinned interpreter with `PARITY_PYTHON=/home/ubuntu/venv-p2/bin/python
+./run_parity.sh`.
+
 After child mart models exist, run `./run_parity.sh` from the project
 directory to compare the DuckDB target tables with `baseline/informatica/`.

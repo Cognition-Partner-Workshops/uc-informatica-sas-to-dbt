@@ -2,7 +2,7 @@
 set -e
 
 cd "$(dirname "$0")/../.."
-python3 tools/parity_diff.py \
+"${PARITY_PYTHON:-python3}" tools/parity_diff.py \
   --baseline baseline/informatica \
   --actual dbt/informatica/dev.duckdb \
   --schema main \
