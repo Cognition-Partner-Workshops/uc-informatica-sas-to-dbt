@@ -1,0 +1,19 @@
+version: 2
+
+models:
+  - name: int_m3__sq_demo_source2
+    columns:
+      - name: Member_Type_Code
+        tests: [not_null]
+  - name: int_m3__exptrans
+    columns:
+      - name: o_Relationship_to_Subscriber_Code_Label
+        tests: [not_null]
+  - name: int_m3__rtr_newgroup1
+  - name: int_m3__rtr_newgroup2
+    columns:
+      - name: Social_Security_Number
+        tests: [not_null]
+  - name: int_m3__abort_fixture
+    config:
+      materialized: ephemeral
