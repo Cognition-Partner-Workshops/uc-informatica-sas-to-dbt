@@ -1,0 +1,56 @@
+# Parity Report
+
+Baseline: `/home/ubuntu/repos/uc-informatica-sas-to-dbt/baseline/informatica`  |  Actual: `/home/ubuntu/evidence/snowflake_actual`
+
+## DEMO_TARGET1_INS
+- rows: baseline=4 actual=4
+- columns compared: 14
+- result: **MATCH** (all values within tolerance)
+
+## DEMO_TARGET1_UPD
+- rows: baseline=3 actual=3
+- columns compared: 14
+- result: **MATCH** (all values within tolerance)
+
+## DEMO_TARGET2
+- rows: baseline=3 actual=3
+- columns compared: 14
+- result: **MATCH** (all values within tolerance)
+
+## DEMO_TARGET21
+- rows: baseline=3 actual=3
+- columns compared: 14
+- result: **MATCH** (all values within tolerance)
+
+## DEMO_TARGET3
+- rows: baseline=4 actual=4
+- columns compared: 8
+- result: **MATCH** (all values within tolerance)
+
+## DEMO_TARGET5
+- rows: baseline=2 actual=2
+- columns compared: 5
+- result: **MATCH** (all values within tolerance)
+
+## DEMO_TARGET6
+- rows: baseline=2 actual=2
+- columns compared: 12
+- result: **MATCH** (all values within tolerance)
+
+**Overall: PARITY VERIFIED**
+SELECT * FROM "DBT_INFORMATICA_RUN20260806"."DEMO_TARGET1_INS"
+EXPORTED demo_target1_INS rows=4 path=/home/ubuntu/evidence/snowflake_actual/demo_target1_INS.csv
+SELECT * FROM "DBT_INFORMATICA_RUN20260806"."DEMO_TARGET1_UPD"
+EXPORTED demo_target1_UPD rows=3 path=/home/ubuntu/evidence/snowflake_actual/demo_target1_UPD.csv
+SELECT * FROM "DBT_INFORMATICA_RUN20260806"."DEMO_TARGET2"
+EXPORTED demo_target2 rows=3 path=/home/ubuntu/evidence/snowflake_actual/demo_target2.csv
+SELECT * FROM "DBT_INFORMATICA_RUN20260806"."DEMO_TARGET21"
+EXPORTED demo_target21 rows=3 path=/home/ubuntu/evidence/snowflake_actual/demo_target21.csv
+SELECT * FROM "DBT_INFORMATICA_RUN20260806"."DEMO_TARGET3"
+EXPORTED demo_target3 rows=4 path=/home/ubuntu/evidence/snowflake_actual/demo_target3.csv
+SELECT * FROM "DBT_INFORMATICA_RUN20260806"."DEMO_TARGET5"
+EXPORTED demo_target5 rows=2 path=/home/ubuntu/evidence/snowflake_actual/demo_target5.csv
+SELECT * FROM "DBT_INFORMATICA_RUN20260806"."DEMO_TARGET6"
+EXPORTED demo_target6 rows=2 path=/home/ubuntu/evidence/snowflake_actual/demo_target6.csv
+RUN_COMPARATOR /home/ubuntu/venv-dbt/bin/python /home/ubuntu/repos/uc-informatica-sas-to-dbt/tools/parity_diff.py --baseline /home/ubuntu/repos/uc-informatica-sas-to-dbt/baseline/informatica --actual /home/ubuntu/evidence/snowflake_actual --keys /home/ubuntu/repos/uc-informatica-sas-to-dbt/tools/keys/informatica_keys.json --report docs/parity/informatica_parity_snowflake.md
+COMPARATOR_EXIT_CODE 0

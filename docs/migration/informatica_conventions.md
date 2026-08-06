@@ -106,3 +106,10 @@ Use the pinned interpreter with `PARITY_PYTHON=/home/ubuntu/venv-p2/bin/python
 
 After child mart models exist, run `./run_parity.sh` from the project
 directory to compare the DuckDB target tables with `baseline/informatica/`.
+
+For Snowflake evidence, run
+`scripts/load_baseline_snowflake.py` to load type-matched baseline tables,
+`scripts/verify_snowflake.py` for explicit row-count/MINUS/object/history
+queries, and `scripts/parity_snowflake.py` for the unmodified comparator
+against exported Snowflake tables. The complete evidence is recorded in
+`docs/evidence/snowflake_verification.md`.
