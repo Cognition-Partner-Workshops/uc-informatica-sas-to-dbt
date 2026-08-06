@@ -1,7 +1,7 @@
-ACCT_ID,TX_TYPE_CD,TX_TYPE_DESC
-1001,DR,Credit posting
-1002,TR,Debit posting first
-1002,DR,Debit posting last
-1003,DR,Debit posting
-1004,CR,Credit posting
-1005,NA,No activity
+ACCT_ID,TX_TYPE_CD,TX_TYPE_DESC,SEED_ROW
+1001,DR,Credit posting,1
+1002,TR,Debit posting first,2
+1002,DR,Debit posting last,3
+1003,DR,Debit posting,4
+1004,CR,Credit posting,5
+1005,NA,No activity,6

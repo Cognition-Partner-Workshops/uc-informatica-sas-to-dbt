@@ -3,14 +3,15 @@
 /*
   RECOVERED: columns are direct target-field pass-throughs from the
   demo_target1 TARGET and TARGETFIELD elements in wf_demo_mapping.XML.
-  DECISION: __deterministic_row_order uses descending "KEY" and then
-  descending data values instead of physical file order. This reproduces
-  Informatica's Use Any Value behavior as resolved by the baseline.
-  RECOVERED: mapping 2 lookup policy is "Use Any Value" on ID.
+  DECISION: SEED_ROW is a warehouse-portable ordinal generated from the
+  legacy file's physical data-row order; physical file order is not otherwise
+  representable in a warehouse table.
+  RECOVERED: mapping 2's "Use Any Value" policy selects highest Key per ID,
+  with SEED_ROW desc as the recovered physical-row tie-breaker.
 */
 with ranked as (
     select
-        "Key" as "KEY",
+        Key,
         LEAD_CO_MNE,
         BRANCH_CO_MNE,
         MIS_DATE,
@@ -24,27 +25,17 @@ with ranked as (
         ACTIVE_FLAG,
         START_DATE,
         END_DATE,
+        SEED_ROW,
         row_number() over (
             partition by ID
             order by
-                "Key" desc nulls last,
-                LEAD_CO_MNE desc nulls last,
-                BRANCH_CO_MNE desc nulls last,
-                MIS_DATE desc nulls last,
-                DESCRIPTION desc nulls last,
-                SHORT_NAME desc nulls last,
-                CREATED_BY desc nulls last,
-                CREATED_TIME desc nulls last,
-                UPDATED_BY desc nulls last,
-                UPDATED_TIME desc nulls last,
-                ACTIVE_FLAG desc nulls last,
-                START_DATE desc nulls last,
-                END_DATE desc nulls last
+                Key desc,
+                SEED_ROW desc
         ) as __deterministic_row_order
     from {{ ref('demo_target1') }}
 )
 select
-    "KEY",
+    Key,
     LEAD_CO_MNE,
     BRANCH_CO_MNE,
     MIS_DATE,

@@ -92,6 +92,7 @@ seeds:
         AGE: VARCHAR
         DOB: VARCHAR
         CUST_TYP: VARCHAR
+        SEED_ROW: BIGINT
     lkp_demo_source2:
       +column_types:
         CUST_ID: BIGINT
@@ -101,11 +102,13 @@ seeds:
         MAX_CRDT_LMT: BIGINT
         CURR_CRDT_BAL_AMT: DOUBLE
         AVG_INC_AMT: DOUBLE
+        SEED_ROW: BIGINT
     lkp_demo_source3:
       +column_types:
         ACCT_ID: BIGINT
         TX_TYPE_CD: VARCHAR
         TX_TYPE_DESC: VARCHAR
+        SEED_ROW: BIGINT
     demo_target1:
       +column_types:
         Key: DOUBLE
@@ -122,3 +125,4 @@ seeds:
         ACTIVE_FLAG: VARCHAR
         START_DATE: TIMESTAMP
         END_DATE: TIMESTAMP
+        SEED_ROW: BIGINT

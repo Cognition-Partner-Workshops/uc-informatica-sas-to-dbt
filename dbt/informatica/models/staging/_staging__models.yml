@@ -100,4 +100,4 @@ models:
         description: "RECOVERED: LKPTRANS lookup key ID = ID1."
         tests: [not_null, unique]
       - name: KEY
-        description: "RECOVERED: LKPTRANS lookup output Key; DECISION: highest-key deterministic Use Any Value resolution."
+        description: "RECOVERED: LKPTRANS lookup output Key; DECISION: highest-key Use Any Value resolution with SEED_ROW tie-break."

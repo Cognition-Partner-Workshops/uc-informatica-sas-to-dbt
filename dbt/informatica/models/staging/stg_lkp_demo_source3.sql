@@ -3,20 +3,21 @@
 /*
   RECOVERED: columns are direct lookup SOURCEFIELD pass-throughs from
   lkp_demo_source3 in wf_demo_mapping.XML.
-  DECISION: __deterministic_row_order uses descending lexicographic values
-  instead of physical file order, which is unavailable in Snowflake.
-  RECOVERED: the lookup policy is "Use Last Value" on ACCT_ID.
+  DECISION: SEED_ROW is a warehouse-portable ordinal generated from the
+  legacy file's physical data-row order; physical file order is not otherwise
+  representable in a warehouse table.
+  RECOVERED: the "Use Last Value" lookup policy orders by SEED_ROW desc on
+  ACCT_ID.
 */
 with ranked as (
     select
         ACCT_ID,
         TX_TYPE_CD,
         TX_TYPE_DESC,
+        SEED_ROW,
         row_number() over (
             partition by ACCT_ID
-            order by
-                TX_TYPE_DESC desc nulls last,
-                TX_TYPE_CD desc nulls last
+            order by SEED_ROW desc
         ) as __deterministic_row_order
     from {{ ref('lkp_demo_source3') }}
 )
