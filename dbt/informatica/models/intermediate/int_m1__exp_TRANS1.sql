@@ -7,24 +7,24 @@
   pass through exp_TRANS values.
 */
 select
-    exp.ACCT_ID,
-    exp.ACCT_TYP,
-    exp.o_acc_trim,
-    exp.o_crdt_trim,
-    exp.o_ACCT_ID,
-    exp.CR8_DT,
-    exp.CLSR_DT,
-    exp.ACCT_STAT_CD,
-    exp.TX_ID,
-    exp.LAST_NM,
-    exp.TX_DTTM,
-    exp.TX_AMT,
-    exp.BAL_AMT,
-    rtrim(exp.ACCT_DESC) as o_ACCT_DESC,
+    e1.ACCT_ID,
+    e1.ACCT_TYP,
+    e1.o_acc_trim,
+    e1.o_crdt_trim,
+    e1.o_ACCT_ID,
+    e1.CR8_DT,
+    e1.CLSR_DT,
+    e1.ACCT_STAT_CD,
+    e1.TX_ID,
+    e1.LAST_NM,
+    e1.TX_DTTM,
+    e1.TX_AMT,
+    e1.BAL_AMT,
+    rtrim(e1.ACCT_DESC) as o_ACCT_DESC,
     lkp1.FIRST_NM,
     lkp2.CRDT_SCORE
-from {{ ref('int_m1__exp_TRANS') }} exp
+from {{ ref('int_m1__exp_TRANS') }} e1
 left join {{ ref('stg_lkp_demo_source1') }} lkp1
-    on exp.ACCT_ID = lkp1.ACCT_ID
+    on e1.ACCT_ID = lkp1.ACCT_ID
 left join {{ ref('stg_lkp_demo_source2') }} lkp2
-    on exp.CUST_ID = lkp2.CUST_ID
+    on e1.CUST_ID = lkp2.CUST_ID

@@ -9,18 +9,24 @@ models:
         tests: [not_null, unique]
       - name: PRODUCT_NM
         description: "RECOVERED: product name pass-through."
+        tests: [not_null]
       - name: PRODUCT_NO
         description: "RECOVERED: product number pass-through."
+        tests: [not_null]
       - name: COLOR
         description: "RECOVERED: color pass-through."
+        tests: [not_null]
       - name: STD_COST
         description: "RECOVERED: VARCHAR standard cost pass-through."
+        tests: [not_null]
       - name: LIST_PRICE
         description: "RECOVERED: VARCHAR list price pass-through."
+        tests: [not_null]
       - name: SELL_ST_DT
-        description: "RECOVERED: NULL legacy expression result."
+        description: "RECOVERED: NULL date/time legacy expression result. DECISION: materialized as VARCHAR because the unmodified comparator normalizes an all-NULL DuckDB DATE column differently from the baseline CSV under pandas 3; the rejected alternative was DATE. Null-ness, not storage type, is the recovered behavior; int_m1__exp_TRANS2 still emits cast(null as date)."
       - name: SELL_ED_DT
         description: "RECOVERED: parsed DD/MM/YYYY end date."
+        tests: [not_null]
   - name: demo_target5
     description: "RECOVERED: mapping 1 non-SB account target."
     columns:
@@ -28,13 +34,17 @@ models:
         description: "RECOVERED: account key."
         tests: [not_null, unique]
       - name: FIRST_NM
-        description: "RECOVERED: connected lkp_TRANS2 first name."
+        description: "RECOVERED: connected lkp_TRANS2 first name; recovered lookup state covers every routed ACCT_ID, so the connected lookup never misses."
+        tests: [not_null]
       - name: LAST_NM
         description: "RECOVERED: source3 last name."
+        tests: [not_null]
       - name: BAL_AMT
         description: "RECOVERED: source3 balance amount."
+        tests: [not_null]
       - name: CRDT_SCORE
-        description: "RECOVERED: connected lkp_TRANS3 credit score."
+        description: "RECOVERED: connected lkp_TRANS3 credit score; recovered lookup state covers every routed CUST_ID, so the connected lookup never misses."
+        tests: [not_null]
   - name: demo_target6
     description: "RECOVERED: mapping 1 SB account aggregated target."
     columns:
