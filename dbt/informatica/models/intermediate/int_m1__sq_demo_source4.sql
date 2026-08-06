@@ -6,7 +6,9 @@
   RECOVERED: position 5 binds CR8_DT to SYSTIMESTAMP, not source CR8_DT.
   RECOVERED: position 14 is the dead TX_TYPE_CD port (STRCMP of account
   status and transaction type); it has no outgoing connector and is omitted.
-  RECOVERED: ORDER BY s4.ACCT_ID supplies the sorted input for agg_TRANS.
+  RECOVERED: the SQ override contains ORDER BY s4.ACCT_ID, which is
+  unrepresentable in a view; ordering dependence is resolved explicitly
+  downstream by the TX_ID desc tie-break in int_m1__agg_TRANS.
 */
 select
     s4.ACCT_ID,
@@ -25,4 +27,3 @@ select
 from {{ ref('stg_demo_source3') }} s3
 inner join {{ ref('stg_demo_source4') }} s4
     on s3.ACCT_ID = s4.ACCT_ID
-order by s4.ACCT_ID

@@ -23,7 +23,7 @@ models:
         description: "RECOVERED: VARCHAR list price pass-through."
         tests: [not_null]
       - name: SELL_ST_DT
-        description: "RECOVERED: NULL date/time legacy expression result. DECISION: materialized as VARCHAR because the unmodified comparator normalizes an all-NULL DuckDB DATE column differently from the baseline CSV under pandas 3; the rejected alternative was DATE. Null-ness, not storage type, is the recovered behavior; int_m1__exp_TRANS2 still emits cast(null as date)."
+        description: "RECOVERED: DATE port whose legacy expression yields NULL; int_m1__exp_TRANS2 emits cast(null as date). Parity comparison requires pandas<3 as an environment requirement, not a modeling decision."
       - name: SELL_ED_DT
         description: "RECOVERED: parsed DD/MM/YYYY end date."
         tests: [not_null]
