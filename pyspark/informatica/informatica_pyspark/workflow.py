@@ -3,7 +3,7 @@ from __future__ import annotations
 import logging
 
 from .config import RunConfig
-from .io import InformaticaIO
+from .io import InformaticaIO, build_io
 from .mappings import MAPPINGS
 from .session import build_spark
 
@@ -22,9 +22,7 @@ def run_mapping(name: str, cfg: RunConfig, io: InformaticaIO) -> None:
 def run_workflow(cfg: RunConfig, io: InformaticaIO | None = None) -> None:
     spark = io.spark if io is not None else build_spark(cfg)
     if io is None:
-        from .io import LocalCsvIO, SnowflakeIO
-
-        io = LocalCsvIO(spark, cfg) if cfg.io_mode == "local" else SnowflakeIO(spark, cfg)
+        io = build_io(spark, cfg)
     try:
         for name in WORKFLOW_ORDER:
             try:

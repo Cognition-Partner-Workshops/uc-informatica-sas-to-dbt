@@ -10,7 +10,7 @@ from .config import RunConfig
 DEFAULT_SPARK_JARS = (
     "/home/ubuntu/spark-jars/"
     "spark-snowflake_2.12-3.2.1-spark_3.5.jar,"
-    "/home/ubuntu/spark-jars/snowflake-jdbc-3.24.2.jar"
+    "/home/ubuntu/spark-jars/snowflake-jdbc-4.0.2.jar"
 )
 
 
