@@ -14,6 +14,7 @@ m_demo_mapping2,EXPTRANS,DESCRIPTION,DESCRIPTION,168,m_demo_mapping2.py:44,HIGH,
 m_demo_mapping2,EXPTRANS,SHORT_NAME,SHORT_NAME,169,m_demo_mapping2.py:45,HIGH,Connector 385 traces this pass-through from SQ to EXPTRANS.
 m_demo_mapping2,EXPTRANS,Key,Key,170,m_demo_mapping2.py:46,HIGH,Connector 392 feeds the lookup Key into this double port.
 m_demo_mapping2,LKPTRANS,LEAD_CO_MNE,LEAD_CO_MNE,267,m_demo_mapping2.py:47 / :53,HIGH,"Connector 387 feeds the lookup's LEAD_CO_MNE into EXPTRANS.LEAD_CO_MNE1; name matching would wrongly use the source column."
+m_demo_mapping2,EXPTRANS,LEAD_CO_MNE1,LEAD_CO_MNE1,171,m_demo_mapping2.py:47,HIGH,"Pass-through of the LKPTRANS LEAD_CO_MNE output (connector 387); MD5_src reads it, and parity fails if the source column is used instead."
 m_demo_mapping2,EXPTRANS,BRANCH_CO_MNE1,BRANCH_CO_MNE1,172,m_demo_mapping2.py:48,HIGH,Connector 388 feeds this lookup pass-through.
 m_demo_mapping2,EXPTRANS,MIS_DATE1,MIS_DATE1,173,m_demo_mapping2.py:49,HIGH,Connector 389 feeds this lookup pass-through.
 m_demo_mapping2,EXPTRANS,DESCRIPTION1,DESCRIPTION1,174,m_demo_mapping2.py:50,HIGH,Connector 390 feeds this lookup pass-through.
@@ -87,7 +88,7 @@ m_demo_mapping2,RTRTRANS,o_UPDATED_TIME2,DEFAULT1 port,261,not emitted,NOT MIGRA
 m_demo_mapping2,RTRTRANS,Key2,DEFAULT1 port,262,not emitted,NOT MIGRATED,DEFAULT1 is unconnected.
 ```
 
-Expression/decision count: 81 rows. Migrated or represented in the runnable mapping: 39. Not-migrated-by-design: 42. Confidence split: HIGH 24, MEDIUM 12, LOW 3, NOT MIGRATED 42.
+Expression/decision count: 82 rows. Migrated or represented in the runnable mapping: 40. Not-migrated-by-design: 42. Confidence split: HIGH 25, MEDIUM 12, LOW 3, NOT MIGRATED 42.
 
 LOW rows grouped by decision:
 
