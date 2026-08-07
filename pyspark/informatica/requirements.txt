@@ -1,0 +1,4 @@
+pyspark==3.5.9
+pandas==2.3.3
+snowflake-connector-python==4.7.1
+cryptography==50.0.0
