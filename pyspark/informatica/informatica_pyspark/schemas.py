@@ -78,11 +78,17 @@ TARGET_SCHEMAS = {
         ("Soc_Number", DoubleType()), ("Type_Code", DoubleType()), ("Relationship_to_Subscriber_Code", DoubleType()),
         ("Relationship_to_Subscriber_Code_Label", StringType()), ("Effective_Date", TimestampType()),
     ]),
-    "demo_target3": _schema([(x, StringType()) for x in
-        ("PRODUCT_ID", "PRODUCT_NM", "PRODUCT_NO", "COLOR", "STD_COST", "LIST_PRICE",
-         "SELL_ST_DT", "SELL_ED_DT")]),
-    "demo_target5": _schema([(x, StringType()) for x in
-        ("ACCT_ID", "FIRST_NM", "LAST_NM", "BAL_AMT", "CRDT_SCORE")]),
+    "demo_target3": _schema([
+        ("PRODUCT_ID", StringType()), ("PRODUCT_NM", StringType()),
+        ("PRODUCT_NO", StringType()), ("COLOR", StringType()),
+        ("STD_COST", StringType()), ("LIST_PRICE", StringType()),
+        ("SELL_ST_DT", DateType()), ("SELL_ED_DT", DateType()),
+    ]),
+    "demo_target5": _schema([
+        ("ACCT_ID", LongType()), ("FIRST_NM", StringType()),
+        ("LAST_NM", StringType()), ("BAL_AMT", DoubleType()),
+        ("CRDT_SCORE", LongType()),
+    ]),
     "demo_target6": _schema([
         ("ACCT_ID", LongType()), ("ACCT_TYP", StringType()), ("ACCT_DESC", StringType()),
         ("CR8_DT", DateType()), ("CRDT_LN", StringType()), ("CLSR_DT", DateType()),

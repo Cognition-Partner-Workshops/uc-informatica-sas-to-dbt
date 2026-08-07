@@ -1,12 +1,21 @@
 import shutil
+import base64
 from pathlib import Path
 
+from cryptography.hazmat.primitives import serialization
 from pyspark.sql import DataFrame, Window
 from pyspark.sql import functions as F
 from pyspark.sql.types import DateType, TimestampType
 
 from .schemas import LOOKUP_SCHEMAS, SOURCE_SCHEMAS, TARGET_SCHEMAS
 
+LINE_ORDINAL_INPUTS = {
+    "demo_source1",
+    "demo_target1",
+    "lkp_demo_source1",
+    "lkp_demo_source2",
+    "lkp_demo_source3",
+}
 
 def attach_line_ordinal(df: DataFrame, col: str = "__line_ordinal") -> DataFrame:
     """Attach the physical input order used by Informatica row policies."""
@@ -29,7 +38,7 @@ class CsvIO:
         schema = SOURCE_SCHEMAS.get(name) or LOOKUP_SCHEMAS.get(name) or TARGET_SCHEMAS[name]
         path = Path(self.cfg.input_overrides.get(name, Path(self.cfg.input_dir) / f"{name}.csv"))
         df = self.spark.read.option("header", True).schema(schema).csv(str(path))
-        if name in LOOKUP_SCHEMAS or name == "demo_target1":
+        if name in LINE_ORDINAL_INPUTS:
             df = attach_line_ordinal(df)
         return df
 
@@ -64,7 +73,7 @@ class CsvIO:
 
 
 class SnowflakeIO:
-    """Snowflake shape; connection options are intentionally wired for a later milestone."""
+    """Spark Snowflake connector IO for one namespaced migration run."""
 
     def __init__(self, spark, cfg):
         self.spark, self.cfg = spark, cfg
@@ -74,17 +83,43 @@ class SnowflakeIO:
             "sfRole": cfg.role,
             "sfWarehouse": cfg.warehouse,
             "sfDatabase": cfg.database,
-            "sfSchema": cfg.migrated_target_schema or cfg.schema,
         }
         if cfg.private_key_path:
-            self.options["pem_private_key"] = str(cfg.private_key_path)
+            key = serialization.load_pem_private_key(
+                cfg.private_key_path.read_bytes(), password=None
+            )
+            der = key.private_bytes(
+                serialization.Encoding.DER,
+                serialization.PrivateFormat.PKCS8,
+                serialization.NoEncryption(),
+            )
+            self.options["pem_private_key"] = base64.b64encode(der).decode("ascii")
+
+    def _options(self, schema):
+        sf_url = self.cfg.account
+        if not sf_url.endswith(".snowflakecomputing.com"):
+            sf_url = f"{sf_url}.snowflakecomputing.com"
+        return {**self.options, "sfURL": sf_url, "sfSchema": schema}
 
     def read(self, name: str) -> DataFrame:
-        return self.spark.read.format("snowflake").options(**self.options).option(
-            "dbtable", name
-        ).load()
+        df = (
+            self.spark.read.format("snowflake")
+            .options(**self._options(self.cfg.source_schema or self.cfg.schema))
+            .option("dbtable", name)
+            .load()
+        )
+        ordinal = next((c for c in df.columns if c.upper() == "__LINE_ORDINAL"), None)
+        if ordinal:
+            df = df.withColumnRenamed(ordinal, "__line_ordinal")
+        return df
 
     def write(self, instance: str, df: DataFrame):
-        df.write.format("snowflake").options(**self.options).option(
+        (
+            df.drop("__line_ordinal")
+            if "__line_ordinal" in df.columns
+            else df
+        ).write.format("snowflake").options(
+            **self._options(self.cfg.migrated_target_schema or self.cfg.schema)
+        ).option(
             "dbtable", instance
         ).mode("overwrite").save()

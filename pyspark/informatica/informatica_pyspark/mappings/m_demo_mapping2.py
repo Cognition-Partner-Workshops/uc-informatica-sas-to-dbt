@@ -4,14 +4,13 @@ from pyspark.sql import functions as F
 
 from ..config import RunContext
 from ..infa import iif, isnull, lookup, md5_concat, not_isnull, sequence_nextval
-from ..io import attach_line_ordinal
 from ..schemas import TARGET_SCHEMAS
 
 TARGETS = ["demo_target1_INS", "demo_target1_UPD"]
 
 
 def run(ctx: RunContext) -> dict:
-    source = attach_line_ordinal(ctx.io.read("demo_source1"))
+    source = ctx.io.read("demo_source1")
     existing = ctx.io.read("demo_target1")
     chosen = lookup(
         existing,
