@@ -1,0 +1,147 @@
+| mapping | transformation | port | informatica_code | xml_line | pyspark_code_or_ref | confidence | reason |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| m_demo_mapping1 | agg_TRANS | o_ACCT_DESC | o_ACCT_DESC | 443 | m_demo_mapping1.py:111 | LOW | Aggregator pass-through is resolved as the highest-TX_ID row; XML does not define within-group order. |
+| m_demo_mapping1 | agg_TRANS | TX_AMT | TX_AMT | 444 | m_demo_mapping1.py:112 | NOT MIGRATED | Input to the SUM aggregate; the pass-through output port is unconnected. |
+| m_demo_mapping1 | agg_TRANS | o_crdt_trim | o_crdt_trim | 445 | m_demo_mapping1.py:113 | LOW | Aggregator pass-through is resolved as the highest-TX_ID row; XML does not define within-group order. |
+| m_demo_mapping1 | agg_TRANS | CLSR_DT | CLSR_DT | 446 | m_demo_mapping1.py:114 | LOW | Aggregator pass-through is resolved as the highest-TX_ID row; XML does not define within-group order. |
+| m_demo_mapping1 | agg_TRANS | TX_ID | TX_ID | 447 | m_demo_mapping1.py:115 | LOW | Aggregator pass-through is resolved as the highest-TX_ID row; XML does not define within-group order. |
+| m_demo_mapping1 | agg_TRANS | ACCT_STAT_CD | ACCT_STAT_CD | 448 | m_demo_mapping1.py:116 | LOW | Aggregator pass-through is resolved as the highest-TX_ID row; XML does not define within-group order. |
+| m_demo_mapping1 | agg_TRANS | TX_DTTM | TX_DTTM | 449 | m_demo_mapping1.py:117 | LOW | Aggregator pass-through is resolved as the highest-TX_ID row; XML does not define within-group order. |
+| m_demo_mapping1 | agg_TRANS | CR8_DT | CR8_DT | 450 | m_demo_mapping1.py:118 | LOW | Aggregator pass-through is resolved as the highest-TX_ID row; XML does not define within-group order. |
+| m_demo_mapping1 | agg_TRANS | o_ACCT_ID | o_ACCT_ID | 451 | m_demo_mapping1.py:119 | LOW | Aggregator pass-through is resolved as the highest-TX_ID row; XML does not define within-group order. |
+| m_demo_mapping1 | agg_TRANS | ACCT_ID | ACCT_ID | 452 | m_demo_mapping1.py:109 | HIGH | Grouping/aggregate semantics are explicit and wrong grouping or sum changes baseline output. |
+| m_demo_mapping1 | agg_TRANS | o_acc_trim | o_acc_trim | 453 | m_demo_mapping1.py:120 | LOW | Aggregator pass-through is resolved as the highest-TX_ID row; XML does not define within-group order. |
+| m_demo_mapping1 | agg_TRANS | o_TX_AMT | SUM(TX_AMT) | 454 | m_demo_mapping1.py:112 | HIGH | Grouping/aggregate semantics are explicit and wrong grouping or sum changes baseline output. |
+| m_demo_mapping1 | exp_TRANS1 | FIRST_NM | FIRST_NM | 463 | m_demo_mapping1.py:96 | HIGH | Explicit expression feeds a downstream target field. |
+| m_demo_mapping1 | exp_TRANS1 | CLSR_DT | CLSR_DT | 464 | m_demo_mapping1.py:95 | HIGH | Explicit expression feeds a downstream target field. |
+| m_demo_mapping1 | exp_TRANS1 | TX_DTTM | TX_DTTM | 465 | m_demo_mapping1.py:95 | HIGH | Explicit expression feeds a downstream target field. |
+| m_demo_mapping1 | exp_TRANS1 | BAL_AMT | BAL_AMT | 466 | m_demo_mapping1.py:95 | HIGH | Explicit expression feeds a downstream target field. |
+| m_demo_mapping1 | exp_TRANS1 | ACCT_DESC | ACCT_DESC | 467 | m_demo_mapping1.py:95 | HIGH | Explicit expression feeds a downstream target field. |
+| m_demo_mapping1 | exp_TRANS1 | ACCT_TYP | ACCT_TYP | 468 | m_demo_mapping1.py:95 | HIGH | Explicit expression feeds a downstream target field. |
+| m_demo_mapping1 | exp_TRANS1 | ACCT_STAT_CD | ACCT_STAT_CD | 469 | m_demo_mapping1.py:95 | HIGH | Explicit expression feeds a downstream target field. |
+| m_demo_mapping1 | exp_TRANS1 | TX_ID | TX_ID | 470 | m_demo_mapping1.py:95 | HIGH | Explicit expression feeds a downstream target field. |
+| m_demo_mapping1 | exp_TRANS1 | LAST_NM | LAST_NM | 471 | m_demo_mapping1.py:95 | HIGH | Explicit expression feeds a downstream target field. |
+| m_demo_mapping1 | exp_TRANS1 | TX_AMT | TX_AMT | 472 | m_demo_mapping1.py:95 | HIGH | Explicit expression feeds a downstream target field. |
+| m_demo_mapping1 | exp_TRANS1 | ACCT_ID | ACCT_ID | 473 | m_demo_mapping1.py:95 | HIGH | Explicit expression feeds a downstream target field. |
+| m_demo_mapping1 | exp_TRANS1 | CR8_DT | CR8_DT | 474 | m_demo_mapping1.py:95 | HIGH | Explicit expression feeds a downstream target field. |
+| m_demo_mapping1 | exp_TRANS1 | o_acc_trim | o_acc_trim | 475 | m_demo_mapping1.py:95 | HIGH | Explicit expression feeds a downstream target field. |
+| m_demo_mapping1 | exp_TRANS1 | o_crdt_trim | o_crdt_trim | 476 | m_demo_mapping1.py:95 | HIGH | Explicit expression feeds a downstream target field. |
+| m_demo_mapping1 | exp_TRANS1 | o_ACCT_ID | o_ACCT_ID | 477 | m_demo_mapping1.py:95 | HIGH | Explicit expression feeds a downstream target field. |
+| m_demo_mapping1 | exp_TRANS1 | CRDT_SCORE | CRDT_SCORE | 478 | m_demo_mapping1.py:95 | HIGH | Explicit expression feeds a downstream target field. |
+| m_demo_mapping1 | exp_TRANS1 | o_ACCT_DESC | RTRIM(ACCT_DESC) | 479 | m_demo_mapping1.py:98 | HIGH | Explicit expression feeds a downstream target field. |
+| m_demo_mapping1 | lkp_TRANS2 | IN_ACCT_ID | IN_ACCT_ID | 483 | m_demo_mapping1.py:95 | HIGH | Lookup input key is explicit and controls the FIRST_NM lookup used by demo_target5. |
+| m_demo_mapping1 | exp_TRANS | CLSR_DT | CLSR_DT | 594 | m_demo_mapping1.py:95 | HIGH | Explicit pass-through/helper expression feeds downstream targets. |
+| m_demo_mapping1 | exp_TRANS | TX_DTTM | TX_DTTM | 595 | m_demo_mapping1.py:95 | HIGH | Explicit pass-through/helper expression feeds downstream targets. |
+| m_demo_mapping1 | exp_TRANS | BAL_AMT | BAL_AMT | 596 | m_demo_mapping1.py:95 | HIGH | Explicit pass-through/helper expression feeds downstream targets. |
+| m_demo_mapping1 | exp_TRANS | ACCT_DESC | ACCT_DESC | 597 | m_demo_mapping1.py:95 | HIGH | Explicit pass-through/helper expression feeds downstream targets. |
+| m_demo_mapping1 | exp_TRANS | ACCT_TYP | ACCT_TYP | 598 | m_demo_mapping1.py:95 | HIGH | Explicit pass-through/helper expression feeds downstream targets. |
+| m_demo_mapping1 | exp_TRANS | ACCT_STAT_CD | ACCT_STAT_CD | 599 | m_demo_mapping1.py:95 | HIGH | Explicit pass-through/helper expression feeds downstream targets. |
+| m_demo_mapping1 | exp_TRANS | TX_ID | TX_ID | 600 | m_demo_mapping1.py:95 | HIGH | Explicit pass-through/helper expression feeds downstream targets. |
+| m_demo_mapping1 | exp_TRANS | LAST_NM | LAST_NM | 601 | m_demo_mapping1.py:95 | HIGH | Explicit pass-through/helper expression feeds downstream targets. |
+| m_demo_mapping1 | exp_TRANS | TX_AMT | TX_AMT | 602 | m_demo_mapping1.py:95 | HIGH | Explicit pass-through/helper expression feeds downstream targets. |
+| m_demo_mapping1 | exp_TRANS | ACCT_ID | ACCT_ID | 603 | m_demo_mapping1.py:95 | HIGH | Explicit pass-through/helper expression feeds downstream targets. |
+| m_demo_mapping1 | exp_TRANS | CR8_DT | CR8_DT | 604 | m_demo_mapping1.py:95 | HIGH | Explicit pass-through/helper expression feeds downstream targets. |
+| m_demo_mapping1 | exp_TRANS | CUST_ID | CUST_ID | 605 | m_demo_mapping1.py:95 | HIGH | Explicit pass-through/helper expression feeds downstream targets. |
+| m_demo_mapping1 | exp_TRANS | o_acc_trim | RTRIM(ACCT_TYP) | 606 | m_demo_mapping1.py:70 | HIGH | Explicit pass-through/helper expression feeds downstream targets. |
+| m_demo_mapping1 | exp_TRANS | o_crdt_trim | LTRIM(CRDT_LN) | 607 | m_demo_mapping1.py:71 | HIGH | Explicit pass-through/helper expression feeds downstream targets. |
+| m_demo_mapping1 | exp_TRANS | o_ACCT_ID | :LKP.lkp_TRANS1(ACCT_ID) | 608 | m_demo_mapping1.py:69 | HIGH | The unconnected lookup return feeds demo_target6.TX_TYPE_CD through the connector graph. |
+| m_demo_mapping1 | lkp_TRANS3 | IN_CUST_ID | IN_CUST_ID | 612 | m_demo_mapping1.py:95 | HIGH | Lookup input key is explicit and controls the CRDT_SCORE lookup used by demo_target5. |
+| m_demo_mapping1 | exp_TRANS2 | PRODUCT_NO | PRODUCT_NO | 654 | m_demo_mapping1.py:95 | HIGH | Explicit pass-through/date conversion feeds demo_target3. |
+| m_demo_mapping1 | exp_TRANS2 | STD_COST | STD_COST | 655 | m_demo_mapping1.py:95 | HIGH | Explicit pass-through/date conversion feeds demo_target3. |
+| m_demo_mapping1 | exp_TRANS2 | COLOR | COLOR | 656 | m_demo_mapping1.py:95 | HIGH | Explicit pass-through/date conversion feeds demo_target3. |
+| m_demo_mapping1 | exp_TRANS2 | PRODUCT_ID | PRODUCT_ID | 659 | m_demo_mapping1.py:95 | HIGH | Explicit pass-through/date conversion feeds demo_target3. |
+| m_demo_mapping1 | exp_TRANS2 | PRODUCT_NM | PRODUCT_NM | 660 | m_demo_mapping1.py:95 | HIGH | Explicit pass-through/date conversion feeds demo_target3. |
+| m_demo_mapping1 | exp_TRANS2 | LIST_PRICE | LIST_PRICE | 661 | m_demo_mapping1.py:95 | HIGH | Explicit pass-through/date conversion feeds demo_target3. |
+| m_demo_mapping1 | exp_TRANS2 | o_SELL_ST_DT | TO_DATE(TO_CHAR(SYSDATE),'DD/MM/YYYY') | 662 | m_demo_mapping1.py:173 | HIGH | The date expression is explicit and its NULL result is present in every baseline row. |
+| m_demo_mapping1 | exp_TRANS2 | o_SELL_ED_DT | TO_DATE(SELL_ED_DT,'DD/MM/YYYY') | 663 | m_demo_mapping1.py:179 | HIGH | Explicit pass-through/date conversion feeds demo_target3. |
+| m_demo_mapping1 | sq_demo_source4 | Sql Query | SELECT demo_source4.ACCT_ID, demo_source4.ACCT_TYP, demo_source4.ACCT_DESC, demo_source4.CRDT_LN, SYSTIMESTAMP, demo_source4.CLSR_DT, demo_source4.ACCT_STAT_CD, demo_source3.TX_ID, demo_source3.LAST_NM, demo_source3.TX_DTTM, demo_source3.TX_AMT, demo_source3.BAL_AMT, demo_source3.CUST_ID, STRCMP(demo_source4.ACCT_STAT_CD,demo_source3.TX_TYPE_CD)<br>FROM<br> demo_source3 INNER JOIN demo_source4 ON demo_source3.ACCT_ID = demo_source4.ACCT_ID<br>ORDER BY<br> demo_source4.ACCT_ID | 580 | m_demo_mapping1.py:33-55 | HIGH | The positional SQL override, inner join, business timestamp, and account ordering determine the account pipeline. |
+| m_demo_mapping1 | SQ_demo_source5 | Sql Query |  | 746 | m_demo_mapping1.py:164-180 | MEDIUM | No override is defined; the source rows pass through unchanged and the seed does not distinguish an erroneous override. |
+| m_demo_mapping1 | lkp_TRANS2 | Lookup condition | ACCT_ID = IN_ACCT_ID | 499 | m_demo_mapping1.py:84-88 | HIGH | The key condition selects the lkp_demo_source1 row used for FIRST_NM. |
+| m_demo_mapping1 | lkp_TRANS2 | Lookup policy on multiple match | Use Last Value | 498 | m_demo_mapping1.py:20-22 | MEDIUM | Collapse is parity-critical, but last versus first is unexercised because the duplicate account routes to demo_target6; rejected first-value choice. |
+| m_demo_mapping1 | lkp_TRANS3 | Lookup condition | CUST_ID = IN_CUST_ID | 625 | m_demo_mapping1.py:89-93 | HIGH | The key condition selects the lkp_demo_source2 row used for CRDT_SCORE. |
+| m_demo_mapping1 | lkp_TRANS3 | Lookup policy on multiple match | Use Last Value | 624 | m_demo_mapping1.py:20-22 | MEDIUM | Collapse is parity-critical, but last versus first is unexercised because the duplicate customer routes to demo_target6; rejected first-value choice. |
+| m_demo_mapping1 | lkp_TRANS1 | Lookup condition | ACCT_ID =  IN_ACCT_ID | 537 | m_demo_mapping1.py:57-65 | HIGH | The explicit double-space condition selects the unconnected lookup return used as TX_TYPE_CD. |
+| m_demo_mapping1 | lkp_TRANS1 | Lookup policy on multiple match | Use Last Value | 536 | m_demo_mapping1.py:20-22 | HIGH | Account 1002 has TR then DR and the last physical value DR is observable in demo_target6. |
+| m_demo_mapping1 | rtr_TRANS | demo_target6_GRP | ACCT_TYP = 'SB' | 668 | m_demo_mapping1.py:103 | HIGH | The group condition is explicit; it is evaluated on untrimmed ACCT_TYP and selects demo_target6 rows. |
+| m_demo_mapping1 | rtr_TRANS | demo_target5_GRP | ACCT_TYP != 'SB' | 669 | m_demo_mapping1.py:104 | HIGH | The group condition is explicit; SQL NULL evaluates to NULL and does not enter this group. |
+| m_demo_mapping1 | rtr_TRANS | DEFAULT1 | DEFAULT1 (unconnected output group) | 670 | m_demo_mapping1.py:102-104 | NOT MIGRATED | The default group has no outgoing connectors; NULL ACCT_TYP rows are deliberately dropped. |
+| m_demo_mapping1 | agg_TRANS | GROUPBY ACCT_ID | ACCT_ID | 452 | m_demo_mapping1.py:109 | HIGH | The XML marks ACCT_ID GROUPBY and grouping changes the target6 row cardinality. |
+| m_demo_mapping1 | agg_TRANS | o_TX_AMT | SUM(TX_AMT) | 454 | m_demo_mapping1.py:112 | HIGH | The explicit sum changes demo_target6.TX_AMT if translated incorrectly. |
+| m_demo_mapping1 | SEQ_GEN | Start Value | 1 | 432 | m_demo_mapping1.py:122-126 | HIGH | Sequence state determines the generated target key. |
+| m_demo_mapping1 | SEQ_GEN | Increment By | 1 | 433 | m_demo_mapping1.py:122-126 | HIGH | Sequence state determines the generated target key. |
+| m_demo_mapping1 | SEQ_GEN | End | 2147483647 | 434 | m_demo_mapping1.py:122-126 | MEDIUM | State is explicit but the seed does not approach the upper bound. |
+| m_demo_mapping1 | SEQ_GEN | Current Value | 281 | 435 | m_demo_mapping1.py:122-126 | HIGH | Current value is the observed sequence state and changes ACCT_KEY. |
+| m_demo_mapping1 | SEQ_GEN | Cycle | YES | 436 | m_demo_mapping1.py:122-126 | MEDIUM | State is explicit but cycling is not exercised by the seed. |
+| m_demo_mapping1 | SEQ_GEN | Number of Cached Values | 0 | 437 | m_demo_mapping1.py:122-126 | MEDIUM | State is explicit but caching is not observable in this local run. |
+| m_demo_mapping1 | SEQ_GEN | Reset | NO | 438 | m_demo_mapping1.py:122-126 | MEDIUM | State is explicit but reset behavior is not exercised by the seed. |
+| m_demo_mapping1 | sq_demo_source4 | TX_TYPE_CD | STRCMP(demo_source4.ACCT_STAT_CD,demo_source3.TX_TYPE_CD) | 580 | m_demo_mapping1.py:39-54 | NOT MIGRATED | The positional 14th SQL item binds to TX_TYPE_CD but no connector leaves that SQ port; STRCMP is dead. |
+| m_demo_mapping1 | lkp_TRANS2 | CUST_ID | CUST_ID | 484 | m_demo_mapping1.py:75-78 | NOT MIGRATED | Lookup output is unconsumed; only FIRST_NM is connected downstream. |
+| m_demo_mapping1 | lkp_TRANS2 | ACCT_ID | ACCT_ID | 485 | m_demo_mapping1.py:75-78 | NOT MIGRATED | Lookup output is unconsumed; only FIRST_NM is connected downstream. |
+| m_demo_mapping1 | lkp_TRANS2 | LAST_NM | LAST_NM | 487 | m_demo_mapping1.py:75-78 | NOT MIGRATED | Lookup output is unconsumed; only FIRST_NM is connected downstream. |
+| m_demo_mapping1 | lkp_TRANS2 | CUST_ADDR | CUST_ADDR | 488 | m_demo_mapping1.py:75-78 | NOT MIGRATED | Lookup output is unconsumed; only FIRST_NM is connected downstream. |
+| m_demo_mapping1 | lkp_TRANS2 | CUST_PHN | CUST_PHN | 489 | m_demo_mapping1.py:75-78 | NOT MIGRATED | Lookup output is unconsumed; only FIRST_NM is connected downstream. |
+| m_demo_mapping1 | lkp_TRANS2 | CUST_EML_ADDR | CUST_EML_ADDR | 490 | m_demo_mapping1.py:75-78 | NOT MIGRATED | Lookup output is unconsumed; only FIRST_NM is connected downstream. |
+| m_demo_mapping1 | lkp_TRANS2 | AGE | AGE | 491 | m_demo_mapping1.py:75-78 | NOT MIGRATED | Lookup output is unconsumed; only FIRST_NM is connected downstream. |
+| m_demo_mapping1 | lkp_TRANS2 | DOB | DOB | 492 | m_demo_mapping1.py:75-78 | NOT MIGRATED | Lookup output is unconsumed; only FIRST_NM is connected downstream. |
+| m_demo_mapping1 | lkp_TRANS2 | CUST_TYP | CUST_TYP | 493 | m_demo_mapping1.py:75-78 | NOT MIGRATED | Lookup output is unconsumed; only FIRST_NM is connected downstream. |
+| m_demo_mapping1 | lkp_TRANS3 | CUST_ID | CUST_ID | 613 | m_demo_mapping1.py:79-82 | NOT MIGRATED | Lookup output is unconsumed; only CRDT_SCORE is connected downstream. |
+| m_demo_mapping1 | lkp_TRANS3 | MAX_CRDT_SCORE | MAX_CRDT_SCORE | 615 | m_demo_mapping1.py:79-82 | NOT MIGRATED | Lookup output is unconsumed; only CRDT_SCORE is connected downstream. |
+| m_demo_mapping1 | lkp_TRANS3 | MIN_CRDT_SCORE | MIN_CRDT_SCORE | 616 | m_demo_mapping1.py:79-82 | NOT MIGRATED | Lookup output is unconsumed; only CRDT_SCORE is connected downstream. |
+| m_demo_mapping1 | lkp_TRANS3 | MAX_CRDT_LMT | MAX_CRDT_LMT | 617 | m_demo_mapping1.py:79-82 | NOT MIGRATED | Lookup output is unconsumed; only CRDT_SCORE is connected downstream. |
+| m_demo_mapping1 | lkp_TRANS3 | CURR_CRDT_BAL_AMT | CURR_CRDT_BAL_AMT | 618 | m_demo_mapping1.py:79-82 | NOT MIGRATED | Lookup output is unconsumed; only CRDT_SCORE is connected downstream. |
+| m_demo_mapping1 | lkp_TRANS3 | AVG_INC_AMT | AVG_INC_AMT | 619 | m_demo_mapping1.py:79-82 | NOT MIGRATED | Lookup output is unconsumed; only CRDT_SCORE is connected downstream. |
+| m_demo_mapping1 | lkp_TRANS1 | ACCT_ID | ACCT_ID | 530 | m_demo_mapping1.py:57-60 | NOT MIGRATED | Lookup output is unconsumed; only the TX_TYPE_CD return port is called. |
+| m_demo_mapping1 | lkp_TRANS1 | TX_TYPE_DESC | TX_TYPE_DESC | 531 | m_demo_mapping1.py:57-60 | NOT MIGRATED | Lookup output is unconsumed; only the TX_TYPE_CD return port is called. |
+| m_demo_mapping1 | SEQ_GEN | CURRVAL | CURRVAL | 431 | m_demo_mapping1.py:122-126 | NOT MIGRATED | CURRVAL has no outgoing connector. |
+| m_demo_mapping1 | exp_TRANS2 | SELL_ST_DT | SELL_ST_DT | 658 | m_demo_mapping1.py:164-179 | NOT MIGRATED | The source input is read but the output expression ignores it and uses SYSDATE instead. |
+| m_demo_mapping1 | rtr_TRANS | BAL_AMT1 | BAL_AMT1 | 687 | m_demo_mapping1.py:103-104 | NOT MIGRATED | Router output port has no outgoing connector. |
+| m_demo_mapping1 | rtr_TRANS | FIRST_NM1 | FIRST_NM1 | 701 | m_demo_mapping1.py:103-104 | NOT MIGRATED | Router output port has no outgoing connector. |
+| m_demo_mapping1 | rtr_TRANS | CRDT_SCORE1 | CRDT_SCORE1 | 702 | m_demo_mapping1.py:103-104 | NOT MIGRATED | Router output port has no outgoing connector. |
+| m_demo_mapping1 | rtr_TRANS | o_ACCT_ID2 | o_ACCT_ID2 | 705 | m_demo_mapping1.py:156-162 | NOT MIGRATED | Router output port has no outgoing connector. |
+| m_demo_mapping1 | rtr_TRANS | o_acc_trim2 | o_acc_trim2 | 706 | m_demo_mapping1.py:156-162 | NOT MIGRATED | Router output port has no outgoing connector. |
+| m_demo_mapping1 | rtr_TRANS | TX_DTTM2 | TX_DTTM2 | 707 | m_demo_mapping1.py:156-162 | NOT MIGRATED | Router output port has no outgoing connector. |
+| m_demo_mapping1 | rtr_TRANS | TX_ID2 | TX_ID2 | 708 | m_demo_mapping1.py:156-162 | NOT MIGRATED | Router output port has no outgoing connector. |
+| m_demo_mapping1 | rtr_TRANS | ACCT_TYP2 | ACCT_TYP2 | 709 | m_demo_mapping1.py:156-162 | NOT MIGRATED | Router output port has no outgoing connector. |
+| m_demo_mapping1 | rtr_TRANS | TX_AMT2 | TX_AMT2 | 710 | m_demo_mapping1.py:156-162 | NOT MIGRATED | Router output port has no outgoing connector. |
+| m_demo_mapping1 | rtr_TRANS | CLSR_DT2 | CLSR_DT2 | 712 | m_demo_mapping1.py:156-162 | NOT MIGRATED | Router output port has no outgoing connector. |
+| m_demo_mapping1 | rtr_TRANS | ACCT_STAT_CD2 | ACCT_STAT_CD2 | 713 | m_demo_mapping1.py:156-162 | NOT MIGRATED | Router output port has no outgoing connector. |
+| m_demo_mapping1 | rtr_TRANS | o_ACCT_DESC2 | o_ACCT_DESC2 | 714 | m_demo_mapping1.py:156-162 | NOT MIGRATED | Router output port has no outgoing connector. |
+| m_demo_mapping1 | rtr_TRANS | CR8_DT2 | CR8_DT2 | 715 | m_demo_mapping1.py:156-162 | NOT MIGRATED | Router output port has no outgoing connector. |
+| m_demo_mapping1 | rtr_TRANS | o_crdt_trim2 | o_crdt_trim2 | 716 | m_demo_mapping1.py:156-162 | NOT MIGRATED | Router output port has no outgoing connector. |
+| m_demo_mapping1 | rtr_TRANS | BAL_AMT3 | BAL_AMT3 | 719 | m_demo_mapping1.py:102-104 | NOT MIGRATED | DEFAULT1 is unconnected, so this output group is not emitted. |
+| m_demo_mapping1 | rtr_TRANS | ACCT_ID3 | ACCT_ID3 | 720 | m_demo_mapping1.py:102-104 | NOT MIGRATED | DEFAULT1 is unconnected, so this output group is not emitted. |
+| m_demo_mapping1 | rtr_TRANS | o_ACCT_ID3 | o_ACCT_ID3 | 721 | m_demo_mapping1.py:102-104 | NOT MIGRATED | DEFAULT1 is unconnected, so this output group is not emitted. |
+| m_demo_mapping1 | rtr_TRANS | o_acc_trim3 | o_acc_trim3 | 722 | m_demo_mapping1.py:102-104 | NOT MIGRATED | DEFAULT1 is unconnected, so this output group is not emitted. |
+| m_demo_mapping1 | rtr_TRANS | TX_DTTM3 | TX_DTTM3 | 723 | m_demo_mapping1.py:102-104 | NOT MIGRATED | DEFAULT1 is unconnected, so this output group is not emitted. |
+| m_demo_mapping1 | rtr_TRANS | TX_ID3 | TX_ID3 | 724 | m_demo_mapping1.py:102-104 | NOT MIGRATED | DEFAULT1 is unconnected, so this output group is not emitted. |
+| m_demo_mapping1 | rtr_TRANS | ACCT_TYP3 | ACCT_TYP3 | 725 | m_demo_mapping1.py:102-104 | NOT MIGRATED | DEFAULT1 is unconnected, so this output group is not emitted. |
+| m_demo_mapping1 | rtr_TRANS | TX_AMT3 | TX_AMT3 | 726 | m_demo_mapping1.py:102-104 | NOT MIGRATED | DEFAULT1 is unconnected, so this output group is not emitted. |
+| m_demo_mapping1 | rtr_TRANS | LAST_NM3 | LAST_NM3 | 727 | m_demo_mapping1.py:102-104 | NOT MIGRATED | DEFAULT1 is unconnected, so this output group is not emitted. |
+| m_demo_mapping1 | rtr_TRANS | CLSR_DT3 | CLSR_DT3 | 728 | m_demo_mapping1.py:102-104 | NOT MIGRATED | DEFAULT1 is unconnected, so this output group is not emitted. |
+| m_demo_mapping1 | rtr_TRANS | ACCT_STAT_CD3 | ACCT_STAT_CD3 | 729 | m_demo_mapping1.py:102-104 | NOT MIGRATED | DEFAULT1 is unconnected, so this output group is not emitted. |
+| m_demo_mapping1 | rtr_TRANS | o_ACCT_DESC3 | o_ACCT_DESC3 | 730 | m_demo_mapping1.py:102-104 | NOT MIGRATED | DEFAULT1 is unconnected, so this output group is not emitted. |
+| m_demo_mapping1 | rtr_TRANS | CR8_DT3 | CR8_DT3 | 731 | m_demo_mapping1.py:102-104 | NOT MIGRATED | DEFAULT1 is unconnected, so this output group is not emitted. |
+| m_demo_mapping1 | rtr_TRANS | o_crdt_trim3 | o_crdt_trim3 | 732 | m_demo_mapping1.py:102-104 | NOT MIGRATED | DEFAULT1 is unconnected, so this output group is not emitted. |
+| m_demo_mapping1 | rtr_TRANS | FIRST_NM3 | FIRST_NM3 | 733 | m_demo_mapping1.py:102-104 | NOT MIGRATED | DEFAULT1 is unconnected, so this output group is not emitted. |
+| m_demo_mapping1 | rtr_TRANS | CRDT_SCORE3 | CRDT_SCORE3 | 734 | m_demo_mapping1.py:102-104 | NOT MIGRATED | DEFAULT1 is unconnected, so this output group is not emitted. |
+
+## Summary
+
+- Total TRANSFORMFIELD expression count: 54
+- Total conversion-table rows: 124
+- Migrated rows: 72
+- Not migrated by design: 52
+- Confidence split: HIGH 56, MEDIUM 7, LOW 9, NOT MIGRATED 52.
+- XML line verification: PASSED by a script against `legacy/informatica/wf_demo_mapping.XML`.
+
+## LOW rows grouped by underlying decision
+
+- Aggregator pass-through choice: highest TX_ID in each ACCT_ID group; rejected first-row-in-group and file-order-last via `__ROW_ORD`. File-order-last happens to coincide with highest TX_ID on this seed data, so parity does not discriminate between those two; first-row-in-group would fail parity.
+- Sequence row order: `280 + row_number()` ordered by ACCT_ID; rejected arbitrary/partition order and did not use `monotonically_increasing_id`.
+
+## Review these first
+
+1. Aggregator pass-through last-row decision.
+2. Sequence generator row ordering and current value.
+3. Positional SQ override and dead STRCMP port.
+4. Lookup policy distinction: collapse is critical for all three, while last-vs-first is only exercised by lkp_TRANS1.

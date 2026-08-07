@@ -1,0 +1,83 @@
+mapping,transformation,port,informatica_code,xml_line,pyspark_code_or_ref,confidence,reason
+m_demo_mapping2,SQ_demo_source1,Sql Query,,151,io.read_source("demo_source1"),MEDIUM,XML override is empty; source reader supplies the declared CSV/table.
+m_demo_mapping2,SQ_demo_source1,Source Filter,,153,io.read_source("demo_source1"),MEDIUM,XML filter is empty; no predicate is applied.
+m_demo_mapping2,EXPTRANS,LEAD_CO_MNE,LEAD_CO_MNE,164,m_demo_mapping2.py:40,HIGH,Connector 380 traces this pass-through from SQ to EXPTRANS.
+m_demo_mapping2,EXPTRANS,BRANCH_CO_MNE,BRANCH_CO_MNE,165,m_demo_mapping2.py:41,HIGH,Connector 381 traces this pass-through from SQ to EXPTRANS.
+m_demo_mapping2,EXPTRANS,MIS_DATE,MIS_DATE,166,m_demo_mapping2.py:42,HIGH,Connector 382 traces this pass-through from SQ to EXPTRANS.
+m_demo_mapping2,EXPTRANS,ID,ID,167,m_demo_mapping2.py:43,HIGH,Connector 383 traces this pass-through from SQ to EXPTRANS.
+m_demo_mapping2,EXPTRANS,DESCRIPTION,DESCRIPTION,168,m_demo_mapping2.py:44,HIGH,Connector 384 traces this source description pass-through.
+m_demo_mapping2,EXPTRANS,SHORT_NAME,SHORT_NAME,169,m_demo_mapping2.py:45,HIGH,Connector 385 traces this pass-through from SQ to EXPTRANS.
+m_demo_mapping2,EXPTRANS,Key,Key,170,m_demo_mapping2.py:46,HIGH,Connector 392 feeds the lookup Key into this double port.
+m_demo_mapping2,LKPTRANS,LEAD_CO_MNE,LEAD_CO_MNE,267,m_demo_mapping2.py:47 / :53,HIGH,"Connector 387 feeds the lookup's LEAD_CO_MNE into EXPTRANS.LEAD_CO_MNE1; name matching would wrongly use the source column."
+m_demo_mapping2,EXPTRANS,LEAD_CO_MNE1,LEAD_CO_MNE1,171,m_demo_mapping2.py:47,HIGH,"Pass-through of the LKPTRANS LEAD_CO_MNE output (connector 387); MD5_src reads it, and parity fails if the source column is used instead."
+m_demo_mapping2,EXPTRANS,BRANCH_CO_MNE1,BRANCH_CO_MNE1,172,m_demo_mapping2.py:48,HIGH,Connector 388 feeds this lookup pass-through.
+m_demo_mapping2,EXPTRANS,MIS_DATE1,MIS_DATE1,173,m_demo_mapping2.py:49,HIGH,Connector 389 feeds this lookup pass-through.
+m_demo_mapping2,EXPTRANS,DESCRIPTION1,DESCRIPTION1,174,m_demo_mapping2.py:50,HIGH,Connector 390 feeds this lookup pass-through.
+m_demo_mapping2,EXPTRANS,SHORT_NAME1,SHORT_NAME1,175,m_demo_mapping2.py:51,HIGH,Connector 391 feeds this lookup pass-through.
+m_demo_mapping2,EXPTRANS,New_Flag,"IIF(ISNULL(Key),'Insert')",176,m_demo_mapping2.py:72-74,HIGH,Two-argument IIF and lookup-null predicate are explicit.
+m_demo_mapping2,EXPTRANS,MD5_src,"AES_DECRYPT(LEAD_CO_MNE1, SUBSTR(SHORT_NAME,1,3), 256)",177,m_demo_mapping2.py:52-56,LOW,AES input is unambiguous but the runtime result is unrecoverable; rejected attempting real decryption without key/ciphertext/runtime.
+m_demo_mapping2,EXPTRANS,MD5_tgt,MD5(LEAD_CO_MNE || BRANCH_CO_MNE || MIS_DATE || DESCRIPTION || SHORT_NAME),178,m_demo_mapping2.py:60-66,HIGH,Source ports and Informatica null-concatenation semantics are explicit.
+m_demo_mapping2,EXPTRANS,Changed_Flag,"IIF(NOT ISNULL(Key) AND  (MD5_tgt != MD5_src),'Update')",179,m_demo_mapping2.py:75-81,LOW,The comparison is explicit but MD5 versus unrecoverable AES requires the sentinel judgment; rejected treating the fields as comparable hashes.
+m_demo_mapping2,EXPTRANS,o_CREATED_BY,'IDWUSER',180,m_demo_mapping2.py:67,MEDIUM,Constant is unambiguous but parity does not independently exercise an alternate constant.
+m_demo_mapping2,EXPTRANS,o_CREATED_TIME,SYSDATE,181,m_demo_mapping2.py:68,HIGH,SYSDATE is pinned to cfg.business_date and baseline checks rendering.
+m_demo_mapping2,EXPTRANS,o_UPDATED_BY,'IDWUSER',182,m_demo_mapping2.py:69,MEDIUM,Constant is unambiguous but it is only observed on the update branch.
+m_demo_mapping2,EXPTRANS,o_UPDATED_TIME,SYSDATE,183,m_demo_mapping2.py:70,HIGH,SYSDATE is pinned to cfg.business_date and baseline checks rendering.
+m_demo_mapping2,LKPTRANS,Lookup Sql Override,,281,io.read_source("demo_target1"),MEDIUM,XML override is empty; the declared lookup table is read directly.
+m_demo_mapping2,LKPTRANS,Lookup table name,demo_target1,282,io.read_source("demo_target1"),HIGH,XML names the lookup source and the implementation reads it through IO.
+m_demo_mapping2,LKPTRANS,Lookup Source Filter,,283,io.read_source("demo_target1"),MEDIUM,XML filter is empty; no lookup filter is applied.
+m_demo_mapping2,LKPTRANS,Lookup policy on multiple match,Use Any Value,285,lookup_use_any_value(...),LOW,"XML does not define the chosen row; rejected lowest Key, physical-first, and physical-last in decisions."
+m_demo_mapping2,LKPTRANS,Lookup condition,ID = ID1,286,m_demo_mapping2.py:33-37,HIGH,Plain left join uses the connector-fed source ID and lookup ID.
+m_demo_mapping2,RTRTRANS,Insert,New_Flag='Insert',188,m_demo_mapping2.py:83,HIGH,Insert group predicate is explicit in XML and code.
+m_demo_mapping2,RTRTRANS,Update,Changed_Flag='Update',190,m_demo_mapping2.py:125,HIGH,Update group predicate is explicit in XML and code.
+m_demo_mapping2,RTRTRANS,DEFAULT1,default when no group condition is satisfied,189,not emitted,NOT MIGRATED,Unconnected default group is intentionally dropped.
+m_demo_mapping2,SEQTRANS,NEXTVAL,NEXTVAL,315,m_demo_mapping2.py:105-109,HIGH,Target connector 373 consumes the bigint sequence port.
+m_demo_mapping2,SEQTRANS,CURRVAL,CURRVAL,316,not emitted,NOT MIGRATED,CURRVAL has no connector and is not observable.
+m_demo_mapping2,SEQTRANS,Start Value,0,317,m_demo_mapping2.py:105-109,MEDIUM,The start value is unexercised because this run does not cycle; the observed seed begins from Current Value 57.
+m_demo_mapping2,SEQTRANS,Increment By,1,318,m_demo_mapping2.py:105-109,HIGH,Row number increments by one in arrival order.
+m_demo_mapping2,SEQTRANS,End Value,9223372036854775807,319,m_demo_mapping2.py:105-109,MEDIUM,No seeded run reaches the end boundary.
+m_demo_mapping2,SEQTRANS,Current Value,57,320,m_demo_mapping2.py:105-109,HIGH,Baseline sequence keys begin at 57.
+m_demo_mapping2,SEQTRANS,Cycle,NO,321,m_demo_mapping2.py:105-109,MEDIUM,No seeded run reaches a cycle boundary.
+m_demo_mapping2,SEQTRANS,Number of Cached Values,0,322,m_demo_mapping2.py:105-109,MEDIUM,No seeded run exercises cache sizing.
+m_demo_mapping2,SEQTRANS,Reset,NO,323,m_demo_mapping2.py:105-109,MEDIUM,No reset event occurs in the single mapping run.
+m_demo_mapping2,SEQTRANS,Is Current Value Shared,NO,324,m_demo_mapping2.py:105-109,MEDIUM,The mapping has one sequence instance and no shared state is exercised.
+m_demo_mapping2,UPDTRANS,Update Strategy Expression,DD_UPDATE,341,m_demo_mapping2.py:145-159,HIGH,Update branch is rendered as the update target stream.
+m_demo_mapping2,demo_target1_INS,UPDATED_BY,unconnected target port,90,m_demo_mapping2.py:118,NOT MIGRATED,XML has no connector; output is NULL.
+m_demo_mapping2,demo_target1_INS,UPDATED_TIME,unconnected target port,91,m_demo_mapping2.py:119,NOT MIGRATED,XML has no connector; output is NULL.
+m_demo_mapping2,demo_target1_INS,ACTIVE_FLAG,unconnected target port,92,m_demo_mapping2.py:120,NOT MIGRATED,XML has no connector; output is NULL.
+m_demo_mapping2,demo_target1_INS,START_DATE,unconnected target port,93,m_demo_mapping2.py:121,NOT MIGRATED,XML has no connector; output is NULL.
+m_demo_mapping2,demo_target1_INS,END_DATE,unconnected target port,94,m_demo_mapping2.py:122,NOT MIGRATED,XML has no connector; output is NULL.
+m_demo_mapping2,demo_target1_UPD,CREATED_BY,unconnected target port,88,m_demo_mapping2.py:168,NOT MIGRATED,XML has no connector; output is NULL.
+m_demo_mapping2,demo_target1_UPD,CREATED_TIME,unconnected target port,89,m_demo_mapping2.py:169,NOT MIGRATED,XML has no connector; output is NULL.
+m_demo_mapping2,demo_target1_UPD,ACTIVE_FLAG,unconnected target port,92,m_demo_mapping2.py:172,NOT MIGRATED,XML has no connector; output is NULL.
+m_demo_mapping2,demo_target1_UPD,START_DATE,unconnected target port,93,m_demo_mapping2.py:173,NOT MIGRATED,XML has no connector; output is NULL.
+m_demo_mapping2,demo_target1_UPD,END_DATE,unconnected target port,94,m_demo_mapping2.py:174,NOT MIGRATED,XML has no connector; output is NULL.
+m_demo_mapping2,LKPTRANS,BRANCH_CO_MNE1,dead lookup output,268,not emitted,NOT MIGRATED,It reaches EXPTRANS and RTRTRANS but no target consumes it.
+m_demo_mapping2,LKPTRANS,MIS_DATE1,dead lookup output,269,not emitted,NOT MIGRATED,It reaches EXPTRANS and RTRTRANS but no target consumes it.
+m_demo_mapping2,LKPTRANS,DESCRIPTION1,dead lookup output,271,not emitted,NOT MIGRATED,It reaches EXPTRANS and RTRTRANS but no target consumes it.
+m_demo_mapping2,LKPTRANS,SHORT_NAME1,dead lookup output,272,not emitted,NOT MIGRATED,It reaches EXPTRANS and RTRTRANS but no target consumes it.
+m_demo_mapping2,LKPTRANS,ID,unconnected lookup output,270,not emitted,NOT MIGRATED,The LOOKUP/OUTPUT port has no connector and is never read.
+m_demo_mapping2,LKPTRANS,CREATED_BY,unconnected lookup output,273,not emitted,NOT MIGRATED,The LOOKUP/OUTPUT port has no connector and is never read.
+m_demo_mapping2,LKPTRANS,CREATED_TIME,unconnected lookup output,274,not emitted,NOT MIGRATED,The LOOKUP/OUTPUT port has no connector and is never read.
+m_demo_mapping2,LKPTRANS,UPDATED_BY,unconnected lookup output,275,not emitted,NOT MIGRATED,The LOOKUP/OUTPUT port has no connector and is never read.
+m_demo_mapping2,LKPTRANS,UPDATED_TIME,unconnected lookup output,276,not emitted,NOT MIGRATED,The LOOKUP/OUTPUT port has no connector and is never read.
+m_demo_mapping2,LKPTRANS,ACTIVE_FLAG,unconnected lookup output,277,not emitted,NOT MIGRATED,The LOOKUP/OUTPUT port has no connector and is never read.
+m_demo_mapping2,LKPTRANS,START_DATE,unconnected lookup output,278,not emitted,NOT MIGRATED,The LOOKUP/OUTPUT port has no connector and is never read.
+m_demo_mapping2,LKPTRANS,END_DATE,unconnected lookup output,279,not emitted,NOT MIGRATED,The LOOKUP/OUTPUT port has no connector and is never read.
+m_demo_mapping2,RTRTRANS,LEAD_CO_MNE3,DEFAULT1 port,245,not emitted,NOT MIGRATED,DEFAULT1 is unconnected; UPDTRANS same-named input is fed by Update connectors 411-423.
+m_demo_mapping2,RTRTRANS,BRANCH_CO_MNE3,DEFAULT1 port,246,not emitted,NOT MIGRATED,DEFAULT1 is unconnected; name matching would misroute this port.
+m_demo_mapping2,RTRTRANS,MIS_DATE3,DEFAULT1 port,247,not emitted,NOT MIGRATED,DEFAULT1 is unconnected.
+m_demo_mapping2,RTRTRANS,ID2,DEFAULT1 port,248,not emitted,NOT MIGRATED,DEFAULT1 is unconnected.
+m_demo_mapping2,RTRTRANS,DESCRIPTION3,DEFAULT1 port,249,not emitted,NOT MIGRATED,DEFAULT1 is unconnected.
+m_demo_mapping2,RTRTRANS,SHORT_NAME3,DEFAULT1 port,250,not emitted,NOT MIGRATED,DEFAULT1 is unconnected.
+m_demo_mapping2,RTRTRANS,LEAD_CO_MNE12,DEFAULT1 port,251,not emitted,NOT MIGRATED,DEFAULT1 is unconnected.
+m_demo_mapping2,RTRTRANS,BRANCH_CO_MNE12,DEFAULT1 port,252,not emitted,NOT MIGRATED,DEFAULT1 is unconnected.
+m_demo_mapping2,RTRTRANS,MIS_DATE12,DEFAULT1 port,253,not emitted,NOT MIGRATED,DEFAULT1 is unconnected.
+m_demo_mapping2,RTRTRANS,DESCRIPTION12,DEFAULT1 port,254,not emitted,NOT MIGRATED,DEFAULT1 is unconnected.
+m_demo_mapping2,RTRTRANS,SHORT_NAME12,DEFAULT1 port,255,not emitted,NOT MIGRATED,DEFAULT1 is unconnected.
+m_demo_mapping2,RTRTRANS,New_Flag2,DEFAULT1 port,256,not emitted,NOT MIGRATED,DEFAULT1 is unconnected.
+m_demo_mapping2,RTRTRANS,Changed_Flag2,DEFAULT1 port,257,not emitted,NOT MIGRATED,DEFAULT1 is unconnected.
+m_demo_mapping2,RTRTRANS,o_CREATED_BY2,DEFAULT1 port,258,not emitted,NOT MIGRATED,DEFAULT1 is unconnected.
+m_demo_mapping2,RTRTRANS,o_CREATED_TIME2,DEFAULT1 port,259,not emitted,NOT MIGRATED,DEFAULT1 is unconnected.
+m_demo_mapping2,RTRTRANS,o_UPDATED_BY2,DEFAULT1 port,260,not emitted,NOT MIGRATED,DEFAULT1 is unconnected.
+m_demo_mapping2,RTRTRANS,o_UPDATED_TIME2,DEFAULT1 port,261,not emitted,NOT MIGRATED,DEFAULT1 is unconnected.
+m_demo_mapping2,RTRTRANS,Key2,DEFAULT1 port,262,not emitted,NOT MIGRATED,DEFAULT1 is unconnected.
