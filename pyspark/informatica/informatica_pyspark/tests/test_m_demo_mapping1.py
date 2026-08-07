@@ -34,7 +34,9 @@ def test_mapping1_reproduces_router_aggregation_sequence_and_lookups(spark):
             (13, 3, "unused", "LAST4", datetime(2024, 1, 4), 9.0, 30),
         ],
         ["TX_ID", "ACCT_ID", "FIRST_NM", "LAST_NM", "TX_DTTM", "TX_AMT", "CUST_ID"],
-    ).withColumn("BAL_AMT", F.lit(100.0)).withColumn("TX_TYPE_CD", F.lit("DR"))
+    ).withColumn("BAL_AMT", F.lit(100.0)).withColumn(
+        "TX_TYPE_CD", F.lit("DR")
+    )
     source4 = spark.createDataFrame(
         [
             (1, "SB", " desc1 ", " 8000", date(2020, 1, 1), None, "A"),
@@ -112,11 +114,11 @@ def test_mapping1_defect3_sell_start_date_is_null(spark):
     )
     empty = spark.createDataFrame([], "id long")
     frames = {
-            "demo_source3": spark.createDataFrame(
-                [], "TX_ID long, ACCT_ID long, FIRST_NM string, LAST_NM string, "
-                "TX_DTTM timestamp, TX_AMT double, TX_TYPE_CD string, "
-                "BAL_AMT double, CUST_ID long"
-            ),
+        "demo_source3": spark.createDataFrame(
+            [], "TX_ID long, ACCT_ID long, FIRST_NM string, LAST_NM string, "
+            "TX_DTTM timestamp, TX_AMT double, TX_TYPE_CD string, "
+            "BAL_AMT double, CUST_ID long"
+        ),
         "demo_source4": spark.createDataFrame(
             [], "ACCT_ID long, ACCT_TYP string, ACCT_DESC string, CRDT_LN string, "
             "CR8_DT date, CLSR_DT date, ACCT_STAT_CD string"

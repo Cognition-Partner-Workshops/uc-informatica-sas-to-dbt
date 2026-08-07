@@ -63,8 +63,6 @@ def run(ctx: RunContext) -> dict[str, DataFrame]:
     target6_rows = joined.where(F.col("ACCT_TYP") == F.lit("SB"))
 
     target5 = target5_rows.select(
-        "ACCT_ID", "lkp_FIRST_NM", "LAST_NM", "BAL_AMT", "lkp_CRDT_SCORE"
-    ).select(
         "ACCT_ID",
         F.col("lkp_FIRST_NM").alias("FIRST_NM"),
         "LAST_NM",
@@ -86,7 +84,7 @@ def run(ctx: RunContext) -> dict[str, DataFrame]:
     target6 = aggregated.select(
         "ACCT_ID",
         F.col("o_acc_trim").alias("ACCT_TYP"),
-        "o_ACCT_DESC",
+        F.col("o_ACCT_DESC").alias("ACCT_DESC"),
         "CR8_DT",
         F.col("o_crdt_trim").alias("CRDT_LN"),
         "CLSR_DT",
@@ -94,21 +92,8 @@ def run(ctx: RunContext) -> dict[str, DataFrame]:
         "TX_ID",
         F.col("NEXTVAL").alias("ACCT_KEY"),
         "TX_DTTM",
-        "o_TX_AMT",
-        F.col("lkp_TX_TYPE_CD").alias("TX_TYPE_CD"),
-    ).select(
-        "ACCT_ID",
-        "ACCT_TYP",
-        F.col("o_ACCT_DESC").alias("ACCT_DESC"),
-        "CR8_DT",
-        "CRDT_LN",
-        "CLSR_DT",
-        "ACCT_STAT_CD",
-        "TX_ID",
-        "ACCT_KEY",
-        "TX_DTTM",
         F.col("o_TX_AMT").alias("TX_AMT"),
-        "TX_TYPE_CD",
+        F.col("lkp_TX_TYPE_CD").alias("TX_TYPE_CD"),
     )
 
     # DEF-3: the session-default formatted date cannot match DD/MM/YYYY.
