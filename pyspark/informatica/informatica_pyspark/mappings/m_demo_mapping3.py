@@ -3,7 +3,7 @@
 from pyspark.sql import functions as F
 
 from ..config import RunContext
-from ..infa import abort_if, iif, isnull, not_isnull
+from ..infa import abort_if, isnull, not_isnull
 
 TARGETS = ["demo_target2", "demo_target21"]
 ABORT_MESSAGE = "Relationship_to_Subscriber_Code_Labe valuel is null"
@@ -53,16 +53,23 @@ def run(ctx: RunContext) -> dict:
     )
     expression = filtered.withColumn(
         "o_Relationship_to_Subscriber_Code_Label",
-        iif(
-            isnull("Relationship_to_Subscriber_Code_Label"),
-            F.lit(None),
-            F.col("Relationship_to_Subscriber_Code_Label"),
-        ),
+        F.col("Relationship_to_Subscriber_Code_Label"),
     )
-    target = expression.select(
-        *[F.col(source_name).alias(target_name) for target_name, source_name in TARGET_COLUMNS]
-    )
+
+    # The iif true branch is ABORT(), realised by abort_if above.
+    target_groups = {
+        "demo_target2": expression.where(isnull("Social_Security_Number")),
+        "demo_target21": expression.where(not_isnull("Social_Security_Number")),
+    }
+
+    def target_frame(group):
+        return group.select(
+            *[
+                F.col(source_name).alias(target_name)
+                for target_name, source_name in TARGET_COLUMNS
+            ]
+        )
+
     return {
-        "demo_target2": target.where(isnull("Social_Security_Number")),
-        "demo_target21": target.where(not_isnull("Social_Security_Number")),
+        instance: target_frame(group) for instance, group in target_groups.items()
     }
