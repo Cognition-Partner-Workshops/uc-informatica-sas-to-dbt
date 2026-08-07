@@ -6,6 +6,7 @@ from informatica_pyspark.config import RunConfig
 from informatica_pyspark.functions import InformaticaAbort
 from informatica_pyspark.io import LocalCsvIO
 from informatica_pyspark.mappings import m_demo_mapping3
+from informatica_pyspark.workflow import run_mapping
 
 
 def _outputs(spark, tmp_path, data_dir="legacy/informatica/data"):
@@ -19,8 +20,15 @@ def _outputs(spark, tmp_path, data_dir="legacy/informatica/data"):
 
 
 def test_abort_fails_before_writing_targets(spark, tmp_path):
+    cfg = RunConfig(
+        business_date=dt.date(2024, 1, 31),
+        data_dir="legacy/informatica/data/abort",
+        out_dir=tmp_path,
+    )
+    io = LocalCsvIO(spark, cfg)
+
     with pytest.raises(InformaticaAbort, match="Relationship_to_Subscriber"):
-        _outputs(spark, tmp_path, "legacy/informatica/data/abort")
+        run_mapping("m_demo_mapping3", cfg, io)
 
     assert list(tmp_path.glob("*.csv")) == []
 

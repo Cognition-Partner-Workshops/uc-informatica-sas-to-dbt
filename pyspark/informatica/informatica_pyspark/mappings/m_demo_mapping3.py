@@ -46,7 +46,7 @@ def _target_projection(frame: DataFrame) -> DataFrame:
     )
     for column in NUMERIC_TARGET_COLUMNS:
         renamed = renamed.withColumn(column, F.col(column).cast("double"))
-    return renamed.select(*TARGET_COLUMNS).drop("__ROW_ORD")
+    return renamed.select(*TARGET_COLUMNS)
 
 
 def run(

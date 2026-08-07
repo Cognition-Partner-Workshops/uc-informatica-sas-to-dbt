@@ -40,6 +40,18 @@ on purpose:
   explicitly cast to double to preserve the legacy CSV rendering.
 - No lookup, aggregator, or sequence-generator semantics exist in this mapping.
   No changes to `io.py` were needed.
+- `__ROW_ORD` is absent from returned frames because the final
+  `select(*TARGET_COLUMNS)` projection excludes it; no separate drop is needed.
+
+## Abort timing decision
+
+PowerCenter evaluates `ABORT()` row by row and stops the session mid-stream, so
+a real run could in principle have written rows before the abort. The PySpark
+implementation evaluates the guard eagerly over the whole filtered DataFrame
+before any target write. This is the behavior required by DESIGN §4 and
+guarantees no partial output. The XML does not determine partial-output
+semantics; this is a decision forced by the design contract, distinct from the
+recovered legacy ABORT behavior above.
 
 The XML does not specify a meaningful output ordering for the two target
 instances. This conversion does not impose one: the existing writer and parity
