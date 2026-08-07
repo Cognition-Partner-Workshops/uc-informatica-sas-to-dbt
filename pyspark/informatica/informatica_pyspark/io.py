@@ -1,6 +1,8 @@
 import shutil
+import base64
 from pathlib import Path
 
+from cryptography.hazmat.primitives import serialization
 from pyspark.sql import DataFrame, Window
 from pyspark.sql import functions as F
 from pyspark.sql.types import DateType, TimestampType
@@ -69,10 +71,21 @@ class SnowflakeIO:
             "sfDatabase": cfg.database,
         }
         if cfg.private_key_path:
-            self.options["pem_private_key"] = str(cfg.private_key_path)
+            key = serialization.load_pem_private_key(
+                cfg.private_key_path.read_bytes(), password=None
+            )
+            der = key.private_bytes(
+                serialization.Encoding.DER,
+                serialization.PrivateFormat.PKCS8,
+                serialization.NoEncryption(),
+            )
+            self.options["pem_private_key"] = base64.b64encode(der).decode("ascii")
 
     def _options(self, schema):
-        return {**self.options, "sfSchema": schema}
+        sf_url = self.cfg.account
+        if not sf_url.endswith(".snowflakecomputing.com"):
+            sf_url = f"{sf_url}.snowflakecomputing.com"
+        return {**self.options, "sfURL": sf_url, "sfSchema": schema}
 
     def read(self, name: str) -> DataFrame:
         df = (

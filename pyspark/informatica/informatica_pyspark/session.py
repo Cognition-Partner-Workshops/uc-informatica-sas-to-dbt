@@ -12,11 +12,19 @@ def build_spark(cfg: RunConfig) -> SparkSession:
         .config("spark.sql.session.timeZone", "UTC")
     )
     if cfg.io == "snowflake":
-        packages = ",".join(
-            [
-                f"net.snowflake:spark-snowflake_2.12:{cfg.snowflake_connector_version}",
-                f"net.snowflake:snowflake-jdbc:{cfg.snowflake_jdbc_version}",
-            ]
-        )
-        builder = builder.config("spark.jars.packages", packages)
+        if cfg.snowflake_jars_dir:
+            jars = sorted(cfg.snowflake_jars_dir.glob("*.jar"))
+        else:
+            jars = []
+        if jars:
+            builder = builder.config("spark.jars", ",".join(str(jar) for jar in jars))
+        else:
+            packages = ",".join(
+                [
+                    f"net.snowflake:spark-snowflake_2.12:"
+                    f"{cfg.snowflake_connector_version}-spark_3.5",
+                    f"net.snowflake:snowflake-jdbc:{cfg.snowflake_jdbc_version}",
+                ]
+            )
+            builder = builder.config("spark.jars.packages", packages)
     return builder.getOrCreate()

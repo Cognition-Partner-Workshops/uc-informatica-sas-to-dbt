@@ -45,6 +45,23 @@ The first real Snowflake provisioning run is recorded in
 `docs/migration/snowflake_milestone_e.md`. Do not reuse its schemas for another
 run; pass a fresh `--run-id`.
 
+If Maven Central is rate-limited, provision the pinned connector artifacts
+outside the repository and pass that directory to the verifier:
+
+```bash
+PYTHONPATH=pyspark/informatica .venv/bin/python \
+  pyspark/informatica/tools/provision_snowflake_jars.py \
+  --output /tmp/snowflake-spark-jars
+PYTHONPATH=pyspark/informatica .venv/bin/python \
+  pyspark/informatica/tools/snowflake_verify.py \
+  --run-id <RUNID> --jars-dir /tmp/snowflake-spark-jars
+```
+
+The verifier executes the generated proof, queries Snowflake query history,
+performs a Spark connector write/read round-trip, and drops its throwaway
+table. Spark key-pair authentication receives the Base64-encoded PKCS8 DER
+form required by the connector; the source PEM remains outside the repository.
+
 ## Parity keys
 
 The minimal unique keys in the generated Informatica baseline are:

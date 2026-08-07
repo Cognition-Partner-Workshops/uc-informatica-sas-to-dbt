@@ -65,28 +65,78 @@ first data line after the header and each subsequent value follows physical
 file order. The generated loader output confirms the tables and row counts;
 the target schemas remain standing for the follow-up Spark round-trip.
 
-## Query-history blocker
+## Verification
 
-The requested query was attempted exactly as an `information_schema.query_history`
-object query:
+The corrected table-function query worked. The selected variant was
+`query_history`:
 
 ```sql
-select query_id, query_text, start_time, rows_produced
-from devin_migration_demo.information_schema.query_history
-where user_name = current_user()
-  and warehouse_name = current_warehouse()
-  and start_time >= dateadd('hour', -2, current_timestamp())
+select query_id, query_text, start_time, end_time, rows_produced,
+       warehouse_name, execution_status
+from table(devin_migration_demo.information_schema.query_history(
+  end_time_range_start => dateadd('hour', -3, current_timestamp()),
+  result_limit => 200))
+where warehouse_name = current_warehouse()
 order by start_time desc
 ```
 
-Snowflake returned:
+Representative real query-history output included:
 
 ```text
-002003 (42S02): SQL compilation error:
-Object 'DEVIN_MIGRATION_DEMO.INFORMATION_SCHEMA.QUERY_HISTORY' does not exist or not authorized.
+01c639a2-0107-4ec9-000f-dc5e0003a2b6 ... CREATE SCHEMA "SOURCE_INFORMATICA_20260807T0658Z" ... 0 DEVIN_DEMO_WH SUCCESS
+01c639a2-0107-58ad-000f-dc5e0004208a ... CREATE SCHEMA "PYSPARK_INFORMATICA_20260807T0658Z" ... 0 DEVIN_DEMO_WH SUCCESS
+01c639a2-0107-5426-000f-dc5e00040182 ... CREATE SCHEMA "BASELINE_INFORMATICA_20260807T0658Z" ... 0 DEVIN_DEMO_WH SUCCESS
+01c639a2-0107-58c8-000f-dc5e00038536 ... INSERT INTO ... LKP_DEMO_SOURCE1 ... 6 DEVIN_DEMO_WH SUCCESS
+01c639a2-0107-58c8-000f-dc5e000430c2 ... INSERT INTO ... LKP_DEMO_SOURCE3 ... 6 DEVIN_DEMO_WH SUCCESS
+01c639a2-0107-58c8-000f-dc5e000430c6 ... INSERT INTO ... DEMO_TARGET1 ... 5 DEVIN_DEMO_WH SUCCESS
+01c639a2-0107-544d-000f-dc5e00034766 ... CREATE OR REPLACE VIEW ... V_DEMO_TARGET5 ... 0 DEVIN_DEMO_WH SUCCESS
+01c639af-0107-562f-000f-dc5e00038576 ... proof statement ... 7 DEVIN_DEMO_WH SUCCESS
+01c639b0-0107-4ec9-000f-dc5e0003a2fe ... CREATE TABLE ... _MILESTONE_E_ROUND_TRIP ... 0 DEVIN_DEMO_WH SUCCESS
+01c639b0-0107-58c8-000f-dc5e0004310e ... COPY INTO _MILESTONE_E_ROUND_TRIP_staging ... 2 DEVIN_DEMO_WH SUCCESS
+01c639b0-0107-562f-000f-dc5e00038582 ... SELECT "ID", "LABEL" FROM _MILESTONE_E_ROUND_TRIP ... 2 DEVIN_DEMO_WH SUCCESS
+01c639b0-0107-562f-000f-dc5e0003858a ... DROP TABLE "PYSPARK_INFORMATICA_20260807T0658Z"."_MILESTONE_E_ROUND_TRIP" ... 0 DEVIN_DEMO_WH SUCCESS
 ```
 
-Per the migration handoff instruction, no alternate query source or query shape
-was substituted after this schema/authorization surprise. Consequently, the
-Spark connector round-trip, proof execution, and query-history evidence remain
-pending the lead's decision on the authorized Snowflake query-history interface.
+The stored ordinal checks returned:
+
+```text
+lkp_demo_source1: stored=[0, 1, 2, 3, 4, 5] csv_expected=[0, 1, 2, 3, 4, 5] MATCH=True
+lkp_demo_source2: stored=[0, 1, 2, 3, 4, 5] csv_expected=[0, 1, 2, 3, 4, 5] MATCH=True
+lkp_demo_source3: stored=[0, 1, 2, 3, 4, 5] csv_expected=[0, 1, 2, 3, 4, 5] MATCH=True
+demo_target1: stored=[0, 1, 2, 3, 4] csv_expected=[0, 1, 2, 3, 4] MATCH=True
+```
+
+The Spark connector round-trip passed:
+
+```text
+Row(ID=Decimal('101'), LABEL='snowflake-round-trip')
+Row(ID=Decimal('102'), LABEL='second-row')
+Spark Snowflake round-trip: PASS; throwaway table dropped
+```
+
+The generated proof statement was executed as-is against the empty migrated
+tables. It produced the expected negative control:
+
+```text
+DEMO_TARGET1_INS  baseline=4 migrated=0 baseline_hash=8128491501339877599 migrated_hash=0 baseline_minus_migrated=4 migrated_minus_baseline=0 FAIL
+DEMO_TARGET1_UPD  baseline=3 migrated=0 baseline_hash=-5257889502721467851 migrated_hash=0 baseline_minus_migrated=3 migrated_minus_baseline=0 FAIL
+DEMO_TARGET2      baseline=3 migrated=0 baseline_hash=3123907108787439864 migrated_hash=0 baseline_minus_migrated=3 migrated_minus_baseline=0 FAIL
+DEMO_TARGET21     baseline=3 migrated=0 baseline_hash=-5462086455473858760 migrated_hash=0 baseline_minus_migrated=3 migrated_minus_baseline=0 FAIL
+DEMO_TARGET3      baseline=4 migrated=0 baseline_hash=2979066879702683896 migrated_hash=0 baseline_minus_migrated=4 migrated_minus_baseline=0 FAIL
+DEMO_TARGET5      baseline=2 migrated=0 baseline_hash=4054638233888008612 migrated_hash=0 baseline_minus_migrated=2 migrated_minus_baseline=0 FAIL
+DEMO_TARGET6      baseline=2 migrated=0 baseline_hash=-987830873279475629 migrated_hash=0 baseline_minus_migrated=2 migrated_minus_baseline=0 FAIL
+```
+
+## Maven fallback
+
+The initial Maven coordinates were tested, but Maven Central returned HTTP 429
+rate-limit responses and Spark reported unresolved dependencies. The
+connector and JDBC jars were therefore provisioned outside the repository:
+
+```text
+/tmp/snowflake-spark-jars/spark-snowflake_2.12-3.2.1-spark_3.5.jar
+/tmp/snowflake-spark-jars/snowflake-jdbc-4.0.2.jar
+```
+
+`session.py` uses `spark.jars` when `snowflake_jars_dir` is supplied; otherwise
+it retains the pinned `spark.jars.packages` fallback.

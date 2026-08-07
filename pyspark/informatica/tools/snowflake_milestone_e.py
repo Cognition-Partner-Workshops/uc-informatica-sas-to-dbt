@@ -8,7 +8,6 @@ The private key is read from ``SNOWFLAKE_PRIVATE_KEY`` only to create a
 
 import argparse
 import csv
-import json
 import os
 import re
 import tempfile
@@ -218,10 +217,12 @@ def proof_sql(baseline_schema, migrated_schema):
 
 def history_sql():
     return (
-        "select query_id, query_text, start_time, rows_produced "
-        "from devin_migration_demo.information_schema.query_history "
-        "where user_name = current_user() and warehouse_name = current_warehouse() "
-        "and start_time >= dateadd('hour', -2, current_timestamp()) "
+        "select query_id, query_text, start_time, end_time, rows_produced, "
+        "warehouse_name, execution_status "
+        "from table(devin_migration_demo.information_schema.query_history("
+        "end_time_range_start => dateadd('hour', -3, current_timestamp()), "
+        "result_limit => 200)) "
+        "where warehouse_name = current_warehouse() "
         "order by start_time desc"
     )
 
