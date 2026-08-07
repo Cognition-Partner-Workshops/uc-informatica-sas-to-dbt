@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-import glob
 import base64
+import glob
 import os
 import shutil
 import tempfile
@@ -265,14 +265,40 @@ def _private_key_der() -> bytes:
     )
 
 
-def snowflake_connection(cfg: RunConfig):
+def snowflake_connection(
+    cfg: RunConfig | None = None,
+    *,
+    account: str | None = None,
+    user: str | None = None,
+    role: str | None = None,
+    warehouse: str | None = None,
+    database: str | None = None,
+):
+    if cfg is not None:
+        account = cfg.snowflake_account
+        user = cfg.snowflake_user
+        role = cfg.snowflake_role
+        warehouse = cfg.snowflake_warehouse
+        database = cfg.snowflake_database
+    missing = [
+        name
+        for name, value in {
+            "account": account,
+            "user": user,
+            "warehouse": warehouse,
+            "database": database,
+        }.items()
+        if not value
+    ]
+    if missing:
+        raise ValueError("Missing Snowflake setting(s): " + ", ".join(missing))
     return snowflake.connector.connect(
-        account=cfg.snowflake_account,
-        user=cfg.snowflake_user,
+        account=account,
+        user=user,
         private_key=_private_key_der(),
-        role=cfg.snowflake_role,
-        warehouse=cfg.snowflake_warehouse,
-        database=cfg.snowflake_database,
+        role=role,
+        warehouse=warehouse,
+        database=database,
     )
 
 
@@ -413,16 +439,25 @@ class SnowflakeIO:
             F.col(field.name.upper()).cast(field.dataType).alias(field.name)
             for field in schema.fields
         ]
-        columns.append(
-            F.coalesce(F.col("__ROW_ORD"), F.lit(0))
-            .cast(LongType())
-            .alias("__ROW_ORD")
-        )
-        projected = frame.select(*columns)
-        exact_schema = StructType(
-            [*schema.fields, StructField("__ROW_ORD", LongType(), False)]
-        )
-        return self.spark.createDataFrame(projected.rdd, exact_schema)
+        row_ord = frame.select("__ROW_ORD")
+        metrics = row_ord.agg(
+            F.count("*").alias("row_count"),
+            F.count("__ROW_ORD").alias("row_ord_count"),
+            F.sum(F.col("__ROW_ORD").isNull().cast("long")).alias("null_count"),
+        ).first()
+        null_count = metrics["null_count"] or 0
+        if (
+            null_count
+            or metrics["row_count"] != metrics["row_ord_count"]
+        ):
+            raise ValueError(
+                f"{name} has invalid __ROW_ORD: "
+                f"rows={metrics['row_count']}, "
+                f"non_null_row_ord={metrics['row_ord_count']}, "
+                f"null_row_ord={null_count}"
+            )
+        columns.append(F.col("__ROW_ORD").cast(LongType()).alias("__ROW_ORD"))
+        return frame.select(*columns)
 
     def write_target(self, instance: str, df: DataFrame) -> None:
         _validate_target_schema(instance, df)

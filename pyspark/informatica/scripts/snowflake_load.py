@@ -50,14 +50,13 @@ def _parser() -> argparse.ArgumentParser:
 
 
 def _connection(args):
-    class Config:
-        snowflake_account = args.account
-        snowflake_user = args.user
-        snowflake_role = args.role
-        snowflake_warehouse = args.warehouse
-        snowflake_database = args.database
-
-    return snowflake_connection(Config())
+    return snowflake_connection(
+        account=args.account,
+        user=args.user,
+        role=args.role,
+        warehouse=args.warehouse,
+        database=args.database,
+    )
 
 
 def _python_value(value, data_type):
