@@ -144,10 +144,10 @@ Task graph (derived from `WORKFLOWLINK` edges):
   ├─ `Decision3` --$Decision3.Condition = 0--> `Failed_Email3` (XML line 1475)
   └─ `Failed_Email2` → `Control (Stop parent)` (XML line 1468)
 
-Session execution order is **s_m_demo_mapping2 → s_m_demo_mapping1 → s_m_demo_mapping3**: mapping numbers **2, 1, 3** — **2, 1, 3, not the mapping numbering**; computed order matches the expected workflow order: `True`.
+Session execution order is **s_m_demo_mapping2 → s_m_demo_mapping1 → s_m_demo_mapping3** — mapping numbers **2, 1, 3**, not the mapping numbering. Computed order matches the expected workflow order: `True`.
 
 | session | mapping | targets in load order | Treat source rows as | Insert | Update as Update | xml line |
-|---|---|---|---|---|---|---|---|
+|---|---|---|---|---|---|---|
 | `s_m_demo_mapping1` | `m_demo_mapping1` | demo_target6, demo_target5, demo_target3 | `Insert` | `YES` | `YES` | 1236 |
 | `s_m_demo_mapping2` | `m_demo_mapping2` | demo_target1_INS, demo_target1_UPD | `Data driven` | `YES` | `YES` | 1365 |
 | `s_m_demo_mapping3` | `m_demo_mapping3` | demo_target21, demo_target2 | `Insert` | `YES` | `YES` | 1169 |
@@ -170,7 +170,7 @@ Connector values in this section are read from regenerated `baseline/informatica
 | m1 demo_target5.CRDT_SCORE | account 1003 | `677` | `715` | 669, 794, 833, 849 |  |
 | m1 demo_target6.TX_TYPE_CD | TX_ID 5003 / account 1002 | `DR` | `CR` | 580, 608, 668, 786, 815, 831, 842, 852, 875 | Use Last Value derived lookup=DR |
 | m1 demo_target6.CR8_DT | account 1001 | `2024-01-31` | `2023-08-18` | 580, 668, 792, 814, 828, 846, 876 | connector exists but is overridden by positional SQL-override binding |
-| m1 SQ STRCMP select item | all rows | `dead / no target row` | `not discriminable` | 580, 579 |  |
+| m1 SQ STRCMP select item | all rows | `dead / no target row` | `not discriminable` | 579, 580 |  |
 | m2 UPDTRANS input names vs Update router connectors | REC00001 | `General ledger account 1` | `no DEFAULT1 target row (unconnected)` | 190, 361, 378, 384, 396, 415 |  |
 | m2 demo_target1_UPD.DESCRIPTION | REC00002 | `General ledger account 2` | `lookup DESCRIPTION1 does not reach target` | 190, 361, 378, 384, 396, 415 |  |
 | m3 router groups / demo_target2 | Member_Record_Number 500000 | `Eli` | `suffix *2/default group would be NULL / no row` | 916, 948, 1032, 1046, 1060, 1074 |  |

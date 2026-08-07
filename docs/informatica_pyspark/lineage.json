@@ -6465,8 +6465,8 @@
       "row": "all rows",
       "trap": "m1 SQ STRCMP select item",
       "xml_lines": [
-        580,
-        579
+        579,
+        580
       ]
     },
     {

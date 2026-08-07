@@ -503,7 +503,7 @@ def evidence(mappings):
          "note": "connector exists but is overridden by positional SQL-override binding"},
         {"trap": "m1 SQ STRCMP select item", "row": "all rows",
          "connector_value": "dead / no target row", "name_matched_value": "not discriminable",
-         "xml_lines": [580, 579]},
+         "xml_lines": [579, 580]},
         {"trap": "m2 UPDTRANS input names vs Update router connectors",
          "row": "REC00001", "connector_value": target_upd_1,
          "name_matched_value": "no DEFAULT1 target row (unconnected)",
@@ -591,12 +591,12 @@ def render(doc):
     control = next(link for link in doc["workflow"]["links"] if link["to"] == "Control")
     lines.append(f"  └─ `{control['from']}` → `Control (Stop parent)` "
                  f"(XML line {control['xml_line']})")
-    lines += ["", f"Session execution order is **{order}**: mapping numbers **{mapping_numbers}** "
-              f"— **2, 1, 3, not the mapping numbering**; computed order matches the "
-              f"expected workflow order: `{doc['workflow']['execution_order_matches_expected']}`.",
+    lines += ["", f"Session execution order is **{order}** — mapping numbers **{mapping_numbers}**, "
+              f"not the mapping numbering. Computed order matches the expected workflow order: "
+              f"`{doc['workflow']['execution_order_matches_expected']}`.",
               "", "| session | mapping | targets in load order | Treat source rows as | Insert | "
               "Update as Update | xml line |",
-              "|---|---|---|---|---|---|---|---|"]
+              "|---|---|---|---|---|---|---|"]
     for session in doc["workflow"]["sessions"]:
         values = {}
         for attribute in session["attributes"]:
