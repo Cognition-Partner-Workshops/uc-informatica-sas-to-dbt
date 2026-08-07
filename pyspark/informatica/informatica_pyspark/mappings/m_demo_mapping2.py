@@ -63,7 +63,7 @@ def run(spark, cfg, io):
                 F.col("source.SHORT_NAME"),
             )
         ).alias("MD5_tgt"),
-        F.col("lookup.__lookup_Key").isNull().alias("__lookup_key_is_null"),
+        inf_isnull(F.col("lookup.__lookup_Key")).alias("__lookup_key_is_null"),
         F.lit("IDWUSER").alias("o_CREATED_BY"),
         F.lit(cfg.business_date).cast(DateType()).alias("o_CREATED_TIME"),
         F.lit("IDWUSER").alias("o_UPDATED_BY"),
