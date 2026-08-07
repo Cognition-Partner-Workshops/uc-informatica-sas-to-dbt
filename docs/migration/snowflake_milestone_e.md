@@ -48,8 +48,8 @@ demo_target6: 2 rows
 ```
 
 Normalized `V_<TARGET>` views were generated in both the baseline and migrated
-schemas. The generated proof SQL is written to the ignored
-`build/pyspark/informatica/proof_<RUNID>.sql`.
+schemas. The generated proof SQL is committed as durable evidence at
+`docs/migration/snowflake_proof_20260807T0658Z.sql`.
 
 ## Ordinal materialization
 

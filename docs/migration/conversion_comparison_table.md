@@ -28,10 +28,13 @@ the duplicate dead-port entries called out by `m_demo_mapping1`.
    `Use Last Value` and `Use Any Value` deterministic.
 4. **DECISION-4 — AES sentinel (`m_demo_mapping2`, L190–191).** Replacing the
    literal sentinel with a real hash changes update classification plausibly.
-5. **DECISION-5 — per-instance materialisation (`m_demo_mapping2`, L328–340).**
-   Same-named discarded `DEFAULT1` ports must not be mistaken for update ports.
-6. **DECISION-6 — separate router outputs (`m_demo_mapping3`, L1009–1010).**
-   Combining the two target instances loses a key parity control.
+5. **DECISION-5 — source sequence/`Key` assignment order
+   (`m_demo_mapping2`, L317–321).** Insert keys follow `demo_source1`'s
+   physical file order; unordered assignment would produce plausible but wrong
+   keys.
+6. **DECISION-6 — per-writer-instance materialisation
+   (`m_demo_mapping2`, L345–346; `m_demo_mapping3`, L1009–1010).** Combining
+   writer instances loses the insert/update or target-instance parity control.
 7. MEDIUM-confidence SQL overrides, pass-through expressions, and constants
    remain listed in the per-mapping tables for targeted review.
 
@@ -43,8 +46,8 @@ the duplicate dead-port entries called out by `m_demo_mapping1`.
 | DECISION-2 | `m_demo_mapping1` | `SEQ_GEN.NEXTVAL` consumption order for `demo_target6.ACCT_KEY`. |
 | DECISION-3 | `m_demo_mapping1`, `m_demo_mapping2` | Lookup multiple-match policies and physical-order tie-breaks. |
 | DECISION-4 | `m_demo_mapping2` | AES sentinel used by update classification. |
-| DECISION-5 | `m_demo_mapping2` | Insert/update per-instance materialisation and router-port interpretation. |
-| DECISION-6 | `m_demo_mapping3` | Separate target-instance materialisation. |
+| DECISION-5 | `m_demo_mapping2` | `demo_target1_INS.Key` assignment from `demo_source1` physical file order. |
+| DECISION-6 | `m_demo_mapping2`, `m_demo_mapping3` | Per-writer-instance materialisation: INS/UPD instances and the two mapping3 target instances remain separate. |
 
 Detailed expressions, XML line numbers, conversion locations, and reasons:
 
