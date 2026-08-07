@@ -1,0 +1,53 @@
+# Informatica PySpark scaffold
+
+This project intentionally follows `docs/migration/00_scaffold_and_conventions.md`.
+Mappings return target-instance DataFrames and the caller owns all writes.
+
+## Local setup
+
+From the repository root:
+
+```bash
+python3 -m venv .venv
+.venv/bin/pip install --upgrade pip
+.venv/bin/pip install -r pyspark/informatica/requirements-local.txt
+export PYTHONPATH="$PWD/pyspark/informatica"
+```
+
+Java 17 is required. Run the local CSV mode with:
+
+```bash
+.venv/bin/python -m informatica_pyspark.cli --config pyspark/informatica/conf/local.yml workflow
+```
+
+Snowflake mode uses the same mapping code and is configured in
+`conf/snowflake.yml`; account credentials and connector wiring are intentionally
+reserved for a later milestone.
+
+## Parity keys
+
+The minimal unique keys in the generated Informatica baseline are:
+
+| Target instance | Key |
+|---|---|
+| demo_target1_INS | ID |
+| demo_target1_UPD | ID |
+| demo_target2 | Member_Identifier |
+| demo_target21 | Member_Identifier |
+| demo_target3 | PRODUCT_ID |
+| demo_target5 | ACCT_ID |
+| demo_target6 | ACCT_ID |
+
+These are checked for uniqueness before parity comparisons. Each target is
+materialized separately, even where Informatica instances share a physical
+target definition.
+
+Uniqueness is verified against the regenerated baseline seed, never assumed
+from the target definition. `demo_target5` is unique on `ACCT_ID` only for this
+seed; if a non-SB account has multiple transactions, its fallback key set is
+`["ACCT_ID", "TX_ID"]`.
+
+The pre-existing `demo_target1` state is read with an explicit schema:
+`Key` is numeric (`DOUBLE`) and duplicate `ID` rows are retained with their
+physical `__line_ordinal`. This preserves the DECISION-3 `Use Any Value`
+fixture, which chooses highest `Key` and then highest physical ordinal.
