@@ -934,4 +934,5 @@ ROWCOUNT=7
 - `__ROW_ORD` correctness is asserted by the loader’s ordering check, which uses the same loader path that materializes the column. An independent check would compare the loaded values directly against CSV bytes.
 - Snowflake connector metadata probes emitted nonfatal cloud metadata warnings in this environment; they did not fail the run.
 - The `ABORT()` failure path was not exercised against Snowflake. The seven-target success run does not prove partial-write behavior for a failing Snowflake mapping.
+- `MINUS` is set-based: it removes duplicates before comparing, so equal row counts plus zero rows in both directions would not by itself distinguish a table holding `{a, a, b}` from one holding `{a, b, b}`. Row multiplicity is covered here by the `HASH_AGG` checksum, which aggregates every row, not by the `MINUS` pair.
 - The checksum is an order-independent aggregate and can theoretically collide; the bidirectional `MINUS` checks are stronger for the captured rows but still inherit the shared schema and seed-data limitations above.
