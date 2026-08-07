@@ -8,7 +8,7 @@ m_demo_mapping2,EXPTRANS,ID,ID,167,m_demo_mapping2.py:43,HIGH,Connector 383 trac
 m_demo_mapping2,EXPTRANS,DESCRIPTION,DESCRIPTION,168,m_demo_mapping2.py:44,HIGH,Connector 384 traces this source description pass-through.
 m_demo_mapping2,EXPTRANS,SHORT_NAME,SHORT_NAME,169,m_demo_mapping2.py:45,HIGH,Connector 385 traces this pass-through from SQ to EXPTRANS.
 m_demo_mapping2,EXPTRANS,Key,Key,170,m_demo_mapping2.py:46,HIGH,Connector 392 feeds the lookup Key into this double port.
-m_demo_mapping2,EXPTRANS,LEAD_CO_MNE1,LEAD_CO_MNE1,171,m_demo_mapping2.py:47,HIGH,"Connector 387 feeds the lookup column, not the source column."
+m_demo_mapping2,LKPTRANS,LEAD_CO_MNE,LEAD_CO_MNE,267,m_demo_mapping2.py:47 / :53,HIGH,"Connector 387 feeds the lookup's LEAD_CO_MNE into EXPTRANS.LEAD_CO_MNE1; name matching would wrongly use the source column."
 m_demo_mapping2,EXPTRANS,BRANCH_CO_MNE1,BRANCH_CO_MNE1,172,m_demo_mapping2.py:48,HIGH,Connector 388 feeds this lookup pass-through.
 m_demo_mapping2,EXPTRANS,MIS_DATE1,MIS_DATE1,173,m_demo_mapping2.py:49,HIGH,Connector 389 feeds this lookup pass-through.
 m_demo_mapping2,EXPTRANS,DESCRIPTION1,DESCRIPTION1,174,m_demo_mapping2.py:50,HIGH,Connector 390 feeds this lookup pass-through.
@@ -26,12 +26,12 @@ m_demo_mapping2,LKPTRANS,Lookup table name,demo_target1,282,io.read_source("demo
 m_demo_mapping2,LKPTRANS,Lookup Source Filter,,283,io.read_source("demo_target1"),MEDIUM,XML filter is empty; no lookup filter is applied.
 m_demo_mapping2,LKPTRANS,Lookup policy on multiple match,Use Any Value,285,lookup_use_any_value(...),LOW,"XML does not define the chosen row; rejected lowest Key, physical-first, and physical-last in decisions."
 m_demo_mapping2,LKPTRANS,Lookup condition,ID = ID1,286,m_demo_mapping2.py:33-37,HIGH,Plain left join uses the connector-fed source ID and lookup ID.
-m_demo_mapping2,RTRTRANS,Insert,New_Flag='Insert',188,m_demo_mapping2.py:81-82,HIGH,Insert group predicate is explicit in XML and code.
-m_demo_mapping2,RTRTRANS,Update,Changed_Flag='Update',190,m_demo_mapping2.py:123,HIGH,Update group predicate is explicit in XML and code.
+m_demo_mapping2,RTRTRANS,Insert,New_Flag='Insert',188,m_demo_mapping2.py:83,HIGH,Insert group predicate is explicit in XML and code.
+m_demo_mapping2,RTRTRANS,Update,Changed_Flag='Update',190,m_demo_mapping2.py:125,HIGH,Update group predicate is explicit in XML and code.
 m_demo_mapping2,RTRTRANS,DEFAULT1,default when no group condition is satisfied,189,not emitted,NOT MIGRATED,Unconnected default group is intentionally dropped.
 m_demo_mapping2,SEQTRANS,NEXTVAL,NEXTVAL,315,m_demo_mapping2.py:105-109,HIGH,Target connector 373 consumes the bigint sequence port.
 m_demo_mapping2,SEQTRANS,CURRVAL,CURRVAL,316,not emitted,NOT MIGRATED,CURRVAL has no connector and is not observable.
-m_demo_mapping2,SEQTRANS,Start Value,0,317,m_demo_mapping2.py:105-109,HIGH,Sequence starts from the XML current-state derivation 56 plus row number.
+m_demo_mapping2,SEQTRANS,Start Value,0,317,m_demo_mapping2.py:105-109,MEDIUM,The start value is unexercised because this run does not cycle; the observed seed begins from Current Value 57.
 m_demo_mapping2,SEQTRANS,Increment By,1,318,m_demo_mapping2.py:105-109,HIGH,Row number increments by one in arrival order.
 m_demo_mapping2,SEQTRANS,End Value,9223372036854775807,319,m_demo_mapping2.py:105-109,MEDIUM,No seeded run reaches the end boundary.
 m_demo_mapping2,SEQTRANS,Current Value,57,320,m_demo_mapping2.py:105-109,HIGH,Baseline sequence keys begin at 57.
@@ -50,10 +50,18 @@ m_demo_mapping2,demo_target1_UPD,CREATED_TIME,unconnected target port,89,m_demo_
 m_demo_mapping2,demo_target1_UPD,ACTIVE_FLAG,unconnected target port,92,m_demo_mapping2.py:172,NOT MIGRATED,XML has no connector; output is NULL.
 m_demo_mapping2,demo_target1_UPD,START_DATE,unconnected target port,93,m_demo_mapping2.py:173,NOT MIGRATED,XML has no connector; output is NULL.
 m_demo_mapping2,demo_target1_UPD,END_DATE,unconnected target port,94,m_demo_mapping2.py:174,NOT MIGRATED,XML has no connector; output is NULL.
-m_demo_mapping2,LKPTRANS,LEAD_CO_MNE1,dead lookup output,267,not emitted,NOT MIGRATED,It reaches EXPTRANS and RTRTRANS but no target consumes it; only MD5_src reads it.
 m_demo_mapping2,LKPTRANS,BRANCH_CO_MNE1,dead lookup output,268,not emitted,NOT MIGRATED,It reaches EXPTRANS and RTRTRANS but no target consumes it.
 m_demo_mapping2,LKPTRANS,MIS_DATE1,dead lookup output,269,not emitted,NOT MIGRATED,It reaches EXPTRANS and RTRTRANS but no target consumes it.
 m_demo_mapping2,LKPTRANS,DESCRIPTION1,dead lookup output,271,not emitted,NOT MIGRATED,It reaches EXPTRANS and RTRTRANS but no target consumes it.
+m_demo_mapping2,LKPTRANS,SHORT_NAME1,dead lookup output,272,not emitted,NOT MIGRATED,It reaches EXPTRANS and RTRTRANS but no target consumes it.
+m_demo_mapping2,LKPTRANS,ID,unconnected lookup output,270,not emitted,NOT MIGRATED,The LOOKUP/OUTPUT port has no connector and is never read.
+m_demo_mapping2,LKPTRANS,CREATED_BY,unconnected lookup output,273,not emitted,NOT MIGRATED,The LOOKUP/OUTPUT port has no connector and is never read.
+m_demo_mapping2,LKPTRANS,CREATED_TIME,unconnected lookup output,274,not emitted,NOT MIGRATED,The LOOKUP/OUTPUT port has no connector and is never read.
+m_demo_mapping2,LKPTRANS,UPDATED_BY,unconnected lookup output,275,not emitted,NOT MIGRATED,The LOOKUP/OUTPUT port has no connector and is never read.
+m_demo_mapping2,LKPTRANS,UPDATED_TIME,unconnected lookup output,276,not emitted,NOT MIGRATED,The LOOKUP/OUTPUT port has no connector and is never read.
+m_demo_mapping2,LKPTRANS,ACTIVE_FLAG,unconnected lookup output,277,not emitted,NOT MIGRATED,The LOOKUP/OUTPUT port has no connector and is never read.
+m_demo_mapping2,LKPTRANS,START_DATE,unconnected lookup output,278,not emitted,NOT MIGRATED,The LOOKUP/OUTPUT port has no connector and is never read.
+m_demo_mapping2,LKPTRANS,END_DATE,unconnected lookup output,279,not emitted,NOT MIGRATED,The LOOKUP/OUTPUT port has no connector and is never read.
 m_demo_mapping2,RTRTRANS,LEAD_CO_MNE3,DEFAULT1 port,245,not emitted,NOT MIGRATED,DEFAULT1 is unconnected; UPDTRANS same-named input is fed by Update connectors 411-423.
 m_demo_mapping2,RTRTRANS,BRANCH_CO_MNE3,DEFAULT1 port,246,not emitted,NOT MIGRATED,DEFAULT1 is unconnected; name matching would misroute this port.
 m_demo_mapping2,RTRTRANS,MIS_DATE3,DEFAULT1 port,247,not emitted,NOT MIGRATED,DEFAULT1 is unconnected.
