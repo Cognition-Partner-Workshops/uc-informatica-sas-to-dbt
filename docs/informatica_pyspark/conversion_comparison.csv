@@ -1,0 +1,254 @@
+mapping,transformation,port,informatica_code,xml_line,pyspark_code_or_ref,confidence,reason
+m_demo_mapping1,agg_TRANS,o_ACCT_DESC,o_ACCT_DESC,443,m_demo_mapping1.py:111,LOW,Aggregator pass-through is resolved as the highest-TX_ID row; XML does not define within-group order.
+m_demo_mapping1,agg_TRANS,TX_AMT,TX_AMT,444,m_demo_mapping1.py:112,NOT MIGRATED,Input to the SUM aggregate; the pass-through output port is unconnected.
+m_demo_mapping1,agg_TRANS,o_crdt_trim,o_crdt_trim,445,m_demo_mapping1.py:113,LOW,Aggregator pass-through is resolved as the highest-TX_ID row; XML does not define within-group order.
+m_demo_mapping1,agg_TRANS,CLSR_DT,CLSR_DT,446,m_demo_mapping1.py:114,LOW,Aggregator pass-through is resolved as the highest-TX_ID row; XML does not define within-group order.
+m_demo_mapping1,agg_TRANS,TX_ID,TX_ID,447,m_demo_mapping1.py:115,LOW,Aggregator pass-through is resolved as the highest-TX_ID row; XML does not define within-group order.
+m_demo_mapping1,agg_TRANS,ACCT_STAT_CD,ACCT_STAT_CD,448,m_demo_mapping1.py:116,LOW,Aggregator pass-through is resolved as the highest-TX_ID row; XML does not define within-group order.
+m_demo_mapping1,agg_TRANS,TX_DTTM,TX_DTTM,449,m_demo_mapping1.py:117,LOW,Aggregator pass-through is resolved as the highest-TX_ID row; XML does not define within-group order.
+m_demo_mapping1,agg_TRANS,CR8_DT,CR8_DT,450,m_demo_mapping1.py:118,LOW,Aggregator pass-through is resolved as the highest-TX_ID row; XML does not define within-group order.
+m_demo_mapping1,agg_TRANS,o_ACCT_ID,o_ACCT_ID,451,m_demo_mapping1.py:119,LOW,Aggregator pass-through is resolved as the highest-TX_ID row; XML does not define within-group order.
+m_demo_mapping1,agg_TRANS,ACCT_ID,ACCT_ID,452,m_demo_mapping1.py:109,HIGH,Grouping/aggregate semantics are explicit and wrong grouping or sum changes baseline output.
+m_demo_mapping1,agg_TRANS,o_acc_trim,o_acc_trim,453,m_demo_mapping1.py:120,LOW,Aggregator pass-through is resolved as the highest-TX_ID row; XML does not define within-group order.
+m_demo_mapping1,agg_TRANS,o_TX_AMT,SUM(TX_AMT),454,m_demo_mapping1.py:112,HIGH,Grouping/aggregate semantics are explicit and wrong grouping or sum changes baseline output.
+m_demo_mapping1,exp_TRANS1,FIRST_NM,FIRST_NM,463,m_demo_mapping1.py:96,HIGH,Explicit expression feeds a downstream target field.
+m_demo_mapping1,exp_TRANS1,CLSR_DT,CLSR_DT,464,m_demo_mapping1.py:95,HIGH,Explicit expression feeds a downstream target field.
+m_demo_mapping1,exp_TRANS1,TX_DTTM,TX_DTTM,465,m_demo_mapping1.py:95,HIGH,Explicit expression feeds a downstream target field.
+m_demo_mapping1,exp_TRANS1,BAL_AMT,BAL_AMT,466,m_demo_mapping1.py:95,HIGH,Explicit expression feeds a downstream target field.
+m_demo_mapping1,exp_TRANS1,ACCT_DESC,ACCT_DESC,467,m_demo_mapping1.py:95,HIGH,Explicit expression feeds a downstream target field.
+m_demo_mapping1,exp_TRANS1,ACCT_TYP,ACCT_TYP,468,m_demo_mapping1.py:95,HIGH,Explicit expression feeds a downstream target field.
+m_demo_mapping1,exp_TRANS1,ACCT_STAT_CD,ACCT_STAT_CD,469,m_demo_mapping1.py:95,HIGH,Explicit expression feeds a downstream target field.
+m_demo_mapping1,exp_TRANS1,TX_ID,TX_ID,470,m_demo_mapping1.py:95,HIGH,Explicit expression feeds a downstream target field.
+m_demo_mapping1,exp_TRANS1,LAST_NM,LAST_NM,471,m_demo_mapping1.py:95,HIGH,Explicit expression feeds a downstream target field.
+m_demo_mapping1,exp_TRANS1,TX_AMT,TX_AMT,472,m_demo_mapping1.py:95,HIGH,Explicit expression feeds a downstream target field.
+m_demo_mapping1,exp_TRANS1,ACCT_ID,ACCT_ID,473,m_demo_mapping1.py:95,HIGH,Explicit expression feeds a downstream target field.
+m_demo_mapping1,exp_TRANS1,CR8_DT,CR8_DT,474,m_demo_mapping1.py:95,HIGH,Explicit expression feeds a downstream target field.
+m_demo_mapping1,exp_TRANS1,o_acc_trim,o_acc_trim,475,m_demo_mapping1.py:95,HIGH,Explicit expression feeds a downstream target field.
+m_demo_mapping1,exp_TRANS1,o_crdt_trim,o_crdt_trim,476,m_demo_mapping1.py:95,HIGH,Explicit expression feeds a downstream target field.
+m_demo_mapping1,exp_TRANS1,o_ACCT_ID,o_ACCT_ID,477,m_demo_mapping1.py:95,HIGH,Explicit expression feeds a downstream target field.
+m_demo_mapping1,exp_TRANS1,CRDT_SCORE,CRDT_SCORE,478,m_demo_mapping1.py:95,HIGH,Explicit expression feeds a downstream target field.
+m_demo_mapping1,exp_TRANS1,o_ACCT_DESC,RTRIM(ACCT_DESC),479,m_demo_mapping1.py:98,HIGH,Explicit expression feeds a downstream target field.
+m_demo_mapping1,lkp_TRANS2,IN_ACCT_ID,IN_ACCT_ID,483,m_demo_mapping1.py:95,HIGH,Lookup input key is explicit and controls the FIRST_NM lookup used by demo_target5.
+m_demo_mapping1,exp_TRANS,CLSR_DT,CLSR_DT,594,m_demo_mapping1.py:95,HIGH,Explicit pass-through/helper expression feeds downstream targets.
+m_demo_mapping1,exp_TRANS,TX_DTTM,TX_DTTM,595,m_demo_mapping1.py:95,HIGH,Explicit pass-through/helper expression feeds downstream targets.
+m_demo_mapping1,exp_TRANS,BAL_AMT,BAL_AMT,596,m_demo_mapping1.py:95,HIGH,Explicit pass-through/helper expression feeds downstream targets.
+m_demo_mapping1,exp_TRANS,ACCT_DESC,ACCT_DESC,597,m_demo_mapping1.py:95,HIGH,Explicit pass-through/helper expression feeds downstream targets.
+m_demo_mapping1,exp_TRANS,ACCT_TYP,ACCT_TYP,598,m_demo_mapping1.py:95,HIGH,Explicit pass-through/helper expression feeds downstream targets.
+m_demo_mapping1,exp_TRANS,ACCT_STAT_CD,ACCT_STAT_CD,599,m_demo_mapping1.py:95,HIGH,Explicit pass-through/helper expression feeds downstream targets.
+m_demo_mapping1,exp_TRANS,TX_ID,TX_ID,600,m_demo_mapping1.py:95,HIGH,Explicit pass-through/helper expression feeds downstream targets.
+m_demo_mapping1,exp_TRANS,LAST_NM,LAST_NM,601,m_demo_mapping1.py:95,HIGH,Explicit pass-through/helper expression feeds downstream targets.
+m_demo_mapping1,exp_TRANS,TX_AMT,TX_AMT,602,m_demo_mapping1.py:95,HIGH,Explicit pass-through/helper expression feeds downstream targets.
+m_demo_mapping1,exp_TRANS,ACCT_ID,ACCT_ID,603,m_demo_mapping1.py:95,HIGH,Explicit pass-through/helper expression feeds downstream targets.
+m_demo_mapping1,exp_TRANS,CR8_DT,CR8_DT,604,m_demo_mapping1.py:95,HIGH,Explicit pass-through/helper expression feeds downstream targets.
+m_demo_mapping1,exp_TRANS,CUST_ID,CUST_ID,605,m_demo_mapping1.py:95,HIGH,Explicit pass-through/helper expression feeds downstream targets.
+m_demo_mapping1,exp_TRANS,o_acc_trim,RTRIM(ACCT_TYP),606,m_demo_mapping1.py:70,HIGH,Explicit pass-through/helper expression feeds downstream targets.
+m_demo_mapping1,exp_TRANS,o_crdt_trim,LTRIM(CRDT_LN),607,m_demo_mapping1.py:71,HIGH,Explicit pass-through/helper expression feeds downstream targets.
+m_demo_mapping1,exp_TRANS,o_ACCT_ID,:LKP.lkp_TRANS1(ACCT_ID),608,m_demo_mapping1.py:69,HIGH,The unconnected lookup return feeds demo_target6.TX_TYPE_CD through the connector graph.
+m_demo_mapping1,lkp_TRANS3,IN_CUST_ID,IN_CUST_ID,612,m_demo_mapping1.py:95,HIGH,Lookup input key is explicit and controls the CRDT_SCORE lookup used by demo_target5.
+m_demo_mapping1,exp_TRANS2,PRODUCT_NO,PRODUCT_NO,654,m_demo_mapping1.py:95,HIGH,Explicit pass-through/date conversion feeds demo_target3.
+m_demo_mapping1,exp_TRANS2,STD_COST,STD_COST,655,m_demo_mapping1.py:95,HIGH,Explicit pass-through/date conversion feeds demo_target3.
+m_demo_mapping1,exp_TRANS2,COLOR,COLOR,656,m_demo_mapping1.py:95,HIGH,Explicit pass-through/date conversion feeds demo_target3.
+m_demo_mapping1,exp_TRANS2,PRODUCT_ID,PRODUCT_ID,659,m_demo_mapping1.py:95,HIGH,Explicit pass-through/date conversion feeds demo_target3.
+m_demo_mapping1,exp_TRANS2,PRODUCT_NM,PRODUCT_NM,660,m_demo_mapping1.py:95,HIGH,Explicit pass-through/date conversion feeds demo_target3.
+m_demo_mapping1,exp_TRANS2,LIST_PRICE,LIST_PRICE,661,m_demo_mapping1.py:95,HIGH,Explicit pass-through/date conversion feeds demo_target3.
+m_demo_mapping1,exp_TRANS2,o_SELL_ST_DT,"TO_DATE(TO_CHAR(SYSDATE),'DD/MM/YYYY')",662,m_demo_mapping1.py:173,HIGH,The date expression is explicit and its NULL result is present in every baseline row.
+m_demo_mapping1,exp_TRANS2,o_SELL_ED_DT,"TO_DATE(SELL_ED_DT,'DD/MM/YYYY')",663,m_demo_mapping1.py:179,HIGH,Explicit pass-through/date conversion feeds demo_target3.
+m_demo_mapping1,sq_demo_source4,Sql Query,"SELECT demo_source4.ACCT_ID, demo_source4.ACCT_TYP, demo_source4.ACCT_DESC, demo_source4.CRDT_LN, SYSTIMESTAMP, demo_source4.CLSR_DT, demo_source4.ACCT_STAT_CD, demo_source3.TX_ID, demo_source3.LAST_NM, demo_source3.TX_DTTM, demo_source3.TX_AMT, demo_source3.BAL_AMT, demo_source3.CUST_ID, STRCMP(demo_source4.ACCT_STAT_CD,demo_source3.TX_TYPE_CD)
+FROM
+ demo_source3 INNER JOIN demo_source4 ON demo_source3.ACCT_ID = demo_source4.ACCT_ID
+ORDER BY
+ demo_source4.ACCT_ID",580,m_demo_mapping1.py:33-55,HIGH,"The positional SQL override, inner join, business timestamp, and account ordering determine the account pipeline."
+m_demo_mapping1,SQ_demo_source5,Sql Query,,746,m_demo_mapping1.py:164-180,MEDIUM,No override is defined; the source rows pass through unchanged and the seed does not distinguish an erroneous override.
+m_demo_mapping1,lkp_TRANS2,Lookup condition,ACCT_ID = IN_ACCT_ID,499,m_demo_mapping1.py:84-88,HIGH,The key condition selects the lkp_demo_source1 row used for FIRST_NM.
+m_demo_mapping1,lkp_TRANS2,Lookup policy on multiple match,Use Last Value,498,m_demo_mapping1.py:20-22,MEDIUM,"Collapse is parity-critical, but last versus first is unexercised because the duplicate account routes to demo_target6; rejected first-value choice."
+m_demo_mapping1,lkp_TRANS3,Lookup condition,CUST_ID = IN_CUST_ID,625,m_demo_mapping1.py:89-93,HIGH,The key condition selects the lkp_demo_source2 row used for CRDT_SCORE.
+m_demo_mapping1,lkp_TRANS3,Lookup policy on multiple match,Use Last Value,624,m_demo_mapping1.py:20-22,MEDIUM,"Collapse is parity-critical, but last versus first is unexercised because the duplicate customer routes to demo_target6; rejected first-value choice."
+m_demo_mapping1,lkp_TRANS1,Lookup condition,ACCT_ID =  IN_ACCT_ID,537,m_demo_mapping1.py:57-65,HIGH,The explicit double-space condition selects the unconnected lookup return used as TX_TYPE_CD.
+m_demo_mapping1,lkp_TRANS1,Lookup policy on multiple match,Use Last Value,536,m_demo_mapping1.py:20-22,HIGH,Account 1002 has TR then DR and the last physical value DR is observable in demo_target6.
+m_demo_mapping1,rtr_TRANS,demo_target6_GRP,ACCT_TYP = 'SB',668,m_demo_mapping1.py:103,HIGH,The group condition is explicit; it is evaluated on untrimmed ACCT_TYP and selects demo_target6 rows.
+m_demo_mapping1,rtr_TRANS,demo_target5_GRP,ACCT_TYP != 'SB',669,m_demo_mapping1.py:104,HIGH,The group condition is explicit; SQL NULL evaluates to NULL and does not enter this group.
+m_demo_mapping1,rtr_TRANS,DEFAULT1,DEFAULT1 (unconnected output group),670,m_demo_mapping1.py:102-104,NOT MIGRATED,The default group has no outgoing connectors; NULL ACCT_TYP rows are deliberately dropped.
+m_demo_mapping1,agg_TRANS,GROUPBY ACCT_ID,ACCT_ID,452,m_demo_mapping1.py:109,HIGH,The XML marks ACCT_ID GROUPBY and grouping changes the target6 row cardinality.
+m_demo_mapping1,agg_TRANS,o_TX_AMT,SUM(TX_AMT),454,m_demo_mapping1.py:112,HIGH,The explicit sum changes demo_target6.TX_AMT if translated incorrectly.
+m_demo_mapping1,SEQ_GEN,Start Value,1,432,m_demo_mapping1.py:122-126,HIGH,Sequence state determines the generated target key.
+m_demo_mapping1,SEQ_GEN,Increment By,1,433,m_demo_mapping1.py:122-126,HIGH,Sequence state determines the generated target key.
+m_demo_mapping1,SEQ_GEN,End,2147483647,434,m_demo_mapping1.py:122-126,MEDIUM,State is explicit but the seed does not approach the upper bound.
+m_demo_mapping1,SEQ_GEN,Current Value,281,435,m_demo_mapping1.py:122-126,HIGH,Current value is the observed sequence state and changes ACCT_KEY.
+m_demo_mapping1,SEQ_GEN,Cycle,YES,436,m_demo_mapping1.py:122-126,MEDIUM,State is explicit but cycling is not exercised by the seed.
+m_demo_mapping1,SEQ_GEN,Number of Cached Values,0,437,m_demo_mapping1.py:122-126,MEDIUM,State is explicit but caching is not observable in this local run.
+m_demo_mapping1,SEQ_GEN,Reset,NO,438,m_demo_mapping1.py:122-126,MEDIUM,State is explicit but reset behavior is not exercised by the seed.
+m_demo_mapping1,sq_demo_source4,TX_TYPE_CD,"STRCMP(demo_source4.ACCT_STAT_CD,demo_source3.TX_TYPE_CD)",580,m_demo_mapping1.py:39-54,NOT MIGRATED,The positional 14th SQL item binds to TX_TYPE_CD but no connector leaves that SQ port; STRCMP is dead.
+m_demo_mapping1,lkp_TRANS2,CUST_ID,CUST_ID,484,m_demo_mapping1.py:75-78,NOT MIGRATED,Lookup output is unconsumed; only FIRST_NM is connected downstream.
+m_demo_mapping1,lkp_TRANS2,ACCT_ID,ACCT_ID,485,m_demo_mapping1.py:75-78,NOT MIGRATED,Lookup output is unconsumed; only FIRST_NM is connected downstream.
+m_demo_mapping1,lkp_TRANS2,LAST_NM,LAST_NM,487,m_demo_mapping1.py:75-78,NOT MIGRATED,Lookup output is unconsumed; only FIRST_NM is connected downstream.
+m_demo_mapping1,lkp_TRANS2,CUST_ADDR,CUST_ADDR,488,m_demo_mapping1.py:75-78,NOT MIGRATED,Lookup output is unconsumed; only FIRST_NM is connected downstream.
+m_demo_mapping1,lkp_TRANS2,CUST_PHN,CUST_PHN,489,m_demo_mapping1.py:75-78,NOT MIGRATED,Lookup output is unconsumed; only FIRST_NM is connected downstream.
+m_demo_mapping1,lkp_TRANS2,CUST_EML_ADDR,CUST_EML_ADDR,490,m_demo_mapping1.py:75-78,NOT MIGRATED,Lookup output is unconsumed; only FIRST_NM is connected downstream.
+m_demo_mapping1,lkp_TRANS2,AGE,AGE,491,m_demo_mapping1.py:75-78,NOT MIGRATED,Lookup output is unconsumed; only FIRST_NM is connected downstream.
+m_demo_mapping1,lkp_TRANS2,DOB,DOB,492,m_demo_mapping1.py:75-78,NOT MIGRATED,Lookup output is unconsumed; only FIRST_NM is connected downstream.
+m_demo_mapping1,lkp_TRANS2,CUST_TYP,CUST_TYP,493,m_demo_mapping1.py:75-78,NOT MIGRATED,Lookup output is unconsumed; only FIRST_NM is connected downstream.
+m_demo_mapping1,lkp_TRANS3,CUST_ID,CUST_ID,613,m_demo_mapping1.py:79-82,NOT MIGRATED,Lookup output is unconsumed; only CRDT_SCORE is connected downstream.
+m_demo_mapping1,lkp_TRANS3,MAX_CRDT_SCORE,MAX_CRDT_SCORE,615,m_demo_mapping1.py:79-82,NOT MIGRATED,Lookup output is unconsumed; only CRDT_SCORE is connected downstream.
+m_demo_mapping1,lkp_TRANS3,MIN_CRDT_SCORE,MIN_CRDT_SCORE,616,m_demo_mapping1.py:79-82,NOT MIGRATED,Lookup output is unconsumed; only CRDT_SCORE is connected downstream.
+m_demo_mapping1,lkp_TRANS3,MAX_CRDT_LMT,MAX_CRDT_LMT,617,m_demo_mapping1.py:79-82,NOT MIGRATED,Lookup output is unconsumed; only CRDT_SCORE is connected downstream.
+m_demo_mapping1,lkp_TRANS3,CURR_CRDT_BAL_AMT,CURR_CRDT_BAL_AMT,618,m_demo_mapping1.py:79-82,NOT MIGRATED,Lookup output is unconsumed; only CRDT_SCORE is connected downstream.
+m_demo_mapping1,lkp_TRANS3,AVG_INC_AMT,AVG_INC_AMT,619,m_demo_mapping1.py:79-82,NOT MIGRATED,Lookup output is unconsumed; only CRDT_SCORE is connected downstream.
+m_demo_mapping1,lkp_TRANS1,ACCT_ID,ACCT_ID,530,m_demo_mapping1.py:57-60,NOT MIGRATED,Lookup output is unconsumed; only the TX_TYPE_CD return port is called.
+m_demo_mapping1,lkp_TRANS1,TX_TYPE_DESC,TX_TYPE_DESC,531,m_demo_mapping1.py:57-60,NOT MIGRATED,Lookup output is unconsumed; only the TX_TYPE_CD return port is called.
+m_demo_mapping1,SEQ_GEN,CURRVAL,CURRVAL,431,m_demo_mapping1.py:122-126,NOT MIGRATED,CURRVAL has no outgoing connector.
+m_demo_mapping1,exp_TRANS2,SELL_ST_DT,SELL_ST_DT,658,m_demo_mapping1.py:164-179,NOT MIGRATED,The source input is read but the output expression ignores it and uses SYSDATE instead.
+m_demo_mapping1,rtr_TRANS,BAL_AMT1,BAL_AMT1,687,m_demo_mapping1.py:103-104,NOT MIGRATED,Router output port has no outgoing connector.
+m_demo_mapping1,rtr_TRANS,FIRST_NM1,FIRST_NM1,701,m_demo_mapping1.py:103-104,NOT MIGRATED,Router output port has no outgoing connector.
+m_demo_mapping1,rtr_TRANS,CRDT_SCORE1,CRDT_SCORE1,702,m_demo_mapping1.py:103-104,NOT MIGRATED,Router output port has no outgoing connector.
+m_demo_mapping1,rtr_TRANS,o_ACCT_ID2,o_ACCT_ID2,705,m_demo_mapping1.py:156-162,NOT MIGRATED,Router output port has no outgoing connector.
+m_demo_mapping1,rtr_TRANS,o_acc_trim2,o_acc_trim2,706,m_demo_mapping1.py:156-162,NOT MIGRATED,Router output port has no outgoing connector.
+m_demo_mapping1,rtr_TRANS,TX_DTTM2,TX_DTTM2,707,m_demo_mapping1.py:156-162,NOT MIGRATED,Router output port has no outgoing connector.
+m_demo_mapping1,rtr_TRANS,TX_ID2,TX_ID2,708,m_demo_mapping1.py:156-162,NOT MIGRATED,Router output port has no outgoing connector.
+m_demo_mapping1,rtr_TRANS,ACCT_TYP2,ACCT_TYP2,709,m_demo_mapping1.py:156-162,NOT MIGRATED,Router output port has no outgoing connector.
+m_demo_mapping1,rtr_TRANS,TX_AMT2,TX_AMT2,710,m_demo_mapping1.py:156-162,NOT MIGRATED,Router output port has no outgoing connector.
+m_demo_mapping1,rtr_TRANS,CLSR_DT2,CLSR_DT2,712,m_demo_mapping1.py:156-162,NOT MIGRATED,Router output port has no outgoing connector.
+m_demo_mapping1,rtr_TRANS,ACCT_STAT_CD2,ACCT_STAT_CD2,713,m_demo_mapping1.py:156-162,NOT MIGRATED,Router output port has no outgoing connector.
+m_demo_mapping1,rtr_TRANS,o_ACCT_DESC2,o_ACCT_DESC2,714,m_demo_mapping1.py:156-162,NOT MIGRATED,Router output port has no outgoing connector.
+m_demo_mapping1,rtr_TRANS,CR8_DT2,CR8_DT2,715,m_demo_mapping1.py:156-162,NOT MIGRATED,Router output port has no outgoing connector.
+m_demo_mapping1,rtr_TRANS,o_crdt_trim2,o_crdt_trim2,716,m_demo_mapping1.py:156-162,NOT MIGRATED,Router output port has no outgoing connector.
+m_demo_mapping1,rtr_TRANS,BAL_AMT3,BAL_AMT3,719,m_demo_mapping1.py:102-104,NOT MIGRATED,"DEFAULT1 is unconnected, so this output group is not emitted."
+m_demo_mapping1,rtr_TRANS,ACCT_ID3,ACCT_ID3,720,m_demo_mapping1.py:102-104,NOT MIGRATED,"DEFAULT1 is unconnected, so this output group is not emitted."
+m_demo_mapping1,rtr_TRANS,o_ACCT_ID3,o_ACCT_ID3,721,m_demo_mapping1.py:102-104,NOT MIGRATED,"DEFAULT1 is unconnected, so this output group is not emitted."
+m_demo_mapping1,rtr_TRANS,o_acc_trim3,o_acc_trim3,722,m_demo_mapping1.py:102-104,NOT MIGRATED,"DEFAULT1 is unconnected, so this output group is not emitted."
+m_demo_mapping1,rtr_TRANS,TX_DTTM3,TX_DTTM3,723,m_demo_mapping1.py:102-104,NOT MIGRATED,"DEFAULT1 is unconnected, so this output group is not emitted."
+m_demo_mapping1,rtr_TRANS,TX_ID3,TX_ID3,724,m_demo_mapping1.py:102-104,NOT MIGRATED,"DEFAULT1 is unconnected, so this output group is not emitted."
+m_demo_mapping1,rtr_TRANS,ACCT_TYP3,ACCT_TYP3,725,m_demo_mapping1.py:102-104,NOT MIGRATED,"DEFAULT1 is unconnected, so this output group is not emitted."
+m_demo_mapping1,rtr_TRANS,TX_AMT3,TX_AMT3,726,m_demo_mapping1.py:102-104,NOT MIGRATED,"DEFAULT1 is unconnected, so this output group is not emitted."
+m_demo_mapping1,rtr_TRANS,LAST_NM3,LAST_NM3,727,m_demo_mapping1.py:102-104,NOT MIGRATED,"DEFAULT1 is unconnected, so this output group is not emitted."
+m_demo_mapping1,rtr_TRANS,CLSR_DT3,CLSR_DT3,728,m_demo_mapping1.py:102-104,NOT MIGRATED,"DEFAULT1 is unconnected, so this output group is not emitted."
+m_demo_mapping1,rtr_TRANS,ACCT_STAT_CD3,ACCT_STAT_CD3,729,m_demo_mapping1.py:102-104,NOT MIGRATED,"DEFAULT1 is unconnected, so this output group is not emitted."
+m_demo_mapping1,rtr_TRANS,o_ACCT_DESC3,o_ACCT_DESC3,730,m_demo_mapping1.py:102-104,NOT MIGRATED,"DEFAULT1 is unconnected, so this output group is not emitted."
+m_demo_mapping1,rtr_TRANS,CR8_DT3,CR8_DT3,731,m_demo_mapping1.py:102-104,NOT MIGRATED,"DEFAULT1 is unconnected, so this output group is not emitted."
+m_demo_mapping1,rtr_TRANS,o_crdt_trim3,o_crdt_trim3,732,m_demo_mapping1.py:102-104,NOT MIGRATED,"DEFAULT1 is unconnected, so this output group is not emitted."
+m_demo_mapping1,rtr_TRANS,FIRST_NM3,FIRST_NM3,733,m_demo_mapping1.py:102-104,NOT MIGRATED,"DEFAULT1 is unconnected, so this output group is not emitted."
+m_demo_mapping1,rtr_TRANS,CRDT_SCORE3,CRDT_SCORE3,734,m_demo_mapping1.py:102-104,NOT MIGRATED,"DEFAULT1 is unconnected, so this output group is not emitted."
+m_demo_mapping2,SQ_demo_source1,Sql Query,,151,"io.read_source(""demo_source1"")",MEDIUM,XML override is empty; source reader supplies the declared CSV/table.
+m_demo_mapping2,SQ_demo_source1,Source Filter,,153,"io.read_source(""demo_source1"")",MEDIUM,XML filter is empty; no predicate is applied.
+m_demo_mapping2,EXPTRANS,LEAD_CO_MNE,LEAD_CO_MNE,164,m_demo_mapping2.py:40,HIGH,Connector 380 traces this pass-through from SQ to EXPTRANS.
+m_demo_mapping2,EXPTRANS,BRANCH_CO_MNE,BRANCH_CO_MNE,165,m_demo_mapping2.py:41,HIGH,Connector 381 traces this pass-through from SQ to EXPTRANS.
+m_demo_mapping2,EXPTRANS,MIS_DATE,MIS_DATE,166,m_demo_mapping2.py:42,HIGH,Connector 382 traces this pass-through from SQ to EXPTRANS.
+m_demo_mapping2,EXPTRANS,ID,ID,167,m_demo_mapping2.py:43,HIGH,Connector 383 traces this pass-through from SQ to EXPTRANS.
+m_demo_mapping2,EXPTRANS,DESCRIPTION,DESCRIPTION,168,m_demo_mapping2.py:44,HIGH,Connector 384 traces this source description pass-through.
+m_demo_mapping2,EXPTRANS,SHORT_NAME,SHORT_NAME,169,m_demo_mapping2.py:45,HIGH,Connector 385 traces this pass-through from SQ to EXPTRANS.
+m_demo_mapping2,EXPTRANS,Key,Key,170,m_demo_mapping2.py:46,HIGH,Connector 392 feeds the lookup Key into this double port.
+m_demo_mapping2,LKPTRANS,LEAD_CO_MNE,LEAD_CO_MNE,267,m_demo_mapping2.py:47 / :53,HIGH,Connector 387 feeds the lookup's LEAD_CO_MNE into EXPTRANS.LEAD_CO_MNE1; name matching would wrongly use the source column.
+m_demo_mapping2,EXPTRANS,LEAD_CO_MNE1,LEAD_CO_MNE1,171,m_demo_mapping2.py:47,HIGH,"Pass-through of the LKPTRANS LEAD_CO_MNE output (connector 387); MD5_src reads it, and parity fails if the source column is used instead."
+m_demo_mapping2,EXPTRANS,BRANCH_CO_MNE1,BRANCH_CO_MNE1,172,m_demo_mapping2.py:48,HIGH,Connector 388 feeds this lookup pass-through.
+m_demo_mapping2,EXPTRANS,MIS_DATE1,MIS_DATE1,173,m_demo_mapping2.py:49,HIGH,Connector 389 feeds this lookup pass-through.
+m_demo_mapping2,EXPTRANS,DESCRIPTION1,DESCRIPTION1,174,m_demo_mapping2.py:50,HIGH,Connector 390 feeds this lookup pass-through.
+m_demo_mapping2,EXPTRANS,SHORT_NAME1,SHORT_NAME1,175,m_demo_mapping2.py:51,HIGH,Connector 391 feeds this lookup pass-through.
+m_demo_mapping2,EXPTRANS,New_Flag,"IIF(ISNULL(Key),'Insert')",176,m_demo_mapping2.py:72-74,HIGH,Two-argument IIF and lookup-null predicate are explicit.
+m_demo_mapping2,EXPTRANS,MD5_src,"AES_DECRYPT(LEAD_CO_MNE1, SUBSTR(SHORT_NAME,1,3), 256)",177,m_demo_mapping2.py:52-56,LOW,AES input is unambiguous but the runtime result is unrecoverable; rejected attempting real decryption without key/ciphertext/runtime.
+m_demo_mapping2,EXPTRANS,MD5_tgt,MD5(LEAD_CO_MNE || BRANCH_CO_MNE || MIS_DATE || DESCRIPTION || SHORT_NAME),178,m_demo_mapping2.py:60-66,HIGH,Source ports and Informatica null-concatenation semantics are explicit.
+m_demo_mapping2,EXPTRANS,Changed_Flag,"IIF(NOT ISNULL(Key) AND  (MD5_tgt != MD5_src),'Update')",179,m_demo_mapping2.py:75-81,LOW,The comparison is explicit but MD5 versus unrecoverable AES requires the sentinel judgment; rejected treating the fields as comparable hashes.
+m_demo_mapping2,EXPTRANS,o_CREATED_BY,'IDWUSER',180,m_demo_mapping2.py:67,MEDIUM,Constant is unambiguous but parity does not independently exercise an alternate constant.
+m_demo_mapping2,EXPTRANS,o_CREATED_TIME,SYSDATE,181,m_demo_mapping2.py:68,HIGH,SYSDATE is pinned to cfg.business_date and baseline checks rendering.
+m_demo_mapping2,EXPTRANS,o_UPDATED_BY,'IDWUSER',182,m_demo_mapping2.py:69,MEDIUM,Constant is unambiguous but it is only observed on the update branch.
+m_demo_mapping2,EXPTRANS,o_UPDATED_TIME,SYSDATE,183,m_demo_mapping2.py:70,HIGH,SYSDATE is pinned to cfg.business_date and baseline checks rendering.
+m_demo_mapping2,LKPTRANS,Lookup Sql Override,,281,"io.read_source(""demo_target1"")",MEDIUM,XML override is empty; the declared lookup table is read directly.
+m_demo_mapping2,LKPTRANS,Lookup table name,demo_target1,282,"io.read_source(""demo_target1"")",HIGH,XML names the lookup source and the implementation reads it through IO.
+m_demo_mapping2,LKPTRANS,Lookup Source Filter,,283,"io.read_source(""demo_target1"")",MEDIUM,XML filter is empty; no lookup filter is applied.
+m_demo_mapping2,LKPTRANS,Lookup policy on multiple match,Use Any Value,285,lookup_use_any_value(...),LOW,"XML does not define the chosen row; rejected lowest Key, physical-first, and physical-last in decisions."
+m_demo_mapping2,LKPTRANS,Lookup condition,ID = ID1,286,m_demo_mapping2.py:33-37,HIGH,Plain left join uses the connector-fed source ID and lookup ID.
+m_demo_mapping2,RTRTRANS,Insert,New_Flag='Insert',188,m_demo_mapping2.py:83,HIGH,Insert group predicate is explicit in XML and code.
+m_demo_mapping2,RTRTRANS,Update,Changed_Flag='Update',190,m_demo_mapping2.py:125,HIGH,Update group predicate is explicit in XML and code.
+m_demo_mapping2,RTRTRANS,DEFAULT1,default when no group condition is satisfied,189,not emitted,NOT MIGRATED,Unconnected default group is intentionally dropped.
+m_demo_mapping2,SEQTRANS,NEXTVAL,NEXTVAL,315,m_demo_mapping2.py:105-109,HIGH,Target connector 373 consumes the bigint sequence port.
+m_demo_mapping2,SEQTRANS,CURRVAL,CURRVAL,316,not emitted,NOT MIGRATED,CURRVAL has no connector and is not observable.
+m_demo_mapping2,SEQTRANS,Start Value,0,317,m_demo_mapping2.py:105-109,MEDIUM,The start value is unexercised because this run does not cycle; the observed seed begins from Current Value 57.
+m_demo_mapping2,SEQTRANS,Increment By,1,318,m_demo_mapping2.py:105-109,HIGH,Row number increments by one in arrival order.
+m_demo_mapping2,SEQTRANS,End Value,9223372036854775807,319,m_demo_mapping2.py:105-109,MEDIUM,No seeded run reaches the end boundary.
+m_demo_mapping2,SEQTRANS,Current Value,57,320,m_demo_mapping2.py:105-109,HIGH,Baseline sequence keys begin at 57.
+m_demo_mapping2,SEQTRANS,Cycle,NO,321,m_demo_mapping2.py:105-109,MEDIUM,No seeded run reaches a cycle boundary.
+m_demo_mapping2,SEQTRANS,Number of Cached Values,0,322,m_demo_mapping2.py:105-109,MEDIUM,No seeded run exercises cache sizing.
+m_demo_mapping2,SEQTRANS,Reset,NO,323,m_demo_mapping2.py:105-109,MEDIUM,No reset event occurs in the single mapping run.
+m_demo_mapping2,SEQTRANS,Is Current Value Shared,NO,324,m_demo_mapping2.py:105-109,MEDIUM,The mapping has one sequence instance and no shared state is exercised.
+m_demo_mapping2,UPDTRANS,Update Strategy Expression,DD_UPDATE,341,m_demo_mapping2.py:145-159,HIGH,Update branch is rendered as the update target stream.
+m_demo_mapping2,demo_target1_INS,UPDATED_BY,unconnected target port,90,m_demo_mapping2.py:118,NOT MIGRATED,XML has no connector; output is NULL.
+m_demo_mapping2,demo_target1_INS,UPDATED_TIME,unconnected target port,91,m_demo_mapping2.py:119,NOT MIGRATED,XML has no connector; output is NULL.
+m_demo_mapping2,demo_target1_INS,ACTIVE_FLAG,unconnected target port,92,m_demo_mapping2.py:120,NOT MIGRATED,XML has no connector; output is NULL.
+m_demo_mapping2,demo_target1_INS,START_DATE,unconnected target port,93,m_demo_mapping2.py:121,NOT MIGRATED,XML has no connector; output is NULL.
+m_demo_mapping2,demo_target1_INS,END_DATE,unconnected target port,94,m_demo_mapping2.py:122,NOT MIGRATED,XML has no connector; output is NULL.
+m_demo_mapping2,demo_target1_UPD,CREATED_BY,unconnected target port,88,m_demo_mapping2.py:168,NOT MIGRATED,XML has no connector; output is NULL.
+m_demo_mapping2,demo_target1_UPD,CREATED_TIME,unconnected target port,89,m_demo_mapping2.py:169,NOT MIGRATED,XML has no connector; output is NULL.
+m_demo_mapping2,demo_target1_UPD,ACTIVE_FLAG,unconnected target port,92,m_demo_mapping2.py:172,NOT MIGRATED,XML has no connector; output is NULL.
+m_demo_mapping2,demo_target1_UPD,START_DATE,unconnected target port,93,m_demo_mapping2.py:173,NOT MIGRATED,XML has no connector; output is NULL.
+m_demo_mapping2,demo_target1_UPD,END_DATE,unconnected target port,94,m_demo_mapping2.py:174,NOT MIGRATED,XML has no connector; output is NULL.
+m_demo_mapping2,LKPTRANS,BRANCH_CO_MNE1,dead lookup output,268,not emitted,NOT MIGRATED,It reaches EXPTRANS and RTRTRANS but no target consumes it.
+m_demo_mapping2,LKPTRANS,MIS_DATE1,dead lookup output,269,not emitted,NOT MIGRATED,It reaches EXPTRANS and RTRTRANS but no target consumes it.
+m_demo_mapping2,LKPTRANS,DESCRIPTION1,dead lookup output,271,not emitted,NOT MIGRATED,It reaches EXPTRANS and RTRTRANS but no target consumes it.
+m_demo_mapping2,LKPTRANS,SHORT_NAME1,dead lookup output,272,not emitted,NOT MIGRATED,It reaches EXPTRANS and RTRTRANS but no target consumes it.
+m_demo_mapping2,LKPTRANS,ID,unconnected lookup output,270,not emitted,NOT MIGRATED,The LOOKUP/OUTPUT port has no connector and is never read.
+m_demo_mapping2,LKPTRANS,CREATED_BY,unconnected lookup output,273,not emitted,NOT MIGRATED,The LOOKUP/OUTPUT port has no connector and is never read.
+m_demo_mapping2,LKPTRANS,CREATED_TIME,unconnected lookup output,274,not emitted,NOT MIGRATED,The LOOKUP/OUTPUT port has no connector and is never read.
+m_demo_mapping2,LKPTRANS,UPDATED_BY,unconnected lookup output,275,not emitted,NOT MIGRATED,The LOOKUP/OUTPUT port has no connector and is never read.
+m_demo_mapping2,LKPTRANS,UPDATED_TIME,unconnected lookup output,276,not emitted,NOT MIGRATED,The LOOKUP/OUTPUT port has no connector and is never read.
+m_demo_mapping2,LKPTRANS,ACTIVE_FLAG,unconnected lookup output,277,not emitted,NOT MIGRATED,The LOOKUP/OUTPUT port has no connector and is never read.
+m_demo_mapping2,LKPTRANS,START_DATE,unconnected lookup output,278,not emitted,NOT MIGRATED,The LOOKUP/OUTPUT port has no connector and is never read.
+m_demo_mapping2,LKPTRANS,END_DATE,unconnected lookup output,279,not emitted,NOT MIGRATED,The LOOKUP/OUTPUT port has no connector and is never read.
+m_demo_mapping2,RTRTRANS,LEAD_CO_MNE3,DEFAULT1 port,245,not emitted,NOT MIGRATED,DEFAULT1 is unconnected; UPDTRANS same-named input is fed by Update connectors 411-423.
+m_demo_mapping2,RTRTRANS,BRANCH_CO_MNE3,DEFAULT1 port,246,not emitted,NOT MIGRATED,DEFAULT1 is unconnected; name matching would misroute this port.
+m_demo_mapping2,RTRTRANS,MIS_DATE3,DEFAULT1 port,247,not emitted,NOT MIGRATED,DEFAULT1 is unconnected.
+m_demo_mapping2,RTRTRANS,ID2,DEFAULT1 port,248,not emitted,NOT MIGRATED,DEFAULT1 is unconnected.
+m_demo_mapping2,RTRTRANS,DESCRIPTION3,DEFAULT1 port,249,not emitted,NOT MIGRATED,DEFAULT1 is unconnected.
+m_demo_mapping2,RTRTRANS,SHORT_NAME3,DEFAULT1 port,250,not emitted,NOT MIGRATED,DEFAULT1 is unconnected.
+m_demo_mapping2,RTRTRANS,LEAD_CO_MNE12,DEFAULT1 port,251,not emitted,NOT MIGRATED,DEFAULT1 is unconnected.
+m_demo_mapping2,RTRTRANS,BRANCH_CO_MNE12,DEFAULT1 port,252,not emitted,NOT MIGRATED,DEFAULT1 is unconnected.
+m_demo_mapping2,RTRTRANS,MIS_DATE12,DEFAULT1 port,253,not emitted,NOT MIGRATED,DEFAULT1 is unconnected.
+m_demo_mapping2,RTRTRANS,DESCRIPTION12,DEFAULT1 port,254,not emitted,NOT MIGRATED,DEFAULT1 is unconnected.
+m_demo_mapping2,RTRTRANS,SHORT_NAME12,DEFAULT1 port,255,not emitted,NOT MIGRATED,DEFAULT1 is unconnected.
+m_demo_mapping2,RTRTRANS,New_Flag2,DEFAULT1 port,256,not emitted,NOT MIGRATED,DEFAULT1 is unconnected.
+m_demo_mapping2,RTRTRANS,Changed_Flag2,DEFAULT1 port,257,not emitted,NOT MIGRATED,DEFAULT1 is unconnected.
+m_demo_mapping2,RTRTRANS,o_CREATED_BY2,DEFAULT1 port,258,not emitted,NOT MIGRATED,DEFAULT1 is unconnected.
+m_demo_mapping2,RTRTRANS,o_CREATED_TIME2,DEFAULT1 port,259,not emitted,NOT MIGRATED,DEFAULT1 is unconnected.
+m_demo_mapping2,RTRTRANS,o_UPDATED_BY2,DEFAULT1 port,260,not emitted,NOT MIGRATED,DEFAULT1 is unconnected.
+m_demo_mapping2,RTRTRANS,o_UPDATED_TIME2,DEFAULT1 port,261,not emitted,NOT MIGRATED,DEFAULT1 is unconnected.
+m_demo_mapping2,RTRTRANS,Key2,DEFAULT1 port,262,not emitted,NOT MIGRATED,DEFAULT1 is unconnected.
+m_demo_mapping3,SQ_demo_source2,Sql Query,"SELECT demo_source2.Title, demo_source2.First_Name, demo_source2.Middle_Name, demo_source2.Last_Name, demo_source2.Member_ID, demo_source2.Member_Suffix, demo_source2.Birth_Date, demo_source2.Gender_Code, demo_source2.Member_Record_Number, demo_source2.Social_Security_Number, demo_source2.Member_Type_Code, demo_source2.Original_Effective_Date, demo_source2.Relationship_to_Subscriber_Code, demo_source2.Relationship_to_Subscriber_Code_Label
+FROM
+ demo_source2 where demo_source2.Member_Type_Code is not null",916,informatica_pyspark/mappings/m_demo_mapping3.py:56,HIGH,The SQL override is a plain projection with a Member_Type_Code IS NOT NULL predicate; the seed row 30005 proves the filter.
+m_demo_mapping3,SQ_demo_source2,Source Filter,,918,,NOT MIGRATED,The separate Source Filter TABLEATTRIBUTE is empty; it is not the SQL override and has no behavior to migrate.
+m_demo_mapping3,EXPTRANS,Title,Title,929,informatica_pyspark/mappings/m_demo_mapping3.py:49,HIGH,Identity pass-through is connected through the router to both targets and is exercised by baseline rows.
+m_demo_mapping3,EXPTRANS,First_Name,First_Name,930,informatica_pyspark/mappings/m_demo_mapping3.py:49,HIGH,Identity pass-through is connected through the router to both targets and is exercised by baseline rows.
+m_demo_mapping3,EXPTRANS,Middle_Name,Middle_Name,931,informatica_pyspark/mappings/m_demo_mapping3.py:49,HIGH,Identity pass-through is connected through the router to both targets and is exercised by baseline rows.
+m_demo_mapping3,EXPTRANS,Last_Name,Last_Name,932,informatica_pyspark/mappings/m_demo_mapping3.py:49,HIGH,Identity pass-through is connected through the router to both targets and is exercised by baseline rows.
+m_demo_mapping3,EXPTRANS,Member_ID,Member_ID,933,informatica_pyspark/mappings/m_demo_mapping3.py:38,HIGH,Connector-derived rename to Member_Identifier; baseline keys would fail if this mapping were wrong.
+m_demo_mapping3,EXPTRANS,Member_Suffix,Member_Suffix,934,informatica_pyspark/mappings/m_demo_mapping3.py:49,MEDIUM,Only one of six surviving baseline rows has a non-empty suffix; parity cannot distinguish a wrong empty-string versus NULL treatment for the other rows.
+m_demo_mapping3,EXPTRANS,Birth_Date,Birth_Date,935,informatica_pyspark/mappings/m_demo_mapping3.py:39,HIGH,Connector-derived rename to Date_of_Birth; baseline dates would fail if this mapping were wrong.
+m_demo_mapping3,EXPTRANS,Gender_Code,Gender_Code,936,informatica_pyspark/mappings/m_demo_mapping3.py:41,HIGH,Connector-derived rename to the second target column Gender; baseline output order and values exercise it.
+m_demo_mapping3,EXPTRANS,Member_Record_Number,Member_Record_Number,937,informatica_pyspark/mappings/m_demo_mapping3.py:42,HIGH,Connector-derived rename to Member_Number; baseline output values exercise it.
+m_demo_mapping3,EXPTRANS,Social_Security_Number,Social_Security_Number,938,informatica_pyspark/mappings/m_demo_mapping3.py:43,HIGH,Connector-derived rename to Soc_Number and router predicate input; baseline separates both targets by this field.
+m_demo_mapping3,EXPTRANS,Member_Type_Code,Member_Type_Code,939,informatica_pyspark/mappings/m_demo_mapping3.py:44,HIGH,The source qualifier filter depends on this port and baseline excludes member 30005.
+m_demo_mapping3,EXPTRANS,Original_Effective_Date,Original_Effective_Date,940,informatica_pyspark/mappings/m_demo_mapping3.py:45,HIGH,Connector-derived rename to Effective_Date; baseline dates exercise it.
+m_demo_mapping3,EXPTRANS,Relationship_to_Subscriber_Code,Relationship_to_Subscriber_Code,941,informatica_pyspark/mappings/m_demo_mapping3.py:49,HIGH,Identity pass-through is connected through the router to both targets and is exercised by baseline rows.
+m_demo_mapping3,EXPTRANS,Relationship_to_Subscriber_Code_Label,Relationship_to_Subscriber_Code_Label,942,informatica_pyspark/mappings/m_demo_mapping3.py:49,NOT MIGRATED,This identically named pass-through is a dead EXPTRANS output with no downstream connector; the connected abort output is the separate port at line 943.
+m_demo_mapping3,EXPTRANS,o_Relationship_to_Subscriber_Code_Label,"iif(ISNULL(Relationship_to_Subscriber_Code_Label),ABORT('Relationship_to_Subscriber_Code_Labe valuel is null'),Relationship_to_Subscriber_Code_Label)",943,informatica_pyspark/mappings/m_demo_mapping3.py:57,HIGH,The abort fixture proves the eager hard-failure guard; the DEFAULTVALUE ERROR('transformation error') is unreachable and is intentionally not used.
+m_demo_mapping3,RTRTRANS,INPUT,,947,,NOT MIGRATED,"INPUT is the router's structural input group, not a routed output path."
+m_demo_mapping3,RTRTRANS,NEWGROUP1,ISNULL(Social_Security_Number),948,informatica_pyspark/mappings/m_demo_mapping3.py:65,HIGH,Connector graph proves NEWGROUP1 *1 ports feed demo_target2; baseline target2 rows have empty Soc_Number.
+m_demo_mapping3,RTRTRANS,DEFAULT1,,949,,NOT MIGRATED,DEFAULT1 owns the *2 ports but has no target connectors; its path is unreachable because the two explicit predicates are complementary.
+m_demo_mapping3,EXPTRANS,target numeric casts,"Member_ID, Member_Record_Number, Social_Security_Number, Member_Type_Code, Relationship_to_Subscriber_Code are double ports feeding number targets",933,informatica_pyspark/mappings/m_demo_mapping3.py:48,MEDIUM,"Ports at XML lines 933, 937, 938, 939, 941; target fields at 133, 136, 137, 138, 139. The XML ports are double and target fields are number, but parity_diff reads both 30001 and 30001.0 as the same float within tolerance; rendering parity is therefore unexercised by the control."
+m_demo_mapping3,RTRTRANS,NEWGROUP2,NOT ISNULL(Social_Security_Number),950,informatica_pyspark/mappings/m_demo_mapping3.py:66,HIGH,Connector graph proves NEWGROUP2 *3 ports feed demo_target21; baseline target21 rows have SSNs.
+wf_demo_mapping,Decision1,Decision Name,$s_m_demo_mapping2.Status = 1,1159,informatica_pyspark/workflow.py:WORKFLOW_ORDER,HIGH,The workflow graph gates mapping1 on the mapping2 status decision.
+wf_demo_mapping,Decision2,Decision Name,$s_m_demo_mapping1.Status = 1,1156,informatica_pyspark/workflow.py:WORKFLOW_ORDER,HIGH,The workflow graph gates mapping3 on the mapping1 status decision.
+wf_demo_mapping,Decision3,Decision Name,$s_m_demo_mapping3.Status = 1,1162,informatica_pyspark/workflow.py:run_workflow,HIGH,The final decision controls the success or failure branch.
+wf_demo_mapping,WORKFLOWLINK,Decision2 -> Failed_Email2,$Decision2.Condition = 0,1465,informatica_pyspark/workflow.py:run_workflow,HIGH,A failed mapping stops the workflow before downstream work; the email branch is logged.
+wf_demo_mapping,WORKFLOWLINK,Decision3 -> SuccessEmail,$Decision3.Condition = 1,1466,informatica_pyspark/workflow.py:run_workflow,HIGH,Successful completion reaches the logged success task.
+wf_demo_mapping,WORKFLOWLINK,Decision1 -> Failed_Email1,$Decision1.Condition = 0,1467,informatica_pyspark/workflow.py:run_workflow,HIGH,A failed mapping stops the workflow before downstream work; the email branch is logged.
+wf_demo_mapping,WORKFLOWLINK,Failed_Email2 -> Control,,1468,informatica_pyspark/workflow.py:run_workflow,HIGH,The migrated fail-fast exception is the equivalent of Stop parent.
+wf_demo_mapping,WORKFLOWLINK,Decision2 -> s_m_demo_mapping3,$Decision2.Condition = 1,1469,informatica_pyspark/workflow.py:WORKFLOW_ORDER,HIGH,The graph advances to mapping3 only after mapping1 succeeds.
+wf_demo_mapping,WORKFLOWLINK,Decision1 -> s_m_demo_mapping1,,1470,informatica_pyspark/workflow.py:WORKFLOW_ORDER,HIGH,The graph advances to mapping1 after mapping2.
+wf_demo_mapping,WORKFLOWLINK,Start -> s_m_demo_mapping2,,1471,informatica_pyspark/workflow.py:WORKFLOW_ORDER,HIGH,The workflow starts with mapping2.
+wf_demo_mapping,WORKFLOWLINK,s_m_demo_mapping1 -> Decision2,,1472,informatica_pyspark/workflow.py:run_workflow,HIGH,Mapping completion feeds its decision gate.
+wf_demo_mapping,WORKFLOWLINK,s_m_demo_mapping2 -> Decision1,,1473,informatica_pyspark/workflow.py:run_workflow,HIGH,Mapping completion feeds its decision gate.
+wf_demo_mapping,WORKFLOWLINK,s_m_demo_mapping3 -> Decision3,,1474,informatica_pyspark/workflow.py:run_workflow,HIGH,Mapping completion feeds its final decision gate.
+wf_demo_mapping,WORKFLOWLINK,Decision3 -> Failed_Email3,$Decision3.Condition = 0,1475,informatica_pyspark/workflow.py:run_workflow,HIGH,A failed final mapping stops the workflow; the email branch is logged.
+wf_demo_mapping,TASK,Failed_Email2,Email task,1137,informatica_pyspark/workflow.py:run_workflow,NOT MIGRATED,Email is deliberately not sent; the failure is logged instead.
+wf_demo_mapping,TASK,SuccessEmail,Email task,1142,informatica_pyspark/workflow.py:run_workflow,NOT MIGRATED,Email is deliberately not sent; successful completion is logged instead.
+wf_demo_mapping,TASK,Failed_Email1,Email task,1147,informatica_pyspark/workflow.py:run_workflow,NOT MIGRATED,Email is deliberately not sent; the failure is logged instead.
+wf_demo_mapping,TASK,Control,Control Option = Stop parent,1152,informatica_pyspark/workflow.py:run_workflow,NOT MIGRATED,The Control task is not invoked; raising the mapping failure is the fail-fast equivalent.
+wf_demo_mapping,TASK,Failed_Email3,Email task,1164,informatica_pyspark/workflow.py:run_workflow,NOT MIGRATED,Email is deliberately not sent; the failure is logged instead.
