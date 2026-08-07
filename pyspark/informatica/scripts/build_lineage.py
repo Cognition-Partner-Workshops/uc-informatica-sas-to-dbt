@@ -15,6 +15,8 @@ ROOT = Path(__file__).resolve().parents[3]
 XML_PATH = ROOT / "legacy" / "informatica" / "wf_demo_mapping.XML"
 OUT_DIR = ROOT / "docs" / "informatica_pyspark"
 IDENT = re.compile(r"[A-Za-z_][A-Za-z0-9_]*")
+QUALIFIED_IDENT = re.compile(r"(?:(?P<table>[A-Za-z_][A-Za-z0-9_]*)\.)?"
+                             r"(?P<column>[A-Za-z_][A-Za-z0-9_]*)")
 LOOKUP_CALL = re.compile(r":LKP\.([A-Za-z_][A-Za-z0-9_]*)\s*\((.*?)\)", re.I | re.S)
 
 
@@ -79,8 +81,8 @@ def field_info(node):
 
 
 def identifiers(expression, ports):
-    quoted = re.sub(r"'(?:''|[^'])*'|\"(?:\"\"|[^\"])*\"", " ", expression or "")
-    return sorted({token for token in IDENT.findall(quoted) if token in ports})
+    dequoted = re.sub(r"'(?:''|[^'])*'|\"(?:\"\"|[^\"])*\"", " ", expression or "")
+    return sorted({token for token in IDENT.findall(dequoted) if token in ports})
 
 
 def split_select(text):
@@ -161,7 +163,6 @@ def parse():
         def hop(instance, field, kind="within", expression=None, group=None, line=None,
                 extra=None):
             info = instances.get(instance, {})
-            tr = transforms.get(info.get("transformation"), {})
             result = {
                 "instance": instance,
                 "instance_type": info.get("transformation_type") or info.get("type", ""),
@@ -170,10 +171,23 @@ def parse():
                 "expression": expression,
                 "group": group,
                 "xml_lines": sorted(x for x in [line] if x),
+                "connector_xml_lines": [],
             }
             if extra:
                 result.update(extra)
             return result
+
+        def merge_connector(edge, branch):
+            if branch and branch[0]["instance"] == edge["from_instance"] and \
+                    branch[0]["field"] == edge["from_field"]:
+                branch[0]["connector_xml_lines"].append(edge["line"])
+                branch[0]["connector_xml_lines"].sort()
+                branch[0]["xml_lines"] = sorted(set(
+                    branch[0]["xml_lines"] + [edge["line"]]))
+                return branch
+            connector = hop(edge["from_instance"], edge["from_field"], "connector",
+                             line=edge["line"])
+            return [connector] + branch
 
         def terminal(instance, field, kind="source_definition", extra=None):
             info = instances.get(instance, {})
@@ -224,9 +238,18 @@ def parse():
                 ports = list(tr["ports"])
                 item = items[ports.index(field)] if field in ports and ports.index(field) < len(items) else None
                 if item:
-                    refs = [r.split(".")[-1] for r in IDENT.findall(item)
-                            if r.split(".")[-1] in {e["from_field"] for e in
-                            incoming.get((instance, field), [])}]
+                    refs = []
+                    for match in QUALIFIED_IDENT.finditer(item):
+                        table, column = match.group("table"), match.group("column")
+                        if table and any(e["from_instance"] == table and
+                                         e["from_field"] == column
+                                         for edges in incoming.values() for e in edges):
+                            refs.extend(e["to_field"] for edges in incoming.values()
+                                         for e in edges if e["from_instance"] == table and
+                                         e["from_field"] == column)
+                        elif not table:
+                            refs.extend(e["to_field"] for edges in incoming.values()
+                                         for e in edges if e["from_field"] == column)
                     if refs:
                         result = []
                         for ref in refs:
@@ -234,10 +257,19 @@ def parse():
                         return [[hop(instance, field, "sql_override", expression=item,
                                       line=tr["attribute_lines"]["Sql Query"]["xml_line"])] + branch
                                 for branch in result]
-                    kind = "system_value" if re.fullmatch(
-                        r"\s*SYS(?:DATE|TIMESTAMP)\s*", item, re.I) else "constant"
+                    if re.fullmatch(r"\s*SYS(?:DATE|TIMESTAMP)\s*", item, re.I):
+                        kind = "system_value"
+                    elif re.fullmatch(r"\s*(?:NULL|[-+]?\d+(?:\.\d+)?|'(?:''|[^'])*')\s*",
+                                      item, re.I):
+                        kind = "constant"
+                    else:
+                        kind = "unresolved"
+                    overridden = [e["line"] for edges in incoming.values() for e in edges
+                                  if e["to_instance"] == instance and e["to_field"] == field]
                     return [[hop(instance, field, "sql_override", expression=item,
-                                  line=tr["attribute_lines"]["Sql Query"]["xml_line"]),
+                                  line=tr["attribute_lines"]["Sql Query"]["xml_line"],
+                                  extra={"overridden_connector_xml_lines": sorted(overridden)}
+                                  if overridden else None),
                              terminal(instance, item, kind)]]
             expression = port.get("expression")
             if typ in ("Expression", "Aggregator") and expression and expression != field:
@@ -270,10 +302,8 @@ def parse():
             edges = sorted(incoming.get((instance, field), []), key=lambda x: x["line"])
             result = []
             for edge in edges:
-                cross = hop(edge["from_instance"], edge["from_field"], "connector",
-                            line=edge["line"])
-                result.extend([ [cross] + branch for branch in
-                                trace(edge["from_instance"], edge["from_field"], seen)])
+                result.extend([merge_connector(edge, branch) for branch in
+                               trace(edge["from_instance"], edge["from_field"], seen)])
             return result or [[terminal(instance, field, "unconnected")]]
 
         target_data = []
@@ -286,10 +316,8 @@ def parse():
                 branches = []
                 for edge in sorted(incoming.get((instance, field["name"]), []),
                                    key=lambda x: x["line"]):
-                    branches.extend([[hop(edge["from_instance"], edge["from_field"],
-                                          "connector", line=edge["line"])] + branch
-                                     for branch in trace(edge["from_instance"],
-                                                         edge["from_field"])])
+                    branches.extend([merge_connector(edge, branch) for branch in
+                                     trace(edge["from_instance"], edge["from_field"])])
                 columns.append({"name": field["name"], "branches": branches,
                                 "connected": bool(incoming.get((instance, field["name"])))})
             target_data.append({"instance": instance, "target_definition": target_name,
@@ -324,8 +352,15 @@ def parse():
                     if pos <= len(ports) and not outgoing.get((tr["name"], ports[pos - 1]))
                 ]
             transformation_details.append(details)
+        target_unconnected = [
+            {"instance": target["instance"], "field": column["name"], "connected": False,
+             "reason": "no incoming CONNECTOR — column is NULL in the target"}
+            for target in target_data for column in target["columns"]
+            if not column["connected"]
+        ]
         mappings.append({"name": mapping.attrs["NAME"], "targets": target_data,
                          "unconnected_or_dead": inventory,
+                         "target_unconnected": target_unconnected,
                          "transformation_details": sorted(transformation_details,
                                                            key=lambda x: x["instance"])})
     return sources, targets, sorted(mappings, key=lambda x: x["name"]), workflow(root)
@@ -378,52 +413,118 @@ def workflow(root):
         current = sorted(preferred or candidates, key=lambda x: x["xml_line"])[0]["to"] \
             if (preferred or candidates) else ""
     session_order = [x for x in execution if x.startswith("s_")]
+    session_numbers = [int(next(session for session in sessions if session["session"] == name)
+                           ["mapping"][-1]) for name in session_order]
+    if session_numbers != [2, 1, 3]:
+        raise ValueError(f"workflow execution order disagrees with expected 2, 1, 3: "
+                         f"{session_numbers}")
     return {"name": wf.attrs.get("NAME", ""), "links": links, "decisions": decisions,
             "sessions": sessions, "execution_order": execution,
-            "execution_session_order": session_order}
+            "execution_session_order": session_order,
+            "execution_mapping_numbers": session_numbers,
+            "execution_order_matches_expected": True}
 
 
-def evidence():
+def evidence(mappings):
     data = ROOT / "legacy" / "informatica" / "data"
-    def rows(name):
-        with (data / name).open(newline="") as handle:
+    baseline = ROOT / "baseline" / "informatica"
+
+    def rows(directory, name):
+        path = directory / name
+        if not path.exists():
+            return []
+        with path.open(newline="") as handle:
             return list(csv.DictReader(handle))
-    source3 = rows("demo_source3.csv")
-    source4 = rows("demo_source4.csv")
-    source1 = rows("demo_source1.csv")
-    source2 = rows("demo_source2.csv")
-    target1 = rows("demo_target1.csv")
-    lkp1, lkp2, lkp3 = rows("lkp_demo_source1.csv"), rows("lkp_demo_source2.csv"), rows(
-        "lkp_demo_source3.csv")
-    return [
+
+    def source(name):
+        return rows(data, name)
+
+    def baseline_value(name, predicate, column):
+        matches = [row for row in rows(baseline, name) if predicate(row)]
+        if not matches:
+            return "not discriminable in this run (baseline absent — run " \
+                   "tools/informatica_baseline.py)"
+        return matches[0].get(column, "")
+
+    def path_lines(mapping_name, instance, column):
+        mapping = next(item for item in mappings if item["name"] == mapping_name)
+        target = next(item for item in mapping["targets"] if item["instance"] == instance)
+        result = []
+        for branch in next(item for item in target["columns"]
+                           if item["name"] == column)["branches"]:
+            result.extend(line for node in branch for line in node["xml_lines"])
+            result.extend(line for node in branch
+                          for line in node.get("connector_xml_lines", []))
+        return sorted(set(result))
+
+    source3 = source("demo_source3.csv")
+    source4 = source("demo_source4.csv")
+    lkp3 = source("lkp_demo_source3.csv")
+    tx_rows = [row for row in lkp3 if row["ACCT_ID"] == "1002"]
+    lookup_last = tx_rows[-1]["TX_TYPE_CD"] if tx_rows else ""
+    target_tx = baseline_value("demo_target6.csv", lambda row: row["ACCT_ID"] == "1002",
+                               "TX_TYPE_CD")
+    target_cr8 = baseline_value("demo_target6.csv", lambda row: row["ACCT_ID"] == "1001",
+                                "CR8_DT")
+    target_first = baseline_value("demo_target5.csv", lambda row: row["ACCT_ID"] == "1004",
+                                  "FIRST_NM")
+    target_score = baseline_value("demo_target5.csv", lambda row: row["ACCT_ID"] == "1003",
+                                  "CRDT_SCORE")
+    target_upd_1 = baseline_value("demo_target1_UPD.csv",
+                                  lambda row: row["ID"] == "REC00001", "DESCRIPTION")
+    target_upd_2 = baseline_value("demo_target1_UPD.csv",
+                                  lambda row: row["ID"] == "REC00002", "DESCRIPTION")
+    target2_first = baseline_value("demo_target2.csv",
+                                   lambda row: row["Member_Number"].startswith("500000"),
+                                   "First_Name")
+    target21_first = baseline_value("demo_target21.csv",
+                                    lambda row: row["Member_Number"].startswith("500001"),
+                                    "First_Name")
+    evidence = [
         {"trap": "m1 demo_target5.FIRST_NM", "row": "account 1004",
-         "connector_value": next(x["FIRST_NM"] for x in lkp1 if x["ACCT_ID"] == "1004"),
-         "name_matched_value": next(x["FIRST_NM"] for x in source3 if x["ACCT_ID"] == "1004")},
+         "connector_value": target_first,
+         "name_matched_value": next(x["FIRST_NM"] for x in source3 if x["ACCT_ID"] == "1004"),
+         "xml_lines": path_lines("m_demo_mapping1", "demo_target5", "FIRST_NM")},
         {"trap": "m1 demo_target5.CRDT_SCORE", "row": "account 1003",
-         "connector_value": next(x["CRDT_SCORE"] for x in lkp2 if x["CUST_ID"] == "70033"),
-         "name_matched_value": next(x["CRDT_SCORE"] for x in source3 if x["ACCT_ID"] == "1003")},
+         "connector_value": target_score,
+         "name_matched_value": next(x["CRDT_SCORE"] for x in source3
+                                    if x["ACCT_ID"] == "1003"),
+         "xml_lines": path_lines("m_demo_mapping1", "demo_target5", "CRDT_SCORE")},
         {"trap": "m1 demo_target6.TX_TYPE_CD", "row": "TX_ID 5003 / account 1002",
-         "connector_value": next(x["TX_TYPE_CD"] for x in lkp3 if x["ACCT_ID"] == "1002"
-                                 and x["TX_TYPE_CD"] == "DR"),
-         "name_matched_value": next(x["TX_TYPE_CD"] for x in source3 if x["TX_ID"] == "5003")},
+         "connector_value": target_tx,
+         "derived_lookup_value": lookup_last,
+         "name_matched_value": next(x["TX_TYPE_CD"] for x in source3 if x["TX_ID"] == "5003"),
+         "xml_lines": path_lines("m_demo_mapping1", "demo_target6", "TX_TYPE_CD")},
         {"trap": "m1 demo_target6.CR8_DT", "row": "account 1001",
-         "connector_value": "2024-01-31 (baseline run date)",
-         "name_matched_value": next(x["CR8_DT"] for x in source4 if x["ACCT_ID"] == "1001")},
+         "connector_value": target_cr8,
+         "name_matched_value": next(x["CR8_DT"] for x in source4 if x["ACCT_ID"] == "1001"),
+         "xml_lines": sorted(set(path_lines("m_demo_mapping1", "demo_target6", "CR8_DT") +
+                                 [580])),
+         "note": "connector exists but is overridden by positional SQL-override binding"},
         {"trap": "m1 SQ STRCMP select item", "row": "all rows",
-         "connector_value": "dead / no target row", "name_matched_value": "not discriminable"},
+         "connector_value": "dead / no target row", "name_matched_value": "not discriminable",
+         "xml_lines": [580, 579]},
         {"trap": "m2 UPDTRANS input names vs Update router connectors",
-         "row": "REC00001", "connector_value": "General ledger account 1",
-         "name_matched_value": "no DEFAULT1 target row (unconnected)"},
+         "row": "REC00001", "connector_value": target_upd_1,
+         "name_matched_value": "no DEFAULT1 target row (unconnected)",
+         "xml_lines": path_lines("m_demo_mapping2", "demo_target1_UPD", "DESCRIPTION")},
         {"trap": "m2 demo_target1_UPD.DESCRIPTION", "row": "REC00002",
-         "connector_value": "General ledger account 2",
-         "name_matched_value": "lookup DESCRIPTION1 does not reach target"},
+         "connector_value": target_upd_2,
+         "name_matched_value": "lookup DESCRIPTION1 does not reach target",
+         "xml_lines": path_lines("m_demo_mapping2", "demo_target1_UPD", "DESCRIPTION")},
         {"trap": "m3 router groups / demo_target2", "row": "Member_Record_Number 500000",
-         "connector_value": "NEWGROUP1 -> demo_target2 (Eli)",
-         "name_matched_value": "suffix *2/default group would be NULL / no row"},
+         "connector_value": target2_first,
+         "name_matched_value": "suffix *2/default group would be NULL / no row",
+         "xml_lines": path_lines("m_demo_mapping3", "demo_target2", "First_Name")},
         {"trap": "m3 router groups / demo_target21", "row": "Member_Record_Number 500001",
-         "connector_value": "NEWGROUP2 -> demo_target21 (Omar)",
-         "name_matched_value": "suffix *2/default group would be NULL / no row"},
+         "connector_value": target21_first,
+         "name_matched_value": "suffix *2/default group would be NULL / no row",
+         "xml_lines": path_lines("m_demo_mapping3", "demo_target21", "First_Name")},
     ]
+    if target_tx not in (lookup_last, "not discriminable in this run (baseline absent — run "
+                         "tools/informatica_baseline.py)"):
+        raise ValueError("baseline TX_TYPE_CD disagrees with Use Last Value lookup policy")
+    return evidence
 
 
 def render(doc):
@@ -455,28 +556,84 @@ def render(doc):
                 paths, sources, expressions, numbers = [], [], [], []
                 for branch in col["branches"]:
                     paths.append(" → ".join(f"{x['instance']}.{x['field']}" for x in branch))
-                    sources.extend(f"{x['instance']}.{x['field']}" for x in branch
-                                   if x["hop_kind"] in ("source_definition", "lookup_source"))
+                    for node in branch:
+                        if node["hop_kind"] in ("source_definition", "lookup_source"):
+                            sources.append(f"{node['instance']}.{node['field']}")
+                        elif node["hop_kind"] == "system_value":
+                            sources.append(f"{node['field']} (system value)")
+                        elif node["hop_kind"] == "sequence":
+                            sources.append(f"{node['instance']}.{node['field']} (sequence)")
+                        elif node["hop_kind"] in ("constant", "unresolved"):
+                            sources.append(node["hop_kind"])
                     expressions.extend(x["expression"] for x in branch if x.get("expression"))
                     numbers.extend(n for x in branch for n in x["xml_lines"])
-                lines.append(f"| `{col['name']}` | {', '.join(sorted(set(sources))) or 'NULL'} | "
+                    numbers.extend(n for x in branch for n in x.get("connector_xml_lines", []))
+                source_text = ", ".join(sorted(set(sources))) if sources else (
+                    "NULL" if not col["connected"] else "unresolved")
+                lines.append(f"| `{col['name']}` | {source_text} | "
                              f"{'<br>'.join(paths) or '—'} | {'; '.join(sorted(set(expressions))) or '—'} | "
                              f"{', '.join(map(str, sorted(set(numbers)))) or '—'} |")
             lines.append("")
     order = " → ".join(doc["workflow"].get("execution_session_order", []))
-    lines += ["## Workflow", "", f"Execution order derived from WORKFLOWLINK edges: **{order}**.",
-              "", "```json", json.dumps(doc["workflow"], indent=2, sort_keys=True), "```", "",
-              "## Name traps", "", "Empirical discriminators from the seed CSVs:", "",
-              "| trap | row | connector value | name-matched value |", "|---|---|---|---|"]
+    mapping_numbers = ", ".join(map(str, doc["workflow"]["execution_mapping_numbers"]))
+    lines += ["## Workflow", "",
+              "Task graph (derived from `WORKFLOWLINK` edges):",
+              f"`{doc['workflow']['execution_order'][0]}`"]
+    execution = doc["workflow"]["execution_order"]
+    for current, following in zip(execution, execution[1:]):
+        link = next(item for item in doc["workflow"]["links"]
+                    if item["from"] == current and item["to"] == following)
+        lines.append(f"  → `{following}` (XML line {link['xml_line']})")
+    for link in doc["workflow"]["links"]:
+        if re.search(r"\.Condition\s*=\s*0\s*$", link["condition"]):
+            lines.append(f"  ├─ `{link['from']}` --{link['condition']}--> "
+                         f"`{link['to']}` (XML line {link['xml_line']})")
+    control = next(link for link in doc["workflow"]["links"] if link["to"] == "Control")
+    lines.append(f"  └─ `{control['from']}` → `Control (Stop parent)` "
+                 f"(XML line {control['xml_line']})")
+    lines += ["", f"Session execution order is **{order}**: mapping numbers **{mapping_numbers}** "
+              f"— **2, 1, 3, not the mapping numbering**; computed order matches the "
+              f"expected workflow order: `{doc['workflow']['execution_order_matches_expected']}`.",
+              "", "| session | mapping | targets in load order | Treat source rows as | Insert | "
+              "Update as Update | xml line |",
+              "|---|---|---|---|---|---|---|---|"]
+    for session in doc["workflow"]["sessions"]:
+        values = {}
+        for attribute in session["attributes"]:
+            values.setdefault(attribute["name"], attribute["value"])
+        lines.append(f"| `{session['session']}` | `{session['mapping']}` | "
+                     f"{', '.join(session['targets'])} | `{values.get('Treat source rows as', '')}` | "
+                     f"`{values.get('Insert', '')}` | `{values.get('Update as Update', '')}` | "
+                     f"{session['xml_line']} |")
+    lines += ["", "| decision | expression | xml line |", "|---|---|---|"]
+    for decision in doc["workflow"]["decisions"]:
+        lines.append(f"| `{decision['task']}` | `{decision['expression']}` | "
+                     f"{decision['xml_line']} |")
+    lines += ["", "Each `Decision = 0` branch leads to its corresponding "
+              "`Failed_Email*` task; `Failed_Email2` leads to `Control (Stop parent)`.",
+              "", "## Name traps", "",
+              "Connector values in this section are read from regenerated "
+              "`baseline/informatica/*.csv`; run `tools/informatica_baseline.py` first "
+              "when those gitignored files are absent.", "",
+              "| trap | row | connector value | name-matched value | XML evidence | notes |",
+              "|---|---|---|---|---|---|"]
     for item in doc["name_traps"]:
+        notes = item.get("note", "")
+        if item.get("derived_lookup_value"):
+            notes = f"Use Last Value derived lookup={item['derived_lookup_value']}" + (
+                f"; {notes}" if notes else "")
         lines.append(f"| {item['trap']} | {item['row']} | `{item['connector_value']}` | "
-                     f"`{item['name_matched_value']}` |")
+                     f"`{item['name_matched_value']}` | "
+                     f"{', '.join(map(str, item['xml_lines']))} | {notes} |")
     lines += ["", "## Unconnected / dead field inventory", ""]
     for mapping in doc["mappings"]:
         lines.append(f"### {mapping['name']}")
         for item in mapping["unconnected_or_dead"]:
             lines.append(f"- `{item['instance']}.{item['field']}` ({item['transformation']}), "
                          f"{item['reason']} (XML line {item['xml_line']})")
+        for item in mapping["target_unconnected"]:
+            lines.append(f"- `{item['instance']}.{item['field']}` (target column), "
+                         f"{item['reason']}")
     return "\n".join(lines) + "\n"
 
 
@@ -484,7 +641,7 @@ def main():
     sources, targets, mappings, wf = parse()
     doc = {"repository_file": "legacy/informatica/wf_demo_mapping.XML",
            "sources": sources, "targets": targets, "mappings": mappings,
-           "workflow": wf, "name_traps": evidence()}
+           "workflow": wf, "name_traps": evidence(mappings)}
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     (OUT_DIR / "lineage.json").write_text(json.dumps(doc, indent=2, sort_keys=True) + "\n")
     (OUT_DIR / "lineage.md").write_text(render(doc))

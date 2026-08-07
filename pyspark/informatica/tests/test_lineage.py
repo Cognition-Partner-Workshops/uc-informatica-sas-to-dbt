@@ -35,3 +35,30 @@ def test_lineage_contains_connector_traps():
     target2 = column("m_demo_mapping3", "demo_target2", "Title")
     assert any(any(step.get("group") == "NEWGROUP1" for step in branch)
                for branch in target2["branches"])
+
+    for mapping in document["mappings"]:
+        for target in mapping["targets"]:
+            for target_column in target["columns"]:
+                for branch in target_column["branches"]:
+                    pairs = [(step["instance"], step["field"]) for step in branch]
+                    assert all(left != right for left, right in zip(pairs, pairs[1:]))
+
+    inventory = next(mapping["target_unconnected"] for mapping in document["mappings"]
+                     if mapping["name"] == "m_demo_mapping2")
+    assert {"instance": "demo_target1_INS", "field": "ACTIVE_FLAG", "connected": False,
+            "reason": "no incoming CONNECTOR — column is NULL in the target"} in inventory
+
+    assert document["workflow"]["execution_session_order"] == [
+        "s_m_demo_mapping2", "s_m_demo_mapping1", "s_m_demo_mapping3"
+    ]
+
+    upd = column("m_demo_mapping2", "demo_target1_UPD", "LEAD_CO_MNE")
+    path = upd["branches"][0]
+    assert any(step["instance"] == "RTRTRANS" and step["field"] == "LEAD_CO_MNE4"
+               and step["group"] == "Update" for step in path)
+    assert not any(step["instance"] == "RTRTRANS" and step["field"] == "LEAD_CO_MNE2"
+                   for step in path)
+
+    upd_id = column("m_demo_mapping2", "demo_target1_UPD", "ID")
+    assert any(step["instance"] == "RTRTRANS" and step["field"] == "ID3"
+               and step["group"] == "Update" for step in upd_id["branches"][0])
