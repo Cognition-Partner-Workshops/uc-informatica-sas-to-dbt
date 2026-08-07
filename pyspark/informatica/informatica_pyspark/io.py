@@ -57,7 +57,7 @@ class CsvIO:
 
 
 class SnowflakeIO:
-    """Snowflake shape; connection options are intentionally wired for a later milestone."""
+    """Spark Snowflake connector IO for one namespaced migration run."""
 
     def __init__(self, spark, cfg):
         self.spark, self.cfg = spark, cfg
@@ -73,11 +73,22 @@ class SnowflakeIO:
             self.options["pem_private_key"] = str(cfg.private_key_path)
 
     def read(self, name: str) -> DataFrame:
-        return self.spark.read.format("snowflake").options(**self.options).option(
-            "dbtable", name
-        ).load()
+        df = (
+            self.spark.read.format("snowflake")
+            .options(**self.options)
+            .option("dbtable", name)
+            .load()
+        )
+        ordinal = next((c for c in df.columns if c.upper() == "__LINE_ORDINAL"), None)
+        if ordinal:
+            df = df.withColumn("__line_ordinal", F.col(ordinal)).drop(ordinal)
+        return df
 
     def write(self, instance: str, df: DataFrame):
-        df.write.format("snowflake").options(**self.options).option(
+        (
+            df.drop("__line_ordinal")
+            if "__line_ordinal" in df.columns
+            else df
+        ).write.format("snowflake").options(**self.options).option(
             "dbtable", instance
         ).mode("overwrite").save()

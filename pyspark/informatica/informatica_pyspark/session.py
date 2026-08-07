@@ -4,13 +4,19 @@ from .config import RunConfig
 
 
 def build_spark(cfg: RunConfig) -> SparkSession:
-    # Later Snowflake milestone: add the connector package/jar here, for example
-    # .config("spark.jars.packages", "net.snowflake:spark-snowflake_2.12:<version>").
-    return (
+    builder = (
         SparkSession.builder.appName("informatica-pyspark")
         .master("local[*]")
         .config("spark.sql.ansi.enabled", "false")
         .config("spark.sql.legacy.timeParserPolicy", "CORRECTED")
         .config("spark.sql.session.timeZone", "UTC")
-        .getOrCreate()
     )
+    if cfg.io == "snowflake":
+        packages = ",".join(
+            [
+                f"net.snowflake:spark-snowflake_2.12:{cfg.snowflake_connector_version}",
+                f"net.snowflake:snowflake-jdbc:{cfg.snowflake_jdbc_version}",
+            ]
+        )
+        builder = builder.config("spark.jars.packages", packages)
+    return builder.getOrCreate()

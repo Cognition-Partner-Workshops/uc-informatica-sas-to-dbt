@@ -18,11 +18,14 @@ class RunConfig:
     warehouse: str = ""
     database: str = ""
     schema: str = ""
+    source_schema: str = ""
     migrated_target_schema: str = ""
     baseline_schema: str = ""
     run_schema_suffix: str = ""
     schema_suffix_env: str = "SNOWFLAKE_SCHEMA_SUFFIX"
     private_key_path: Path | None = None
+    snowflake_connector_version: str = "2.16.0-spark_3.5"
+    snowflake_jdbc_version: str = "3.18.0"
 
     @classmethod
     def from_yaml(cls, path: str | Path) -> "RunConfig":

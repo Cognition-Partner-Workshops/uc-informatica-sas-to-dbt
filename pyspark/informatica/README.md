@@ -24,6 +24,27 @@ Snowflake mode uses the same mapping code and is configured in
 `conf/snowflake.yml`; account credentials and connector wiring are intentionally
 reserved for a later milestone.
 
+## Snowflake milestone E
+
+Install the local Snowflake client dependency with:
+
+```bash
+.venv/bin/pip install -r pyspark/informatica/requirements-local.txt
+```
+
+The provisioning generator is `tools/snowflake_milestone_e.py`. It reads the
+private key only from the `SNOWFLAKE_PRIVATE_KEY` environment variable and
+writes a temporary mode-0600 PEM outside the repository. It creates fresh
+namespaced source, migrated-target, and baseline schemas only after checking
+`information_schema.schemata`, loads all typed tables, materializes
+`__LINE_ORDINAL` for lookup inputs and pre-existing `demo_target1`, and
+generates normalized comparison views and a proof statement under ignored
+`build/`.
+
+The first real Snowflake provisioning run is recorded in
+`docs/migration/snowflake_milestone_e.md`. Do not reuse its schemas for another
+run; pass a fresh `--run-id`.
+
 ## Parity keys
 
 The minimal unique keys in the generated Informatica baseline are:
