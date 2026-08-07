@@ -101,4 +101,7 @@ def run(ctx: RunContext) -> dict:
             "UPDATED_TIME": F.col("o_UPDATED_TIME"),
         },
     )
-    return {"demo_target1_INS": ins.drop("__line_ordinal"), "demo_target1_UPD": upd.drop("__line_ordinal")}
+    return {
+        "demo_target1_INS": ins,
+        "demo_target1_UPD": upd,
+    }
