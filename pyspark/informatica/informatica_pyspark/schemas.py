@@ -84,8 +84,11 @@ TARGET_SCHEMAS = {
         ("STD_COST", StringType()), ("LIST_PRICE", StringType()),
         ("SELL_ST_DT", DateType()), ("SELL_ED_DT", DateType()),
     ]),
-    "demo_target5": _schema([(x, StringType()) for x in
-        ("ACCT_ID", "FIRST_NM", "LAST_NM", "BAL_AMT", "CRDT_SCORE")]),
+    "demo_target5": _schema([
+        ("ACCT_ID", LongType()), ("FIRST_NM", StringType()),
+        ("LAST_NM", StringType()), ("BAL_AMT", DoubleType()),
+        ("CRDT_SCORE", LongType()),
+    ]),
     "demo_target6": _schema([
         ("ACCT_ID", LongType()), ("ACCT_TYP", StringType()), ("ACCT_DESC", StringType()),
         ("CR8_DT", DateType()), ("CRDT_LN", StringType()), ("CLSR_DT", DateType()),

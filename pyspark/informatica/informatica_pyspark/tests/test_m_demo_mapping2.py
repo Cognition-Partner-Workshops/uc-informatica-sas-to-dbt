@@ -12,7 +12,10 @@ class MemoryIO:
         self.values = values
 
     def read(self, name):
-        return self.values[name]
+        value = self.values[name]
+        if name == "demo_source1" and "__line_ordinal" not in value.columns:
+            return attach_line_ordinal(value)
+        return value
 
 
 def test_mapping2_router_lookup_sequence_and_unconnected_columns(spark):

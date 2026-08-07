@@ -1,4 +1,4 @@
-# Snowflake milestone E provisioning record
+# Snowflake end-to-end provisioning and parity record
 
 Run id: `20260807T0658Z`
 
@@ -58,6 +58,7 @@ The loader DDL includes a stored `__LINE_ORDINAL NUMBER(38,0) NOT NULL` on:
 - `lkp_demo_source1`
 - `lkp_demo_source2`
 - `lkp_demo_source3`
+- `demo_source1`
 - `demo_target1`
 
 Rows are inserted from `csv.DictReader` enumeration, so ordinal zero is the
@@ -103,6 +104,7 @@ The stored ordinal checks returned:
 lkp_demo_source1: stored=[0, 1, 2, 3, 4, 5] csv_expected=[0, 1, 2, 3, 4, 5] MATCH=True
 lkp_demo_source2: stored=[0, 1, 2, 3, 4, 5] csv_expected=[0, 1, 2, 3, 4, 5] MATCH=True
 lkp_demo_source3: stored=[0, 1, 2, 3, 4, 5] csv_expected=[0, 1, 2, 3, 4, 5] MATCH=True
+demo_source1: stored=[0, 1, 2, 3, 4, 5, 6] csv_expected=[0, 1, 2, 3, 4, 5, 6] MATCH=True
 demo_target1: stored=[0, 1, 2, 3, 4] csv_expected=[0, 1, 2, 3, 4] MATCH=True
 ```
 
@@ -114,18 +116,40 @@ Row(ID=Decimal('102'), LABEL='second-row')
 Spark Snowflake round-trip: PASS; throwaway table dropped
 ```
 
-The generated proof statement was executed as-is against the empty migrated
-tables. It produced the expected negative control:
+The generated proof statement was first executed against the empty migrated
+tables as the expected negative control. After the mapping modules landed, the
+same run schemas were reused for the end-to-end workflow. The final proof
+statement was executed unchanged and passed all seven targets:
 
 ```text
-DEMO_TARGET1_INS  baseline=4 migrated=0 baseline_hash=8128491501339877599 migrated_hash=0 baseline_minus_migrated=4 migrated_minus_baseline=0 FAIL
-DEMO_TARGET1_UPD  baseline=3 migrated=0 baseline_hash=-5257889502721467851 migrated_hash=0 baseline_minus_migrated=3 migrated_minus_baseline=0 FAIL
-DEMO_TARGET2      baseline=3 migrated=0 baseline_hash=3123907108787439864 migrated_hash=0 baseline_minus_migrated=3 migrated_minus_baseline=0 FAIL
-DEMO_TARGET21     baseline=3 migrated=0 baseline_hash=-5462086455473858760 migrated_hash=0 baseline_minus_migrated=3 migrated_minus_baseline=0 FAIL
-DEMO_TARGET3      baseline=4 migrated=0 baseline_hash=2979066879702683896 migrated_hash=0 baseline_minus_migrated=4 migrated_minus_baseline=0 FAIL
-DEMO_TARGET5      baseline=2 migrated=0 baseline_hash=4054638233888008612 migrated_hash=0 baseline_minus_migrated=2 migrated_minus_baseline=0 FAIL
-DEMO_TARGET6      baseline=2 migrated=0 baseline_hash=-987830873279475629 migrated_hash=0 baseline_minus_migrated=2 migrated_minus_baseline=0 FAIL
+('DEMO_TARGET1_INS', 4, 4, 8128491501339877599, 8128491501339877599, 0, 0, 'PASS')
+('DEMO_TARGET1_UPD', 3, 3, -5257889502721467851, -5257889502721467851, 0, 0, 'PASS')
+('DEMO_TARGET2', 3, 3, 3123907108787439864, 3123907108787439864, 0, 0, 'PASS')
+('DEMO_TARGET21', 3, 3, -5462086455473858760, -5462086455473858760, 0, 0, 'PASS')
+('DEMO_TARGET3', 4, 4, 2979066879702683896, 2979066879702683896, 0, 0, 'PASS')
+('DEMO_TARGET5', 2, 2, -4578390602032457200, -4578390602032457200, 0, 0, 'PASS')
+('DEMO_TARGET6', 2, 2, -987830873279475629, -987830873279475629, 0, 0, 'PASS')
 ```
+
+The Snowflake workflow exited `0`. The local workflow exited `0`, and the
+unmodified parity comparator reported all seven targets as `MATCH`.
+
+Final-run query-history evidence included the end-to-end proof and regenerated
+normalisation:
+
+```text
+01c639bd-0107-4ec9-000f-dc5e0003a4ce ... proof statement ... 7 DEVIN_DEMO_WH SUCCESS
+01c639bc-0107-4ec9-000f-dc5e0003a49a ... CREATE OR REPLACE VIEW ... PYSPARK...V_DEMO_TARGET5 ... 0 DEVIN_DEMO_WH SUCCESS
+01c639bc-0107-544d-000f-dc5e00034936 ... CREATE OR REPLACE VIEW ... BASELINE...V_DEMO_TARGET5 ... 0 DEVIN_DEMO_WH SUCCESS
+01c639bc-0107-5426-000f-dc5e0004031e ... CREATE OR REPLACE VIEW ... PYSPARK...V_DEMO_TARGET6 ... 0 DEVIN_DEMO_WH SUCCESS
+01c639bc-0107-58c8-000f-dc5e0004327a ... DROP TABLE ... _MILESTONE_E_ROUND_TRIP ... 0 DEVIN_DEMO_WH SUCCESS
+```
+
+The final Snowflake target column checks showed `DATE` for migrated
+`DEMO_TARGET3.SELL_ST_DT` and `SELL_ED_DT`, and `NUMBER` for migrated
+`DEMO_TARGET5.ACCT_ID`, `BAL_AMT`, and `CRDT_SCORE`. The generated view for
+`DEMO_TARGET5` uses `TO_VARCHAR(TO_DECIMAL(...,38,6))` for the numeric columns,
+which resolved the initial end-to-end formatting divergence.
 
 ## Maven fallback
 
@@ -134,8 +158,8 @@ rate-limit responses and Spark reported unresolved dependencies. The
 connector and JDBC jars were therefore provisioned outside the repository:
 
 ```text
-/tmp/snowflake-spark-jars/spark-snowflake_2.12-3.2.1-spark_3.5.jar
-/tmp/snowflake-spark-jars/snowflake-jdbc-4.0.2.jar
+$HOME/.cache/informatica-snowflake-jars/spark-snowflake_2.12-3.2.1-spark_3.5.jar
+$HOME/.cache/informatica-snowflake-jars/snowflake-jdbc-4.0.2.jar
 ```
 
 `session.py` uses `spark.jars` when `snowflake_jars_dir` is supplied; otherwise

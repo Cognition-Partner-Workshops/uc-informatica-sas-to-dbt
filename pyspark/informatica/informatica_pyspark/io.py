@@ -110,7 +110,7 @@ class SnowflakeIO:
         )
         ordinal = next((c for c in df.columns if c.upper() == "__LINE_ORDINAL"), None)
         if ordinal:
-            df = df.withColumn("__line_ordinal", F.col(ordinal)).drop(ordinal)
+            df = df.withColumnRenamed(ordinal, "__line_ordinal")
         return df
 
     def write(self, instance: str, df: DataFrame):

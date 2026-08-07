@@ -51,10 +51,10 @@ outside the repository and pass that directory to the verifier:
 ```bash
 PYTHONPATH=pyspark/informatica .venv/bin/python \
   pyspark/informatica/tools/provision_snowflake_jars.py \
-  --output /tmp/snowflake-spark-jars
+  --output "$HOME/.cache/informatica-snowflake-jars"
 PYTHONPATH=pyspark/informatica .venv/bin/python \
   pyspark/informatica/tools/snowflake_verify.py \
-  --run-id <RUNID> --jars-dir /tmp/snowflake-spark-jars
+  --run-id <RUNID> --jars-dir "$HOME/.cache/informatica-snowflake-jars"
 ```
 
 The verifier executes the generated proof, queries Snowflake query history,
