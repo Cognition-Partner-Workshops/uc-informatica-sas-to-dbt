@@ -12,6 +12,7 @@ from informatica_pyspark.config import (
     DEFAULT_SNOWFLAKE_ROLE,
     DEFAULT_SNOWFLAKE_USER,
     DEFAULT_SNOWFLAKE_WAREHOUSE,
+    REPO_ROOT,
 )
 from informatica_pyspark.io import (
     SOURCE_SCHEMAS,
@@ -33,12 +34,14 @@ SOURCE_TABLES = (
     "lkp_demo_source3",
     "demo_target1",
 )
+DEFAULT_DATA_DIR = REPO_ROOT / "legacy" / "informatica" / "data"
 
 
 def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser()
     parser.add_argument("--source-schema", required=True)
-    parser.add_argument("--baseline-schema", required=True)
+    parser.add_argument("--baseline-schema")
+    parser.add_argument("--skip-baseline", action="store_true")
     parser.add_argument("--data-dir", default="legacy/informatica/data")
     parser.add_argument("--baseline-dir", default="baseline/informatica")
     parser.add_argument("--account", default=DEFAULT_SNOWFLAKE_ACCOUNT)
@@ -71,6 +74,11 @@ def _python_value(value, data_type):
     if data_type.simpleString() == "double":
         return float(value)
     return str(value)
+
+
+def _source_path(data_dir: Path, table: str) -> Path:
+    override = data_dir / f"{table}.csv"
+    return override if override.exists() else DEFAULT_DATA_DIR / f"{table}.csv"
 
 
 def _load_table(
@@ -126,6 +134,8 @@ def _load_table(
 
 def main(argv=None):
     args = _parser().parse_args(argv)
+    if not args.skip_baseline and not args.baseline_schema:
+        _parser().error("--baseline-schema is required unless --skip-baseline is set")
     data_dir = Path(args.data_dir)
     baseline_dir = Path(args.baseline_dir)
     connection = _connection(args)
@@ -141,19 +151,20 @@ def main(argv=None):
                 args.database,
                 args.source_schema,
                 table,
-                data_dir / f"{table}.csv",
+                _source_path(data_dir, table),
                 definition,
             )
-        for table, definition in TARGET_INSTANCE_SCHEMAS.items():
-            _load_table(
-                connection,
-                args.database,
-                args.baseline_schema,
-                table,
-                baseline_dir / f"{table}.csv",
-                definition,
-                include_row_ord=False,
-            )
+        if not args.skip_baseline:
+            for table, definition in TARGET_INSTANCE_SCHEMAS.items():
+                _load_table(
+                    connection,
+                    args.database,
+                    args.baseline_schema,
+                    table,
+                    baseline_dir / f"{table}.csv",
+                    definition,
+                    include_row_ord=False,
+                )
     finally:
         connection.close()
 

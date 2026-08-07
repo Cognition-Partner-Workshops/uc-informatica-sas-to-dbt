@@ -933,6 +933,345 @@ ROWCOUNT=7
 - The seven targets were verified, but each contains only 2–4 rows. Nothing here exercises volume, partitioning, or spill behavior. `MINUS` over a handful of rows is a weak test of joins or aggregations that could fail at scale.
 - `__ROW_ORD` correctness is asserted by the loader’s ordering check, which uses the same loader path that materializes the column. An independent check would compare the loaded values directly against CSV bytes.
 - Snowflake connector metadata probes emitted nonfatal cloud metadata warnings in this environment; they did not fail the run.
-- The `ABORT()` failure path was not exercised against Snowflake. The seven-target success run does not prove partial-write behavior for a failing Snowflake mapping.
+- The abort path is now characterized for this fixture, but this is not a transactional guarantee for every possible failure point or workload. The run leaves an intentionally partial schema; production recovery still needs an explicit success marker, transaction boundary, or swap protocol.
 - `MINUS` is set-based: it removes duplicates before comparing, so equal row counts plus zero rows in both directions would not by itself distinguish a table holding `{a, a, b}` from one holding `{a, b, b}`. Row multiplicity is covered here by the `HASH_AGG` checksum, which aggregates every row, not by the `MINUS` pair.
 - The checksum is an order-independent aggregate and can theoretically collide; the bidirectional `MINUS` checks are stronger for the captured rows but still inherit the shared schema and seed-data limitations above.
+
+
+## Snowflake `ABORT()` fixture verification
+
+This is a separate abort-fixture run, captured in `/home/ubuntu/sf_abort_evidence.txt`. It did not reuse or modify the good proof schemas.
+
+- UTC run timestamp: `20260807075158`
+- Source schema: `SOURCE_INFORMATICA_ABORT_20260807075158`
+- Run schema: `PYSPARK_INFORMATICA_ABORT_20260807075158`
+- Baseline schema: not created; the abort fixture has no baseline output.
+- The prior `SOURCE_INFORMATICA_20260807073611`, `BASELINE_INFORMATICA_20260807073611`, and `PYSPARK_INFORMATICA_20260807073611` schemas were left untouched.
+
+### Local abort run
+
+The local run returned exit code 1 and left the five target CSVs written by mappings 2 and 1:
+
+```text
+=== local abort command result ===
+COMMAND:
+python -m informatica_pyspark.cli run-workflow --business-date 2024-01-31 --io local --data-dir legacy/informatica/data/abort --out-dir /tmp/out_abort_wf
+EXIT_CODE=1
+TARGET_FILES:
+demo_target1_INS.csv
+demo_target1_UPD.csv
+demo_target3.csv
+demo_target5.csv
+demo_target6.csv
+```
+
+The captured local traceback is:
+
+```text
+=== local abort run ===
+LOG_PATH=/tmp/pyspark_local_abort_20260807075158.log
+26/08/07 07:52:38 WARN Utils: Your hostname, devin-box resolves to a loopback address: 127.0.0.1; using 172.16.16.2 instead (on interface eth0)
+26/08/07 07:52:38 WARN Utils: Set SPARK_LOCAL_IP if you need to bind to another address
+Setting default log level to "WARN".
+To adjust logging level use sc.setLogLevel(newLevel). For SparkR, use setLogLevel(newLevel).
+26/08/07 07:52:38 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+26/08/07 07:52:41 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
+26/08/07 07:52:44 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
+ERROR Failed_Email task for m_demo_mapping3 (NOT MIGRATED)
+Traceback (most recent call last):
+  File "/home/ubuntu/repos/uc-informatica-sas-to-dbt/pyspark/informatica/informatica_pyspark/workflow.py", line 29, in run_workflow
+    run_mapping(name, cfg, io)
+  File "/home/ubuntu/repos/uc-informatica-sas-to-dbt/pyspark/informatica/informatica_pyspark/workflow.py", line 17, in run_mapping
+    outputs = mapping.run(spark, cfg, io)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/repos/uc-informatica-sas-to-dbt/pyspark/informatica/informatica_pyspark/mappings/m_demo_mapping3.py", line 57, in run
+    assert_no_abort(
+  File "/home/ubuntu/repos/uc-informatica-sas-to-dbt/pyspark/informatica/informatica_pyspark/functions.py", line 66, in assert_no_abort
+    raise InformaticaAbort(message)
+informatica_pyspark.functions.InformaticaAbort: Relationship_to_Subscriber_Code_Labe valuel is null
+ERROR Control task: Stop parent (NOT MIGRATED)
+ERROR Informatica run failed
+Traceback (most recent call last):
+  File "/home/ubuntu/repos/uc-informatica-sas-to-dbt/pyspark/informatica/informatica_pyspark/cli.py", line 65, in main
+    run_workflow(cfg, io)
+  File "/home/ubuntu/repos/uc-informatica-sas-to-dbt/pyspark/informatica/informatica_pyspark/workflow.py", line 29, in run_workflow
+    run_mapping(name, cfg, io)
+  File "/home/ubuntu/repos/uc-informatica-sas-to-dbt/pyspark/informatica/informatica_pyspark/workflow.py", line 17, in run_mapping
+    outputs = mapping.run(spark, cfg, io)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/repos/uc-informatica-sas-to-dbt/pyspark/informatica/informatica_pyspark/mappings/m_demo_mapping3.py", line 57, in run
+    assert_no_abort(
+  File "/home/ubuntu/repos/uc-informatica-sas-to-dbt/pyspark/informatica/informatica_pyspark/functions.py", line 66, in assert_no_abort
+    raise InformaticaAbort(message)
+informatica_pyspark.functions.InformaticaAbort: Relationship_to_Subscriber_Code_Labe valuel is null
+INFO Closing down clientserver connection
+```
+
+### Snowflake abort run
+
+The Snowflake run returned the same non-zero exit code and did not expose private-key material in its log:
+
+```text
+=== snowflake abort command result ===
+COMMAND:
+python -m informatica_pyspark.cli run-workflow --business-date 2024-01-31 --io snowflake --data-dir legacy/informatica/data/abort --run-schema PYSPARK_INFORMATICA_ABORT_20260807075158 --src-schema SOURCE_INFORMATICA_ABORT_20260807075158
+EXIT_CODE=1
+PRIVATE_KEY_DETECTED_IN_LOG=0
+```
+
+The captured Snowflake log contains the same `InformaticaAbort` raised from `m_demo_mapping3`:
+
+```text
+=== snowflake abort run ===
+LOG_PATH=/tmp/pyspark_snowflake_abort_20260807075158.log
+26/08/07 07:52:47 WARN Utils: Your hostname, devin-box resolves to a loopback address: 127.0.0.1; using 172.16.16.2 instead (on interface eth0)
+26/08/07 07:52:47 WARN Utils: Set SPARK_LOCAL_IP if you need to bind to another address
+26/08/07 07:52:48 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+Setting default log level to "WARN".
+To adjust logging level use sc.setLogLevel(newLevel). For SparkR, use setLogLevel(newLevel).
+26/08/07 07:52:51 ERROR RestRequest: Stop retrying since elapsed time due to network issues has reached timeout. Elapsed: 1,032 ms, timeout: 1,000 ms
+26/08/07 07:52:51 ERROR RestRequest: Stop retrying since elapsed time due to network issues has reached timeout. Elapsed: 1,032 ms, timeout: 1,000 ms
+26/08/07 07:52:51 ERROR RestRequest: Returning null response. Cause: java.net.UnknownHostException: metadata.google.internal, request: GET http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/email HTTP/1.1
+26/08/07 07:52:51 ERROR RestRequest: Returning null response. Cause: java.net.UnknownHostException: metadata.google.internal, request: GET http://metadata.google.internal HTTP/1.1
+26/08/07 07:52:52 ERROR RestRequest: Stop retrying since elapsed time due to network issues has reached timeout. Elapsed: 1,423 ms, timeout: 1,000 ms
+26/08/07 07:52:52 ERROR RestRequest: Returning null response. Cause: java.net.SocketTimeoutException: Connect timed out, request: PUT http://169.254.169.254/latest/api/token HTTP/1.1
+26/08/07 07:52:52 ERROR RestRequest: Stop retrying since elapsed time due to network issues has reached timeout. Elapsed: 1,424 ms, timeout: 1,000 ms
+26/08/07 07:52:52 ERROR RestRequest: Stop retrying since elapsed time due to network issues has reached timeout. Elapsed: 1,424 ms, timeout: 1,000 ms
+26/08/07 07:52:52 ERROR RestRequest: Returning null response. Cause: java.net.SocketTimeoutException: Connect timed out, request: GET http://169.254.169.254/metadata/instance?api-version=2021-02-01 HTTP/1.1
+26/08/07 07:52:52 ERROR RestRequest: Returning null response. Cause: java.net.SocketTimeoutException: Connect timed out, request: GET http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=https://management.azure.com HTTP/1.1
+26/08/07 07:52:53 ERROR RestRequest: Stop retrying since elapsed time due to network issues has reached timeout. Elapsed: 1,404 ms, timeout: 1,000 ms
+26/08/07 07:52:53 ERROR RestRequest: Returning null response. Cause: java.net.SocketTimeoutException: Connect timed out, request: GET http://169.254.169.254/latest/dynamic/instance-identity/document HTTP/1.1
+
+[Stage 0:>                                                          (0 + 1) / 1]
+
+
+INFO Snowflake Connector for Python Version: 4.7.1, Python Version: 3.12.8, Platform: Linux-5.15.200-x86_64-with-glibc2.35
+INFO Connecting to GLOBAL Snowflake domain
+INFO Found credentials in environment variables.
+26/08/07 07:53:04 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
+26/08/07 07:53:06 WARN VersionInfoUtils: The AWS SDK for Java 1.x entered maintenance mode starting July 31, 2024 and will reach end of support on December 31, 2025. For more information, see https://aws.amazon.com/blogs/developer/the-aws-sdk-for-java-1-x-is-in-maintenance-mode-effective-july-31-2024/
+You can print where on the file system the AWS SDK for Java 1.x core runtime is located by setting the AWS_JAVA_V1_PRINT_LOCATION environment variable or aws.java.v1.printLocation system property to 'true'.
+This message can be disabled by setting the AWS_JAVA_V1_DISABLE_DEPRECATION_ANNOUNCEMENT environment variable or aws.java.v1.disableDeprecationAnnouncement system property to 'true'.
+The AWS SDK for Java 1.x is being used here:
+at java.base/java.lang.Thread.getStackTrace(Thread.java:1619)
+at net.snowflake.spark.shaded.amazonaws.util.VersionInfoUtils.printDeprecationAnnouncement(VersionInfoUtils.java:81)
+at net.snowflake.spark.shaded.amazonaws.util.VersionInfoUtils.<clinit>(VersionInfoUtils.java:59)
+at net.snowflake.spark.shaded.amazonaws.ClientConfiguration.<clinit>(ClientConfiguration.java:95)
+at net.snowflake.spark.snowflake.io.CloudStorageOperations$.createS3Client(CloudStorageOperations.scala:423)
+at net.snowflake.spark.snowflake.io.InternalS3Storage.createUploadStream(CloudStorageOperations.scala:1474)
+at net.snowflake.spark.snowflake.io.CloudStorage.doUploadPartition(CloudStorageOperations.scala:715)
+at net.snowflake.spark.snowflake.io.CloudStorage.uploadPartition(CloudStorageOperations.scala:629)
+at net.snowflake.spark.snowflake.io.CloudStorage.uploadPartition$(CloudStorageOperations.scala:611)
+at net.snowflake.spark.snowflake.io.InternalS3Storage.uploadPartition(CloudStorageOperations.scala:1382)
+at net.snowflake.spark.snowflake.io.CloudStorage.$anonfun$uploadRDD$2(CloudStorageOperations.scala:871)
+at net.snowflake.spark.snowflake.io.CloudStorage.$anonfun$uploadRDD$2$adapted(CloudStorageOperations.scala:861)
+at org.apache.spark.rdd.RDD.$anonfun$mapPartitionsWithIndex$2(RDD.scala:910)
+at org.apache.spark.rdd.RDD.$anonfun$mapPartitionsWithIndex$2$adapted(RDD.scala:910)
+at org.apache.spark.rdd.MapPartitionsRDD.compute(MapPartitionsRDD.scala:52)
+at org.apache.spark.rdd.RDD.computeOrReadCheckpoint(RDD.scala:367)
+at org.apache.spark.rdd.RDD.iterator(RDD.scala:331)
+at org.apache.spark.scheduler.ResultTask.runTask(ResultTask.scala:93)
+at org.apache.spark.TaskContext.runTaskWithListeners(TaskContext.scala:166)
+at org.apache.spark.scheduler.Task.run(Task.scala:141)
+at org.apache.spark.executor.Executor$TaskRunner.$anonfun$run$4(Executor.scala:621)
+at org.apache.spark.util.SparkErrorUtils.tryWithSafeFinally(SparkErrorUtils.scala:64)
+at org.apache.spark.util.SparkErrorUtils.tryWithSafeFinally$(SparkErrorUtils.scala:61)
+at org.apache.spark.util.Utils$.tryWithSafeFinally(Utils.scala:94)
+at org.apache.spark.executor.Executor$TaskRunner.run(Executor.scala:624)
+at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+at java.base/java.lang.Thread.run(Thread.java:840)
+
+[Stage 7:>                                                          (0 + 1) / 1]
+
+
+INFO Snowflake Connector for Python Version: 4.7.1, Python Version: 3.12.8, Platform: Linux-5.15.200-x86_64-with-glibc2.35
+INFO Connecting to GLOBAL Snowflake domain
+INFO Snowflake Connector for Python Version: 4.7.1, Python Version: 3.12.8, Platform: Linux-5.15.200-x86_64-with-glibc2.35
+INFO Connecting to GLOBAL Snowflake domain
+26/08/07 07:53:29 WARN WindowExec: No Partition Defined for Window operation! Moving all data to a single partition, this can cause serious performance degradation.
+INFO Snowflake Connector for Python Version: 4.7.1, Python Version: 3.12.8, Platform: Linux-5.15.200-x86_64-with-glibc2.35
+INFO Connecting to GLOBAL Snowflake domain
+INFO Snowflake Connector for Python Version: 4.7.1, Python Version: 3.12.8, Platform: Linux-5.15.200-x86_64-with-glibc2.35
+INFO Connecting to GLOBAL Snowflake domain
+ERROR Failed_Email task for m_demo_mapping3 (NOT MIGRATED)
+Traceback (most recent call last):
+  File "/home/ubuntu/repos/uc-informatica-sas-to-dbt/pyspark/informatica/informatica_pyspark/workflow.py", line 29, in run_workflow
+    run_mapping(name, cfg, io)
+  File "/home/ubuntu/repos/uc-informatica-sas-to-dbt/pyspark/informatica/informatica_pyspark/workflow.py", line 17, in run_mapping
+    outputs = mapping.run(spark, cfg, io)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/repos/uc-informatica-sas-to-dbt/pyspark/informatica/informatica_pyspark/mappings/m_demo_mapping3.py", line 57, in run
+    assert_no_abort(
+  File "/home/ubuntu/repos/uc-informatica-sas-to-dbt/pyspark/informatica/informatica_pyspark/functions.py", line 66, in assert_no_abort
+    raise InformaticaAbort(message)
+informatica_pyspark.functions.InformaticaAbort: Relationship_to_Subscriber_Code_Labe valuel is null
+ERROR Control task: Stop parent (NOT MIGRATED)
+26/08/07 07:53:49 WARN SparkConnectorContext$: Finish cancelling all queries for local-1786089168989
+ERROR Informatica run failed
+Traceback (most recent call last):
+  File "/home/ubuntu/repos/uc-informatica-sas-to-dbt/pyspark/informatica/informatica_pyspark/cli.py", line 65, in main
+    run_workflow(cfg, io)
+  File "/home/ubuntu/repos/uc-informatica-sas-to-dbt/pyspark/informatica/informatica_pyspark/workflow.py", line 29, in run_workflow
+    run_mapping(name, cfg, io)
+  File "/home/ubuntu/repos/uc-informatica-sas-to-dbt/pyspark/informatica/informatica_pyspark/workflow.py", line 17, in run_mapping
+    outputs = mapping.run(spark, cfg, io)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/repos/uc-informatica-sas-to-dbt/pyspark/informatica/informatica_pyspark/mappings/m_demo_mapping3.py", line 57, in run
+    assert_no_abort(
+  File "/home/ubuntu/repos/uc-informatica-sas-to-dbt/pyspark/informatica/informatica_pyspark/functions.py", line 66, in assert_no_abort
+    raise InformaticaAbort(message)
+informatica_pyspark.functions.InformaticaAbort: Relationship_to_Subscriber_Code_Labe valuel is null
+INFO Closing down clientserver connection
+```
+
+The query-history evidence below shows the earlier target DDL and writes completed before the abort surfaced. The logs and table inventory therefore demonstrate the workflow order rather than a mapping-specific alternative execution.
+
+### Post-abort Snowflake state
+
+The run schema contains exactly five tables, with these captured row counts:
+
+```text
+=== show run tables ===
+SQL:
+SHOW TABLES IN SCHEMA DEVIN_MIGRATION_DEMO.PYSPARK_INFORMATICA_ABORT_20260807075158
+OUTPUT:
+(datetime.datetime(2026, 8, 7, 0, 53, 2, 313000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), 'DEMO_TARGET1_INS', 'DEVIN_MIGRATION_DEMO', 'PYSPARK_INFORMATICA_ABORT_20260807075158', 'TABLE', '', '', 4, 1536, 'DEVIN_MIGRATION_DEMO', '1', 'OFF', 'OFF', 'OFF', None, None, 'N', 'N', 'ROLE', 'N', 'N', 'N', 'N', 'N', 'N', 'OFF', 'OFF')
+(datetime.datetime(2026, 8, 7, 0, 53, 10, 585000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), 'DEMO_TARGET1_UPD', 'DEVIN_MIGRATION_DEMO', 'PYSPARK_INFORMATICA_ABORT_20260807075158', 'TABLE', '', '', 3, 1536, 'DEVIN_MIGRATION_DEMO', '1', 'OFF', 'OFF', 'OFF', None, None, 'N', 'N', 'ROLE', 'N', 'N', 'N', 'N', 'N', 'N', 'OFF', 'OFF')
+(datetime.datetime(2026, 8, 7, 0, 53, 43, 705000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), 'DEMO_TARGET3', 'DEVIN_MIGRATION_DEMO', 'PYSPARK_INFORMATICA_ABORT_20260807075158', 'TABLE', '', '', 4, 1536, 'DEVIN_MIGRATION_DEMO', '1', 'OFF', 'OFF', 'OFF', None, None, 'N', 'N', 'ROLE', 'N', 'N', 'N', 'N', 'N', 'N', 'OFF', 'OFF')
+(datetime.datetime(2026, 8, 7, 0, 53, 33, 722000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), 'DEMO_TARGET5', 'DEVIN_MIGRATION_DEMO', 'PYSPARK_INFORMATICA_ABORT_20260807075158', 'TABLE', '', '', 2, 1024, 'DEVIN_MIGRATION_DEMO', '1', 'OFF', 'OFF', 'OFF', None, None, 'N', 'N', 'ROLE', 'N', 'N', 'N', 'N', 'N', 'N', 'OFF', 'OFF')
+(datetime.datetime(2026, 8, 7, 0, 53, 24, 308000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), 'DEMO_TARGET6', 'DEVIN_MIGRATION_DEMO', 'PYSPARK_INFORMATICA_ABORT_20260807075158', 'TABLE', '', '', 2, 2048, 'DEVIN_MIGRATION_DEMO', '1', 'OFF', 'OFF', 'OFF', None, None, 'N', 'N', 'ROLE', 'N', 'N', 'N', 'N', 'N', 'N', 'OFF', 'OFF')
+ROWCOUNT=5
+
+=== count DEMO_TARGET1_INS ===
+SQL:
+SELECT COUNT(*) AS ROW_COUNT FROM DEVIN_MIGRATION_DEMO.PYSPARK_INFORMATICA_ABORT_20260807075158.DEMO_TARGET1_INS
+OUTPUT:
+(4,)
+ROWCOUNT=1
+
+=== count DEMO_TARGET1_UPD ===
+SQL:
+SELECT COUNT(*) AS ROW_COUNT FROM DEVIN_MIGRATION_DEMO.PYSPARK_INFORMATICA_ABORT_20260807075158.DEMO_TARGET1_UPD
+OUTPUT:
+(3,)
+ROWCOUNT=1
+
+=== count DEMO_TARGET3 ===
+SQL:
+SELECT COUNT(*) AS ROW_COUNT FROM DEVIN_MIGRATION_DEMO.PYSPARK_INFORMATICA_ABORT_20260807075158.DEMO_TARGET3
+OUTPUT:
+(4,)
+ROWCOUNT=1
+
+=== count DEMO_TARGET5 ===
+SQL:
+SELECT COUNT(*) AS ROW_COUNT FROM DEVIN_MIGRATION_DEMO.PYSPARK_INFORMATICA_ABORT_20260807075158.DEMO_TARGET5
+OUTPUT:
+(2,)
+ROWCOUNT=1
+
+=== count DEMO_TARGET6 ===
+SQL:
+SELECT COUNT(*) AS ROW_COUNT FROM DEVIN_MIGRATION_DEMO.PYSPARK_INFORMATICA_ABORT_20260807075158.DEMO_TARGET6
+OUTPUT:
+(2,)
+ROWCOUNT=1
+```
+
+`DEMO_TARGET2` and `DEMO_TARGET21` are absent. The query history contains no `CREATE OR REPLACE TABLE` for either m3 target, so the guard held: m3 evaluated the abort before creating or writing either table. The five surviving tables are:
+
+- `DEMO_TARGET1_INS`: 4 rows
+- `DEMO_TARGET1_UPD`: 3 rows
+- `DEMO_TARGET6`: 2 rows
+- `DEMO_TARGET5`: 2 rows
+- `DEMO_TARGET3`: 4 rows
+
+The complete captured run-window query history is:
+
+```text
+=== run-window query history ===
+SQL:
+SELECT query_id,query_text,start_time,end_time,execution_status,database_name,schema_name FROM TABLE(DEVIN_MIGRATION_DEMO.INFORMATION_SCHEMA.QUERY_HISTORY(END_TIME_RANGE_START=>TO_TIMESTAMP_LTZ('2026-08-07 00:50:00 -07:00'), END_TIME_RANGE_END=>TO_TIMESTAMP_LTZ('2026-08-07 00:56:00 -07:00'), RESULT_LIMIT=>10000)) WHERE query_text ILIKE '%SOURCE_INFORMATICA_ABORT_20260807075158%' OR query_text ILIKE '%PYSPARK_INFORMATICA_ABORT_20260807075158%' ORDER BY start_time
+OUTPUT:
+('01c639d8-0107-58ad-000f-dc5e0004244a', 'CREATE SCHEMA IF NOT EXISTS devin_migration_demo.SOURCE_INFORMATICA_ABORT_20260807075158', datetime.datetime(2026, 8, 7, 0, 52, 14, 753000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), datetime.datetime(2026, 8, 7, 0, 52, 14, 874000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), 'SUCCESS', 'DEVIN_MIGRATION_DEMO', None)
+('01c639d8-0107-562f-000f-dc5e00038922', 'CREATE OR REPLACE TABLE devin_migration_demo.SOURCE_INFORMATICA_ABORT_20260807075158.DEMO_SOURCE1 (LEAD_CO_MNE VARCHAR, BRANCH_CO_MNE VARCHAR, MIS_DATE VARCHAR, ID VARCHAR, DESCRIPTION VARCHAR, SHORT_NAME VARCHAR, __ROW_ORD NUMBER(38,0))', datetime.datetime(2026, 8, 7, 0, 52, 14, 959000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), datetime.datetime(2026, 8, 7, 0, 52, 15, 161000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), 'SUCCESS', 'DEVIN_MIGRATION_DEMO', 'SOURCE_INFORMATICA_ABORT_20260807075158')
+('01c639d8-0107-58c8-000f-dc5e000434da', "INSERT INTO devin_migration_demo.SOURCE_INFORMATICA_ABORT_20260807075158.DEMO_SOURCE1 (LEAD_CO_MNE, BRANCH_CO_MNE, MIS_DATE, ID, DESCRIPTION, SHORT_NAME, __ROW_ORD) VALUES ('BNK01', 'BR101', '2024-01-31', 'REC00001', 'General ledger account 1', 'GL0001', 0),('BNK02', 'BR102', '2024-01-31', 'REC00002', 'General ledger account 2', 'GL0002', 1),('BNK03', 'BR103', '2024-01-31', 'REC00003', 'General ledger account 3', 'GL0003', 2),('BNK04', 'BR104', '2024-01-31', 'REC00004', 'General ledger account 4', 'GL0004', 3),('BNK05', 'BR105', '2024-01-31', 'REC00005', 'General ledger account 5', 'GL0005', 4),('BNK06', 'BR106', '2024-01-31', 'REC00006', 'General ledger account 6', 'GL0006', 5),('BNK07', 'BR107', '2024-01-31', 'REC00007', 'General ledger account 7', 'GL0007', 6)", datetime.datetime(2026, 8, 7, 0, 52, 15, 226000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), datetime.datetime(2026, 8, 7, 0, 52, 16, 710000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), 'SUCCESS', 'DEVIN_MIGRATION_DEMO', 'SOURCE_INFORMATICA_ABORT_20260807075158')
+('01c639d8-0107-58c8-000f-dc5e000434de', 'CREATE SCHEMA IF NOT EXISTS devin_migration_demo.SOURCE_INFORMATICA_ABORT_20260807075158', datetime.datetime(2026, 8, 7, 0, 52, 16, 932000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), datetime.datetime(2026, 8, 7, 0, 52, 16, 966000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), 'SUCCESS', 'DEVIN_MIGRATION_DEMO', 'SOURCE_INFORMATICA_ABORT_20260807075158')
+('01c639d8-0107-562f-000f-dc5e00038926', 'CREATE OR REPLACE TABLE devin_migration_demo.SOURCE_INFORMATICA_ABORT_20260807075158.DEMO_SOURCE2 (TITLE VARCHAR, FIRST_NAME VARCHAR, MIDDLE_NAME VARCHAR, LAST_NAME VARCHAR, MEMBER_ID NUMBER(38,0), MEMBER_SUFFIX VARCHAR, BIRTH_DATE DATE, GENDER_CODE VARCHAR, MEMBER_RECORD_NUMBER NUMBER(38,0), SOCIAL_SECURITY_NUMBER NUMBER(38,0), MEMBER_TYPE_CODE NUMBER(38,0), ORIGINAL_EFFECTIVE_DATE DATE, RELATIONSHIP_TO_SUBSCRIBER_CODE NUMBER(38,0), RELATIONSHIP_TO_SUBSCRIBER_CODE_LABEL VARCHAR, __ROW_ORD NUMBER(38,0))', datetime.datetime(2026, 8, 7, 0, 52, 17, 28000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), datetime.datetime(2026, 8, 7, 0, 52, 17, 177000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), 'SUCCESS', 'DEVIN_MIGRATION_DEMO', 'SOURCE_INFORMATICA_ABORT_20260807075158')
+('01c639d8-0107-544d-000f-dc5e00034b3e', "INSERT INTO devin_migration_demo.SOURCE_INFORMATICA_ABORT_20260807075158.DEMO_SOURCE2 (TITLE, FIRST_NAME, MIDDLE_NAME, LAST_NAME, MEMBER_ID, MEMBER_SUFFIX, BIRTH_DATE, GENDER_CODE, MEMBER_RECORD_NUMBER, SOCIAL_SECURITY_NUMBER, MEMBER_TYPE_CODE, ORIGINAL_EFFECTIVE_DATE, RELATIONSHIP_TO_SUBSCRIBER_CODE, RELATIONSHIP_TO_SUBSCRIBER_CODE_LABEL, __ROW_ORD) VALUES ('MS', 'Tara', 'S', 'Young', 40001, NULL, '1982-11-01', 'F', 600001, 100000222, 1, '2021-07-01', 1, NULL, 0)", datetime.datetime(2026, 8, 7, 0, 52, 17, 240000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), datetime.datetime(2026, 8, 7, 0, 52, 17, 710000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), 'SUCCESS', 'DEVIN_MIGRATION_DEMO', 'SOURCE_INFORMATICA_ABORT_20260807075158')
+('01c639d8-0107-4ec9-000f-dc5e0003a692', 'CREATE SCHEMA IF NOT EXISTS devin_migration_demo.SOURCE_INFORMATICA_ABORT_20260807075158', datetime.datetime(2026, 8, 7, 0, 52, 17, 922000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), datetime.datetime(2026, 8, 7, 0, 52, 18, 6000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), 'SUCCESS', 'DEVIN_MIGRATION_DEMO', 'SOURCE_INFORMATICA_ABORT_20260807075158')
+('01c639d8-0107-58ad-000f-dc5e00042452', 'CREATE OR REPLACE TABLE devin_migration_demo.SOURCE_INFORMATICA_ABORT_20260807075158.DEMO_SOURCE3 (TX_ID NUMBER(38,0), ACCT_ID NUMBER(38,0), FIRST_NM VARCHAR, LAST_NM VARCHAR, TX_DTTM TIMESTAMP_NTZ, TX_AMT FLOAT, TX_TYPE_CD VARCHAR, BAL_AMT FLOAT, TX_DESC VARCHAR, CRDT_SCORE NUMBER(38,0), CUST_ID NUMBER(38,0), __ROW_ORD NUMBER(38,0))', datetime.datetime(2026, 8, 7, 0, 52, 18, 70000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), datetime.datetime(2026, 8, 7, 0, 52, 18, 291000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), 'SUCCESS', 'DEVIN_MIGRATION_DEMO', 'SOURCE_INFORMATICA_ABORT_20260807075158')
+('01c639d8-0107-58ad-000f-dc5e00042456', "INSERT INTO devin_migration_demo.SOURCE_INFORMATICA_ABORT_20260807075158.DEMO_SOURCE3 (TX_ID, ACCT_ID, FIRST_NM, LAST_NM, TX_DTTM, TX_AMT, TX_TYPE_CD, BAL_AMT, TX_DESC, CRDT_SCORE, CUST_ID, __ROW_ORD) VALUES (5001, 1001, 'MAX', 'SINGH', '2024-01-14 10:28:00', 2131.24, 'DR', 42329.05, 'CASH DEPOSIT', 420, 70031, 0),(5002, 1001, 'MAX', 'SINGH', '2024-01-15 11:00:00', -100.0, 'CR', 42229.05, 'FEE', 420, 70031, 1),(5003, 1002, 'OMAR', 'SILVA', '2024-01-14 05:49:00', -1238.81, 'CR', 91291.88, 'ONLINE TRANSFER', 720, 70032, 2),(5004, 1003, 'IVY', 'COSTA', '2024-01-25 21:01:00', 2446.85, 'CR', 86284.15, 'POS PURCHASE', 715, 70033, 3),(5005, 1004, 'NINA', 'PATEL', '2024-01-11 17:00:00', 2070.53, 'CR', 72185.35, 'POS PURCHASE', 409, 70034, 4),(5006, 1005, 'RAVI', 'WEISS', '2024-01-09 08:22:00', 199.99, 'DR', 11111.11, 'ATM WITHDRAWAL', 615, 70035, 5)", datetime.datetime(2026, 8, 7, 0, 52, 18, 362000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), datetime.datetime(2026, 8, 7, 0, 52, 18, 714000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), 'SUCCESS', 'DEVIN_MIGRATION_DEMO', 'SOURCE_INFORMATICA_ABORT_20260807075158')
+('01c639d8-0107-5426-000f-dc5e00040522', 'CREATE SCHEMA IF NOT EXISTS devin_migration_demo.SOURCE_INFORMATICA_ABORT_20260807075158', datetime.datetime(2026, 8, 7, 0, 52, 18, 893000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), datetime.datetime(2026, 8, 7, 0, 52, 18, 924000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), 'SUCCESS', 'DEVIN_MIGRATION_DEMO', 'SOURCE_INFORMATICA_ABORT_20260807075158')
+('01c639d8-0107-544d-000f-dc5e00034b42', 'CREATE OR REPLACE TABLE devin_migration_demo.SOURCE_INFORMATICA_ABORT_20260807075158.DEMO_SOURCE4 (ACCT_ID NUMBER(38,0), ACCT_TYP VARCHAR, ACCT_DESC VARCHAR, CRDT_LN VARCHAR, CR8_DT DATE, CLSR_DT DATE, ACCT_STAT_CD VARCHAR, __ROW_ORD NUMBER(38,0))', datetime.datetime(2026, 8, 7, 0, 52, 18, 998000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), datetime.datetime(2026, 8, 7, 0, 52, 19, 406000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), 'SUCCESS', 'DEVIN_MIGRATION_DEMO', 'SOURCE_INFORMATICA_ABORT_20260807075158')
+('01c639d8-0107-5426-000f-dc5e00040526', "INSERT INTO devin_migration_demo.SOURCE_INFORMATICA_ABORT_20260807075158.DEMO_SOURCE4 (ACCT_ID, ACCT_TYP, ACCT_DESC, CRDT_LN, CR8_DT, CLSR_DT, ACCT_STAT_CD, __ROW_ORD) VALUES (1001, 'SB', 'Account 1001 ledger', '  8000', '2023-08-18', '2025-06-30', 'A', 0),(1002, 'SB', 'Account 1002 ledger', '48000', '2017-02-09', NULL, 'D', 1),(1003, 'CA', 'Account 1003 ledger', '7000', '2023-12-11', NULL, 'D', 2),(1004, 'CA', 'Account 1004 ledger', '1000', '2016-10-19', NULL, 'A', 3),(1005, NULL, 'Account 1005 ledger', '9000', '2020-01-01', NULL, 'P', 4)", datetime.datetime(2026, 8, 7, 0, 52, 19, 477000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), datetime.datetime(2026, 8, 7, 0, 52, 19, 860000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), 'SUCCESS', 'DEVIN_MIGRATION_DEMO', 'SOURCE_INFORMATICA_ABORT_20260807075158')
+('01c639d8-0107-5426-000f-dc5e0004052a', 'CREATE SCHEMA IF NOT EXISTS devin_migration_demo.SOURCE_INFORMATICA_ABORT_20260807075158', datetime.datetime(2026, 8, 7, 0, 52, 20, 37000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), datetime.datetime(2026, 8, 7, 0, 52, 20, 74000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), 'SUCCESS', 'DEVIN_MIGRATION_DEMO', 'SOURCE_INFORMATICA_ABORT_20260807075158')
+('01c639d8-0107-58c8-000f-dc5e000434e6', 'CREATE OR REPLACE TABLE devin_migration_demo.SOURCE_INFORMATICA_ABORT_20260807075158.DEMO_SOURCE5 (PRODUCT_ID VARCHAR, PRODUCT_NM VARCHAR, PRODUCT_NO VARCHAR, COLOR VARCHAR, STD_COST VARCHAR, LIST_PRICE VARCHAR, SELL_ST_DT VARCHAR, SELL_ED_DT VARCHAR, __ROW_ORD NUMBER(38,0))', datetime.datetime(2026, 8, 7, 0, 52, 20, 140000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), datetime.datetime(2026, 8, 7, 0, 52, 20, 257000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), 'SUCCESS', 'DEVIN_MIGRATION_DEMO', 'SOURCE_INFORMATICA_ABORT_20260807075158')
+('01c639d8-0107-544d-000f-dc5e00034b46', "INSERT INTO devin_migration_demo.SOURCE_INFORMATICA_ABORT_20260807075158.DEMO_SOURCE5 (PRODUCT_ID, PRODUCT_NM, PRODUCT_NO, COLOR, STD_COST, LIST_PRICE, SELL_ST_DT, SELL_ED_DT, __ROW_ORD) VALUES ('PRD0001', 'Card Product 001', 'P001', 'Black', '186', '783', '10/02/2020', '17/07/2024', 0),('PRD0002', 'Card Product 002', 'P002', 'Black', '908', '737', '11/07/2021', '28/09/2025', 1),('PRD0003', 'Card Product 003', 'P003', 'Blue', '161', '351', '03/05/2021', '23/08/2025', 2),('PRD0004', 'Card Product 004', 'P004', 'Red', '805', '836', '01/08/2020', '20/01/2026', 3)", datetime.datetime(2026, 8, 7, 0, 52, 20, 321000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), datetime.datetime(2026, 8, 7, 0, 52, 20, 706000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), 'SUCCESS', 'DEVIN_MIGRATION_DEMO', 'SOURCE_INFORMATICA_ABORT_20260807075158')
+('01c639d8-0107-4ec9-000f-dc5e0003a696', 'CREATE SCHEMA IF NOT EXISTS devin_migration_demo.SOURCE_INFORMATICA_ABORT_20260807075158', datetime.datetime(2026, 8, 7, 0, 52, 20, 864000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), datetime.datetime(2026, 8, 7, 0, 52, 20, 895000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), 'SUCCESS', 'DEVIN_MIGRATION_DEMO', 'SOURCE_INFORMATICA_ABORT_20260807075158')
+('01c639d8-0107-58c8-000f-dc5e000434ea', 'CREATE OR REPLACE TABLE devin_migration_demo.SOURCE_INFORMATICA_ABORT_20260807075158.LKP_DEMO_SOURCE1 (ACCT_ID NUMBER(38,0), CUST_ID NUMBER(38,0), FIRST_NM VARCHAR, LAST_NM VARCHAR, CUST_ADDR VARCHAR, CUST_PHN VARCHAR, CUST_EML_ADDR VARCHAR, AGE NUMBER(38,0), DOB DATE, CUST_TYP VARCHAR, __ROW_ORD NUMBER(38,0))', datetime.datetime(2026, 8, 7, 0, 52, 20, 958000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), datetime.datetime(2026, 8, 7, 0, 52, 21, 148000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), 'SUCCESS', 'DEVIN_MIGRATION_DEMO', 'SOURCE_INFORMATICA_ABORT_20260807075158')
+('01c639d8-0107-58ad-000f-dc5e0004245a', "INSERT INTO devin_migration_demo.SOURCE_INFORMATICA_ABORT_20260807075158.LKP_DEMO_SOURCE1 (ACCT_ID, CUST_ID, FIRST_NM, LAST_NM, CUST_ADDR, CUST_PHN, CUST_EML_ADDR, AGE, DOB, CUST_TYP, __ROW_ORD) VALUES (1001, 70031, 'AVA', 'BAKER', '46 High Street', '2580606026', 'c1001@mail.example', 36, '1952-07-23', 'CORP', 0),(1002, 70032, 'NINA', 'WEISS', '857 High Street', '2317518731', 'c1002@mail.example', 35, '1969-08-06', 'RET', 1),(1002, 70032, 'ZOE', 'WEISS', '999 High Street', '2317518731', 'c1002b@mail.example', 36, '1968-08-06', 'CORP', 2),(1003, 70033, 'IVY', 'SILVA', '449 High Street', '2072328507', 'c1003@mail.example', 71, '1963-03-23', 'CORP', 3),(1004, 70034, 'AVA', 'RIVERA', '422 High Street', '2478922435', 'c1004@mail.example', 55, '1986-01-27', 'CORP', 4),(1005, 70035, 'RAVI', 'PATEL', '100 Main Street', '2223334444', 'c1005@mail.example', 44, '1980-12-12', 'SMB', 5)", datetime.datetime(2026, 8, 7, 0, 52, 21, 213000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), datetime.datetime(2026, 8, 7, 0, 52, 21, 514000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), 'SUCCESS', 'DEVIN_MIGRATION_DEMO', 'SOURCE_INFORMATICA_ABORT_20260807075158')
+('01c639d8-0107-58ad-000f-dc5e0004245e', 'CREATE SCHEMA IF NOT EXISTS devin_migration_demo.SOURCE_INFORMATICA_ABORT_20260807075158', datetime.datetime(2026, 8, 7, 0, 52, 21, 676000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), datetime.datetime(2026, 8, 7, 0, 52, 21, 706000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), 'SUCCESS', 'DEVIN_MIGRATION_DEMO', 'SOURCE_INFORMATICA_ABORT_20260807075158')
+('01c639d8-0107-5426-000f-dc5e00040532', 'CREATE OR REPLACE TABLE devin_migration_demo.SOURCE_INFORMATICA_ABORT_20260807075158.LKP_DEMO_SOURCE2 (CUST_ID NUMBER(38,0), CRDT_SCORE NUMBER(38,0), MAX_CRDT_SCORE NUMBER(38,0), MIN_CRDT_SCORE NUMBER(38,0), MAX_CRDT_LMT NUMBER(38,0), CURR_CRDT_BAL_AMT FLOAT, AVG_INC_AMT FLOAT, __ROW_ORD NUMBER(38,0))', datetime.datetime(2026, 8, 7, 0, 52, 21, 770000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), datetime.datetime(2026, 8, 7, 0, 52, 21, 975000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), 'SUCCESS', 'DEVIN_MIGRATION_DEMO', 'SOURCE_INFORMATICA_ABORT_20260807075158')
+('01c639d8-0107-58ad-000f-dc5e00042462', 'INSERT INTO devin_migration_demo.SOURCE_INFORMATICA_ABORT_20260807075158.LKP_DEMO_SOURCE2 (CUST_ID, CRDT_SCORE, MAX_CRDT_SCORE, MIN_CRDT_SCORE, MAX_CRDT_LMT, CURR_CRDT_BAL_AMT, AVG_INC_AMT, __ROW_ORD) VALUES (70031, 699, 741, 657, 182000, 21143.19, 10527.8, 0),(70032, 435, 470, 421, 138000, 26422.6, 11326.72, 1),(70032, 450, 480, 430, 140000, 20000.0, 12000.0, 2),(70033, 677, 700, 653, 86000, 23474.97, 6015.99, 3),(70034, 626, 635, 618, 88000, 31656.74, 2913.69, 4),(70035, 512, 530, 500, 91000, 15000.0, 8000.0, 5)', datetime.datetime(2026, 8, 7, 0, 52, 22, 42000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), datetime.datetime(2026, 8, 7, 0, 52, 22, 364000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), 'SUCCESS', 'DEVIN_MIGRATION_DEMO', 'SOURCE_INFORMATICA_ABORT_20260807075158')
+('01c639d8-0107-5426-000f-dc5e00040536', 'CREATE SCHEMA IF NOT EXISTS devin_migration_demo.SOURCE_INFORMATICA_ABORT_20260807075158', datetime.datetime(2026, 8, 7, 0, 52, 22, 531000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), datetime.datetime(2026, 8, 7, 0, 52, 22, 552000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), 'SUCCESS', 'DEVIN_MIGRATION_DEMO', 'SOURCE_INFORMATICA_ABORT_20260807075158')
+('01c639d8-0107-4ec9-000f-dc5e0003a69a', 'CREATE OR REPLACE TABLE devin_migration_demo.SOURCE_INFORMATICA_ABORT_20260807075158.LKP_DEMO_SOURCE3 (ACCT_ID NUMBER(38,0), TX_TYPE_CD VARCHAR, TX_TYPE_DESC VARCHAR, __ROW_ORD NUMBER(38,0))', datetime.datetime(2026, 8, 7, 0, 52, 22, 618000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), datetime.datetime(2026, 8, 7, 0, 52, 22, 828000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), 'SUCCESS', 'DEVIN_MIGRATION_DEMO', 'SOURCE_INFORMATICA_ABORT_20260807075158')
+('01c639d8-0107-58ad-000f-dc5e00042466', "INSERT INTO devin_migration_demo.SOURCE_INFORMATICA_ABORT_20260807075158.LKP_DEMO_SOURCE3 (ACCT_ID, TX_TYPE_CD, TX_TYPE_DESC, __ROW_ORD) VALUES (1001, 'DR', 'Credit posting', 0),(1002, 'TR', 'Debit posting first', 1),(1002, 'DR', 'Debit posting last', 2),(1003, 'DR', 'Debit posting', 3),(1004, 'CR', 'Credit posting', 4),(1005, 'NA', 'No activity', 5)", datetime.datetime(2026, 8, 7, 0, 52, 22, 891000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), datetime.datetime(2026, 8, 7, 0, 52, 23, 290000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), 'SUCCESS', 'DEVIN_MIGRATION_DEMO', 'SOURCE_INFORMATICA_ABORT_20260807075158')
+('01c639d8-0107-544d-000f-dc5e00034b52', 'CREATE SCHEMA IF NOT EXISTS devin_migration_demo.SOURCE_INFORMATICA_ABORT_20260807075158', datetime.datetime(2026, 8, 7, 0, 52, 23, 472000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), datetime.datetime(2026, 8, 7, 0, 52, 23, 542000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), 'SUCCESS', 'DEVIN_MIGRATION_DEMO', 'SOURCE_INFORMATICA_ABORT_20260807075158')
+('01c639d8-0107-562f-000f-dc5e00038932', 'CREATE OR REPLACE TABLE devin_migration_demo.SOURCE_INFORMATICA_ABORT_20260807075158.DEMO_TARGET1 (KEY NUMBER(38,0), LEAD_CO_MNE VARCHAR, BRANCH_CO_MNE VARCHAR, MIS_DATE VARCHAR, ID VARCHAR, DESCRIPTION VARCHAR, SHORT_NAME VARCHAR, CREATED_BY VARCHAR, CREATED_TIME TIMESTAMP_NTZ, UPDATED_BY VARCHAR, UPDATED_TIME TIMESTAMP_NTZ, ACTIVE_FLAG VARCHAR, START_DATE TIMESTAMP_NTZ, END_DATE TIMESTAMP_NTZ, __ROW_ORD NUMBER(38,0))', datetime.datetime(2026, 8, 7, 0, 52, 23, 606000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), datetime.datetime(2026, 8, 7, 0, 52, 23, 782000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), 'SUCCESS', 'DEVIN_MIGRATION_DEMO', 'SOURCE_INFORMATICA_ABORT_20260807075158')
+('01c639d8-0107-5426-000f-dc5e0004053a', "INSERT INTO devin_migration_demo.SOURCE_INFORMATICA_ABORT_20260807075158.DEMO_TARGET1 (KEY, LEAD_CO_MNE, BRANCH_CO_MNE, MIS_DATE, ID, DESCRIPTION, SHORT_NAME, CREATED_BY, CREATED_TIME, UPDATED_BY, UPDATED_TIME, ACTIVE_FLAG, START_DATE, END_DATE, __ROW_ORD) VALUES (1, 'BNK01', 'BR101', '2024-01-31', 'REC00001', 'Existing account 1', 'GL0001', 'IDWUSER', '2024-01-15 00:00:00', 'IDWUSER', '2024-01-15 00:00:00', 'Y', '2023-01-01 00:00:00', '9999-12-31 00:00:00', 0),(2, 'BNK02', 'BR102', '2024-01-31', 'REC00002', 'Existing account 2 old key', 'GL0002', 'IDWUSER', '2024-01-15 00:00:00', 'IDWUSER', '2024-01-15 00:00:00', 'Y', '2023-01-01 00:00:00', '9999-12-31 00:00:00', 1),(99, 'BNK02', 'BR102', '2024-01-31', 'REC00002', 'Existing account 2 new key', 'GL0002', 'IDWUSER', '2024-01-16 00:00:00', 'IDWUSER', '2024-01-16 00:00:00', 'Y', '2023-01-01 00:00:00', '9999-12-31 00:00:00', 2),(3, 'BNK03', 'BR103', '2024-01-31', 'REC00003', 'Existing account 3', 'GL0003', 'IDWUSER', '2024-01-15 00:00:00', 'IDWUSER', '2024-01-15 00:00:00', 'Y', '2023-01-01 00:00:00', '9999-12-31 00:00:00', 3),(40, 'BNK40', 'BR140', '2024-01-31', 'REC90001', 'Unrelated existing row', 'GL9040', 'IDWUSER', '2024-01-15 00:00:00', 'IDWUSER', '2024-01-15 00:00:00', 'Y', '2023-01-01 00:00:00', '9999-12-31 00:00:00', 4)", datetime.datetime(2026, 8, 7, 0, 52, 23, 857000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), datetime.datetime(2026, 8, 7, 0, 52, 24, 577000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), 'SUCCESS', 'DEVIN_MIGRATION_DEMO', 'SOURCE_INFORMATICA_ABORT_20260807075158')
+('01c639d8-0107-562f-000f-dc5e0003893e', 'SELECT "__ROW_ORD" FROM SOURCE_INFORMATICA_ABORT_20260807075158.demo_source1 ', datetime.datetime(2026, 8, 7, 0, 52, 56, 536000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), datetime.datetime(2026, 8, 7, 0, 52, 56, 688000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), 'SUCCESS', 'DEVIN_MIGRATION_DEMO', 'SOURCE_INFORMATICA_ABORT_20260807075158')
+('01c639d8-0107-5426-000f-dc5e0004054a', 'SELECT "__ROW_ORD" FROM SOURCE_INFORMATICA_ABORT_20260807075158.demo_target1 ', datetime.datetime(2026, 8, 7, 0, 52, 59, 723000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), datetime.datetime(2026, 8, 7, 0, 52, 59, 818000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), 'SUCCESS', 'DEVIN_MIGRATION_DEMO', 'SOURCE_INFORMATICA_ABORT_20260807075158')
+('01c639d9-0107-4ec9-000f-dc5e0003a6a6', 'CREATE SCHEMA IF NOT EXISTS devin_migration_demo.PYSPARK_INFORMATICA_ABORT_20260807075158', datetime.datetime(2026, 8, 7, 0, 53, 2, 151000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), datetime.datetime(2026, 8, 7, 0, 53, 2, 254000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), 'SUCCESS', 'DEVIN_MIGRATION_DEMO', None)
+('01c639d9-0107-5426-000f-dc5e0004054e', 'CREATE OR REPLACE TABLE devin_migration_demo.PYSPARK_INFORMATICA_ABORT_20260807075158.DEMO_TARGET1_INS (KEY NUMBER(38,0), LEAD_CO_MNE VARCHAR, BRANCH_CO_MNE VARCHAR, MIS_DATE VARCHAR, ID VARCHAR, DESCRIPTION VARCHAR, SHORT_NAME VARCHAR, CREATED_BY VARCHAR, CREATED_TIME DATE, UPDATED_BY VARCHAR, UPDATED_TIME DATE, ACTIVE_FLAG VARCHAR, START_DATE DATE, END_DATE DATE)', datetime.datetime(2026, 8, 7, 0, 53, 2, 313000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), datetime.datetime(2026, 8, 7, 0, 53, 2, 499000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), 'SUCCESS', 'DEVIN_MIGRATION_DEMO', 'PYSPARK_INFORMATICA_ABORT_20260807075158')
+('01c639d9-0107-562f-000f-dc5e00038942', 'SELECT "LEAD_CO_MNE", "BRANCH_CO_MNE", "MIS_DATE", "ID", "DESCRIPTION", "SHORT_NAME", "__ROW_ORD" FROM SOURCE_INFORMATICA_ABORT_20260807075158.demo_source1 ', datetime.datetime(2026, 8, 7, 0, 53, 3, 38000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), datetime.datetime(2026, 8, 7, 0, 53, 3, 92000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), 'SUCCESS', 'DEVIN_MIGRATION_DEMO', 'SOURCE_INFORMATICA_ABORT_20260807075158')
+('01c639d9-0107-5426-000f-dc5e00040552', 'SELECT "KEY", "ID", "__ROW_ORD" FROM SOURCE_INFORMATICA_ABORT_20260807075158.demo_target1 WHERE ( ID IS NOT NULL) ', datetime.datetime(2026, 8, 7, 0, 53, 3, 980000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), datetime.datetime(2026, 8, 7, 0, 53, 4, 16000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), 'SUCCESS', 'DEVIN_MIGRATION_DEMO', 'SOURCE_INFORMATICA_ABORT_20260807075158')
+('01c639d9-0107-58ad-000f-dc5e00042472', 'desc table identifier(\'"DEVIN_MIGRATION_DEMO".PYSPARK_INFORMATICA_ABORT_20260807075158.DEMO_TARGET1_INS\') ', datetime.datetime(2026, 8, 7, 0, 53, 7, 736000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), datetime.datetime(2026, 8, 7, 0, 53, 7, 792000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), 'SUCCESS', 'DEVIN_MIGRATION_DEMO', 'PYSPARK_INFORMATICA_ABORT_20260807075158')
+('01c639d9-0107-58c8-000f-dc5e000434fe', 'copy into PYSPARK_INFORMATICA_ABORT_20260807075158.DEMO_TARGET1_INS FROM @spark_connector_load_stage_15cd0hqb2f/twV6VxawPG/ \nFILE_FORMAT = (\n    TYPE=CSV\n    FIELD_DELIMITER=\'|\'\n    NULL_IF=()\n    FIELD_OPTIONALLY_ENCLOSED_BY=\'"\'\n    TIMESTAMP_FORMAT=\'TZHTZM YYYY-MM-DD HH24:MI:SS.FF9\'\n    DATE_FORMAT=\'TZHTZM YYYY-MM-DD HH24:MI:SS.FF9\'\n    BINARY_FORMAT=BASE64\n  )\n            ', datetime.datetime(2026, 8, 7, 0, 53, 7, 869000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), datetime.datetime(2026, 8, 7, 0, 53, 8, 551000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), 'SUCCESS', 'DEVIN_MIGRATION_DEMO', 'PYSPARK_INFORMATICA_ABORT_20260807075158')
+('01c639d9-0107-4ec9-000f-dc5e0003a6ae', 'CREATE SCHEMA IF NOT EXISTS devin_migration_demo.PYSPARK_INFORMATICA_ABORT_20260807075158', datetime.datetime(2026, 8, 7, 0, 53, 10, 491000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), datetime.datetime(2026, 8, 7, 0, 53, 10, 527000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), 'SUCCESS', 'DEVIN_MIGRATION_DEMO', None)
+('01c639d9-0107-4ec9-000f-dc5e0003a6b2', 'CREATE OR REPLACE TABLE devin_migration_demo.PYSPARK_INFORMATICA_ABORT_20260807075158.DEMO_TARGET1_UPD (KEY FLOAT, LEAD_CO_MNE VARCHAR, BRANCH_CO_MNE VARCHAR, MIS_DATE VARCHAR, ID VARCHAR, DESCRIPTION VARCHAR, SHORT_NAME VARCHAR, CREATED_BY VARCHAR, CREATED_TIME DATE, UPDATED_BY VARCHAR, UPDATED_TIME DATE, ACTIVE_FLAG VARCHAR, START_DATE DATE, END_DATE DATE)', datetime.datetime(2026, 8, 7, 0, 53, 10, 585000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), datetime.datetime(2026, 8, 7, 0, 53, 10, 783000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), 'SUCCESS', 'DEVIN_MIGRATION_DEMO', None)
+('01c639d9-0107-58ad-000f-dc5e0004247a', 'SELECT "LEAD_CO_MNE", "BRANCH_CO_MNE", "MIS_DATE", "ID", "DESCRIPTION", "SHORT_NAME" FROM SOURCE_INFORMATICA_ABORT_20260807075158.demo_source1 WHERE ( ID IS NOT NULL) ', datetime.datetime(2026, 8, 7, 0, 53, 11, 238000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), datetime.datetime(2026, 8, 7, 0, 53, 11, 391000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), 'SUCCESS', 'DEVIN_MIGRATION_DEMO', 'SOURCE_INFORMATICA_ABORT_20260807075158')
+('01c639d9-0107-58c8-000f-dc5e00043506', 'SELECT "KEY", "ID", "__ROW_ORD" FROM SOURCE_INFORMATICA_ABORT_20260807075158.demo_target1 WHERE ( ID IS NOT NULL) ', datetime.datetime(2026, 8, 7, 0, 53, 12, 135000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), datetime.datetime(2026, 8, 7, 0, 53, 12, 171000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), 'SUCCESS', 'DEVIN_MIGRATION_DEMO', 'SOURCE_INFORMATICA_ABORT_20260807075158')
+('01c639d9-0107-562f-000f-dc5e00038956', 'desc table identifier(\'"DEVIN_MIGRATION_DEMO".PYSPARK_INFORMATICA_ABORT_20260807075158.DEMO_TARGET1_UPD\') ', datetime.datetime(2026, 8, 7, 0, 53, 14, 235000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), datetime.datetime(2026, 8, 7, 0, 53, 14, 274000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), 'SUCCESS', 'DEVIN_MIGRATION_DEMO', 'PYSPARK_INFORMATICA_ABORT_20260807075158')
+('01c639d9-0107-544d-000f-dc5e00034b66', 'copy into PYSPARK_INFORMATICA_ABORT_20260807075158.DEMO_TARGET1_UPD FROM @spark_connector_load_stage_lH4ABVRu2c/j72wvDo5wk/ \nFILE_FORMAT = (\n    TYPE=CSV\n    FIELD_DELIMITER=\'|\'\n    NULL_IF=()\n    FIELD_OPTIONALLY_ENCLOSED_BY=\'"\'\n    TIMESTAMP_FORMAT=\'TZHTZM YYYY-MM-DD HH24:MI:SS.FF9\'\n    DATE_FORMAT=\'TZHTZM YYYY-MM-DD HH24:MI:SS.FF9\'\n    BINARY_FORMAT=BASE64\n  )\n            ', datetime.datetime(2026, 8, 7, 0, 53, 14, 352000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), datetime.datetime(2026, 8, 7, 0, 53, 15, 187000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), 'SUCCESS', 'DEVIN_MIGRATION_DEMO', 'PYSPARK_INFORMATICA_ABORT_20260807075158')
+('01c639d9-0107-544d-000f-dc5e00034b6a', 'SELECT "__ROW_ORD" FROM SOURCE_INFORMATICA_ABORT_20260807075158.demo_source3 ', datetime.datetime(2026, 8, 7, 0, 53, 16, 222000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), datetime.datetime(2026, 8, 7, 0, 53, 16, 345000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), 'SUCCESS', 'DEVIN_MIGRATION_DEMO', 'SOURCE_INFORMATICA_ABORT_20260807075158')
+('01c639d9-0107-4ec9-000f-dc5e0003a6b6', 'SELECT "__ROW_ORD" FROM SOURCE_INFORMATICA_ABORT_20260807075158.demo_source4 ', datetime.datetime(2026, 8, 7, 0, 53, 17, 439000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), datetime.datetime(2026, 8, 7, 0, 53, 17, 564000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), 'SUCCESS', 'DEVIN_MIGRATION_DEMO', 'SOURCE_INFORMATICA_ABORT_20260807075158')
+('01c639d9-0107-4ec9-000f-dc5e0003a6ba', 'SELECT "__ROW_ORD" FROM SOURCE_INFORMATICA_ABORT_20260807075158.lkp_demo_source3 ', datetime.datetime(2026, 8, 7, 0, 53, 18, 649000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), datetime.datetime(2026, 8, 7, 0, 53, 18, 749000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), 'SUCCESS', 'DEVIN_MIGRATION_DEMO', 'SOURCE_INFORMATICA_ABORT_20260807075158')
+('01c639d9-0107-5426-000f-dc5e0004056e', 'SELECT "__ROW_ORD" FROM SOURCE_INFORMATICA_ABORT_20260807075158.lkp_demo_source1 ', datetime.datetime(2026, 8, 7, 0, 53, 19, 918000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), datetime.datetime(2026, 8, 7, 0, 53, 20, 29000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), 'SUCCESS', 'DEVIN_MIGRATION_DEMO', 'SOURCE_INFORMATICA_ABORT_20260807075158')
+('01c639d9-0107-544d-000f-dc5e00034b7a', 'SELECT "__ROW_ORD" FROM SOURCE_INFORMATICA_ABORT_20260807075158.lkp_demo_source2 ', datetime.datetime(2026, 8, 7, 0, 53, 21, 105000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), datetime.datetime(2026, 8, 7, 0, 53, 21, 225000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), 'SUCCESS', 'DEVIN_MIGRATION_DEMO', 'SOURCE_INFORMATICA_ABORT_20260807075158')
+('01c639d9-0107-5426-000f-dc5e00040572', 'SELECT "__ROW_ORD" FROM SOURCE_INFORMATICA_ABORT_20260807075158.demo_source5 ', datetime.datetime(2026, 8, 7, 0, 53, 22, 460000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), datetime.datetime(2026, 8, 7, 0, 53, 22, 556000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), 'SUCCESS', 'DEVIN_MIGRATION_DEMO', 'SOURCE_INFORMATICA_ABORT_20260807075158')
+('01c639d9-0107-5426-000f-dc5e00040576', 'CREATE SCHEMA IF NOT EXISTS devin_migration_demo.PYSPARK_INFORMATICA_ABORT_20260807075158', datetime.datetime(2026, 8, 7, 0, 53, 24, 217000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), datetime.datetime(2026, 8, 7, 0, 53, 24, 244000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), 'SUCCESS', 'DEVIN_MIGRATION_DEMO', None)
+('01c639d9-0107-58c8-000f-dc5e00043526', 'CREATE OR REPLACE TABLE devin_migration_demo.PYSPARK_INFORMATICA_ABORT_20260807075158.DEMO_TARGET6 (ACCT_ID NUMBER(38,0), ACCT_TYP VARCHAR, ACCT_DESC VARCHAR, CR8_DT DATE, CRDT_LN VARCHAR, CLSR_DT DATE, ACCT_STAT_CD VARCHAR, TX_ID NUMBER(38,0), ACCT_KEY NUMBER(38,0), TX_DTTM TIMESTAMP_NTZ, TX_AMT FLOAT, TX_TYPE_CD VARCHAR)', datetime.datetime(2026, 8, 7, 0, 53, 24, 308000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), datetime.datetime(2026, 8, 7, 0, 53, 24, 489000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), 'SUCCESS', 'DEVIN_MIGRATION_DEMO', None)
+('01c639d9-0107-562f-000f-dc5e00038962', 'SELECT "ACCT_ID", "ACCT_TYP", "ACCT_DESC", "CRDT_LN", "CLSR_DT", "ACCT_STAT_CD" FROM SOURCE_INFORMATICA_ABORT_20260807075158.demo_source4 WHERE ( ACCT_TYP IS NOT NULL) AND ACCT_TYP = \'SB\' ', datetime.datetime(2026, 8, 7, 0, 53, 24, 955000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), datetime.datetime(2026, 8, 7, 0, 53, 25, 57000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), 'SUCCESS', 'DEVIN_MIGRATION_DEMO', 'SOURCE_INFORMATICA_ABORT_20260807075158')
+('01c639d9-0107-562f-000f-dc5e00038966', 'SELECT "TX_ID", "ACCT_ID", "TX_DTTM", "TX_AMT", "CUST_ID" FROM SOURCE_INFORMATICA_ABORT_20260807075158.demo_source3 ', datetime.datetime(2026, 8, 7, 0, 53, 25, 823000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), datetime.datetime(2026, 8, 7, 0, 53, 25, 932000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), 'SUCCESS', 'DEVIN_MIGRATION_DEMO', 'SOURCE_INFORMATICA_ABORT_20260807075158')
+('01c639d9-0107-4ec9-000f-dc5e0003a6c2', 'SELECT "ACCT_ID", "TX_TYPE_CD", "__ROW_ORD" FROM SOURCE_INFORMATICA_ABORT_20260807075158.lkp_demo_source3 ', datetime.datetime(2026, 8, 7, 0, 53, 26, 773000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), datetime.datetime(2026, 8, 7, 0, 53, 26, 819000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), 'SUCCESS', 'DEVIN_MIGRATION_DEMO', 'SOURCE_INFORMATICA_ABORT_20260807075158')
+('01c639d9-0107-58ad-000f-dc5e0004249a', 'SELECT "ACCT_ID", "__ROW_ORD" FROM SOURCE_INFORMATICA_ABORT_20260807075158.lkp_demo_source1 ', datetime.datetime(2026, 8, 7, 0, 53, 27, 682000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), datetime.datetime(2026, 8, 7, 0, 53, 27, 793000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), 'SUCCESS', 'DEVIN_MIGRATION_DEMO', 'SOURCE_INFORMATICA_ABORT_20260807075158')
+('01c639d9-0107-58ad-000f-dc5e000424a2', 'SELECT "CUST_ID", "__ROW_ORD" FROM SOURCE_INFORMATICA_ABORT_20260807075158.lkp_demo_source2 ', datetime.datetime(2026, 8, 7, 0, 53, 28, 564000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), datetime.datetime(2026, 8, 7, 0, 53, 28, 616000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), 'SUCCESS', 'DEVIN_MIGRATION_DEMO', 'SOURCE_INFORMATICA_ABORT_20260807075158')
+('01c639d9-0107-5426-000f-dc5e00040586', 'desc table identifier(\'"DEVIN_MIGRATION_DEMO".PYSPARK_INFORMATICA_ABORT_20260807075158.DEMO_TARGET6\') ', datetime.datetime(2026, 8, 7, 0, 53, 30, 913000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), datetime.datetime(2026, 8, 7, 0, 53, 30, 947000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), 'SUCCESS', 'DEVIN_MIGRATION_DEMO', 'PYSPARK_INFORMATICA_ABORT_20260807075158')
+('01c639d9-0107-544d-000f-dc5e00034b8a', 'copy into PYSPARK_INFORMATICA_ABORT_20260807075158.DEMO_TARGET6 FROM @spark_connector_load_stage_1tncBKUyEl/FsBeRk2i41/ \nFILE_FORMAT = (\n    TYPE=CSV\n    FIELD_DELIMITER=\'|\'\n    NULL_IF=()\n    FIELD_OPTIONALLY_ENCLOSED_BY=\'"\'\n    TIMESTAMP_FORMAT=\'TZHTZM YYYY-MM-DD HH24:MI:SS.FF9\'\n    DATE_FORMAT=\'TZHTZM YYYY-MM-DD HH24:MI:SS.FF9\'\n    BINARY_FORMAT=BASE64\n  )\n            ', datetime.datetime(2026, 8, 7, 0, 53, 31, 17000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), datetime.datetime(2026, 8, 7, 0, 53, 31, 611000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), 'SUCCESS', 'DEVIN_MIGRATION_DEMO', 'PYSPARK_INFORMATICA_ABORT_20260807075158')
+('01c639d9-0107-4ec9-000f-dc5e0003a6c6', 'CREATE SCHEMA IF NOT EXISTS devin_migration_demo.PYSPARK_INFORMATICA_ABORT_20260807075158', datetime.datetime(2026, 8, 7, 0, 53, 33, 606000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), datetime.datetime(2026, 8, 7, 0, 53, 33, 657000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), 'SUCCESS', 'DEVIN_MIGRATION_DEMO', None)
+('01c639d9-0107-58ad-000f-dc5e000424a6', 'CREATE OR REPLACE TABLE devin_migration_demo.PYSPARK_INFORMATICA_ABORT_20260807075158.DEMO_TARGET5 (ACCT_ID NUMBER(38,0), FIRST_NM VARCHAR, LAST_NM VARCHAR, BAL_AMT FLOAT, CRDT_SCORE NUMBER(38,0))', datetime.datetime(2026, 8, 7, 0, 53, 33, 722000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), datetime.datetime(2026, 8, 7, 0, 53, 33, 936000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), 'SUCCESS', 'DEVIN_MIGRATION_DEMO', None)
+('01c639d9-0107-58ad-000f-dc5e000424aa', 'SELECT "ACCT_ID" FROM SOURCE_INFORMATICA_ABORT_20260807075158.demo_source4 WHERE ( ACCT_TYP IS NOT NULL) AND (NOT ( ACCT_TYP = \'SB\' )) ', datetime.datetime(2026, 8, 7, 0, 53, 34, 800000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), datetime.datetime(2026, 8, 7, 0, 53, 34, 946000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), 'SUCCESS', 'DEVIN_MIGRATION_DEMO', 'SOURCE_INFORMATICA_ABORT_20260807075158')
+('01c639d9-0107-58c8-000f-dc5e0004353a', 'SELECT "ACCT_ID", "LAST_NM", "BAL_AMT", "CUST_ID" FROM SOURCE_INFORMATICA_ABORT_20260807075158.demo_source3 ', datetime.datetime(2026, 8, 7, 0, 53, 35, 698000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), datetime.datetime(2026, 8, 7, 0, 53, 35, 747000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), 'SUCCESS', 'DEVIN_MIGRATION_DEMO', 'SOURCE_INFORMATICA_ABORT_20260807075158')
+('01c639d9-0107-562f-000f-dc5e00038976', 'SELECT "ACCT_ID", "__ROW_ORD" FROM SOURCE_INFORMATICA_ABORT_20260807075158.lkp_demo_source3 ', datetime.datetime(2026, 8, 7, 0, 53, 36, 945000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), datetime.datetime(2026, 8, 7, 0, 53, 37, 46000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), 'SUCCESS', 'DEVIN_MIGRATION_DEMO', 'SOURCE_INFORMATICA_ABORT_20260807075158')
+('01c639d9-0107-58c8-000f-dc5e00043542', 'SELECT "ACCT_ID", "FIRST_NM", "__ROW_ORD" FROM SOURCE_INFORMATICA_ABORT_20260807075158.lkp_demo_source1 ', datetime.datetime(2026, 8, 7, 0, 53, 37, 845000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), datetime.datetime(2026, 8, 7, 0, 53, 37, 946000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), 'SUCCESS', 'DEVIN_MIGRATION_DEMO', 'SOURCE_INFORMATICA_ABORT_20260807075158')
+('01c639d9-0107-5426-000f-dc5e000405a2', 'SELECT "CUST_ID", "CRDT_SCORE", "__ROW_ORD" FROM SOURCE_INFORMATICA_ABORT_20260807075158.lkp_demo_source2 ', datetime.datetime(2026, 8, 7, 0, 53, 38, 743000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), datetime.datetime(2026, 8, 7, 0, 53, 38, 842000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), 'SUCCESS', 'DEVIN_MIGRATION_DEMO', 'SOURCE_INFORMATICA_ABORT_20260807075158')
+('01c639d9-0107-58ad-000f-dc5e000424b6', 'desc table identifier(\'"DEVIN_MIGRATION_DEMO".PYSPARK_INFORMATICA_ABORT_20260807075158.DEMO_TARGET5\') ', datetime.datetime(2026, 8, 7, 0, 53, 40, 750000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), datetime.datetime(2026, 8, 7, 0, 53, 40, 794000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), 'SUCCESS', 'DEVIN_MIGRATION_DEMO', 'PYSPARK_INFORMATICA_ABORT_20260807075158')
+('01c639d9-0107-544d-000f-dc5e00034ba2', 'copy into PYSPARK_INFORMATICA_ABORT_20260807075158.DEMO_TARGET5 FROM @spark_connector_load_stage_VwBS5ELYwl/UpTKHDFXdq/ \nFILE_FORMAT = (\n    TYPE=CSV\n    FIELD_DELIMITER=\'|\'\n    NULL_IF=()\n    FIELD_OPTIONALLY_ENCLOSED_BY=\'"\'\n    TIMESTAMP_FORMAT=\'TZHTZM YYYY-MM-DD HH24:MI:SS.FF9\'\n    DATE_FORMAT=\'TZHTZM YYYY-MM-DD HH24:MI:SS.FF9\'\n    BINARY_FORMAT=BASE64\n  )\n            ', datetime.datetime(2026, 8, 7, 0, 53, 40, 984000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), datetime.datetime(2026, 8, 7, 0, 53, 41, 604000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), 'SUCCESS', 'DEVIN_MIGRATION_DEMO', 'PYSPARK_INFORMATICA_ABORT_20260807075158')
+('01c639d9-0107-544d-000f-dc5e00034baa', 'CREATE SCHEMA IF NOT EXISTS devin_migration_demo.PYSPARK_INFORMATICA_ABORT_20260807075158', datetime.datetime(2026, 8, 7, 0, 53, 43, 584000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), datetime.datetime(2026, 8, 7, 0, 53, 43, 629000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), 'SUCCESS', 'DEVIN_MIGRATION_DEMO', None)
+('01c639d9-0107-544d-000f-dc5e00034bae', 'CREATE OR REPLACE TABLE devin_migration_demo.PYSPARK_INFORMATICA_ABORT_20260807075158.DEMO_TARGET3 (PRODUCT_ID VARCHAR, PRODUCT_NM VARCHAR, PRODUCT_NO VARCHAR, COLOR VARCHAR, STD_COST VARCHAR, LIST_PRICE VARCHAR, SELL_ST_DT DATE, SELL_ED_DT DATE)', datetime.datetime(2026, 8, 7, 0, 53, 43, 705000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), datetime.datetime(2026, 8, 7, 0, 53, 43, 881000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), 'SUCCESS', 'DEVIN_MIGRATION_DEMO', None)
+('01c639d9-0107-5426-000f-dc5e000405aa', 'SELECT "PRODUCT_ID", "PRODUCT_NM", "PRODUCT_NO", "COLOR", "STD_COST", "LIST_PRICE", "SELL_ED_DT" FROM SOURCE_INFORMATICA_ABORT_20260807075158.demo_source5 ', datetime.datetime(2026, 8, 7, 0, 53, 44, 662000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), datetime.datetime(2026, 8, 7, 0, 53, 44, 711000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), 'SUCCESS', 'DEVIN_MIGRATION_DEMO', 'SOURCE_INFORMATICA_ABORT_20260807075158')
+('01c639d9-0107-5426-000f-dc5e000405ae', 'desc table identifier(\'"DEVIN_MIGRATION_DEMO".PYSPARK_INFORMATICA_ABORT_20260807075158.DEMO_TARGET3\') ', datetime.datetime(2026, 8, 7, 0, 53, 46, 414000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), datetime.datetime(2026, 8, 7, 0, 53, 46, 459000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), 'SUCCESS', 'DEVIN_MIGRATION_DEMO', 'PYSPARK_INFORMATICA_ABORT_20260807075158')
+('01c639d9-0107-58c8-000f-dc5e00043556', 'copy into PYSPARK_INFORMATICA_ABORT_20260807075158.DEMO_TARGET3 FROM @spark_connector_load_stage_cQHgm6PJJO/ytWVDxXXdA/ \nFILE_FORMAT = (\n    TYPE=CSV\n    FIELD_DELIMITER=\'|\'\n    NULL_IF=()\n    FIELD_OPTIONALLY_ENCLOSED_BY=\'"\'\n    TIMESTAMP_FORMAT=\'TZHTZM YYYY-MM-DD HH24:MI:SS.FF9\'\n    DATE_FORMAT=\'TZHTZM YYYY-MM-DD HH24:MI:SS.FF9\'\n    BINARY_FORMAT=BASE64\n  )\n            ', datetime.datetime(2026, 8, 7, 0, 53, 46, 526000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), datetime.datetime(2026, 8, 7, 0, 53, 47, 29000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), 'SUCCESS', 'DEVIN_MIGRATION_DEMO', 'PYSPARK_INFORMATICA_ABORT_20260807075158')
+('01c639d9-0107-562f-000f-dc5e0003898a', 'SELECT "__ROW_ORD" FROM SOURCE_INFORMATICA_ABORT_20260807075158.demo_source2 ', datetime.datetime(2026, 8, 7, 0, 53, 48, 56000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), datetime.datetime(2026, 8, 7, 0, 53, 48, 80000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), 'SUCCESS', 'DEVIN_MIGRATION_DEMO', 'SOURCE_INFORMATICA_ABORT_20260807075158')
+('01c639d9-0107-58c8-000f-dc5e0004355e', 'SELECT "MEMBER_TYPE_CODE" FROM SOURCE_INFORMATICA_ABORT_20260807075158.demo_source2 WHERE ( MEMBER_TYPE_CODE IS NOT NULL) AND ( RELATIONSHIP_TO_SUBSCRIBER_CODE_LABEL IS NULL) ', datetime.datetime(2026, 8, 7, 0, 53, 49, 9000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), datetime.datetime(2026, 8, 7, 0, 53, 49, 95000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), 'SUCCESS', 'DEVIN_MIGRATION_DEMO', 'SOURCE_INFORMATICA_ABORT_20260807075158')
+('01c639da-0107-5426-000f-dc5e000405ba', 'SHOW TABLES IN SCHEMA DEVIN_MIGRATION_DEMO.PYSPARK_INFORMATICA_ABORT_20260807075158', datetime.datetime(2026, 8, 7, 0, 54, 3, 842000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), datetime.datetime(2026, 8, 7, 0, 54, 3, 943000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), 'SUCCESS', 'DEVIN_MIGRATION_DEMO', None)
+('01c639da-0107-58ad-000f-dc5e000424c6', 'SHOW TABLES IN SCHEMA DEVIN_MIGRATION_DEMO.PYSPARK_INFORMATICA_ABORT_20260807075158', datetime.datetime(2026, 8, 7, 0, 54, 14, 859000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), datetime.datetime(2026, 8, 7, 0, 54, 14, 973000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), 'SUCCESS', 'DEVIN_MIGRATION_DEMO', None)
+('01c639da-0107-562f-000f-dc5e0003898e', 'SELECT COUNT(*) AS ROW_COUNT FROM DEVIN_MIGRATION_DEMO.PYSPARK_INFORMATICA_ABORT_20260807075158.DEMO_TARGET1_INS', datetime.datetime(2026, 8, 7, 0, 54, 15, 34000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), datetime.datetime(2026, 8, 7, 0, 54, 15, 127000, tzinfo=<DstTzInfo 'America/Los_Angeles' PDT-1 day, 17:00:00 DST>), 'SUCCESS', 'DEVIN_MIGRATION_DEMO', None)
+ROWCOUNT=75
+```
+
+### What the partial state means
+
+The workflow is fail-fast, not transactional. Snowflake has no cross-statement rollback spanning the seven `CREATE OR REPLACE TABLE` plus `append` writes performed by the workflow, so an aborting run leaves earlier mappings' targets committed in the run schema. A re-run into the same timestamped schema would replace the five existing tables and add the two missing m3 tables because each write uses `CREATE OR REPLACE TABLE`. Between the failure and that re-run, however, the schema is partially populated and internally inconsistent, and nothing marks it invalid. A production migration would need an explicit mechanism such as a transaction, a swap-on-success staging schema, or a run-status marker. This milestone documents the limitation; it does not implement one of those recovery protocols.

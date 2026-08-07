@@ -68,5 +68,20 @@ The 3.24.2 jar contained `net/snowflake/client/jdbc/SnowflakeLoggedFeatureNotSup
 
 - The warehouse proof compares two tables built from one registry and one seed dataset; it cannot detect errors shared by both.
 - The source ordering assertion verifies the loader’s own row-order materialization. An independent byte-level CSV comparison would be stronger.
-- The Snowflake `ABORT()` failure path was not exercised. The successful run verified all seven target instances only.
+- The abort fixture characterizes one failure point and its partial-write state; it does not establish transactional behavior for every possible failure point or workload.
 - The dataset is too small to establish scale, partitioning, or spill behavior.
+
+
+## Abort-fixture staging
+
+The abort fixture contains only an overriding `demo_source2.csv`; the other eight source files must come from the normal seed directory. The loader therefore mirrors `LocalCsvIO` with per-file override-with-fallback resolution: an existing `<data-dir>/<name>.csv` wins, and a missing override falls back to `legacy/informatica/data/<name>.csv`. The fixture is staged into a separate timestamped source schema rather than reusing the successful source schema, so good and failing inputs remain independently inspectable. No baseline schema is created for an aborted run because there is no expected target output to load.
+
+## Non-transactional multi-target writes
+
+**Observed behavior.** The workflow is fail-fast but not transactional across mapping writes. In the abort fixture, mappings 2 and 1 committed five target tables before mapping 3 raised `InformaticaAbort`; mapping 3's two target tables were never created because its guard ran before target writes.
+
+**Choice forced by the current Snowflake IO.** Each target is explicitly created or replaced and then appended to independently in the run schema. The timestamped run schema makes the partial result inspectable and a rerun idempotent at the table level, but it does not mark a failed run or hide the partial state.
+
+**Rejected alternatives for this milestone.** A single transaction spanning all seven table DDL and writes was not adopted; connector staging and multiple statements do not provide the required cross-statement rollback contract here. A staging-schema swap-on-success was also not adopted, because it would require lifecycle, publication, and cleanup policy beyond this verification milestone. A run-status marker was not added.
+
+**What could still be wrong.** Between failure and rerun, consumers can see an internally inconsistent schema with no invalid marker. A failure after a target's `CREATE OR REPLACE TABLE` but before its append could leave an empty or partially loaded target. A production migration needs an explicit transaction, swap-on-success staging schema, or run-status marker and consumer gate.
