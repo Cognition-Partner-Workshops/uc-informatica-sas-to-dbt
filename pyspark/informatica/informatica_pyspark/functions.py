@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import hashlib
 from typing import Iterable
 
 from pyspark.sql import DataFrame, Window
@@ -83,7 +82,7 @@ def lookup_use_last_value(
     lookup_df: DataFrame, keys: Iterable[str], order_col: str
 ) -> DataFrame:
     return _collapse_lookup(
-        lookup_df, keys, [F.col(order_col).desc(), F.monotonically_increasing_id().desc()]
+        lookup_df, keys, [F.col(order_col).desc()]
     )
 
 

@@ -12,7 +12,6 @@ from pyspark.sql import functions as F
 from pyspark.sql.types import (
     DateType,
     DoubleType,
-    IntegerType,
     LongType,
     StringType,
     StructField,
@@ -20,7 +19,7 @@ from pyspark.sql.types import (
     TimestampType,
 )
 
-from .config import RunConfig
+from .config import REPO_ROOT, RunConfig
 
 
 def _schema(*fields: tuple[str, object]) -> StructType:
@@ -142,18 +141,19 @@ class LocalCsvIO:
     def __init__(self, spark: SparkSession, cfg: RunConfig):
         self.spark = spark
         self.cfg = cfg
-        self.base_dir = Path("legacy/informatica/data")
+        self.base_dir = REPO_ROOT / "legacy" / "informatica" / "data"
 
     def read_source(self, name: str) -> DataFrame:
         if name not in SOURCE_SCHEMAS and name not in TARGET_SCHEMAS:
             raise KeyError(f"Unknown Informatica source: {name}")
-        schema = SOURCE_SCHEMAS.get(name, TARGET_SCHEMAS[name])
+        schema = (
+            SOURCE_SCHEMAS[name] if name in SOURCE_SCHEMAS else TARGET_SCHEMAS[name]
+        )
         override = self.cfg.data_dir / f"{name}.csv"
         fallback = self.base_dir / f"{name}.csv"
         path = override if override.exists() else fallback
         return (
             self.spark.read.option("header", True)
-            .option("nullValue", "*")
             .schema(schema)
             .csv(str(path))
             .coalesce(1)
@@ -165,8 +165,13 @@ class LocalCsvIO:
         temp_dir = Path(tempfile.mkdtemp(prefix=f".{instance}.", dir=self.cfg.out_dir))
         try:
             output_df = df.drop("__ROW_ORD") if "__ROW_ORD" in df.columns else df
-            output_df.coalesce(1).write.mode("overwrite").option("header", True).csv(
-                str(temp_dir)
+            (
+                output_df.coalesce(1)
+                .write.mode("overwrite")
+                .option("header", True)
+                .option("dateFormat", "yyyy-MM-dd")
+                .option("timestampFormat", "yyyy-MM-dd HH:mm:ss")
+                .csv(str(temp_dir))
             )
             part_files = glob.glob(str(temp_dir / "part-*.csv"))
             if len(part_files) != 1:
@@ -182,31 +187,46 @@ class SnowflakeIO:
         self.cfg = cfg
 
     def _options(self) -> dict[str, str]:
-        options = {
-            "sfAccount": self.cfg.snowflake_account or "",
-            "sfUser": self.cfg.snowflake_user or "",
-            "sfRole": self.cfg.snowflake_role or "",
-            "sfWarehouse": self.cfg.snowflake_warehouse or "",
-            "sfDatabase": self.cfg.snowflake_database or "",
-            "pem_private_key": self.cfg.snowflake_private_key or "",
+        required = {
+            "account": self.cfg.snowflake_account,
+            "user": self.cfg.snowflake_user,
+            "warehouse": self.cfg.snowflake_warehouse,
+            "database": self.cfg.snowflake_database,
+            "src_schema": self.cfg.snowflake_src_schema,
+            "run_schema": self.cfg.snowflake_run_schema,
+            "SNOWFLAKE_PRIVATE_KEY": self.cfg.snowflake_private_key,
         }
+        missing = [name for name, value in required.items() if not value]
+        if missing:
+            raise ValueError(
+                "Missing Snowflake setting(s): " + ", ".join(missing)
+            )
+        options = {
+            "sfAccount": self.cfg.snowflake_account,
+            "sfUser": self.cfg.snowflake_user,
+            "sfWarehouse": self.cfg.snowflake_warehouse,
+            "sfDatabase": self.cfg.snowflake_database,
+            "sfSchema": self.cfg.snowflake_src_schema,
+            "pem_private_key": self.cfg.snowflake_private_key,
+        }
+        if self.cfg.snowflake_role:
+            options["sfRole"] = self.cfg.snowflake_role
         return options
 
     def read_source(self, name: str) -> DataFrame:
         if name not in SOURCE_SCHEMAS and name not in TARGET_SCHEMAS:
             raise KeyError(f"Unknown Informatica source: {name}")
-        schema = SOURCE_SCHEMAS.get(name, TARGET_SCHEMAS[name])
         options = self._options()
         options["dbtable"] = f"{self.cfg.snowflake_src_schema}.{name}"
         return (
             self.spark.read.format("net.snowflake.spark.snowflake")
             .options(**options)
-            .schema(schema)
             .load()
         )
 
     def write_target(self, instance: str, df: DataFrame) -> None:
         options = self._options()
+        options["sfSchema"] = self.cfg.snowflake_run_schema
         options["dbtable"] = f"{self.cfg.snowflake_run_schema}.{instance}"
         output_df = df.drop("__ROW_ORD") if "__ROW_ORD" in df.columns else df
         output_df.write.format("net.snowflake.spark.snowflake").options(
