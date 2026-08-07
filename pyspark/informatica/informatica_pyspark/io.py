@@ -8,6 +8,19 @@ from pyspark.sql.types import DateType, TimestampType
 from .schemas import LOOKUP_SCHEMAS, SOURCE_SCHEMAS, TARGET_SCHEMAS
 
 
+def attach_line_ordinal(df: DataFrame, col: str = "__line_ordinal") -> DataFrame:
+    """Attach the physical input order used by Informatica row policies."""
+    return (
+        df.coalesce(1)
+        .withColumn("__physical_row", F.monotonically_increasing_id())
+        .withColumn(
+            col,
+            F.row_number().over(Window.orderBy(F.col("__physical_row"))) - 1,
+        )
+        .drop("__physical_row")
+    )
+
+
 class CsvIO:
     def __init__(self, spark, cfg):
         self.spark, self.cfg = spark, cfg
@@ -17,13 +30,7 @@ class CsvIO:
         path = Path(self.cfg.input_dir) / f"{name}.csv"
         df = self.spark.read.option("header", True).schema(schema).csv(str(path))
         if name in LOOKUP_SCHEMAS or name == "demo_target1":
-            # One partition preserves the CSV reader's physical row sequence.
-            # The row number makes that sequence an explicit stable ordinal.
-            df = df.coalesce(1).withColumn("__physical_row", F.monotonically_increasing_id())
-            df = df.withColumn(
-                "__line_ordinal",
-                F.row_number().over(Window.orderBy(F.col("__physical_row"))) - 1,
-            ).drop("__physical_row")
+            df = attach_line_ordinal(df)
         return df
 
     def write(self, instance: str, df: DataFrame):
