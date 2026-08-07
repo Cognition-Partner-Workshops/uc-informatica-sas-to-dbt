@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import date
 from pathlib import Path
 from typing import Any
@@ -23,6 +23,7 @@ class RunConfig:
     run_schema_suffix: str = ""
     schema_suffix_env: str = "SNOWFLAKE_SCHEMA_SUFFIX"
     private_key_path: Path | None = None
+    input_overrides: dict[str, str] = field(default_factory=dict)
 
     @classmethod
     def from_yaml(cls, path: str | Path) -> "RunConfig":
