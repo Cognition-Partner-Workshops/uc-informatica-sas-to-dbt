@@ -6,7 +6,7 @@ import logging
 import sys
 
 from .config import RunConfig
-from .io import LocalCsvIO, SnowflakeIO
+from .io import build_io
 from .mappings import MAPPINGS
 from .session import build_spark
 from .workflow import run_mapping, run_workflow
@@ -55,7 +55,7 @@ def main(argv: list[str] | None = None) -> int:
     try:
         cfg = _config(args)
         spark = build_spark(cfg)
-        io = LocalCsvIO(spark, cfg) if cfg.io_mode == "local" else SnowflakeIO(spark, cfg)
+        io = build_io(spark, cfg)
         if args.command == "run-mapping":
             try:
                 run_mapping(args.name, cfg, io)

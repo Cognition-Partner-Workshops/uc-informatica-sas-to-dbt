@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import base64
 import glob
 import os
 import shutil
@@ -7,11 +8,14 @@ import tempfile
 from pathlib import Path
 from typing import Protocol
 
+import snowflake.connector
+from cryptography.hazmat.primitives import serialization
 from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql import functions as F
 from pyspark.sql.types import (
     DateType,
     DoubleType,
+    IntegerType,
     LongType,
     StringType,
     StructField,
@@ -130,11 +134,215 @@ TARGET_SCHEMAS = {
     ),
 }
 
+TARGET_INSTANCE_SCHEMAS: dict[str, StructType] = {
+    "demo_target1_INS": _schema(
+        ("Key", LongType()),
+        ("LEAD_CO_MNE", StringType()),
+        ("BRANCH_CO_MNE", StringType()),
+        ("MIS_DATE", StringType()),
+        ("ID", StringType()),
+        ("DESCRIPTION", StringType()),
+        ("SHORT_NAME", StringType()),
+        ("CREATED_BY", StringType()),
+        ("CREATED_TIME", DateType()),
+        ("UPDATED_BY", StringType()),
+        ("UPDATED_TIME", DateType()),
+        ("ACTIVE_FLAG", StringType()),
+        ("START_DATE", DateType()),
+        ("END_DATE", DateType()),
+    ),
+    "demo_target1_UPD": _schema(
+        ("Key", DoubleType()),
+        ("LEAD_CO_MNE", StringType()),
+        ("BRANCH_CO_MNE", StringType()),
+        ("MIS_DATE", StringType()),
+        ("ID", StringType()),
+        ("DESCRIPTION", StringType()),
+        ("SHORT_NAME", StringType()),
+        ("CREATED_BY", StringType()),
+        ("CREATED_TIME", DateType()),
+        ("UPDATED_BY", StringType()),
+        ("UPDATED_TIME", DateType()),
+        ("ACTIVE_FLAG", StringType()),
+        ("START_DATE", DateType()),
+        ("END_DATE", DateType()),
+    ),
+    "demo_target2": _schema(
+        ("Title", StringType()),
+        ("Gender", StringType()),
+        ("First_Name", StringType()),
+        ("Middle_Name", StringType()),
+        ("Last_Name", StringType()),
+        ("Member_Identifier", DoubleType()),
+        ("Member_Suffix", StringType()),
+        ("Date_of_Birth", DateType()),
+        ("Member_Number", DoubleType()),
+        ("Soc_Number", DoubleType()),
+        ("Type_Code", DoubleType()),
+        ("Relationship_to_Subscriber_Code", DoubleType()),
+        ("Relationship_to_Subscriber_Code_Label", StringType()),
+        ("Effective_Date", DateType()),
+    ),
+    "demo_target21": _schema(
+        ("Title", StringType()),
+        ("Gender", StringType()),
+        ("First_Name", StringType()),
+        ("Middle_Name", StringType()),
+        ("Last_Name", StringType()),
+        ("Member_Identifier", DoubleType()),
+        ("Member_Suffix", StringType()),
+        ("Date_of_Birth", DateType()),
+        ("Member_Number", DoubleType()),
+        ("Soc_Number", DoubleType()),
+        ("Type_Code", DoubleType()),
+        ("Relationship_to_Subscriber_Code", DoubleType()),
+        ("Relationship_to_Subscriber_Code_Label", StringType()),
+        ("Effective_Date", DateType()),
+    ),
+    "demo_target3": _schema(
+        ("PRODUCT_ID", StringType()),
+        ("PRODUCT_NM", StringType()),
+        ("PRODUCT_NO", StringType()),
+        ("COLOR", StringType()),
+        ("STD_COST", StringType()),
+        ("LIST_PRICE", StringType()),
+        ("SELL_ST_DT", DateType()),
+        ("SELL_ED_DT", DateType()),
+    ),
+    "demo_target5": _schema(
+        ("ACCT_ID", LongType()),
+        ("FIRST_NM", StringType()),
+        ("LAST_NM", StringType()),
+        ("BAL_AMT", DoubleType()),
+        ("CRDT_SCORE", LongType()),
+    ),
+    "demo_target6": _schema(
+        ("ACCT_ID", LongType()),
+        ("ACCT_TYP", StringType()),
+        ("ACCT_DESC", StringType()),
+        ("CR8_DT", DateType()),
+        ("CRDT_LN", StringType()),
+        ("CLSR_DT", DateType()),
+        ("ACCT_STAT_CD", StringType()),
+        ("TX_ID", LongType()),
+        ("ACCT_KEY", IntegerType()),
+        ("TX_DTTM", TimestampType()),
+        ("TX_AMT", DoubleType()),
+        ("TX_TYPE_CD", StringType()),
+    ),
+}
+
+
+def _same_data_schema(actual: StructType, expected: StructType) -> bool:
+    return [
+        (field.name, field.dataType)
+        for field in actual.fields
+    ] == [
+        (field.name, field.dataType)
+        for field in expected.fields
+    ]
+
+
+def _validate_target_schema(instance: str, df: DataFrame) -> None:
+    expected = TARGET_INSTANCE_SCHEMAS.get(instance)
+    if expected is not None and not _same_data_schema(df.schema, expected):
+        raise TypeError(
+            f"{instance} schema mismatch: expected {expected.simpleString()}, "
+            f"got {df.schema.simpleString()}"
+        )
+
+
+def _private_key_der() -> bytes:
+    raw = os.environ.get("SNOWFLAKE_PRIVATE_KEY")
+    if not raw:
+        raise ValueError("Missing Snowflake setting(s): SNOWFLAKE_PRIVATE_KEY")
+    raw = raw.replace("\\n", "\n")
+    key = serialization.load_pem_private_key(raw.encode("utf-8"), password=None)
+    return key.private_bytes(
+        serialization.Encoding.DER,
+        serialization.PrivateFormat.PKCS8,
+        serialization.NoEncryption(),
+    )
+
+
+def snowflake_connection(
+    cfg: RunConfig | None = None,
+    *,
+    account: str | None = None,
+    user: str | None = None,
+    role: str | None = None,
+    warehouse: str | None = None,
+    database: str | None = None,
+):
+    if cfg is not None:
+        account = cfg.snowflake_account
+        user = cfg.snowflake_user
+        role = cfg.snowflake_role
+        warehouse = cfg.snowflake_warehouse
+        database = cfg.snowflake_database
+    missing = [
+        name
+        for name, value in {
+            "account": account,
+            "user": user,
+            "warehouse": warehouse,
+            "database": database,
+        }.items()
+        if not value
+    ]
+    if missing:
+        raise ValueError("Missing Snowflake setting(s): " + ", ".join(missing))
+    return snowflake.connector.connect(
+        account=account,
+        user=user,
+        private_key=_private_key_der(),
+        role=role,
+        warehouse=warehouse,
+        database=database,
+    )
+
+
+def snowflake_type(data_type: object) -> str:
+    if isinstance(data_type, LongType):
+        return "NUMBER(38,0)"
+    if isinstance(data_type, IntegerType):
+        return "NUMBER(38,0)"
+    if isinstance(data_type, DoubleType):
+        return "FLOAT"
+    if isinstance(data_type, StringType):
+        return "VARCHAR"
+    if isinstance(data_type, DateType):
+        return "DATE"
+    if isinstance(data_type, TimestampType):
+        return "TIMESTAMP_NTZ"
+    raise TypeError(f"Unsupported Spark type: {data_type}")
+
+
+def create_target_table(connection, database: str, schema: str, instance: str) -> None:
+    expected = TARGET_INSTANCE_SCHEMAS[instance]
+    columns = ", ".join(
+        f"{field.name.upper()} {snowflake_type(field.dataType)}"
+        for field in expected.fields
+    )
+    cursor = connection.cursor()
+    try:
+        cursor.execute(f"CREATE SCHEMA IF NOT EXISTS {database}.{schema}")
+        cursor.execute(
+            f"CREATE OR REPLACE TABLE {database}.{schema}.{instance.upper()} "
+            f"({columns})"
+        )
+    finally:
+        cursor.close()
+
 
 class InformaticaIO(Protocol):
     def read_source(self, name: str) -> DataFrame: ...
 
     def write_target(self, instance: str, df: DataFrame) -> None: ...
+
+
+def build_io(spark: SparkSession, cfg: RunConfig) -> InformaticaIO:
+    return LocalCsvIO(spark, cfg) if cfg.io_mode == "local" else SnowflakeIO(spark, cfg)
 
 
 class LocalCsvIO:
@@ -161,6 +369,7 @@ class LocalCsvIO:
         )
 
     def write_target(self, instance: str, df: DataFrame) -> None:
+        _validate_target_schema(instance, df)
         self.cfg.out_dir.mkdir(parents=True, exist_ok=True)
         temp_dir = Path(tempfile.mkdtemp(prefix=f".{instance}.", dir=self.cfg.out_dir))
         try:
@@ -203,11 +412,13 @@ class SnowflakeIO:
             )
         options = {
             "sfAccount": self.cfg.snowflake_account,
+            "sfURL": f"{self.cfg.snowflake_account}.snowflakecomputing.com",
             "sfUser": self.cfg.snowflake_user,
             "sfWarehouse": self.cfg.snowflake_warehouse,
             "sfDatabase": self.cfg.snowflake_database,
             "sfSchema": self.cfg.snowflake_src_schema,
-            "pem_private_key": self.cfg.snowflake_private_key,
+            "pem_private_key": base64.b64encode(_private_key_der()).decode("ascii"),
+            "sfTimezone": "UTC",
         }
         if self.cfg.snowflake_role:
             options["sfRole"] = self.cfg.snowflake_role
@@ -218,17 +429,53 @@ class SnowflakeIO:
             raise KeyError(f"Unknown Informatica source: {name}")
         options = self._options()
         options["dbtable"] = f"{self.cfg.snowflake_src_schema}.{name}"
-        return (
+        schema = SOURCE_SCHEMAS.get(name, TARGET_SCHEMAS.get(name))
+        frame = (
             self.spark.read.format("net.snowflake.spark.snowflake")
             .options(**options)
             .load()
         )
+        columns = [
+            F.col(field.name.upper()).cast(field.dataType).alias(field.name)
+            for field in schema.fields
+        ]
+        row_ord = frame.select("__ROW_ORD")
+        metrics = row_ord.agg(
+            F.count("*").alias("row_count"),
+            F.count("__ROW_ORD").alias("row_ord_count"),
+            F.sum(F.col("__ROW_ORD").isNull().cast("long")).alias("null_count"),
+        ).first()
+        null_count = metrics["null_count"] or 0
+        if (
+            null_count
+            or metrics["row_count"] != metrics["row_ord_count"]
+        ):
+            raise ValueError(
+                f"{name} has invalid __ROW_ORD: "
+                f"rows={metrics['row_count']}, "
+                f"non_null_row_ord={metrics['row_ord_count']}, "
+                f"null_row_ord={null_count}"
+            )
+        columns.append(F.col("__ROW_ORD").cast(LongType()).alias("__ROW_ORD"))
+        return frame.select(*columns)
 
     def write_target(self, instance: str, df: DataFrame) -> None:
+        _validate_target_schema(instance, df)
         options = self._options()
         options["sfSchema"] = self.cfg.snowflake_run_schema
-        options["dbtable"] = f"{self.cfg.snowflake_run_schema}.{instance}"
+        options["dbtable"] = f"{self.cfg.snowflake_run_schema}.{instance.upper()}"
+        connection = snowflake_connection(self.cfg)
+        try:
+            create_target_table(
+                connection,
+                self.cfg.snowflake_database,
+                self.cfg.snowflake_run_schema,
+                instance,
+            )
+        finally:
+            connection.close()
         output_df = df.drop("__ROW_ORD") if "__ROW_ORD" in df.columns else df
+        output_df = output_df.toDF(*(column.upper() for column in output_df.columns))
         output_df.write.format("net.snowflake.spark.snowflake").options(
             **options
-        ).mode("overwrite").save()
+        ).mode("append").save()

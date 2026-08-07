@@ -8,6 +8,11 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 DEFAULT_DATA_DIR = REPO_ROOT / "legacy" / "informatica" / "data"
+DEFAULT_SNOWFLAKE_ACCOUNT = "YD76133.us-east-2.aws"
+DEFAULT_SNOWFLAKE_USER = "devin_demo"
+DEFAULT_SNOWFLAKE_ROLE = "devin_migration_demo"
+DEFAULT_SNOWFLAKE_WAREHOUSE = "devin_demo_wh"
+DEFAULT_SNOWFLAKE_DATABASE = "devin_migration_demo"
 
 
 @dataclass(frozen=True)
@@ -16,11 +21,11 @@ class RunConfig:
     io_mode: str = "local"
     data_dir: Path = DEFAULT_DATA_DIR
     out_dir: Path = Path("out")
-    account: str | None = None
-    user: str | None = None
-    role: str | None = None
-    warehouse: str | None = None
-    database: str | None = None
+    account: str | None = DEFAULT_SNOWFLAKE_ACCOUNT
+    user: str | None = DEFAULT_SNOWFLAKE_USER
+    role: str | None = DEFAULT_SNOWFLAKE_ROLE
+    warehouse: str | None = DEFAULT_SNOWFLAKE_WAREHOUSE
+    database: str | None = DEFAULT_SNOWFLAKE_DATABASE
     src_schema: str | None = None
     run_schema: str | None = None
     snowflake_private_key: str | None = field(
@@ -33,6 +38,15 @@ class RunConfig:
         object.__setattr__(
             self, "snowflake_private_key", os.environ.get("SNOWFLAKE_PRIVATE_KEY")
         )
+        for name, default in (
+            ("account", DEFAULT_SNOWFLAKE_ACCOUNT),
+            ("user", DEFAULT_SNOWFLAKE_USER),
+            ("role", DEFAULT_SNOWFLAKE_ROLE),
+            ("warehouse", DEFAULT_SNOWFLAKE_WAREHOUSE),
+            ("database", DEFAULT_SNOWFLAKE_DATABASE),
+        ):
+            if getattr(self, name) is None:
+                object.__setattr__(self, name, default)
         data_dir = Path(self.data_dir)
         if not data_dir.is_absolute():
             data_dir = REPO_ROOT / data_dir
