@@ -27,7 +27,7 @@ class CsvIO:
 
     def read(self, name: str) -> DataFrame:
         schema = SOURCE_SCHEMAS.get(name) or LOOKUP_SCHEMAS.get(name) or TARGET_SCHEMAS[name]
-        path = Path(self.cfg.input_dir) / f"{name}.csv"
+        path = Path(self.cfg.input_overrides.get(name, Path(self.cfg.input_dir) / f"{name}.csv"))
         df = self.spark.read.option("header", True).schema(schema).csv(str(path))
         if name in LOOKUP_SCHEMAS or name == "demo_target1":
             df = attach_line_ordinal(df)
