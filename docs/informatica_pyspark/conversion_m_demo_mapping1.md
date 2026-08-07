@@ -1,7 +1,7 @@
 | mapping | transformation | port | informatica_code | xml_line | pyspark_code_or_ref | confidence | reason |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | m_demo_mapping1 | agg_TRANS | o_ACCT_DESC | o_ACCT_DESC | 443 | m_demo_mapping1.py:111 | LOW | Aggregator pass-through is resolved as the highest-TX_ID row; XML does not define within-group order. |
-| m_demo_mapping1 | agg_TRANS | TX_AMT | TX_AMT | 444 | m_demo_mapping1.py:112 | LOW | Aggregator pass-through is resolved as the highest-TX_ID row; XML does not define within-group order. |
+| m_demo_mapping1 | agg_TRANS | TX_AMT | TX_AMT | 444 | m_demo_mapping1.py:112 | NOT MIGRATED | Input to the SUM aggregate; the pass-through output port is unconnected. |
 | m_demo_mapping1 | agg_TRANS | o_crdt_trim | o_crdt_trim | 445 | m_demo_mapping1.py:113 | LOW | Aggregator pass-through is resolved as the highest-TX_ID row; XML does not define within-group order. |
 | m_demo_mapping1 | agg_TRANS | CLSR_DT | CLSR_DT | 446 | m_demo_mapping1.py:114 | LOW | Aggregator pass-through is resolved as the highest-TX_ID row; XML does not define within-group order. |
 | m_demo_mapping1 | agg_TRANS | TX_ID | TX_ID | 447 | m_demo_mapping1.py:115 | LOW | Aggregator pass-through is resolved as the highest-TX_ID row; XML does not define within-group order. |
@@ -129,9 +129,9 @@
 
 - Total TRANSFORMFIELD expression count: 54
 - Total conversion-table rows: 124
-- Migrated rows: 73
-- Not migrated by design: 51
-- Confidence split: HIGH 56, MEDIUM 7, LOW 10, NOT MIGRATED 51.
+- Migrated rows: 72
+- Not migrated by design: 52
+- Confidence split: HIGH 56, MEDIUM 7, LOW 9, NOT MIGRATED 52.
 - XML line verification: PASSED by a script against `legacy/informatica/wf_demo_mapping.XML`.
 
 ## LOW rows grouped by underlying decision

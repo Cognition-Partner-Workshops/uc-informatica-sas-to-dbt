@@ -27,14 +27,38 @@ def test_mapping1_routes_lookup_return_to_target6_tx_type(spark, tmp_path):
     cfg, io = _io(spark, tmp_path)
     outputs = run(spark, cfg, io)
 
-    row = (
+    rows = (
         outputs["demo_target6"]
-        .where("ACCT_ID = 1002")
-        .select("TX_TYPE_CD")
+        .where("ACCT_ID IN (1001, 1002)")
+        .select("ACCT_ID", "TX_TYPE_CD")
+        .orderBy("ACCT_ID")
         .collect()
     )
 
-    assert [item.TX_TYPE_CD for item in row] == ["DR"]
+    assert [(item.ACCT_ID, item.TX_TYPE_CD) for item in rows] == [
+        (1001, "DR"),
+        (1002, "DR"),
+    ]
+    assert rows[0].TX_TYPE_CD != 1001
+
+
+def test_mapping1_preserves_lookup_name_traps(spark, tmp_path):
+    cfg, io = _io(spark, tmp_path)
+    outputs = run(spark, cfg, io)
+
+    rows = (
+        outputs["demo_target5"]
+        .where("ACCT_ID IN (1003, 1004)")
+        .select("ACCT_ID", "FIRST_NM", "LAST_NM", "CRDT_SCORE")
+        .orderBy("ACCT_ID")
+        .collect()
+    )
+
+    assert rows[0].FIRST_NM == "IVY"
+    assert rows[0].LAST_NM == "COSTA"
+    assert rows[0].CRDT_SCORE == 677
+    assert rows[1].FIRST_NM == "AVA"
+    assert rows[1].LAST_NM == "PATEL"
 
 
 def test_mapping1_drops_null_account_type_from_both_router_groups(spark, tmp_path):
