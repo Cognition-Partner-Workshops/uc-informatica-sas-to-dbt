@@ -41,3 +41,13 @@ The minimal unique keys in the generated Informatica baseline are:
 These are checked for uniqueness before parity comparisons. Each target is
 materialized separately, even where Informatica instances share a physical
 target definition.
+
+Uniqueness is verified against the regenerated baseline seed, never assumed
+from the target definition. `demo_target5` is unique on `ACCT_ID` only for this
+seed; if a non-SB account has multiple transactions, its fallback key set is
+`["ACCT_ID", "TX_ID"]`.
+
+The pre-existing `demo_target1` state is read with an explicit schema:
+`Key` is numeric (`DOUBLE`) and duplicate `ID` rows are retained with their
+physical `__line_ordinal`. This preserves the DECISION-3 `Use Any Value`
+fixture, which chooses highest `Key` and then highest physical ordinal.

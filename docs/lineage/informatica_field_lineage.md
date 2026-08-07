@@ -5,14 +5,15 @@ Edges below are traversed from target ports through XML CONNECTOR edges.
 ## demo_target1_UPD
 
 ### demo_target1_UPD.Key
-- demo_target1_UPD.Key (XML line 1)
+- demo_target1_UPD.Key (XML line 81)
 - UPDTRANS.Key2 (XML line 340)
 - RTRTRANS.Key3 [Update] (XML line 244)
 - EXPTRANS.Key = Key (XML line 170)
 - LKPTRANS.Key (XML line 266)
+- demo_target1.Key [lookup condition: ID = ID1; policy: Use Any Value] (XML line 81)
 
 ### demo_target1_UPD.LEAD_CO_MNE
-- demo_target1_UPD.LEAD_CO_MNE (XML line 1)
+- demo_target1_UPD.LEAD_CO_MNE (XML line 82)
 - UPDTRANS.LEAD_CO_MNE3 (XML line 328)
 - RTRTRANS.LEAD_CO_MNE4 [Update] (XML line 227)
 - EXPTRANS.LEAD_CO_MNE = LEAD_CO_MNE (XML line 164)
@@ -20,7 +21,7 @@ Edges below are traversed from target ports through XML CONNECTOR edges.
 - demo_source1.LEAD_CO_MNE (XML line 16)
 
 ### demo_target1_UPD.BRANCH_CO_MNE
-- demo_target1_UPD.BRANCH_CO_MNE (XML line 1)
+- demo_target1_UPD.BRANCH_CO_MNE (XML line 83)
 - UPDTRANS.BRANCH_CO_MNE3 (XML line 329)
 - RTRTRANS.BRANCH_CO_MNE4 [Update] (XML line 228)
 - EXPTRANS.BRANCH_CO_MNE = BRANCH_CO_MNE (XML line 165)
@@ -28,7 +29,7 @@ Edges below are traversed from target ports through XML CONNECTOR edges.
 - demo_source1.BRANCH_CO_MNE (XML line 17)
 
 ### demo_target1_UPD.MIS_DATE
-- demo_target1_UPD.MIS_DATE (XML line 1)
+- demo_target1_UPD.MIS_DATE (XML line 84)
 - UPDTRANS.MIS_DATE3 (XML line 330)
 - RTRTRANS.MIS_DATE4 [Update] (XML line 229)
 - EXPTRANS.MIS_DATE = MIS_DATE (XML line 166)
@@ -36,7 +37,7 @@ Edges below are traversed from target ports through XML CONNECTOR edges.
 - demo_source1.MIS_DATE (XML line 18)
 
 ### demo_target1_UPD.ID
-- demo_target1_UPD.ID (XML line 1)
+- demo_target1_UPD.ID (XML line 85)
 - UPDTRANS.ID2 (XML line 331)
 - RTRTRANS.ID3 [Update] (XML line 230)
 - EXPTRANS.ID = ID (XML line 167)
@@ -44,7 +45,7 @@ Edges below are traversed from target ports through XML CONNECTOR edges.
 - demo_source1.ID (XML line 19)
 
 ### demo_target1_UPD.DESCRIPTION
-- demo_target1_UPD.DESCRIPTION (XML line 1)
+- demo_target1_UPD.DESCRIPTION (XML line 86)
 - UPDTRANS.DESCRIPTION3 (XML line 332)
 - RTRTRANS.DESCRIPTION4 [Update] (XML line 231)
 - EXPTRANS.DESCRIPTION = DESCRIPTION (XML line 168)
@@ -52,7 +53,7 @@ Edges below are traversed from target ports through XML CONNECTOR edges.
 - demo_source1.DESCRIPTION (XML line 20)
 
 ### demo_target1_UPD.SHORT_NAME
-- demo_target1_UPD.SHORT_NAME (XML line 1)
+- demo_target1_UPD.SHORT_NAME (XML line 87)
 - UPDTRANS.SHORT_NAME3 (XML line 333)
 - RTRTRANS.SHORT_NAME4 [Update] (XML line 232)
 - EXPTRANS.SHORT_NAME = SHORT_NAME (XML line 169)
@@ -60,109 +61,109 @@ Edges below are traversed from target ports through XML CONNECTOR edges.
 - demo_source1.SHORT_NAME (XML line 21)
 
 ### demo_target1_UPD.CREATED_BY
-- demo_target1_UPD.CREATED_BY (XML line 1)
+- demo_target1_UPD.CREATED_BY (XML line 88)
 
 ### demo_target1_UPD.CREATED_TIME
-- demo_target1_UPD.CREATED_TIME (XML line 1)
+- demo_target1_UPD.CREATED_TIME (XML line 89)
 
 ### demo_target1_UPD.UPDATED_BY
-- demo_target1_UPD.UPDATED_BY (XML line 1)
+- demo_target1_UPD.UPDATED_BY (XML line 90)
 - UPDTRANS.o_UPDATED_BY2 (XML line 338)
 - RTRTRANS.o_UPDATED_BY3 [Update] (XML line 242)
 - EXPTRANS.o_UPDATED_BY = 'IDWUSER' (XML line 182)
 
 ### demo_target1_UPD.UPDATED_TIME
-- demo_target1_UPD.UPDATED_TIME (XML line 1)
+- demo_target1_UPD.UPDATED_TIME (XML line 91)
 - UPDTRANS.o_UPDATED_TIME2 (XML line 339)
 - RTRTRANS.o_UPDATED_TIME3 [Update] (XML line 243)
 - EXPTRANS.o_UPDATED_TIME = SYSDATE (XML line 183)
 
 ### demo_target1_UPD.ACTIVE_FLAG
-- demo_target1_UPD.ACTIVE_FLAG (XML line 1)
+- demo_target1_UPD.ACTIVE_FLAG (XML line 92)
 
 ### demo_target1_UPD.START_DATE
-- demo_target1_UPD.START_DATE (XML line 1)
+- demo_target1_UPD.START_DATE (XML line 93)
 
 ### demo_target1_UPD.END_DATE
-- demo_target1_UPD.END_DATE (XML line 1)
+- demo_target1_UPD.END_DATE (XML line 94)
 
 ## demo_target1_INS
 
 ### demo_target1_INS.Key
-- demo_target1_INS.Key (XML line 1)
+- demo_target1_INS.Key (XML line 81)
 - SEQTRANS.NEXTVAL (XML line 315)
 
 ### demo_target1_INS.LEAD_CO_MNE
-- demo_target1_INS.LEAD_CO_MNE (XML line 1)
+- demo_target1_INS.LEAD_CO_MNE (XML line 82)
 - RTRTRANS.LEAD_CO_MNE2 [Insert] (XML line 209)
 - EXPTRANS.LEAD_CO_MNE = LEAD_CO_MNE (XML line 164)
 - SQ_demo_source1.LEAD_CO_MNE (XML line 145)
 - demo_source1.LEAD_CO_MNE (XML line 16)
 
 ### demo_target1_INS.BRANCH_CO_MNE
-- demo_target1_INS.BRANCH_CO_MNE (XML line 1)
+- demo_target1_INS.BRANCH_CO_MNE (XML line 83)
 - RTRTRANS.BRANCH_CO_MNE2 [Insert] (XML line 210)
 - EXPTRANS.BRANCH_CO_MNE = BRANCH_CO_MNE (XML line 165)
 - SQ_demo_source1.BRANCH_CO_MNE (XML line 146)
 - demo_source1.BRANCH_CO_MNE (XML line 17)
 
 ### demo_target1_INS.MIS_DATE
-- demo_target1_INS.MIS_DATE (XML line 1)
+- demo_target1_INS.MIS_DATE (XML line 84)
 - RTRTRANS.MIS_DATE2 [Insert] (XML line 211)
 - EXPTRANS.MIS_DATE = MIS_DATE (XML line 166)
 - SQ_demo_source1.MIS_DATE (XML line 147)
 - demo_source1.MIS_DATE (XML line 18)
 
 ### demo_target1_INS.ID
-- demo_target1_INS.ID (XML line 1)
+- demo_target1_INS.ID (XML line 85)
 - RTRTRANS.ID1 [Insert] (XML line 212)
 - EXPTRANS.ID = ID (XML line 167)
 - SQ_demo_source1.ID (XML line 148)
 - demo_source1.ID (XML line 19)
 
 ### demo_target1_INS.DESCRIPTION
-- demo_target1_INS.DESCRIPTION (XML line 1)
+- demo_target1_INS.DESCRIPTION (XML line 86)
 - RTRTRANS.DESCRIPTION2 [Insert] (XML line 213)
 - EXPTRANS.DESCRIPTION = DESCRIPTION (XML line 168)
 - SQ_demo_source1.DESCRIPTION (XML line 149)
 - demo_source1.DESCRIPTION (XML line 20)
 
 ### demo_target1_INS.SHORT_NAME
-- demo_target1_INS.SHORT_NAME (XML line 1)
+- demo_target1_INS.SHORT_NAME (XML line 87)
 - RTRTRANS.SHORT_NAME2 [Insert] (XML line 214)
 - EXPTRANS.SHORT_NAME = SHORT_NAME (XML line 169)
 - SQ_demo_source1.SHORT_NAME (XML line 150)
 - demo_source1.SHORT_NAME (XML line 21)
 
 ### demo_target1_INS.CREATED_BY
-- demo_target1_INS.CREATED_BY (XML line 1)
+- demo_target1_INS.CREATED_BY (XML line 88)
 - RTRTRANS.o_CREATED_BY1 [Insert] (XML line 222)
 - EXPTRANS.o_CREATED_BY = 'IDWUSER' (XML line 180)
 
 ### demo_target1_INS.CREATED_TIME
-- demo_target1_INS.CREATED_TIME (XML line 1)
+- demo_target1_INS.CREATED_TIME (XML line 89)
 - RTRTRANS.o_CREATED_TIME1 [Insert] (XML line 223)
 - EXPTRANS.o_CREATED_TIME = SYSDATE (XML line 181)
 
 ### demo_target1_INS.UPDATED_BY
-- demo_target1_INS.UPDATED_BY (XML line 1)
+- demo_target1_INS.UPDATED_BY (XML line 90)
 
 ### demo_target1_INS.UPDATED_TIME
-- demo_target1_INS.UPDATED_TIME (XML line 1)
+- demo_target1_INS.UPDATED_TIME (XML line 91)
 
 ### demo_target1_INS.ACTIVE_FLAG
-- demo_target1_INS.ACTIVE_FLAG (XML line 1)
+- demo_target1_INS.ACTIVE_FLAG (XML line 92)
 
 ### demo_target1_INS.START_DATE
-- demo_target1_INS.START_DATE (XML line 1)
+- demo_target1_INS.START_DATE (XML line 93)
 
 ### demo_target1_INS.END_DATE
-- demo_target1_INS.END_DATE (XML line 1)
+- demo_target1_INS.END_DATE (XML line 94)
 
 ## demo_target6
 
 ### demo_target6.ACCT_ID
-- demo_target6.ACCT_ID (XML line 97)
+- demo_target6.ACCT_ID (XML line 111)
 - agg_TRANS.ACCT_ID = ACCT_ID (XML line 452)
 - rtr_TRANS.ACCT_ID1 [demo_target6_GRP] (XML line 688)
 - exp_TRANS1.ACCT_ID = ACCT_ID (XML line 473)
@@ -191,6 +192,7 @@ Edges below are traversed from target ports through XML CONNECTOR edges.
 - exp_TRANS.CR8_DT = CR8_DT (XML line 604)
 - sq_demo_source4.CR8_DT (XML line 570)
 - demo_source4.CR8_DT (XML line 28)
+- SQL override: SYSTIMESTAMP (positional SQL override) (XML line 580)
 
 ### demo_target6.CRDT_LN
 - demo_target6.CRDT_LN (XML line 101)
@@ -249,6 +251,7 @@ Edges below are traversed from target ports through XML CONNECTOR edges.
 - rtr_TRANS.o_ACCT_ID1 [demo_target6_GRP] (XML line 689)
 - exp_TRANS1.o_ACCT_ID = o_ACCT_ID (XML line 477)
 - exp_TRANS.o_ACCT_ID = :LKP.lkp_TRANS1(ACCT_ID) (XML line 608)
+- :LKP.lkp_TRANS1(ACCT_ID) -> lkp_demo_source3.TX_TYPE_CD (XML line 608)
 
 ## demo_target5
 
@@ -265,6 +268,7 @@ Edges below are traversed from target ports through XML CONNECTOR edges.
 - rtr_TRANS.FIRST_NM2 [demo_target5_GRP] (XML line 717)
 - exp_TRANS1.FIRST_NM = FIRST_NM (XML line 463)
 - lkp_TRANS2.FIRST_NM (XML line 486)
+- lkp_demo_source1.FIRST_NM [lookup condition: ACCT_ID = IN_ACCT_ID; policy: Use Last Value] (XML line 35)
 
 ### demo_target5.LAST_NM
 - demo_target5.LAST_NM (XML line 113)
@@ -287,6 +291,7 @@ Edges below are traversed from target ports through XML CONNECTOR edges.
 - rtr_TRANS.CRDT_SCORE2 [demo_target5_GRP] (XML line 718)
 - exp_TRANS1.CRDT_SCORE = CRDT_SCORE (XML line 478)
 - lkp_TRANS3.CRDT_SCORE (XML line 614)
+- lkp_demo_source2.CRDT_SCORE [lookup condition: CUST_ID = IN_CUST_ID; policy: Use Last Value] (XML line 42)
 
 ## demo_target3
 
@@ -337,96 +342,96 @@ Edges below are traversed from target ports through XML CONNECTOR edges.
 ## demo_target21
 
 ### demo_target21.Title
-- demo_target21.Title (XML line 1)
+- demo_target21.Title (XML line 128)
 - RTRTRANS.Title3 [NEWGROUP2] (XML line 1)
 - EXPTRANS.Title = Title (XML line 1)
 - SQ_demo_source2.Title (XML line 902)
 - demo_source2.Title (XML line 65)
 
 ### demo_target21.Gender
-- demo_target21.Gender (XML line 1)
+- demo_target21.Gender (XML line 129)
 - RTRTRANS.Gender_Code3 [NEWGROUP2] (XML line 1)
 - EXPTRANS.Gender_Code = Gender_Code (XML line 1)
 - SQ_demo_source2.Gender_Code (XML line 909)
 - demo_source2.Gender_Code (XML line 72)
 
 ### demo_target21.First_Name
-- demo_target21.First_Name (XML line 1)
+- demo_target21.First_Name (XML line 130)
 - RTRTRANS.First_Name3 [NEWGROUP2] (XML line 1)
 - EXPTRANS.First_Name = First_Name (XML line 1)
 - SQ_demo_source2.First_Name (XML line 903)
 - demo_source2.First_Name (XML line 66)
 
 ### demo_target21.Middle_Name
-- demo_target21.Middle_Name (XML line 1)
+- demo_target21.Middle_Name (XML line 131)
 - RTRTRANS.Middle_Name3 [NEWGROUP2] (XML line 1)
 - EXPTRANS.Middle_Name = Middle_Name (XML line 1)
 - SQ_demo_source2.Middle_Name (XML line 904)
 - demo_source2.Middle_Name (XML line 67)
 
 ### demo_target21.Last_Name
-- demo_target21.Last_Name (XML line 1)
+- demo_target21.Last_Name (XML line 132)
 - RTRTRANS.Last_Name3 [NEWGROUP2] (XML line 1)
 - EXPTRANS.Last_Name = Last_Name (XML line 1)
 - SQ_demo_source2.Last_Name (XML line 905)
 - demo_source2.Last_Name (XML line 68)
 
 ### demo_target21.Member_Identifier
-- demo_target21.Member_Identifier (XML line 1)
+- demo_target21.Member_Identifier (XML line 133)
 - RTRTRANS.Member_ID3 [NEWGROUP2] (XML line 1)
 - EXPTRANS.Member_ID = Member_ID (XML line 1)
 - SQ_demo_source2.Member_ID (XML line 906)
 - demo_source2.Member_ID (XML line 69)
 
 ### demo_target21.Member_Suffix
-- demo_target21.Member_Suffix (XML line 1)
+- demo_target21.Member_Suffix (XML line 134)
 - RTRTRANS.Member_Suffix3 [NEWGROUP2] (XML line 1)
 - EXPTRANS.Member_Suffix = Member_Suffix (XML line 1)
 - SQ_demo_source2.Member_Suffix (XML line 907)
 - demo_source2.Member_Suffix (XML line 70)
 
 ### demo_target21.Date_of_Birth
-- demo_target21.Date_of_Birth (XML line 1)
+- demo_target21.Date_of_Birth (XML line 135)
 - RTRTRANS.Birth_Date3 [NEWGROUP2] (XML line 1)
 - EXPTRANS.Birth_Date = Birth_Date (XML line 1)
 - SQ_demo_source2.Birth_Date (XML line 908)
 - demo_source2.Birth_Date (XML line 71)
 
 ### demo_target21.Member_Number
-- demo_target21.Member_Number (XML line 1)
+- demo_target21.Member_Number (XML line 136)
 - RTRTRANS.Member_Record_Number3 [NEWGROUP2] (XML line 1)
 - EXPTRANS.Member_Record_Number = Member_Record_Number (XML line 1)
 - SQ_demo_source2.Member_Record_Number (XML line 910)
 - demo_source2.Member_Record_Number (XML line 73)
 
 ### demo_target21.Soc_Number
-- demo_target21.Soc_Number (XML line 1)
+- demo_target21.Soc_Number (XML line 137)
 - RTRTRANS.Social_Security_Number3 [NEWGROUP2] (XML line 1)
 - EXPTRANS.Social_Security_Number = Social_Security_Number (XML line 1)
 - SQ_demo_source2.Social_Security_Number (XML line 911)
 - demo_source2.Social_Security_Number (XML line 74)
 
 ### demo_target21.Type_Code
-- demo_target21.Type_Code (XML line 1)
+- demo_target21.Type_Code (XML line 138)
 - RTRTRANS.Member_Type_Code3 [NEWGROUP2] (XML line 1)
 - EXPTRANS.Member_Type_Code = Member_Type_Code (XML line 1)
 - SQ_demo_source2.Member_Type_Code (XML line 912)
 - demo_source2.Member_Type_Code (XML line 75)
 
 ### demo_target21.Relationship_to_Subscriber_Code
-- demo_target21.Relationship_to_Subscriber_Code (XML line 1)
+- demo_target21.Relationship_to_Subscriber_Code (XML line 139)
 - RTRTRANS.Relationship_to_Subscriber_Code3 [NEWGROUP2] (XML line 1)
 - EXPTRANS.Relationship_to_Subscriber_Code = Relationship_to_Subscriber_Code (XML line 1)
 - SQ_demo_source2.Relationship_to_Subscriber_Code (XML line 914)
 - demo_source2.Relationship_to_Subscriber_Code (XML line 77)
 
 ### demo_target21.Relationship_to_Subscriber_Code_Label
-- demo_target21.Relationship_to_Subscriber_Code_Label (XML line 1)
+- demo_target21.Relationship_to_Subscriber_Code_Label (XML line 140)
 - RTRTRANS.Relationship_to_Subscriber_Code_Label3 [NEWGROUP2] (XML line 1)
 - EXPTRANS.o_Relationship_to_Subscriber_Code_Label = iif(ISNULL(Relationship_to_Subscriber_Code_Label),ABORT('Relationship_to_Subscriber_Code_Labe valuel is null'),Relationship_to_Subscriber_Code_Label) (XML line 1)
 
 ### demo_target21.Effective_Date
-- demo_target21.Effective_Date (XML line 1)
+- demo_target21.Effective_Date (XML line 141)
 - RTRTRANS.Original_Effective_Date3 [NEWGROUP2] (XML line 1)
 - EXPTRANS.Original_Effective_Date = Original_Effective_Date (XML line 1)
 - SQ_demo_source2.Original_Effective_Date (XML line 913)
@@ -565,7 +570,7 @@ Edges below are traversed from target ports through XML CONNECTOR edges.
 - `RTRTRANS.o_UPDATED_BY2` (XML line 260)
 - `RTRTRANS.o_UPDATED_TIME2` (XML line 261)
 - `RTRTRANS.Key2` (XML line 262)
-- `SEQTRANS.CURRVAL` (XML line 316)
+- `SEQTRANS.CURRVAL` (XML line 431)
 - `SEQ_GEN.CURRVAL` (XML line 431)
 - `rtr_TRANS.BAL_AMT1` (XML line 687)
 - `rtr_TRANS.ACCT_TYP1` (XML line 693)
@@ -599,26 +604,26 @@ Edges below are traversed from target ports through XML CONNECTOR edges.
 - `rtr_TRANS.o_crdt_trim3` (XML line 732)
 - `rtr_TRANS.FIRST_NM3` (XML line 733)
 - `rtr_TRANS.CRDT_SCORE3` (XML line 734)
-- `RTRTRANS.Title2` (XML line 1)
-- `RTRTRANS.First_Name2` (XML line 1)
-- `RTRTRANS.Middle_Name2` (XML line 1)
-- `RTRTRANS.Last_Name2` (XML line 1)
-- `RTRTRANS.Member_ID2` (XML line 1)
-- `RTRTRANS.Member_Suffix2` (XML line 1)
-- `RTRTRANS.Birth_Date2` (XML line 1)
-- `RTRTRANS.Gender_Code2` (XML line 1)
-- `RTRTRANS.Member_Record_Number2` (XML line 1)
-- `RTRTRANS.Social_Security_Number2` (XML line 1)
-- `RTRTRANS.Member_Type_Code2` (XML line 1)
-- `RTRTRANS.Original_Effective_Date2` (XML line 1)
-- `RTRTRANS.Relationship_to_Subscriber_Code2` (XML line 1)
-- `RTRTRANS.Relationship_to_Subscriber_Code_Label2` (XML line 1)
+- `RTRTRANS.Title2` (XML line 993)
+- `RTRTRANS.First_Name2` (XML line 994)
+- `RTRTRANS.Middle_Name2` (XML line 995)
+- `RTRTRANS.Last_Name2` (XML line 996)
+- `RTRTRANS.Member_ID2` (XML line 997)
+- `RTRTRANS.Member_Suffix2` (XML line 998)
+- `RTRTRANS.Birth_Date2` (XML line 999)
+- `RTRTRANS.Gender_Code2` (XML line 1000)
+- `RTRTRANS.Member_Record_Number2` (XML line 1001)
+- `RTRTRANS.Social_Security_Number2` (XML line 1002)
+- `RTRTRANS.Member_Type_Code2` (XML line 1003)
+- `RTRTRANS.Original_Effective_Date2` (XML line 1004)
+- `RTRTRANS.Relationship_to_Subscriber_Code2` (XML line 1005)
+- `RTRTRANS.Relationship_to_Subscriber_Code_Label2` (XML line 1006)
 
 ## Recovered connector-graph checks
 
-- `demo_target5.FIRST_NM` traces through `lkp_TRANS2` to `lkp_demo_source1.FIRST_NM`, not `demo_source3.FIRST_NM`.
-- `demo_target5.CRDT_SCORE` traces through `lkp_TRANS3` to `lkp_demo_source2.CRDT_SCORE`, not `demo_source3.CRDT_SCORE`.
-- `demo_target6.TX_TYPE_CD` traces through `o_ACCT_ID` to unconnected `:LKP.lkp_TRANS1(ACCT_ID)`; its return port is `lkp_demo_source3.TX_TYPE_CD`.
-- `demo_target6.CR8_DT` traces to the SQL override positional `SYSTIMESTAMP` at the `CR8_DT` port, not `demo_source4.CR8_DT`.
-- `m_demo_mapping2` router ports resolve by `GROUP`: `Update` carries `LEAD_CO_MNE4`, `ID3`, `Key3`; `DEFAULT1` carries the similarly named discarded ports.
-- `demo_target2` is fed by router group `NEWGROUP1` (SSN null); `demo_target21` is fed by `NEWGROUP2` (SSN not null).
+- **demo_target5 lookup FIRST_NM: ASSERTION PASS** — demo_target5.FIRST_NM (XML line 112); rtr_TRANS.FIRST_NM2 [demo_target5_GRP] (XML line 717); exp_TRANS1.FIRST_NM = FIRST_NM (XML line 463); lkp_TRANS2.FIRST_NM (XML line 486); lkp_demo_source1.FIRST_NM [lookup condition: ACCT_ID = IN_ACCT_ID; policy: Use Last Value] (XML line 35)
+- **demo_target5 lookup CRDT_SCORE: ASSERTION PASS** — demo_target5.CRDT_SCORE (XML line 115); rtr_TRANS.CRDT_SCORE2 [demo_target5_GRP] (XML line 718); exp_TRANS1.CRDT_SCORE = CRDT_SCORE (XML line 478); lkp_TRANS3.CRDT_SCORE (XML line 614); lkp_demo_source2.CRDT_SCORE [lookup condition: CUST_ID = IN_CUST_ID; policy: Use Last Value] (XML line 42)
+- **demo_target6 lookup TX_TYPE_CD: ASSERTION PASS** — demo_target6.TX_TYPE_CD (XML line 108); agg_TRANS.o_ACCT_ID = o_ACCT_ID (XML line 451); rtr_TRANS.o_ACCT_ID1 [demo_target6_GRP] (XML line 689); exp_TRANS1.o_ACCT_ID = o_ACCT_ID (XML line 477); exp_TRANS.o_ACCT_ID = :LKP.lkp_TRANS1(ACCT_ID) (XML line 608); :LKP.lkp_TRANS1(ACCT_ID) -> lkp_demo_source3.TX_TYPE_CD (XML line 608)
+- **demo_target6 positional SYSTIMESTAMP: ASSERTION PASS** — derived from the connector graph and XML transformation metadata
+- **mapping2 router GROUP: ASSERTION PASS** — derived from the connector graph and XML transformation metadata
+- **mapping3 router groups: ASSERTION PASS** — derived from the connector graph and XML transformation metadata

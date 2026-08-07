@@ -7,7 +7,7 @@
           {
             "instance": "demo_target1_UPD",
             "port": "Key",
-            "line": 1,
+            "line": 81,
             "expression": "",
             "group": "",
             "upstream": [
@@ -42,6 +42,16 @@
                                     "line": 266,
                                     "expression": "",
                                     "group": "",
+                                    "lookup": {
+                                      "table": "demo_target1",
+                                      "condition": "ID = ID1",
+                                      "policy": "Use Any Value"
+                                    },
+                                    "lookup_source": {
+                                      "instance": "demo_target1",
+                                      "port": "Key",
+                                      "line": 81
+                                    },
                                     "upstream": []
                                   }
                                 ]
@@ -64,7 +74,7 @@
           {
             "instance": "demo_target1_UPD",
             "port": "LEAD_CO_MNE",
-            "line": 1,
+            "line": 82,
             "expression": "",
             "group": "",
             "upstream": [
@@ -132,7 +142,7 @@
           {
             "instance": "demo_target1_UPD",
             "port": "BRANCH_CO_MNE",
-            "line": 1,
+            "line": 83,
             "expression": "",
             "group": "",
             "upstream": [
@@ -200,7 +210,7 @@
           {
             "instance": "demo_target1_UPD",
             "port": "MIS_DATE",
-            "line": 1,
+            "line": 84,
             "expression": "",
             "group": "",
             "upstream": [
@@ -268,7 +278,7 @@
           {
             "instance": "demo_target1_UPD",
             "port": "ID",
-            "line": 1,
+            "line": 85,
             "expression": "",
             "group": "",
             "upstream": [
@@ -336,7 +346,7 @@
           {
             "instance": "demo_target1_UPD",
             "port": "DESCRIPTION",
-            "line": 1,
+            "line": 86,
             "expression": "",
             "group": "",
             "upstream": [
@@ -404,7 +414,7 @@
           {
             "instance": "demo_target1_UPD",
             "port": "SHORT_NAME",
-            "line": 1,
+            "line": 87,
             "expression": "",
             "group": "",
             "upstream": [
@@ -472,7 +482,7 @@
           {
             "instance": "demo_target1_UPD",
             "port": "CREATED_BY",
-            "line": 1,
+            "line": 88,
             "expression": "",
             "group": "",
             "upstream": []
@@ -485,7 +495,7 @@
           {
             "instance": "demo_target1_UPD",
             "port": "CREATED_TIME",
-            "line": 1,
+            "line": 89,
             "expression": "",
             "group": "",
             "upstream": []
@@ -498,7 +508,7 @@
           {
             "instance": "demo_target1_UPD",
             "port": "UPDATED_BY",
-            "line": 1,
+            "line": 90,
             "expression": "",
             "group": "",
             "upstream": [
@@ -544,7 +554,7 @@
           {
             "instance": "demo_target1_UPD",
             "port": "UPDATED_TIME",
-            "line": 1,
+            "line": 91,
             "expression": "",
             "group": "",
             "upstream": [
@@ -590,7 +600,7 @@
           {
             "instance": "demo_target1_UPD",
             "port": "ACTIVE_FLAG",
-            "line": 1,
+            "line": 92,
             "expression": "",
             "group": "",
             "upstream": []
@@ -603,7 +613,7 @@
           {
             "instance": "demo_target1_UPD",
             "port": "START_DATE",
-            "line": 1,
+            "line": 93,
             "expression": "",
             "group": "",
             "upstream": []
@@ -616,7 +626,7 @@
           {
             "instance": "demo_target1_UPD",
             "port": "END_DATE",
-            "line": 1,
+            "line": 94,
             "expression": "",
             "group": "",
             "upstream": []
@@ -631,7 +641,7 @@
           {
             "instance": "demo_target1_INS",
             "port": "Key",
-            "line": 1,
+            "line": 81,
             "expression": "",
             "group": "",
             "upstream": [
@@ -655,7 +665,7 @@
           {
             "instance": "demo_target1_INS",
             "port": "LEAD_CO_MNE",
-            "line": 1,
+            "line": 82,
             "expression": "",
             "group": "",
             "upstream": [
@@ -712,7 +722,7 @@
           {
             "instance": "demo_target1_INS",
             "port": "BRANCH_CO_MNE",
-            "line": 1,
+            "line": 83,
             "expression": "",
             "group": "",
             "upstream": [
@@ -769,7 +779,7 @@
           {
             "instance": "demo_target1_INS",
             "port": "MIS_DATE",
-            "line": 1,
+            "line": 84,
             "expression": "",
             "group": "",
             "upstream": [
@@ -826,7 +836,7 @@
           {
             "instance": "demo_target1_INS",
             "port": "ID",
-            "line": 1,
+            "line": 85,
             "expression": "",
             "group": "",
             "upstream": [
@@ -883,7 +893,7 @@
           {
             "instance": "demo_target1_INS",
             "port": "DESCRIPTION",
-            "line": 1,
+            "line": 86,
             "expression": "",
             "group": "",
             "upstream": [
@@ -940,7 +950,7 @@
           {
             "instance": "demo_target1_INS",
             "port": "SHORT_NAME",
-            "line": 1,
+            "line": 87,
             "expression": "",
             "group": "",
             "upstream": [
@@ -997,7 +1007,7 @@
           {
             "instance": "demo_target1_INS",
             "port": "CREATED_BY",
-            "line": 1,
+            "line": 88,
             "expression": "",
             "group": "",
             "upstream": [
@@ -1032,7 +1042,7 @@
           {
             "instance": "demo_target1_INS",
             "port": "CREATED_TIME",
-            "line": 1,
+            "line": 89,
             "expression": "",
             "group": "",
             "upstream": [
@@ -1067,7 +1077,7 @@
           {
             "instance": "demo_target1_INS",
             "port": "UPDATED_BY",
-            "line": 1,
+            "line": 90,
             "expression": "",
             "group": "",
             "upstream": []
@@ -1080,7 +1090,7 @@
           {
             "instance": "demo_target1_INS",
             "port": "UPDATED_TIME",
-            "line": 1,
+            "line": 91,
             "expression": "",
             "group": "",
             "upstream": []
@@ -1093,7 +1103,7 @@
           {
             "instance": "demo_target1_INS",
             "port": "ACTIVE_FLAG",
-            "line": 1,
+            "line": 92,
             "expression": "",
             "group": "",
             "upstream": []
@@ -1106,7 +1116,7 @@
           {
             "instance": "demo_target1_INS",
             "port": "START_DATE",
-            "line": 1,
+            "line": 93,
             "expression": "",
             "group": "",
             "upstream": []
@@ -1119,7 +1129,7 @@
           {
             "instance": "demo_target1_INS",
             "port": "END_DATE",
-            "line": 1,
+            "line": 94,
             "expression": "",
             "group": "",
             "upstream": []
@@ -1134,7 +1144,7 @@
           {
             "instance": "demo_target6",
             "port": "ACCT_ID",
-            "line": 97,
+            "line": 111,
             "expression": "",
             "group": "",
             "upstream": [
@@ -1359,6 +1369,7 @@
                                           "line": 570,
                                           "expression": "",
                                           "group": "",
+                                          "sql_override": "SYSTIMESTAMP (positional SQL override)",
                                           "upstream": [
                                             [
                                               {
@@ -1851,6 +1862,12 @@
                                     "line": 608,
                                     "expression": ":LKP.lkp_TRANS1(ACCT_ID)",
                                     "group": "",
+                                    "unconnected_lookup": {
+                                      "call": ":LKP.lkp_TRANS1(ACCT_ID)",
+                                      "table": "lkp_demo_source3",
+                                      "port": "TX_TYPE_CD",
+                                      "line": 608
+                                    },
                                     "upstream": []
                                   }
                                 ]
@@ -1970,6 +1987,16 @@
                               "line": 486,
                               "expression": "",
                               "group": "",
+                              "lookup": {
+                                "table": "lkp_demo_source1",
+                                "condition": "ACCT_ID = IN_ACCT_ID",
+                                "policy": "Use Last Value"
+                              },
+                              "lookup_source": {
+                                "instance": "lkp_demo_source1",
+                                "port": "FIRST_NM",
+                                "line": 35
+                              },
                               "upstream": []
                             }
                           ]
@@ -2152,6 +2179,16 @@
                               "line": 614,
                               "expression": "",
                               "group": "",
+                              "lookup": {
+                                "table": "lkp_demo_source2",
+                                "condition": "CUST_ID = IN_CUST_ID",
+                                "policy": "Use Last Value"
+                              },
+                              "lookup_source": {
+                                "instance": "lkp_demo_source2",
+                                "port": "CRDT_SCORE",
+                                "line": 42
+                              },
                               "upstream": []
                             }
                           ]
@@ -2499,7 +2536,7 @@
           {
             "instance": "demo_target21",
             "port": "Title",
-            "line": 1,
+            "line": 128,
             "expression": "",
             "group": "",
             "upstream": [
@@ -2556,7 +2593,7 @@
           {
             "instance": "demo_target21",
             "port": "Gender",
-            "line": 1,
+            "line": 129,
             "expression": "",
             "group": "",
             "upstream": [
@@ -2613,7 +2650,7 @@
           {
             "instance": "demo_target21",
             "port": "First_Name",
-            "line": 1,
+            "line": 130,
             "expression": "",
             "group": "",
             "upstream": [
@@ -2670,7 +2707,7 @@
           {
             "instance": "demo_target21",
             "port": "Middle_Name",
-            "line": 1,
+            "line": 131,
             "expression": "",
             "group": "",
             "upstream": [
@@ -2727,7 +2764,7 @@
           {
             "instance": "demo_target21",
             "port": "Last_Name",
-            "line": 1,
+            "line": 132,
             "expression": "",
             "group": "",
             "upstream": [
@@ -2784,7 +2821,7 @@
           {
             "instance": "demo_target21",
             "port": "Member_Identifier",
-            "line": 1,
+            "line": 133,
             "expression": "",
             "group": "",
             "upstream": [
@@ -2841,7 +2878,7 @@
           {
             "instance": "demo_target21",
             "port": "Member_Suffix",
-            "line": 1,
+            "line": 134,
             "expression": "",
             "group": "",
             "upstream": [
@@ -2898,7 +2935,7 @@
           {
             "instance": "demo_target21",
             "port": "Date_of_Birth",
-            "line": 1,
+            "line": 135,
             "expression": "",
             "group": "",
             "upstream": [
@@ -2955,7 +2992,7 @@
           {
             "instance": "demo_target21",
             "port": "Member_Number",
-            "line": 1,
+            "line": 136,
             "expression": "",
             "group": "",
             "upstream": [
@@ -3012,7 +3049,7 @@
           {
             "instance": "demo_target21",
             "port": "Soc_Number",
-            "line": 1,
+            "line": 137,
             "expression": "",
             "group": "",
             "upstream": [
@@ -3069,7 +3106,7 @@
           {
             "instance": "demo_target21",
             "port": "Type_Code",
-            "line": 1,
+            "line": 138,
             "expression": "",
             "group": "",
             "upstream": [
@@ -3126,7 +3163,7 @@
           {
             "instance": "demo_target21",
             "port": "Relationship_to_Subscriber_Code",
-            "line": 1,
+            "line": 139,
             "expression": "",
             "group": "",
             "upstream": [
@@ -3183,7 +3220,7 @@
           {
             "instance": "demo_target21",
             "port": "Relationship_to_Subscriber_Code_Label",
-            "line": 1,
+            "line": 140,
             "expression": "",
             "group": "",
             "upstream": [
@@ -3218,7 +3255,7 @@
           {
             "instance": "demo_target21",
             "port": "Effective_Date",
-            "line": 1,
+            "line": 141,
             "expression": "",
             "group": "",
             "upstream": [
@@ -4284,7 +4321,7 @@
     {
       "instance": "SEQTRANS",
       "port": "CURRVAL",
-      "line": 316,
+      "line": 431,
       "expression": "",
       "group": ""
     },
@@ -4522,98 +4559,98 @@
     {
       "instance": "RTRTRANS",
       "port": "Title2",
-      "line": 1,
+      "line": 993,
       "expression": "",
       "group": "DEFAULT1"
     },
     {
       "instance": "RTRTRANS",
       "port": "First_Name2",
-      "line": 1,
+      "line": 994,
       "expression": "",
       "group": "DEFAULT1"
     },
     {
       "instance": "RTRTRANS",
       "port": "Middle_Name2",
-      "line": 1,
+      "line": 995,
       "expression": "",
       "group": "DEFAULT1"
     },
     {
       "instance": "RTRTRANS",
       "port": "Last_Name2",
-      "line": 1,
+      "line": 996,
       "expression": "",
       "group": "DEFAULT1"
     },
     {
       "instance": "RTRTRANS",
       "port": "Member_ID2",
-      "line": 1,
+      "line": 997,
       "expression": "",
       "group": "DEFAULT1"
     },
     {
       "instance": "RTRTRANS",
       "port": "Member_Suffix2",
-      "line": 1,
+      "line": 998,
       "expression": "",
       "group": "DEFAULT1"
     },
     {
       "instance": "RTRTRANS",
       "port": "Birth_Date2",
-      "line": 1,
+      "line": 999,
       "expression": "",
       "group": "DEFAULT1"
     },
     {
       "instance": "RTRTRANS",
       "port": "Gender_Code2",
-      "line": 1,
+      "line": 1000,
       "expression": "",
       "group": "DEFAULT1"
     },
     {
       "instance": "RTRTRANS",
       "port": "Member_Record_Number2",
-      "line": 1,
+      "line": 1001,
       "expression": "",
       "group": "DEFAULT1"
     },
     {
       "instance": "RTRTRANS",
       "port": "Social_Security_Number2",
-      "line": 1,
+      "line": 1002,
       "expression": "",
       "group": "DEFAULT1"
     },
     {
       "instance": "RTRTRANS",
       "port": "Member_Type_Code2",
-      "line": 1,
+      "line": 1003,
       "expression": "",
       "group": "DEFAULT1"
     },
     {
       "instance": "RTRTRANS",
       "port": "Original_Effective_Date2",
-      "line": 1,
+      "line": 1004,
       "expression": "",
       "group": "DEFAULT1"
     },
     {
       "instance": "RTRTRANS",
       "port": "Relationship_to_Subscriber_Code2",
-      "line": 1,
+      "line": 1005,
       "expression": "",
       "group": "DEFAULT1"
     },
     {
       "instance": "RTRTRANS",
       "port": "Relationship_to_Subscriber_Code_Label2",
-      "line": 1,
+      "line": 1006,
       "expression": "",
       "group": "DEFAULT1"
     }
