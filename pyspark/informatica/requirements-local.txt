@@ -1,0 +1,5 @@
+pyspark==3.5.3
+pandas<3
+pyyaml
+pytest
+snowflake-connector-python

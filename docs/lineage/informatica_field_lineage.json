@@ -1,0 +1,4658 @@
+{
+  "targets": {
+    "demo_target1_UPD": [
+      {
+        "target_column": "Key",
+        "chain": [
+          {
+            "instance": "demo_target1_UPD",
+            "port": "Key",
+            "line": 81,
+            "expression": "",
+            "group": "",
+            "upstream": [
+              [
+                {
+                  "instance": "UPDTRANS",
+                  "port": "Key2",
+                  "line": 340,
+                  "expression": "",
+                  "group": "",
+                  "upstream": [
+                    [
+                      {
+                        "instance": "RTRTRANS",
+                        "port": "Key3",
+                        "line": 244,
+                        "expression": "",
+                        "group": "Update",
+                        "upstream": [
+                          [
+                            {
+                              "instance": "EXPTRANS",
+                              "port": "Key",
+                              "line": 170,
+                              "expression": "Key",
+                              "group": "",
+                              "upstream": [
+                                [
+                                  {
+                                    "instance": "LKPTRANS",
+                                    "port": "Key",
+                                    "line": 266,
+                                    "expression": "",
+                                    "group": "",
+                                    "lookup": {
+                                      "table": "demo_target1",
+                                      "condition": "ID = ID1",
+                                      "policy": "Use Any Value"
+                                    },
+                                    "lookup_source": {
+                                      "instance": "demo_target1",
+                                      "port": "Key",
+                                      "line": 81
+                                    },
+                                    "upstream": []
+                                  }
+                                ]
+                              ]
+                            }
+                          ]
+                        ]
+                      }
+                    ]
+                  ]
+                }
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "target_column": "LEAD_CO_MNE",
+        "chain": [
+          {
+            "instance": "demo_target1_UPD",
+            "port": "LEAD_CO_MNE",
+            "line": 82,
+            "expression": "",
+            "group": "",
+            "upstream": [
+              [
+                {
+                  "instance": "UPDTRANS",
+                  "port": "LEAD_CO_MNE3",
+                  "line": 328,
+                  "expression": "",
+                  "group": "",
+                  "upstream": [
+                    [
+                      {
+                        "instance": "RTRTRANS",
+                        "port": "LEAD_CO_MNE4",
+                        "line": 227,
+                        "expression": "",
+                        "group": "Update",
+                        "upstream": [
+                          [
+                            {
+                              "instance": "EXPTRANS",
+                              "port": "LEAD_CO_MNE",
+                              "line": 164,
+                              "expression": "LEAD_CO_MNE",
+                              "group": "",
+                              "upstream": [
+                                [
+                                  {
+                                    "instance": "SQ_demo_source1",
+                                    "port": "LEAD_CO_MNE",
+                                    "line": 145,
+                                    "expression": "",
+                                    "group": "",
+                                    "upstream": [
+                                      [
+                                        {
+                                          "instance": "demo_source1",
+                                          "port": "LEAD_CO_MNE",
+                                          "line": 16,
+                                          "expression": "",
+                                          "group": "",
+                                          "upstream": []
+                                        }
+                                      ]
+                                    ]
+                                  }
+                                ]
+                              ]
+                            }
+                          ]
+                        ]
+                      }
+                    ]
+                  ]
+                }
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "target_column": "BRANCH_CO_MNE",
+        "chain": [
+          {
+            "instance": "demo_target1_UPD",
+            "port": "BRANCH_CO_MNE",
+            "line": 83,
+            "expression": "",
+            "group": "",
+            "upstream": [
+              [
+                {
+                  "instance": "UPDTRANS",
+                  "port": "BRANCH_CO_MNE3",
+                  "line": 329,
+                  "expression": "",
+                  "group": "",
+                  "upstream": [
+                    [
+                      {
+                        "instance": "RTRTRANS",
+                        "port": "BRANCH_CO_MNE4",
+                        "line": 228,
+                        "expression": "",
+                        "group": "Update",
+                        "upstream": [
+                          [
+                            {
+                              "instance": "EXPTRANS",
+                              "port": "BRANCH_CO_MNE",
+                              "line": 165,
+                              "expression": "BRANCH_CO_MNE",
+                              "group": "",
+                              "upstream": [
+                                [
+                                  {
+                                    "instance": "SQ_demo_source1",
+                                    "port": "BRANCH_CO_MNE",
+                                    "line": 146,
+                                    "expression": "",
+                                    "group": "",
+                                    "upstream": [
+                                      [
+                                        {
+                                          "instance": "demo_source1",
+                                          "port": "BRANCH_CO_MNE",
+                                          "line": 17,
+                                          "expression": "",
+                                          "group": "",
+                                          "upstream": []
+                                        }
+                                      ]
+                                    ]
+                                  }
+                                ]
+                              ]
+                            }
+                          ]
+                        ]
+                      }
+                    ]
+                  ]
+                }
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "target_column": "MIS_DATE",
+        "chain": [
+          {
+            "instance": "demo_target1_UPD",
+            "port": "MIS_DATE",
+            "line": 84,
+            "expression": "",
+            "group": "",
+            "upstream": [
+              [
+                {
+                  "instance": "UPDTRANS",
+                  "port": "MIS_DATE3",
+                  "line": 330,
+                  "expression": "",
+                  "group": "",
+                  "upstream": [
+                    [
+                      {
+                        "instance": "RTRTRANS",
+                        "port": "MIS_DATE4",
+                        "line": 229,
+                        "expression": "",
+                        "group": "Update",
+                        "upstream": [
+                          [
+                            {
+                              "instance": "EXPTRANS",
+                              "port": "MIS_DATE",
+                              "line": 166,
+                              "expression": "MIS_DATE",
+                              "group": "",
+                              "upstream": [
+                                [
+                                  {
+                                    "instance": "SQ_demo_source1",
+                                    "port": "MIS_DATE",
+                                    "line": 147,
+                                    "expression": "",
+                                    "group": "",
+                                    "upstream": [
+                                      [
+                                        {
+                                          "instance": "demo_source1",
+                                          "port": "MIS_DATE",
+                                          "line": 18,
+                                          "expression": "",
+                                          "group": "",
+                                          "upstream": []
+                                        }
+                                      ]
+                                    ]
+                                  }
+                                ]
+                              ]
+                            }
+                          ]
+                        ]
+                      }
+                    ]
+                  ]
+                }
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "target_column": "ID",
+        "chain": [
+          {
+            "instance": "demo_target1_UPD",
+            "port": "ID",
+            "line": 85,
+            "expression": "",
+            "group": "",
+            "upstream": [
+              [
+                {
+                  "instance": "UPDTRANS",
+                  "port": "ID2",
+                  "line": 331,
+                  "expression": "",
+                  "group": "",
+                  "upstream": [
+                    [
+                      {
+                        "instance": "RTRTRANS",
+                        "port": "ID3",
+                        "line": 230,
+                        "expression": "",
+                        "group": "Update",
+                        "upstream": [
+                          [
+                            {
+                              "instance": "EXPTRANS",
+                              "port": "ID",
+                              "line": 167,
+                              "expression": "ID",
+                              "group": "",
+                              "upstream": [
+                                [
+                                  {
+                                    "instance": "SQ_demo_source1",
+                                    "port": "ID",
+                                    "line": 148,
+                                    "expression": "",
+                                    "group": "",
+                                    "upstream": [
+                                      [
+                                        {
+                                          "instance": "demo_source1",
+                                          "port": "ID",
+                                          "line": 19,
+                                          "expression": "",
+                                          "group": "",
+                                          "upstream": []
+                                        }
+                                      ]
+                                    ]
+                                  }
+                                ]
+                              ]
+                            }
+                          ]
+                        ]
+                      }
+                    ]
+                  ]
+                }
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "target_column": "DESCRIPTION",
+        "chain": [
+          {
+            "instance": "demo_target1_UPD",
+            "port": "DESCRIPTION",
+            "line": 86,
+            "expression": "",
+            "group": "",
+            "upstream": [
+              [
+                {
+                  "instance": "UPDTRANS",
+                  "port": "DESCRIPTION3",
+                  "line": 332,
+                  "expression": "",
+                  "group": "",
+                  "upstream": [
+                    [
+                      {
+                        "instance": "RTRTRANS",
+                        "port": "DESCRIPTION4",
+                        "line": 231,
+                        "expression": "",
+                        "group": "Update",
+                        "upstream": [
+                          [
+                            {
+                              "instance": "EXPTRANS",
+                              "port": "DESCRIPTION",
+                              "line": 168,
+                              "expression": "DESCRIPTION",
+                              "group": "",
+                              "upstream": [
+                                [
+                                  {
+                                    "instance": "SQ_demo_source1",
+                                    "port": "DESCRIPTION",
+                                    "line": 149,
+                                    "expression": "",
+                                    "group": "",
+                                    "upstream": [
+                                      [
+                                        {
+                                          "instance": "demo_source1",
+                                          "port": "DESCRIPTION",
+                                          "line": 20,
+                                          "expression": "",
+                                          "group": "",
+                                          "upstream": []
+                                        }
+                                      ]
+                                    ]
+                                  }
+                                ]
+                              ]
+                            }
+                          ]
+                        ]
+                      }
+                    ]
+                  ]
+                }
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "target_column": "SHORT_NAME",
+        "chain": [
+          {
+            "instance": "demo_target1_UPD",
+            "port": "SHORT_NAME",
+            "line": 87,
+            "expression": "",
+            "group": "",
+            "upstream": [
+              [
+                {
+                  "instance": "UPDTRANS",
+                  "port": "SHORT_NAME3",
+                  "line": 333,
+                  "expression": "",
+                  "group": "",
+                  "upstream": [
+                    [
+                      {
+                        "instance": "RTRTRANS",
+                        "port": "SHORT_NAME4",
+                        "line": 232,
+                        "expression": "",
+                        "group": "Update",
+                        "upstream": [
+                          [
+                            {
+                              "instance": "EXPTRANS",
+                              "port": "SHORT_NAME",
+                              "line": 169,
+                              "expression": "SHORT_NAME",
+                              "group": "",
+                              "upstream": [
+                                [
+                                  {
+                                    "instance": "SQ_demo_source1",
+                                    "port": "SHORT_NAME",
+                                    "line": 150,
+                                    "expression": "",
+                                    "group": "",
+                                    "upstream": [
+                                      [
+                                        {
+                                          "instance": "demo_source1",
+                                          "port": "SHORT_NAME",
+                                          "line": 21,
+                                          "expression": "",
+                                          "group": "",
+                                          "upstream": []
+                                        }
+                                      ]
+                                    ]
+                                  }
+                                ]
+                              ]
+                            }
+                          ]
+                        ]
+                      }
+                    ]
+                  ]
+                }
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "target_column": "CREATED_BY",
+        "chain": [
+          {
+            "instance": "demo_target1_UPD",
+            "port": "CREATED_BY",
+            "line": 88,
+            "expression": "",
+            "group": "",
+            "upstream": []
+          }
+        ]
+      },
+      {
+        "target_column": "CREATED_TIME",
+        "chain": [
+          {
+            "instance": "demo_target1_UPD",
+            "port": "CREATED_TIME",
+            "line": 89,
+            "expression": "",
+            "group": "",
+            "upstream": []
+          }
+        ]
+      },
+      {
+        "target_column": "UPDATED_BY",
+        "chain": [
+          {
+            "instance": "demo_target1_UPD",
+            "port": "UPDATED_BY",
+            "line": 90,
+            "expression": "",
+            "group": "",
+            "upstream": [
+              [
+                {
+                  "instance": "UPDTRANS",
+                  "port": "o_UPDATED_BY2",
+                  "line": 338,
+                  "expression": "",
+                  "group": "",
+                  "upstream": [
+                    [
+                      {
+                        "instance": "RTRTRANS",
+                        "port": "o_UPDATED_BY3",
+                        "line": 242,
+                        "expression": "",
+                        "group": "Update",
+                        "upstream": [
+                          [
+                            {
+                              "instance": "EXPTRANS",
+                              "port": "o_UPDATED_BY",
+                              "line": 182,
+                              "expression": "'IDWUSER'",
+                              "group": "",
+                              "upstream": []
+                            }
+                          ]
+                        ]
+                      }
+                    ]
+                  ]
+                }
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "target_column": "UPDATED_TIME",
+        "chain": [
+          {
+            "instance": "demo_target1_UPD",
+            "port": "UPDATED_TIME",
+            "line": 91,
+            "expression": "",
+            "group": "",
+            "upstream": [
+              [
+                {
+                  "instance": "UPDTRANS",
+                  "port": "o_UPDATED_TIME2",
+                  "line": 339,
+                  "expression": "",
+                  "group": "",
+                  "upstream": [
+                    [
+                      {
+                        "instance": "RTRTRANS",
+                        "port": "o_UPDATED_TIME3",
+                        "line": 243,
+                        "expression": "",
+                        "group": "Update",
+                        "upstream": [
+                          [
+                            {
+                              "instance": "EXPTRANS",
+                              "port": "o_UPDATED_TIME",
+                              "line": 183,
+                              "expression": "SYSDATE",
+                              "group": "",
+                              "upstream": []
+                            }
+                          ]
+                        ]
+                      }
+                    ]
+                  ]
+                }
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "target_column": "ACTIVE_FLAG",
+        "chain": [
+          {
+            "instance": "demo_target1_UPD",
+            "port": "ACTIVE_FLAG",
+            "line": 92,
+            "expression": "",
+            "group": "",
+            "upstream": []
+          }
+        ]
+      },
+      {
+        "target_column": "START_DATE",
+        "chain": [
+          {
+            "instance": "demo_target1_UPD",
+            "port": "START_DATE",
+            "line": 93,
+            "expression": "",
+            "group": "",
+            "upstream": []
+          }
+        ]
+      },
+      {
+        "target_column": "END_DATE",
+        "chain": [
+          {
+            "instance": "demo_target1_UPD",
+            "port": "END_DATE",
+            "line": 94,
+            "expression": "",
+            "group": "",
+            "upstream": []
+          }
+        ]
+      }
+    ],
+    "demo_target1_INS": [
+      {
+        "target_column": "Key",
+        "chain": [
+          {
+            "instance": "demo_target1_INS",
+            "port": "Key",
+            "line": 81,
+            "expression": "",
+            "group": "",
+            "upstream": [
+              [
+                {
+                  "instance": "SEQTRANS",
+                  "port": "NEXTVAL",
+                  "line": 315,
+                  "expression": "",
+                  "group": "",
+                  "upstream": []
+                }
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "target_column": "LEAD_CO_MNE",
+        "chain": [
+          {
+            "instance": "demo_target1_INS",
+            "port": "LEAD_CO_MNE",
+            "line": 82,
+            "expression": "",
+            "group": "",
+            "upstream": [
+              [
+                {
+                  "instance": "RTRTRANS",
+                  "port": "LEAD_CO_MNE2",
+                  "line": 209,
+                  "expression": "",
+                  "group": "Insert",
+                  "upstream": [
+                    [
+                      {
+                        "instance": "EXPTRANS",
+                        "port": "LEAD_CO_MNE",
+                        "line": 164,
+                        "expression": "LEAD_CO_MNE",
+                        "group": "",
+                        "upstream": [
+                          [
+                            {
+                              "instance": "SQ_demo_source1",
+                              "port": "LEAD_CO_MNE",
+                              "line": 145,
+                              "expression": "",
+                              "group": "",
+                              "upstream": [
+                                [
+                                  {
+                                    "instance": "demo_source1",
+                                    "port": "LEAD_CO_MNE",
+                                    "line": 16,
+                                    "expression": "",
+                                    "group": "",
+                                    "upstream": []
+                                  }
+                                ]
+                              ]
+                            }
+                          ]
+                        ]
+                      }
+                    ]
+                  ]
+                }
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "target_column": "BRANCH_CO_MNE",
+        "chain": [
+          {
+            "instance": "demo_target1_INS",
+            "port": "BRANCH_CO_MNE",
+            "line": 83,
+            "expression": "",
+            "group": "",
+            "upstream": [
+              [
+                {
+                  "instance": "RTRTRANS",
+                  "port": "BRANCH_CO_MNE2",
+                  "line": 210,
+                  "expression": "",
+                  "group": "Insert",
+                  "upstream": [
+                    [
+                      {
+                        "instance": "EXPTRANS",
+                        "port": "BRANCH_CO_MNE",
+                        "line": 165,
+                        "expression": "BRANCH_CO_MNE",
+                        "group": "",
+                        "upstream": [
+                          [
+                            {
+                              "instance": "SQ_demo_source1",
+                              "port": "BRANCH_CO_MNE",
+                              "line": 146,
+                              "expression": "",
+                              "group": "",
+                              "upstream": [
+                                [
+                                  {
+                                    "instance": "demo_source1",
+                                    "port": "BRANCH_CO_MNE",
+                                    "line": 17,
+                                    "expression": "",
+                                    "group": "",
+                                    "upstream": []
+                                  }
+                                ]
+                              ]
+                            }
+                          ]
+                        ]
+                      }
+                    ]
+                  ]
+                }
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "target_column": "MIS_DATE",
+        "chain": [
+          {
+            "instance": "demo_target1_INS",
+            "port": "MIS_DATE",
+            "line": 84,
+            "expression": "",
+            "group": "",
+            "upstream": [
+              [
+                {
+                  "instance": "RTRTRANS",
+                  "port": "MIS_DATE2",
+                  "line": 211,
+                  "expression": "",
+                  "group": "Insert",
+                  "upstream": [
+                    [
+                      {
+                        "instance": "EXPTRANS",
+                        "port": "MIS_DATE",
+                        "line": 166,
+                        "expression": "MIS_DATE",
+                        "group": "",
+                        "upstream": [
+                          [
+                            {
+                              "instance": "SQ_demo_source1",
+                              "port": "MIS_DATE",
+                              "line": 147,
+                              "expression": "",
+                              "group": "",
+                              "upstream": [
+                                [
+                                  {
+                                    "instance": "demo_source1",
+                                    "port": "MIS_DATE",
+                                    "line": 18,
+                                    "expression": "",
+                                    "group": "",
+                                    "upstream": []
+                                  }
+                                ]
+                              ]
+                            }
+                          ]
+                        ]
+                      }
+                    ]
+                  ]
+                }
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "target_column": "ID",
+        "chain": [
+          {
+            "instance": "demo_target1_INS",
+            "port": "ID",
+            "line": 85,
+            "expression": "",
+            "group": "",
+            "upstream": [
+              [
+                {
+                  "instance": "RTRTRANS",
+                  "port": "ID1",
+                  "line": 212,
+                  "expression": "",
+                  "group": "Insert",
+                  "upstream": [
+                    [
+                      {
+                        "instance": "EXPTRANS",
+                        "port": "ID",
+                        "line": 167,
+                        "expression": "ID",
+                        "group": "",
+                        "upstream": [
+                          [
+                            {
+                              "instance": "SQ_demo_source1",
+                              "port": "ID",
+                              "line": 148,
+                              "expression": "",
+                              "group": "",
+                              "upstream": [
+                                [
+                                  {
+                                    "instance": "demo_source1",
+                                    "port": "ID",
+                                    "line": 19,
+                                    "expression": "",
+                                    "group": "",
+                                    "upstream": []
+                                  }
+                                ]
+                              ]
+                            }
+                          ]
+                        ]
+                      }
+                    ]
+                  ]
+                }
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "target_column": "DESCRIPTION",
+        "chain": [
+          {
+            "instance": "demo_target1_INS",
+            "port": "DESCRIPTION",
+            "line": 86,
+            "expression": "",
+            "group": "",
+            "upstream": [
+              [
+                {
+                  "instance": "RTRTRANS",
+                  "port": "DESCRIPTION2",
+                  "line": 213,
+                  "expression": "",
+                  "group": "Insert",
+                  "upstream": [
+                    [
+                      {
+                        "instance": "EXPTRANS",
+                        "port": "DESCRIPTION",
+                        "line": 168,
+                        "expression": "DESCRIPTION",
+                        "group": "",
+                        "upstream": [
+                          [
+                            {
+                              "instance": "SQ_demo_source1",
+                              "port": "DESCRIPTION",
+                              "line": 149,
+                              "expression": "",
+                              "group": "",
+                              "upstream": [
+                                [
+                                  {
+                                    "instance": "demo_source1",
+                                    "port": "DESCRIPTION",
+                                    "line": 20,
+                                    "expression": "",
+                                    "group": "",
+                                    "upstream": []
+                                  }
+                                ]
+                              ]
+                            }
+                          ]
+                        ]
+                      }
+                    ]
+                  ]
+                }
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "target_column": "SHORT_NAME",
+        "chain": [
+          {
+            "instance": "demo_target1_INS",
+            "port": "SHORT_NAME",
+            "line": 87,
+            "expression": "",
+            "group": "",
+            "upstream": [
+              [
+                {
+                  "instance": "RTRTRANS",
+                  "port": "SHORT_NAME2",
+                  "line": 214,
+                  "expression": "",
+                  "group": "Insert",
+                  "upstream": [
+                    [
+                      {
+                        "instance": "EXPTRANS",
+                        "port": "SHORT_NAME",
+                        "line": 169,
+                        "expression": "SHORT_NAME",
+                        "group": "",
+                        "upstream": [
+                          [
+                            {
+                              "instance": "SQ_demo_source1",
+                              "port": "SHORT_NAME",
+                              "line": 150,
+                              "expression": "",
+                              "group": "",
+                              "upstream": [
+                                [
+                                  {
+                                    "instance": "demo_source1",
+                                    "port": "SHORT_NAME",
+                                    "line": 21,
+                                    "expression": "",
+                                    "group": "",
+                                    "upstream": []
+                                  }
+                                ]
+                              ]
+                            }
+                          ]
+                        ]
+                      }
+                    ]
+                  ]
+                }
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "target_column": "CREATED_BY",
+        "chain": [
+          {
+            "instance": "demo_target1_INS",
+            "port": "CREATED_BY",
+            "line": 88,
+            "expression": "",
+            "group": "",
+            "upstream": [
+              [
+                {
+                  "instance": "RTRTRANS",
+                  "port": "o_CREATED_BY1",
+                  "line": 222,
+                  "expression": "",
+                  "group": "Insert",
+                  "upstream": [
+                    [
+                      {
+                        "instance": "EXPTRANS",
+                        "port": "o_CREATED_BY",
+                        "line": 180,
+                        "expression": "'IDWUSER'",
+                        "group": "",
+                        "upstream": []
+                      }
+                    ]
+                  ]
+                }
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "target_column": "CREATED_TIME",
+        "chain": [
+          {
+            "instance": "demo_target1_INS",
+            "port": "CREATED_TIME",
+            "line": 89,
+            "expression": "",
+            "group": "",
+            "upstream": [
+              [
+                {
+                  "instance": "RTRTRANS",
+                  "port": "o_CREATED_TIME1",
+                  "line": 223,
+                  "expression": "",
+                  "group": "Insert",
+                  "upstream": [
+                    [
+                      {
+                        "instance": "EXPTRANS",
+                        "port": "o_CREATED_TIME",
+                        "line": 181,
+                        "expression": "SYSDATE",
+                        "group": "",
+                        "upstream": []
+                      }
+                    ]
+                  ]
+                }
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "target_column": "UPDATED_BY",
+        "chain": [
+          {
+            "instance": "demo_target1_INS",
+            "port": "UPDATED_BY",
+            "line": 90,
+            "expression": "",
+            "group": "",
+            "upstream": []
+          }
+        ]
+      },
+      {
+        "target_column": "UPDATED_TIME",
+        "chain": [
+          {
+            "instance": "demo_target1_INS",
+            "port": "UPDATED_TIME",
+            "line": 91,
+            "expression": "",
+            "group": "",
+            "upstream": []
+          }
+        ]
+      },
+      {
+        "target_column": "ACTIVE_FLAG",
+        "chain": [
+          {
+            "instance": "demo_target1_INS",
+            "port": "ACTIVE_FLAG",
+            "line": 92,
+            "expression": "",
+            "group": "",
+            "upstream": []
+          }
+        ]
+      },
+      {
+        "target_column": "START_DATE",
+        "chain": [
+          {
+            "instance": "demo_target1_INS",
+            "port": "START_DATE",
+            "line": 93,
+            "expression": "",
+            "group": "",
+            "upstream": []
+          }
+        ]
+      },
+      {
+        "target_column": "END_DATE",
+        "chain": [
+          {
+            "instance": "demo_target1_INS",
+            "port": "END_DATE",
+            "line": 94,
+            "expression": "",
+            "group": "",
+            "upstream": []
+          }
+        ]
+      }
+    ],
+    "demo_target6": [
+      {
+        "target_column": "ACCT_ID",
+        "chain": [
+          {
+            "instance": "demo_target6",
+            "port": "ACCT_ID",
+            "line": 111,
+            "expression": "",
+            "group": "",
+            "upstream": [
+              [
+                {
+                  "instance": "agg_TRANS",
+                  "port": "ACCT_ID",
+                  "line": 452,
+                  "expression": "ACCT_ID",
+                  "group": "",
+                  "upstream": [
+                    [
+                      {
+                        "instance": "rtr_TRANS",
+                        "port": "ACCT_ID1",
+                        "line": 688,
+                        "expression": "",
+                        "group": "demo_target6_GRP",
+                        "upstream": [
+                          [
+                            {
+                              "instance": "exp_TRANS1",
+                              "port": "ACCT_ID",
+                              "line": 473,
+                              "expression": "ACCT_ID",
+                              "group": "",
+                              "upstream": [
+                                [
+                                  {
+                                    "instance": "exp_TRANS",
+                                    "port": "ACCT_ID",
+                                    "line": 603,
+                                    "expression": "ACCT_ID",
+                                    "group": "",
+                                    "upstream": [
+                                      [
+                                        {
+                                          "instance": "sq_demo_source4",
+                                          "port": "ACCT_ID",
+                                          "line": 566,
+                                          "expression": "",
+                                          "group": "",
+                                          "upstream": [
+                                            [
+                                              {
+                                                "instance": "demo_source4",
+                                                "port": "ACCT_ID",
+                                                "line": 24,
+                                                "expression": "",
+                                                "group": "",
+                                                "upstream": []
+                                              }
+                                            ]
+                                          ]
+                                        }
+                                      ]
+                                    ]
+                                  }
+                                ]
+                              ]
+                            }
+                          ]
+                        ]
+                      }
+                    ]
+                  ]
+                }
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "target_column": "ACCT_TYP",
+        "chain": [
+          {
+            "instance": "demo_target6",
+            "port": "ACCT_TYP",
+            "line": 98,
+            "expression": "",
+            "group": "",
+            "upstream": [
+              [
+                {
+                  "instance": "agg_TRANS",
+                  "port": "o_acc_trim",
+                  "line": 453,
+                  "expression": "o_acc_trim",
+                  "group": "",
+                  "upstream": [
+                    [
+                      {
+                        "instance": "rtr_TRANS",
+                        "port": "o_acc_trim1",
+                        "line": 690,
+                        "expression": "",
+                        "group": "demo_target6_GRP",
+                        "upstream": [
+                          [
+                            {
+                              "instance": "exp_TRANS1",
+                              "port": "o_acc_trim",
+                              "line": 475,
+                              "expression": "o_acc_trim",
+                              "group": "",
+                              "upstream": [
+                                [
+                                  {
+                                    "instance": "exp_TRANS",
+                                    "port": "o_acc_trim",
+                                    "line": 606,
+                                    "expression": "RTRIM(ACCT_TYP)",
+                                    "group": "",
+                                    "upstream": []
+                                  }
+                                ]
+                              ]
+                            }
+                          ]
+                        ]
+                      }
+                    ]
+                  ]
+                }
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "target_column": "ACCT_DESC",
+        "chain": [
+          {
+            "instance": "demo_target6",
+            "port": "ACCT_DESC",
+            "line": 99,
+            "expression": "",
+            "group": "",
+            "upstream": [
+              [
+                {
+                  "instance": "agg_TRANS",
+                  "port": "o_ACCT_DESC",
+                  "line": 443,
+                  "expression": "o_ACCT_DESC",
+                  "group": "",
+                  "upstream": [
+                    [
+                      {
+                        "instance": "rtr_TRANS",
+                        "port": "o_ACCT_DESC1",
+                        "line": 698,
+                        "expression": "",
+                        "group": "demo_target6_GRP",
+                        "upstream": [
+                          [
+                            {
+                              "instance": "exp_TRANS1",
+                              "port": "o_ACCT_DESC",
+                              "line": 479,
+                              "expression": "RTRIM(ACCT_DESC)",
+                              "group": "",
+                              "upstream": []
+                            }
+                          ]
+                        ]
+                      }
+                    ]
+                  ]
+                }
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "target_column": "CR8_DT",
+        "chain": [
+          {
+            "instance": "demo_target6",
+            "port": "CR8_DT",
+            "line": 100,
+            "expression": "",
+            "group": "",
+            "upstream": [
+              [
+                {
+                  "instance": "agg_TRANS",
+                  "port": "CR8_DT",
+                  "line": 450,
+                  "expression": "CR8_DT",
+                  "group": "",
+                  "upstream": [
+                    [
+                      {
+                        "instance": "rtr_TRANS",
+                        "port": "CR8_DT1",
+                        "line": 699,
+                        "expression": "",
+                        "group": "demo_target6_GRP",
+                        "upstream": [
+                          [
+                            {
+                              "instance": "exp_TRANS1",
+                              "port": "CR8_DT",
+                              "line": 474,
+                              "expression": "CR8_DT",
+                              "group": "",
+                              "upstream": [
+                                [
+                                  {
+                                    "instance": "exp_TRANS",
+                                    "port": "CR8_DT",
+                                    "line": 604,
+                                    "expression": "CR8_DT",
+                                    "group": "",
+                                    "upstream": [
+                                      [
+                                        {
+                                          "instance": "sq_demo_source4",
+                                          "port": "CR8_DT",
+                                          "line": 570,
+                                          "expression": "",
+                                          "group": "",
+                                          "sql_override": "SYSTIMESTAMP (positional SQL override)",
+                                          "upstream": [
+                                            [
+                                              {
+                                                "instance": "demo_source4",
+                                                "port": "CR8_DT",
+                                                "line": 28,
+                                                "expression": "",
+                                                "group": "",
+                                                "upstream": []
+                                              }
+                                            ]
+                                          ]
+                                        }
+                                      ]
+                                    ]
+                                  }
+                                ]
+                              ]
+                            }
+                          ]
+                        ]
+                      }
+                    ]
+                  ]
+                }
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "target_column": "CRDT_LN",
+        "chain": [
+          {
+            "instance": "demo_target6",
+            "port": "CRDT_LN",
+            "line": 101,
+            "expression": "",
+            "group": "",
+            "upstream": [
+              [
+                {
+                  "instance": "agg_TRANS",
+                  "port": "o_crdt_trim",
+                  "line": 445,
+                  "expression": "o_crdt_trim",
+                  "group": "",
+                  "upstream": [
+                    [
+                      {
+                        "instance": "rtr_TRANS",
+                        "port": "o_crdt_trim1",
+                        "line": 700,
+                        "expression": "",
+                        "group": "demo_target6_GRP",
+                        "upstream": [
+                          [
+                            {
+                              "instance": "exp_TRANS1",
+                              "port": "o_crdt_trim",
+                              "line": 476,
+                              "expression": "o_crdt_trim",
+                              "group": "",
+                              "upstream": [
+                                [
+                                  {
+                                    "instance": "exp_TRANS",
+                                    "port": "o_crdt_trim",
+                                    "line": 607,
+                                    "expression": "LTRIM(CRDT_LN)",
+                                    "group": "",
+                                    "upstream": []
+                                  }
+                                ]
+                              ]
+                            }
+                          ]
+                        ]
+                      }
+                    ]
+                  ]
+                }
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "target_column": "CLSR_DT",
+        "chain": [
+          {
+            "instance": "demo_target6",
+            "port": "CLSR_DT",
+            "line": 102,
+            "expression": "",
+            "group": "",
+            "upstream": [
+              [
+                {
+                  "instance": "agg_TRANS",
+                  "port": "CLSR_DT",
+                  "line": 446,
+                  "expression": "CLSR_DT",
+                  "group": "",
+                  "upstream": [
+                    [
+                      {
+                        "instance": "rtr_TRANS",
+                        "port": "CLSR_DT1",
+                        "line": 696,
+                        "expression": "",
+                        "group": "demo_target6_GRP",
+                        "upstream": [
+                          [
+                            {
+                              "instance": "exp_TRANS1",
+                              "port": "CLSR_DT",
+                              "line": 464,
+                              "expression": "CLSR_DT",
+                              "group": "",
+                              "upstream": [
+                                [
+                                  {
+                                    "instance": "exp_TRANS",
+                                    "port": "CLSR_DT",
+                                    "line": 594,
+                                    "expression": "CLSR_DT",
+                                    "group": "",
+                                    "upstream": [
+                                      [
+                                        {
+                                          "instance": "sq_demo_source4",
+                                          "port": "CLSR_DT",
+                                          "line": 571,
+                                          "expression": "",
+                                          "group": "",
+                                          "upstream": [
+                                            [
+                                              {
+                                                "instance": "demo_source4",
+                                                "port": "CLSR_DT",
+                                                "line": 29,
+                                                "expression": "",
+                                                "group": "",
+                                                "upstream": []
+                                              }
+                                            ]
+                                          ]
+                                        }
+                                      ]
+                                    ]
+                                  }
+                                ]
+                              ]
+                            }
+                          ]
+                        ]
+                      }
+                    ]
+                  ]
+                }
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "target_column": "ACCT_STAT_CD",
+        "chain": [
+          {
+            "instance": "demo_target6",
+            "port": "ACCT_STAT_CD",
+            "line": 103,
+            "expression": "",
+            "group": "",
+            "upstream": [
+              [
+                {
+                  "instance": "agg_TRANS",
+                  "port": "ACCT_STAT_CD",
+                  "line": 448,
+                  "expression": "ACCT_STAT_CD",
+                  "group": "",
+                  "upstream": [
+                    [
+                      {
+                        "instance": "rtr_TRANS",
+                        "port": "ACCT_STAT_CD1",
+                        "line": 697,
+                        "expression": "",
+                        "group": "demo_target6_GRP",
+                        "upstream": [
+                          [
+                            {
+                              "instance": "exp_TRANS1",
+                              "port": "ACCT_STAT_CD",
+                              "line": 469,
+                              "expression": "ACCT_STAT_CD",
+                              "group": "",
+                              "upstream": [
+                                [
+                                  {
+                                    "instance": "exp_TRANS",
+                                    "port": "ACCT_STAT_CD",
+                                    "line": 599,
+                                    "expression": "ACCT_STAT_CD",
+                                    "group": "",
+                                    "upstream": [
+                                      [
+                                        {
+                                          "instance": "sq_demo_source4",
+                                          "port": "ACCT_STAT_CD",
+                                          "line": 572,
+                                          "expression": "",
+                                          "group": "",
+                                          "upstream": [
+                                            [
+                                              {
+                                                "instance": "demo_source4",
+                                                "port": "ACCT_STAT_CD",
+                                                "line": 30,
+                                                "expression": "",
+                                                "group": "",
+                                                "upstream": []
+                                              }
+                                            ]
+                                          ]
+                                        }
+                                      ]
+                                    ]
+                                  }
+                                ]
+                              ]
+                            }
+                          ]
+                        ]
+                      }
+                    ]
+                  ]
+                }
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "target_column": "TX_ID",
+        "chain": [
+          {
+            "instance": "demo_target6",
+            "port": "TX_ID",
+            "line": 104,
+            "expression": "",
+            "group": "",
+            "upstream": [
+              [
+                {
+                  "instance": "agg_TRANS",
+                  "port": "TX_ID",
+                  "line": 447,
+                  "expression": "TX_ID",
+                  "group": "",
+                  "upstream": [
+                    [
+                      {
+                        "instance": "rtr_TRANS",
+                        "port": "TX_ID1",
+                        "line": 692,
+                        "expression": "",
+                        "group": "demo_target6_GRP",
+                        "upstream": [
+                          [
+                            {
+                              "instance": "exp_TRANS1",
+                              "port": "TX_ID",
+                              "line": 470,
+                              "expression": "TX_ID",
+                              "group": "",
+                              "upstream": [
+                                [
+                                  {
+                                    "instance": "exp_TRANS",
+                                    "port": "TX_ID",
+                                    "line": 600,
+                                    "expression": "TX_ID",
+                                    "group": "",
+                                    "upstream": [
+                                      [
+                                        {
+                                          "instance": "sq_demo_source4",
+                                          "port": "TX_ID",
+                                          "line": 573,
+                                          "expression": "",
+                                          "group": "",
+                                          "upstream": [
+                                            [
+                                              {
+                                                "instance": "demo_source3",
+                                                "port": "TX_ID",
+                                                "line": 33,
+                                                "expression": "",
+                                                "group": "",
+                                                "upstream": []
+                                              }
+                                            ]
+                                          ]
+                                        }
+                                      ]
+                                    ]
+                                  }
+                                ]
+                              ]
+                            }
+                          ]
+                        ]
+                      }
+                    ]
+                  ]
+                }
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "target_column": "ACCT_KEY",
+        "chain": [
+          {
+            "instance": "demo_target6",
+            "port": "ACCT_KEY",
+            "line": 105,
+            "expression": "",
+            "group": "",
+            "upstream": [
+              [
+                {
+                  "instance": "SEQ_GEN",
+                  "port": "NEXTVAL",
+                  "line": 430,
+                  "expression": "",
+                  "group": "",
+                  "upstream": []
+                }
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "target_column": "TX_DTTM",
+        "chain": [
+          {
+            "instance": "demo_target6",
+            "port": "TX_DTTM",
+            "line": 106,
+            "expression": "",
+            "group": "",
+            "upstream": [
+              [
+                {
+                  "instance": "agg_TRANS",
+                  "port": "TX_DTTM",
+                  "line": 449,
+                  "expression": "TX_DTTM",
+                  "group": "",
+                  "upstream": [
+                    [
+                      {
+                        "instance": "rtr_TRANS",
+                        "port": "TX_DTTM1",
+                        "line": 691,
+                        "expression": "",
+                        "group": "demo_target6_GRP",
+                        "upstream": [
+                          [
+                            {
+                              "instance": "exp_TRANS1",
+                              "port": "TX_DTTM",
+                              "line": 465,
+                              "expression": "TX_DTTM",
+                              "group": "",
+                              "upstream": [
+                                [
+                                  {
+                                    "instance": "exp_TRANS",
+                                    "port": "TX_DTTM",
+                                    "line": 595,
+                                    "expression": "TX_DTTM",
+                                    "group": "",
+                                    "upstream": [
+                                      [
+                                        {
+                                          "instance": "sq_demo_source4",
+                                          "port": "TX_DTTM",
+                                          "line": 575,
+                                          "expression": "",
+                                          "group": "",
+                                          "upstream": [
+                                            [
+                                              {
+                                                "instance": "demo_source3",
+                                                "port": "TX_DTTM",
+                                                "line": 37,
+                                                "expression": "",
+                                                "group": "",
+                                                "upstream": []
+                                              }
+                                            ]
+                                          ]
+                                        }
+                                      ]
+                                    ]
+                                  }
+                                ]
+                              ]
+                            }
+                          ]
+                        ]
+                      }
+                    ]
+                  ]
+                }
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "target_column": "TX_AMT",
+        "chain": [
+          {
+            "instance": "demo_target6",
+            "port": "TX_AMT",
+            "line": 107,
+            "expression": "",
+            "group": "",
+            "upstream": [
+              [
+                {
+                  "instance": "agg_TRANS",
+                  "port": "o_TX_AMT",
+                  "line": 454,
+                  "expression": "SUM(TX_AMT)",
+                  "group": "",
+                  "upstream": []
+                }
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "target_column": "TX_TYPE_CD",
+        "chain": [
+          {
+            "instance": "demo_target6",
+            "port": "TX_TYPE_CD",
+            "line": 108,
+            "expression": "",
+            "group": "",
+            "upstream": [
+              [
+                {
+                  "instance": "agg_TRANS",
+                  "port": "o_ACCT_ID",
+                  "line": 451,
+                  "expression": "o_ACCT_ID",
+                  "group": "",
+                  "upstream": [
+                    [
+                      {
+                        "instance": "rtr_TRANS",
+                        "port": "o_ACCT_ID1",
+                        "line": 689,
+                        "expression": "",
+                        "group": "demo_target6_GRP",
+                        "upstream": [
+                          [
+                            {
+                              "instance": "exp_TRANS1",
+                              "port": "o_ACCT_ID",
+                              "line": 477,
+                              "expression": "o_ACCT_ID",
+                              "group": "",
+                              "upstream": [
+                                [
+                                  {
+                                    "instance": "exp_TRANS",
+                                    "port": "o_ACCT_ID",
+                                    "line": 608,
+                                    "expression": ":LKP.lkp_TRANS1(ACCT_ID)",
+                                    "group": "",
+                                    "unconnected_lookup": {
+                                      "call": ":LKP.lkp_TRANS1(ACCT_ID)",
+                                      "table": "lkp_demo_source3",
+                                      "port": "TX_TYPE_CD",
+                                      "line": 608
+                                    },
+                                    "upstream": []
+                                  }
+                                ]
+                              ]
+                            }
+                          ]
+                        ]
+                      }
+                    ]
+                  ]
+                }
+              ]
+            ]
+          }
+        ]
+      }
+    ],
+    "demo_target5": [
+      {
+        "target_column": "ACCT_ID",
+        "chain": [
+          {
+            "instance": "demo_target5",
+            "port": "ACCT_ID",
+            "line": 111,
+            "expression": "",
+            "group": "",
+            "upstream": [
+              [
+                {
+                  "instance": "rtr_TRANS",
+                  "port": "ACCT_ID2",
+                  "line": 704,
+                  "expression": "",
+                  "group": "demo_target5_GRP",
+                  "upstream": [
+                    [
+                      {
+                        "instance": "exp_TRANS1",
+                        "port": "ACCT_ID",
+                        "line": 473,
+                        "expression": "ACCT_ID",
+                        "group": "",
+                        "upstream": [
+                          [
+                            {
+                              "instance": "exp_TRANS",
+                              "port": "ACCT_ID",
+                              "line": 603,
+                              "expression": "ACCT_ID",
+                              "group": "",
+                              "upstream": [
+                                [
+                                  {
+                                    "instance": "sq_demo_source4",
+                                    "port": "ACCT_ID",
+                                    "line": 566,
+                                    "expression": "",
+                                    "group": "",
+                                    "upstream": [
+                                      [
+                                        {
+                                          "instance": "demo_source4",
+                                          "port": "ACCT_ID",
+                                          "line": 24,
+                                          "expression": "",
+                                          "group": "",
+                                          "upstream": []
+                                        }
+                                      ]
+                                    ]
+                                  }
+                                ]
+                              ]
+                            }
+                          ]
+                        ]
+                      }
+                    ]
+                  ]
+                }
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "target_column": "FIRST_NM",
+        "chain": [
+          {
+            "instance": "demo_target5",
+            "port": "FIRST_NM",
+            "line": 112,
+            "expression": "",
+            "group": "",
+            "upstream": [
+              [
+                {
+                  "instance": "rtr_TRANS",
+                  "port": "FIRST_NM2",
+                  "line": 717,
+                  "expression": "",
+                  "group": "demo_target5_GRP",
+                  "upstream": [
+                    [
+                      {
+                        "instance": "exp_TRANS1",
+                        "port": "FIRST_NM",
+                        "line": 463,
+                        "expression": "FIRST_NM",
+                        "group": "",
+                        "upstream": [
+                          [
+                            {
+                              "instance": "lkp_TRANS2",
+                              "port": "FIRST_NM",
+                              "line": 486,
+                              "expression": "",
+                              "group": "",
+                              "lookup": {
+                                "table": "lkp_demo_source1",
+                                "condition": "ACCT_ID = IN_ACCT_ID",
+                                "policy": "Use Last Value"
+                              },
+                              "lookup_source": {
+                                "instance": "lkp_demo_source1",
+                                "port": "FIRST_NM",
+                                "line": 35
+                              },
+                              "upstream": []
+                            }
+                          ]
+                        ]
+                      }
+                    ]
+                  ]
+                }
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "target_column": "LAST_NM",
+        "chain": [
+          {
+            "instance": "demo_target5",
+            "port": "LAST_NM",
+            "line": 113,
+            "expression": "",
+            "group": "",
+            "upstream": [
+              [
+                {
+                  "instance": "rtr_TRANS",
+                  "port": "LAST_NM2",
+                  "line": 711,
+                  "expression": "",
+                  "group": "demo_target5_GRP",
+                  "upstream": [
+                    [
+                      {
+                        "instance": "exp_TRANS1",
+                        "port": "LAST_NM",
+                        "line": 471,
+                        "expression": "LAST_NM",
+                        "group": "",
+                        "upstream": [
+                          [
+                            {
+                              "instance": "exp_TRANS",
+                              "port": "LAST_NM",
+                              "line": 601,
+                              "expression": "LAST_NM",
+                              "group": "",
+                              "upstream": [
+                                [
+                                  {
+                                    "instance": "sq_demo_source4",
+                                    "port": "LAST_NM",
+                                    "line": 574,
+                                    "expression": "",
+                                    "group": "",
+                                    "upstream": [
+                                      [
+                                        {
+                                          "instance": "demo_source3",
+                                          "port": "LAST_NM",
+                                          "line": 36,
+                                          "expression": "",
+                                          "group": "",
+                                          "upstream": []
+                                        }
+                                      ]
+                                    ]
+                                  }
+                                ]
+                              ]
+                            }
+                          ]
+                        ]
+                      }
+                    ]
+                  ]
+                }
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "target_column": "BAL_AMT",
+        "chain": [
+          {
+            "instance": "demo_target5",
+            "port": "BAL_AMT",
+            "line": 114,
+            "expression": "",
+            "group": "",
+            "upstream": [
+              [
+                {
+                  "instance": "rtr_TRANS",
+                  "port": "BAL_AMT2",
+                  "line": 703,
+                  "expression": "",
+                  "group": "demo_target5_GRP",
+                  "upstream": [
+                    [
+                      {
+                        "instance": "exp_TRANS1",
+                        "port": "BAL_AMT",
+                        "line": 466,
+                        "expression": "BAL_AMT",
+                        "group": "",
+                        "upstream": [
+                          [
+                            {
+                              "instance": "exp_TRANS",
+                              "port": "BAL_AMT",
+                              "line": 596,
+                              "expression": "BAL_AMT",
+                              "group": "",
+                              "upstream": [
+                                [
+                                  {
+                                    "instance": "sq_demo_source4",
+                                    "port": "BAL_AMT",
+                                    "line": 577,
+                                    "expression": "",
+                                    "group": "",
+                                    "upstream": [
+                                      [
+                                        {
+                                          "instance": "demo_source3",
+                                          "port": "BAL_AMT",
+                                          "line": 40,
+                                          "expression": "",
+                                          "group": "",
+                                          "upstream": []
+                                        }
+                                      ]
+                                    ]
+                                  }
+                                ]
+                              ]
+                            }
+                          ]
+                        ]
+                      }
+                    ]
+                  ]
+                }
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "target_column": "CRDT_SCORE",
+        "chain": [
+          {
+            "instance": "demo_target5",
+            "port": "CRDT_SCORE",
+            "line": 115,
+            "expression": "",
+            "group": "",
+            "upstream": [
+              [
+                {
+                  "instance": "rtr_TRANS",
+                  "port": "CRDT_SCORE2",
+                  "line": 718,
+                  "expression": "",
+                  "group": "demo_target5_GRP",
+                  "upstream": [
+                    [
+                      {
+                        "instance": "exp_TRANS1",
+                        "port": "CRDT_SCORE",
+                        "line": 478,
+                        "expression": "CRDT_SCORE",
+                        "group": "",
+                        "upstream": [
+                          [
+                            {
+                              "instance": "lkp_TRANS3",
+                              "port": "CRDT_SCORE",
+                              "line": 614,
+                              "expression": "",
+                              "group": "",
+                              "lookup": {
+                                "table": "lkp_demo_source2",
+                                "condition": "CUST_ID = IN_CUST_ID",
+                                "policy": "Use Last Value"
+                              },
+                              "lookup_source": {
+                                "instance": "lkp_demo_source2",
+                                "port": "CRDT_SCORE",
+                                "line": 42
+                              },
+                              "upstream": []
+                            }
+                          ]
+                        ]
+                      }
+                    ]
+                  ]
+                }
+              ]
+            ]
+          }
+        ]
+      }
+    ],
+    "demo_target3": [
+      {
+        "target_column": "PRODUCT_ID",
+        "chain": [
+          {
+            "instance": "demo_target3",
+            "port": "PRODUCT_ID",
+            "line": 118,
+            "expression": "",
+            "group": "",
+            "upstream": [
+              [
+                {
+                  "instance": "exp_TRANS2",
+                  "port": "PRODUCT_ID",
+                  "line": 659,
+                  "expression": "PRODUCT_ID",
+                  "group": "",
+                  "upstream": [
+                    [
+                      {
+                        "instance": "SQ_demo_source5",
+                        "port": "PRODUCT_ID",
+                        "line": 738,
+                        "expression": "",
+                        "group": "",
+                        "upstream": [
+                          [
+                            {
+                              "instance": "demo_source5",
+                              "port": "PRODUCT_ID",
+                              "line": 55,
+                              "expression": "",
+                              "group": "",
+                              "upstream": []
+                            }
+                          ]
+                        ]
+                      }
+                    ]
+                  ]
+                }
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "target_column": "PRODUCT_NM",
+        "chain": [
+          {
+            "instance": "demo_target3",
+            "port": "PRODUCT_NM",
+            "line": 119,
+            "expression": "",
+            "group": "",
+            "upstream": [
+              [
+                {
+                  "instance": "exp_TRANS2",
+                  "port": "PRODUCT_NM",
+                  "line": 660,
+                  "expression": "PRODUCT_NM",
+                  "group": "",
+                  "upstream": [
+                    [
+                      {
+                        "instance": "SQ_demo_source5",
+                        "port": "PRODUCT_NM",
+                        "line": 739,
+                        "expression": "",
+                        "group": "",
+                        "upstream": [
+                          [
+                            {
+                              "instance": "demo_source5",
+                              "port": "PRODUCT_NM",
+                              "line": 56,
+                              "expression": "",
+                              "group": "",
+                              "upstream": []
+                            }
+                          ]
+                        ]
+                      }
+                    ]
+                  ]
+                }
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "target_column": "PRODUCT_NO",
+        "chain": [
+          {
+            "instance": "demo_target3",
+            "port": "PRODUCT_NO",
+            "line": 120,
+            "expression": "",
+            "group": "",
+            "upstream": [
+              [
+                {
+                  "instance": "exp_TRANS2",
+                  "port": "PRODUCT_NO",
+                  "line": 654,
+                  "expression": "PRODUCT_NO",
+                  "group": "",
+                  "upstream": [
+                    [
+                      {
+                        "instance": "SQ_demo_source5",
+                        "port": "PRODUCT_NO",
+                        "line": 740,
+                        "expression": "",
+                        "group": "",
+                        "upstream": [
+                          [
+                            {
+                              "instance": "demo_source5",
+                              "port": "PRODUCT_NO",
+                              "line": 57,
+                              "expression": "",
+                              "group": "",
+                              "upstream": []
+                            }
+                          ]
+                        ]
+                      }
+                    ]
+                  ]
+                }
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "target_column": "COLOR",
+        "chain": [
+          {
+            "instance": "demo_target3",
+            "port": "COLOR",
+            "line": 121,
+            "expression": "",
+            "group": "",
+            "upstream": [
+              [
+                {
+                  "instance": "exp_TRANS2",
+                  "port": "COLOR",
+                  "line": 656,
+                  "expression": "COLOR",
+                  "group": "",
+                  "upstream": [
+                    [
+                      {
+                        "instance": "SQ_demo_source5",
+                        "port": "COLOR",
+                        "line": 741,
+                        "expression": "",
+                        "group": "",
+                        "upstream": [
+                          [
+                            {
+                              "instance": "demo_source5",
+                              "port": "COLOR",
+                              "line": 58,
+                              "expression": "",
+                              "group": "",
+                              "upstream": []
+                            }
+                          ]
+                        ]
+                      }
+                    ]
+                  ]
+                }
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "target_column": "STD_COST",
+        "chain": [
+          {
+            "instance": "demo_target3",
+            "port": "STD_COST",
+            "line": 122,
+            "expression": "",
+            "group": "",
+            "upstream": [
+              [
+                {
+                  "instance": "exp_TRANS2",
+                  "port": "STD_COST",
+                  "line": 655,
+                  "expression": "STD_COST",
+                  "group": "",
+                  "upstream": [
+                    [
+                      {
+                        "instance": "SQ_demo_source5",
+                        "port": "STD_COST",
+                        "line": 742,
+                        "expression": "",
+                        "group": "",
+                        "upstream": [
+                          [
+                            {
+                              "instance": "demo_source5",
+                              "port": "STD_COST",
+                              "line": 59,
+                              "expression": "",
+                              "group": "",
+                              "upstream": []
+                            }
+                          ]
+                        ]
+                      }
+                    ]
+                  ]
+                }
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "target_column": "LIST_PRICE",
+        "chain": [
+          {
+            "instance": "demo_target3",
+            "port": "LIST_PRICE",
+            "line": 123,
+            "expression": "",
+            "group": "",
+            "upstream": [
+              [
+                {
+                  "instance": "exp_TRANS2",
+                  "port": "LIST_PRICE",
+                  "line": 661,
+                  "expression": "LIST_PRICE",
+                  "group": "",
+                  "upstream": [
+                    [
+                      {
+                        "instance": "SQ_demo_source5",
+                        "port": "LIST_PRICE",
+                        "line": 743,
+                        "expression": "",
+                        "group": "",
+                        "upstream": [
+                          [
+                            {
+                              "instance": "demo_source5",
+                              "port": "LIST_PRICE",
+                              "line": 60,
+                              "expression": "",
+                              "group": "",
+                              "upstream": []
+                            }
+                          ]
+                        ]
+                      }
+                    ]
+                  ]
+                }
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "target_column": "SELL_ST_DT",
+        "chain": [
+          {
+            "instance": "demo_target3",
+            "port": "SELL_ST_DT",
+            "line": 124,
+            "expression": "",
+            "group": "",
+            "upstream": [
+              [
+                {
+                  "instance": "exp_TRANS2",
+                  "port": "o_SELL_ST_DT",
+                  "line": 662,
+                  "expression": "TO_DATE(TO_CHAR(SYSDATE),'DD/MM/YYYY')",
+                  "group": "",
+                  "upstream": []
+                }
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "target_column": "SELL_ED_DT",
+        "chain": [
+          {
+            "instance": "demo_target3",
+            "port": "SELL_ED_DT",
+            "line": 125,
+            "expression": "",
+            "group": "",
+            "upstream": [
+              [
+                {
+                  "instance": "exp_TRANS2",
+                  "port": "o_SELL_ED_DT",
+                  "line": 663,
+                  "expression": "TO_DATE(SELL_ED_DT,'DD/MM/YYYY')",
+                  "group": "",
+                  "upstream": []
+                }
+              ]
+            ]
+          }
+        ]
+      }
+    ],
+    "demo_target21": [
+      {
+        "target_column": "Title",
+        "chain": [
+          {
+            "instance": "demo_target21",
+            "port": "Title",
+            "line": 128,
+            "expression": "",
+            "group": "",
+            "upstream": [
+              [
+                {
+                  "instance": "RTRTRANS",
+                  "port": "Title3",
+                  "line": 1,
+                  "expression": "",
+                  "group": "NEWGROUP2",
+                  "upstream": [
+                    [
+                      {
+                        "instance": "EXPTRANS",
+                        "port": "Title",
+                        "line": 1,
+                        "expression": "Title",
+                        "group": "",
+                        "upstream": [
+                          [
+                            {
+                              "instance": "SQ_demo_source2",
+                              "port": "Title",
+                              "line": 902,
+                              "expression": "",
+                              "group": "",
+                              "upstream": [
+                                [
+                                  {
+                                    "instance": "demo_source2",
+                                    "port": "Title",
+                                    "line": 65,
+                                    "expression": "",
+                                    "group": "",
+                                    "upstream": []
+                                  }
+                                ]
+                              ]
+                            }
+                          ]
+                        ]
+                      }
+                    ]
+                  ]
+                }
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "target_column": "Gender",
+        "chain": [
+          {
+            "instance": "demo_target21",
+            "port": "Gender",
+            "line": 129,
+            "expression": "",
+            "group": "",
+            "upstream": [
+              [
+                {
+                  "instance": "RTRTRANS",
+                  "port": "Gender_Code3",
+                  "line": 1,
+                  "expression": "",
+                  "group": "NEWGROUP2",
+                  "upstream": [
+                    [
+                      {
+                        "instance": "EXPTRANS",
+                        "port": "Gender_Code",
+                        "line": 1,
+                        "expression": "Gender_Code",
+                        "group": "",
+                        "upstream": [
+                          [
+                            {
+                              "instance": "SQ_demo_source2",
+                              "port": "Gender_Code",
+                              "line": 909,
+                              "expression": "",
+                              "group": "",
+                              "upstream": [
+                                [
+                                  {
+                                    "instance": "demo_source2",
+                                    "port": "Gender_Code",
+                                    "line": 72,
+                                    "expression": "",
+                                    "group": "",
+                                    "upstream": []
+                                  }
+                                ]
+                              ]
+                            }
+                          ]
+                        ]
+                      }
+                    ]
+                  ]
+                }
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "target_column": "First_Name",
+        "chain": [
+          {
+            "instance": "demo_target21",
+            "port": "First_Name",
+            "line": 130,
+            "expression": "",
+            "group": "",
+            "upstream": [
+              [
+                {
+                  "instance": "RTRTRANS",
+                  "port": "First_Name3",
+                  "line": 1,
+                  "expression": "",
+                  "group": "NEWGROUP2",
+                  "upstream": [
+                    [
+                      {
+                        "instance": "EXPTRANS",
+                        "port": "First_Name",
+                        "line": 1,
+                        "expression": "First_Name",
+                        "group": "",
+                        "upstream": [
+                          [
+                            {
+                              "instance": "SQ_demo_source2",
+                              "port": "First_Name",
+                              "line": 903,
+                              "expression": "",
+                              "group": "",
+                              "upstream": [
+                                [
+                                  {
+                                    "instance": "demo_source2",
+                                    "port": "First_Name",
+                                    "line": 66,
+                                    "expression": "",
+                                    "group": "",
+                                    "upstream": []
+                                  }
+                                ]
+                              ]
+                            }
+                          ]
+                        ]
+                      }
+                    ]
+                  ]
+                }
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "target_column": "Middle_Name",
+        "chain": [
+          {
+            "instance": "demo_target21",
+            "port": "Middle_Name",
+            "line": 131,
+            "expression": "",
+            "group": "",
+            "upstream": [
+              [
+                {
+                  "instance": "RTRTRANS",
+                  "port": "Middle_Name3",
+                  "line": 1,
+                  "expression": "",
+                  "group": "NEWGROUP2",
+                  "upstream": [
+                    [
+                      {
+                        "instance": "EXPTRANS",
+                        "port": "Middle_Name",
+                        "line": 1,
+                        "expression": "Middle_Name",
+                        "group": "",
+                        "upstream": [
+                          [
+                            {
+                              "instance": "SQ_demo_source2",
+                              "port": "Middle_Name",
+                              "line": 904,
+                              "expression": "",
+                              "group": "",
+                              "upstream": [
+                                [
+                                  {
+                                    "instance": "demo_source2",
+                                    "port": "Middle_Name",
+                                    "line": 67,
+                                    "expression": "",
+                                    "group": "",
+                                    "upstream": []
+                                  }
+                                ]
+                              ]
+                            }
+                          ]
+                        ]
+                      }
+                    ]
+                  ]
+                }
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "target_column": "Last_Name",
+        "chain": [
+          {
+            "instance": "demo_target21",
+            "port": "Last_Name",
+            "line": 132,
+            "expression": "",
+            "group": "",
+            "upstream": [
+              [
+                {
+                  "instance": "RTRTRANS",
+                  "port": "Last_Name3",
+                  "line": 1,
+                  "expression": "",
+                  "group": "NEWGROUP2",
+                  "upstream": [
+                    [
+                      {
+                        "instance": "EXPTRANS",
+                        "port": "Last_Name",
+                        "line": 1,
+                        "expression": "Last_Name",
+                        "group": "",
+                        "upstream": [
+                          [
+                            {
+                              "instance": "SQ_demo_source2",
+                              "port": "Last_Name",
+                              "line": 905,
+                              "expression": "",
+                              "group": "",
+                              "upstream": [
+                                [
+                                  {
+                                    "instance": "demo_source2",
+                                    "port": "Last_Name",
+                                    "line": 68,
+                                    "expression": "",
+                                    "group": "",
+                                    "upstream": []
+                                  }
+                                ]
+                              ]
+                            }
+                          ]
+                        ]
+                      }
+                    ]
+                  ]
+                }
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "target_column": "Member_Identifier",
+        "chain": [
+          {
+            "instance": "demo_target21",
+            "port": "Member_Identifier",
+            "line": 133,
+            "expression": "",
+            "group": "",
+            "upstream": [
+              [
+                {
+                  "instance": "RTRTRANS",
+                  "port": "Member_ID3",
+                  "line": 1,
+                  "expression": "",
+                  "group": "NEWGROUP2",
+                  "upstream": [
+                    [
+                      {
+                        "instance": "EXPTRANS",
+                        "port": "Member_ID",
+                        "line": 1,
+                        "expression": "Member_ID",
+                        "group": "",
+                        "upstream": [
+                          [
+                            {
+                              "instance": "SQ_demo_source2",
+                              "port": "Member_ID",
+                              "line": 906,
+                              "expression": "",
+                              "group": "",
+                              "upstream": [
+                                [
+                                  {
+                                    "instance": "demo_source2",
+                                    "port": "Member_ID",
+                                    "line": 69,
+                                    "expression": "",
+                                    "group": "",
+                                    "upstream": []
+                                  }
+                                ]
+                              ]
+                            }
+                          ]
+                        ]
+                      }
+                    ]
+                  ]
+                }
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "target_column": "Member_Suffix",
+        "chain": [
+          {
+            "instance": "demo_target21",
+            "port": "Member_Suffix",
+            "line": 134,
+            "expression": "",
+            "group": "",
+            "upstream": [
+              [
+                {
+                  "instance": "RTRTRANS",
+                  "port": "Member_Suffix3",
+                  "line": 1,
+                  "expression": "",
+                  "group": "NEWGROUP2",
+                  "upstream": [
+                    [
+                      {
+                        "instance": "EXPTRANS",
+                        "port": "Member_Suffix",
+                        "line": 1,
+                        "expression": "Member_Suffix",
+                        "group": "",
+                        "upstream": [
+                          [
+                            {
+                              "instance": "SQ_demo_source2",
+                              "port": "Member_Suffix",
+                              "line": 907,
+                              "expression": "",
+                              "group": "",
+                              "upstream": [
+                                [
+                                  {
+                                    "instance": "demo_source2",
+                                    "port": "Member_Suffix",
+                                    "line": 70,
+                                    "expression": "",
+                                    "group": "",
+                                    "upstream": []
+                                  }
+                                ]
+                              ]
+                            }
+                          ]
+                        ]
+                      }
+                    ]
+                  ]
+                }
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "target_column": "Date_of_Birth",
+        "chain": [
+          {
+            "instance": "demo_target21",
+            "port": "Date_of_Birth",
+            "line": 135,
+            "expression": "",
+            "group": "",
+            "upstream": [
+              [
+                {
+                  "instance": "RTRTRANS",
+                  "port": "Birth_Date3",
+                  "line": 1,
+                  "expression": "",
+                  "group": "NEWGROUP2",
+                  "upstream": [
+                    [
+                      {
+                        "instance": "EXPTRANS",
+                        "port": "Birth_Date",
+                        "line": 1,
+                        "expression": "Birth_Date",
+                        "group": "",
+                        "upstream": [
+                          [
+                            {
+                              "instance": "SQ_demo_source2",
+                              "port": "Birth_Date",
+                              "line": 908,
+                              "expression": "",
+                              "group": "",
+                              "upstream": [
+                                [
+                                  {
+                                    "instance": "demo_source2",
+                                    "port": "Birth_Date",
+                                    "line": 71,
+                                    "expression": "",
+                                    "group": "",
+                                    "upstream": []
+                                  }
+                                ]
+                              ]
+                            }
+                          ]
+                        ]
+                      }
+                    ]
+                  ]
+                }
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "target_column": "Member_Number",
+        "chain": [
+          {
+            "instance": "demo_target21",
+            "port": "Member_Number",
+            "line": 136,
+            "expression": "",
+            "group": "",
+            "upstream": [
+              [
+                {
+                  "instance": "RTRTRANS",
+                  "port": "Member_Record_Number3",
+                  "line": 1,
+                  "expression": "",
+                  "group": "NEWGROUP2",
+                  "upstream": [
+                    [
+                      {
+                        "instance": "EXPTRANS",
+                        "port": "Member_Record_Number",
+                        "line": 1,
+                        "expression": "Member_Record_Number",
+                        "group": "",
+                        "upstream": [
+                          [
+                            {
+                              "instance": "SQ_demo_source2",
+                              "port": "Member_Record_Number",
+                              "line": 910,
+                              "expression": "",
+                              "group": "",
+                              "upstream": [
+                                [
+                                  {
+                                    "instance": "demo_source2",
+                                    "port": "Member_Record_Number",
+                                    "line": 73,
+                                    "expression": "",
+                                    "group": "",
+                                    "upstream": []
+                                  }
+                                ]
+                              ]
+                            }
+                          ]
+                        ]
+                      }
+                    ]
+                  ]
+                }
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "target_column": "Soc_Number",
+        "chain": [
+          {
+            "instance": "demo_target21",
+            "port": "Soc_Number",
+            "line": 137,
+            "expression": "",
+            "group": "",
+            "upstream": [
+              [
+                {
+                  "instance": "RTRTRANS",
+                  "port": "Social_Security_Number3",
+                  "line": 1,
+                  "expression": "",
+                  "group": "NEWGROUP2",
+                  "upstream": [
+                    [
+                      {
+                        "instance": "EXPTRANS",
+                        "port": "Social_Security_Number",
+                        "line": 1,
+                        "expression": "Social_Security_Number",
+                        "group": "",
+                        "upstream": [
+                          [
+                            {
+                              "instance": "SQ_demo_source2",
+                              "port": "Social_Security_Number",
+                              "line": 911,
+                              "expression": "",
+                              "group": "",
+                              "upstream": [
+                                [
+                                  {
+                                    "instance": "demo_source2",
+                                    "port": "Social_Security_Number",
+                                    "line": 74,
+                                    "expression": "",
+                                    "group": "",
+                                    "upstream": []
+                                  }
+                                ]
+                              ]
+                            }
+                          ]
+                        ]
+                      }
+                    ]
+                  ]
+                }
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "target_column": "Type_Code",
+        "chain": [
+          {
+            "instance": "demo_target21",
+            "port": "Type_Code",
+            "line": 138,
+            "expression": "",
+            "group": "",
+            "upstream": [
+              [
+                {
+                  "instance": "RTRTRANS",
+                  "port": "Member_Type_Code3",
+                  "line": 1,
+                  "expression": "",
+                  "group": "NEWGROUP2",
+                  "upstream": [
+                    [
+                      {
+                        "instance": "EXPTRANS",
+                        "port": "Member_Type_Code",
+                        "line": 1,
+                        "expression": "Member_Type_Code",
+                        "group": "",
+                        "upstream": [
+                          [
+                            {
+                              "instance": "SQ_demo_source2",
+                              "port": "Member_Type_Code",
+                              "line": 912,
+                              "expression": "",
+                              "group": "",
+                              "upstream": [
+                                [
+                                  {
+                                    "instance": "demo_source2",
+                                    "port": "Member_Type_Code",
+                                    "line": 75,
+                                    "expression": "",
+                                    "group": "",
+                                    "upstream": []
+                                  }
+                                ]
+                              ]
+                            }
+                          ]
+                        ]
+                      }
+                    ]
+                  ]
+                }
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "target_column": "Relationship_to_Subscriber_Code",
+        "chain": [
+          {
+            "instance": "demo_target21",
+            "port": "Relationship_to_Subscriber_Code",
+            "line": 139,
+            "expression": "",
+            "group": "",
+            "upstream": [
+              [
+                {
+                  "instance": "RTRTRANS",
+                  "port": "Relationship_to_Subscriber_Code3",
+                  "line": 1,
+                  "expression": "",
+                  "group": "NEWGROUP2",
+                  "upstream": [
+                    [
+                      {
+                        "instance": "EXPTRANS",
+                        "port": "Relationship_to_Subscriber_Code",
+                        "line": 1,
+                        "expression": "Relationship_to_Subscriber_Code",
+                        "group": "",
+                        "upstream": [
+                          [
+                            {
+                              "instance": "SQ_demo_source2",
+                              "port": "Relationship_to_Subscriber_Code",
+                              "line": 914,
+                              "expression": "",
+                              "group": "",
+                              "upstream": [
+                                [
+                                  {
+                                    "instance": "demo_source2",
+                                    "port": "Relationship_to_Subscriber_Code",
+                                    "line": 77,
+                                    "expression": "",
+                                    "group": "",
+                                    "upstream": []
+                                  }
+                                ]
+                              ]
+                            }
+                          ]
+                        ]
+                      }
+                    ]
+                  ]
+                }
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "target_column": "Relationship_to_Subscriber_Code_Label",
+        "chain": [
+          {
+            "instance": "demo_target21",
+            "port": "Relationship_to_Subscriber_Code_Label",
+            "line": 140,
+            "expression": "",
+            "group": "",
+            "upstream": [
+              [
+                {
+                  "instance": "RTRTRANS",
+                  "port": "Relationship_to_Subscriber_Code_Label3",
+                  "line": 1,
+                  "expression": "",
+                  "group": "NEWGROUP2",
+                  "upstream": [
+                    [
+                      {
+                        "instance": "EXPTRANS",
+                        "port": "o_Relationship_to_Subscriber_Code_Label",
+                        "line": 1,
+                        "expression": "iif(ISNULL(Relationship_to_Subscriber_Code_Label),ABORT('Relationship_to_Subscriber_Code_Labe valuel is null'),Relationship_to_Subscriber_Code_Label)",
+                        "group": "",
+                        "upstream": []
+                      }
+                    ]
+                  ]
+                }
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "target_column": "Effective_Date",
+        "chain": [
+          {
+            "instance": "demo_target21",
+            "port": "Effective_Date",
+            "line": 141,
+            "expression": "",
+            "group": "",
+            "upstream": [
+              [
+                {
+                  "instance": "RTRTRANS",
+                  "port": "Original_Effective_Date3",
+                  "line": 1,
+                  "expression": "",
+                  "group": "NEWGROUP2",
+                  "upstream": [
+                    [
+                      {
+                        "instance": "EXPTRANS",
+                        "port": "Original_Effective_Date",
+                        "line": 1,
+                        "expression": "Original_Effective_Date",
+                        "group": "",
+                        "upstream": [
+                          [
+                            {
+                              "instance": "SQ_demo_source2",
+                              "port": "Original_Effective_Date",
+                              "line": 913,
+                              "expression": "",
+                              "group": "",
+                              "upstream": [
+                                [
+                                  {
+                                    "instance": "demo_source2",
+                                    "port": "Original_Effective_Date",
+                                    "line": 76,
+                                    "expression": "",
+                                    "group": "",
+                                    "upstream": []
+                                  }
+                                ]
+                              ]
+                            }
+                          ]
+                        ]
+                      }
+                    ]
+                  ]
+                }
+              ]
+            ]
+          }
+        ]
+      }
+    ],
+    "demo_target2": [
+      {
+        "target_column": "Title",
+        "chain": [
+          {
+            "instance": "demo_target2",
+            "port": "Title",
+            "line": 128,
+            "expression": "",
+            "group": "",
+            "upstream": [
+              [
+                {
+                  "instance": "RTRTRANS",
+                  "port": "Title1",
+                  "line": 1,
+                  "expression": "",
+                  "group": "NEWGROUP1",
+                  "upstream": [
+                    [
+                      {
+                        "instance": "EXPTRANS",
+                        "port": "Title",
+                        "line": 1,
+                        "expression": "Title",
+                        "group": "",
+                        "upstream": [
+                          [
+                            {
+                              "instance": "SQ_demo_source2",
+                              "port": "Title",
+                              "line": 902,
+                              "expression": "",
+                              "group": "",
+                              "upstream": [
+                                [
+                                  {
+                                    "instance": "demo_source2",
+                                    "port": "Title",
+                                    "line": 65,
+                                    "expression": "",
+                                    "group": "",
+                                    "upstream": []
+                                  }
+                                ]
+                              ]
+                            }
+                          ]
+                        ]
+                      }
+                    ]
+                  ]
+                }
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "target_column": "Gender",
+        "chain": [
+          {
+            "instance": "demo_target2",
+            "port": "Gender",
+            "line": 129,
+            "expression": "",
+            "group": "",
+            "upstream": [
+              [
+                {
+                  "instance": "RTRTRANS",
+                  "port": "Gender_Code1",
+                  "line": 1,
+                  "expression": "",
+                  "group": "NEWGROUP1",
+                  "upstream": [
+                    [
+                      {
+                        "instance": "EXPTRANS",
+                        "port": "Gender_Code",
+                        "line": 1,
+                        "expression": "Gender_Code",
+                        "group": "",
+                        "upstream": [
+                          [
+                            {
+                              "instance": "SQ_demo_source2",
+                              "port": "Gender_Code",
+                              "line": 909,
+                              "expression": "",
+                              "group": "",
+                              "upstream": [
+                                [
+                                  {
+                                    "instance": "demo_source2",
+                                    "port": "Gender_Code",
+                                    "line": 72,
+                                    "expression": "",
+                                    "group": "",
+                                    "upstream": []
+                                  }
+                                ]
+                              ]
+                            }
+                          ]
+                        ]
+                      }
+                    ]
+                  ]
+                }
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "target_column": "First_Name",
+        "chain": [
+          {
+            "instance": "demo_target2",
+            "port": "First_Name",
+            "line": 130,
+            "expression": "",
+            "group": "",
+            "upstream": [
+              [
+                {
+                  "instance": "RTRTRANS",
+                  "port": "First_Name1",
+                  "line": 1,
+                  "expression": "",
+                  "group": "NEWGROUP1",
+                  "upstream": [
+                    [
+                      {
+                        "instance": "EXPTRANS",
+                        "port": "First_Name",
+                        "line": 1,
+                        "expression": "First_Name",
+                        "group": "",
+                        "upstream": [
+                          [
+                            {
+                              "instance": "SQ_demo_source2",
+                              "port": "First_Name",
+                              "line": 903,
+                              "expression": "",
+                              "group": "",
+                              "upstream": [
+                                [
+                                  {
+                                    "instance": "demo_source2",
+                                    "port": "First_Name",
+                                    "line": 66,
+                                    "expression": "",
+                                    "group": "",
+                                    "upstream": []
+                                  }
+                                ]
+                              ]
+                            }
+                          ]
+                        ]
+                      }
+                    ]
+                  ]
+                }
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "target_column": "Middle_Name",
+        "chain": [
+          {
+            "instance": "demo_target2",
+            "port": "Middle_Name",
+            "line": 131,
+            "expression": "",
+            "group": "",
+            "upstream": [
+              [
+                {
+                  "instance": "RTRTRANS",
+                  "port": "Middle_Name1",
+                  "line": 1,
+                  "expression": "",
+                  "group": "NEWGROUP1",
+                  "upstream": [
+                    [
+                      {
+                        "instance": "EXPTRANS",
+                        "port": "Middle_Name",
+                        "line": 1,
+                        "expression": "Middle_Name",
+                        "group": "",
+                        "upstream": [
+                          [
+                            {
+                              "instance": "SQ_demo_source2",
+                              "port": "Middle_Name",
+                              "line": 904,
+                              "expression": "",
+                              "group": "",
+                              "upstream": [
+                                [
+                                  {
+                                    "instance": "demo_source2",
+                                    "port": "Middle_Name",
+                                    "line": 67,
+                                    "expression": "",
+                                    "group": "",
+                                    "upstream": []
+                                  }
+                                ]
+                              ]
+                            }
+                          ]
+                        ]
+                      }
+                    ]
+                  ]
+                }
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "target_column": "Last_Name",
+        "chain": [
+          {
+            "instance": "demo_target2",
+            "port": "Last_Name",
+            "line": 132,
+            "expression": "",
+            "group": "",
+            "upstream": [
+              [
+                {
+                  "instance": "RTRTRANS",
+                  "port": "Last_Name1",
+                  "line": 1,
+                  "expression": "",
+                  "group": "NEWGROUP1",
+                  "upstream": [
+                    [
+                      {
+                        "instance": "EXPTRANS",
+                        "port": "Last_Name",
+                        "line": 1,
+                        "expression": "Last_Name",
+                        "group": "",
+                        "upstream": [
+                          [
+                            {
+                              "instance": "SQ_demo_source2",
+                              "port": "Last_Name",
+                              "line": 905,
+                              "expression": "",
+                              "group": "",
+                              "upstream": [
+                                [
+                                  {
+                                    "instance": "demo_source2",
+                                    "port": "Last_Name",
+                                    "line": 68,
+                                    "expression": "",
+                                    "group": "",
+                                    "upstream": []
+                                  }
+                                ]
+                              ]
+                            }
+                          ]
+                        ]
+                      }
+                    ]
+                  ]
+                }
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "target_column": "Member_Identifier",
+        "chain": [
+          {
+            "instance": "demo_target2",
+            "port": "Member_Identifier",
+            "line": 133,
+            "expression": "",
+            "group": "",
+            "upstream": [
+              [
+                {
+                  "instance": "RTRTRANS",
+                  "port": "Member_ID1",
+                  "line": 1,
+                  "expression": "",
+                  "group": "NEWGROUP1",
+                  "upstream": [
+                    [
+                      {
+                        "instance": "EXPTRANS",
+                        "port": "Member_ID",
+                        "line": 1,
+                        "expression": "Member_ID",
+                        "group": "",
+                        "upstream": [
+                          [
+                            {
+                              "instance": "SQ_demo_source2",
+                              "port": "Member_ID",
+                              "line": 906,
+                              "expression": "",
+                              "group": "",
+                              "upstream": [
+                                [
+                                  {
+                                    "instance": "demo_source2",
+                                    "port": "Member_ID",
+                                    "line": 69,
+                                    "expression": "",
+                                    "group": "",
+                                    "upstream": []
+                                  }
+                                ]
+                              ]
+                            }
+                          ]
+                        ]
+                      }
+                    ]
+                  ]
+                }
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "target_column": "Member_Suffix",
+        "chain": [
+          {
+            "instance": "demo_target2",
+            "port": "Member_Suffix",
+            "line": 134,
+            "expression": "",
+            "group": "",
+            "upstream": [
+              [
+                {
+                  "instance": "RTRTRANS",
+                  "port": "Member_Suffix1",
+                  "line": 1,
+                  "expression": "",
+                  "group": "NEWGROUP1",
+                  "upstream": [
+                    [
+                      {
+                        "instance": "EXPTRANS",
+                        "port": "Member_Suffix",
+                        "line": 1,
+                        "expression": "Member_Suffix",
+                        "group": "",
+                        "upstream": [
+                          [
+                            {
+                              "instance": "SQ_demo_source2",
+                              "port": "Member_Suffix",
+                              "line": 907,
+                              "expression": "",
+                              "group": "",
+                              "upstream": [
+                                [
+                                  {
+                                    "instance": "demo_source2",
+                                    "port": "Member_Suffix",
+                                    "line": 70,
+                                    "expression": "",
+                                    "group": "",
+                                    "upstream": []
+                                  }
+                                ]
+                              ]
+                            }
+                          ]
+                        ]
+                      }
+                    ]
+                  ]
+                }
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "target_column": "Date_of_Birth",
+        "chain": [
+          {
+            "instance": "demo_target2",
+            "port": "Date_of_Birth",
+            "line": 135,
+            "expression": "",
+            "group": "",
+            "upstream": [
+              [
+                {
+                  "instance": "RTRTRANS",
+                  "port": "Birth_Date1",
+                  "line": 1,
+                  "expression": "",
+                  "group": "NEWGROUP1",
+                  "upstream": [
+                    [
+                      {
+                        "instance": "EXPTRANS",
+                        "port": "Birth_Date",
+                        "line": 1,
+                        "expression": "Birth_Date",
+                        "group": "",
+                        "upstream": [
+                          [
+                            {
+                              "instance": "SQ_demo_source2",
+                              "port": "Birth_Date",
+                              "line": 908,
+                              "expression": "",
+                              "group": "",
+                              "upstream": [
+                                [
+                                  {
+                                    "instance": "demo_source2",
+                                    "port": "Birth_Date",
+                                    "line": 71,
+                                    "expression": "",
+                                    "group": "",
+                                    "upstream": []
+                                  }
+                                ]
+                              ]
+                            }
+                          ]
+                        ]
+                      }
+                    ]
+                  ]
+                }
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "target_column": "Member_Number",
+        "chain": [
+          {
+            "instance": "demo_target2",
+            "port": "Member_Number",
+            "line": 136,
+            "expression": "",
+            "group": "",
+            "upstream": [
+              [
+                {
+                  "instance": "RTRTRANS",
+                  "port": "Member_Record_Number1",
+                  "line": 1,
+                  "expression": "",
+                  "group": "NEWGROUP1",
+                  "upstream": [
+                    [
+                      {
+                        "instance": "EXPTRANS",
+                        "port": "Member_Record_Number",
+                        "line": 1,
+                        "expression": "Member_Record_Number",
+                        "group": "",
+                        "upstream": [
+                          [
+                            {
+                              "instance": "SQ_demo_source2",
+                              "port": "Member_Record_Number",
+                              "line": 910,
+                              "expression": "",
+                              "group": "",
+                              "upstream": [
+                                [
+                                  {
+                                    "instance": "demo_source2",
+                                    "port": "Member_Record_Number",
+                                    "line": 73,
+                                    "expression": "",
+                                    "group": "",
+                                    "upstream": []
+                                  }
+                                ]
+                              ]
+                            }
+                          ]
+                        ]
+                      }
+                    ]
+                  ]
+                }
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "target_column": "Soc_Number",
+        "chain": [
+          {
+            "instance": "demo_target2",
+            "port": "Soc_Number",
+            "line": 137,
+            "expression": "",
+            "group": "",
+            "upstream": [
+              [
+                {
+                  "instance": "RTRTRANS",
+                  "port": "Social_Security_Number1",
+                  "line": 1,
+                  "expression": "",
+                  "group": "NEWGROUP1",
+                  "upstream": [
+                    [
+                      {
+                        "instance": "EXPTRANS",
+                        "port": "Social_Security_Number",
+                        "line": 1,
+                        "expression": "Social_Security_Number",
+                        "group": "",
+                        "upstream": [
+                          [
+                            {
+                              "instance": "SQ_demo_source2",
+                              "port": "Social_Security_Number",
+                              "line": 911,
+                              "expression": "",
+                              "group": "",
+                              "upstream": [
+                                [
+                                  {
+                                    "instance": "demo_source2",
+                                    "port": "Social_Security_Number",
+                                    "line": 74,
+                                    "expression": "",
+                                    "group": "",
+                                    "upstream": []
+                                  }
+                                ]
+                              ]
+                            }
+                          ]
+                        ]
+                      }
+                    ]
+                  ]
+                }
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "target_column": "Type_Code",
+        "chain": [
+          {
+            "instance": "demo_target2",
+            "port": "Type_Code",
+            "line": 138,
+            "expression": "",
+            "group": "",
+            "upstream": [
+              [
+                {
+                  "instance": "RTRTRANS",
+                  "port": "Member_Type_Code1",
+                  "line": 1,
+                  "expression": "",
+                  "group": "NEWGROUP1",
+                  "upstream": [
+                    [
+                      {
+                        "instance": "EXPTRANS",
+                        "port": "Member_Type_Code",
+                        "line": 1,
+                        "expression": "Member_Type_Code",
+                        "group": "",
+                        "upstream": [
+                          [
+                            {
+                              "instance": "SQ_demo_source2",
+                              "port": "Member_Type_Code",
+                              "line": 912,
+                              "expression": "",
+                              "group": "",
+                              "upstream": [
+                                [
+                                  {
+                                    "instance": "demo_source2",
+                                    "port": "Member_Type_Code",
+                                    "line": 75,
+                                    "expression": "",
+                                    "group": "",
+                                    "upstream": []
+                                  }
+                                ]
+                              ]
+                            }
+                          ]
+                        ]
+                      }
+                    ]
+                  ]
+                }
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "target_column": "Relationship_to_Subscriber_Code",
+        "chain": [
+          {
+            "instance": "demo_target2",
+            "port": "Relationship_to_Subscriber_Code",
+            "line": 139,
+            "expression": "",
+            "group": "",
+            "upstream": [
+              [
+                {
+                  "instance": "RTRTRANS",
+                  "port": "Relationship_to_Subscriber_Code1",
+                  "line": 1,
+                  "expression": "",
+                  "group": "NEWGROUP1",
+                  "upstream": [
+                    [
+                      {
+                        "instance": "EXPTRANS",
+                        "port": "Relationship_to_Subscriber_Code",
+                        "line": 1,
+                        "expression": "Relationship_to_Subscriber_Code",
+                        "group": "",
+                        "upstream": [
+                          [
+                            {
+                              "instance": "SQ_demo_source2",
+                              "port": "Relationship_to_Subscriber_Code",
+                              "line": 914,
+                              "expression": "",
+                              "group": "",
+                              "upstream": [
+                                [
+                                  {
+                                    "instance": "demo_source2",
+                                    "port": "Relationship_to_Subscriber_Code",
+                                    "line": 77,
+                                    "expression": "",
+                                    "group": "",
+                                    "upstream": []
+                                  }
+                                ]
+                              ]
+                            }
+                          ]
+                        ]
+                      }
+                    ]
+                  ]
+                }
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "target_column": "Relationship_to_Subscriber_Code_Label",
+        "chain": [
+          {
+            "instance": "demo_target2",
+            "port": "Relationship_to_Subscriber_Code_Label",
+            "line": 140,
+            "expression": "",
+            "group": "",
+            "upstream": [
+              [
+                {
+                  "instance": "RTRTRANS",
+                  "port": "Relationship_to_Subscriber_Code_Label1",
+                  "line": 1,
+                  "expression": "",
+                  "group": "NEWGROUP1",
+                  "upstream": [
+                    [
+                      {
+                        "instance": "EXPTRANS",
+                        "port": "o_Relationship_to_Subscriber_Code_Label",
+                        "line": 1,
+                        "expression": "iif(ISNULL(Relationship_to_Subscriber_Code_Label),ABORT('Relationship_to_Subscriber_Code_Labe valuel is null'),Relationship_to_Subscriber_Code_Label)",
+                        "group": "",
+                        "upstream": []
+                      }
+                    ]
+                  ]
+                }
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "target_column": "Effective_Date",
+        "chain": [
+          {
+            "instance": "demo_target2",
+            "port": "Effective_Date",
+            "line": 141,
+            "expression": "",
+            "group": "",
+            "upstream": [
+              [
+                {
+                  "instance": "RTRTRANS",
+                  "port": "Original_Effective_Date1",
+                  "line": 1,
+                  "expression": "",
+                  "group": "NEWGROUP1",
+                  "upstream": [
+                    [
+                      {
+                        "instance": "EXPTRANS",
+                        "port": "Original_Effective_Date",
+                        "line": 1,
+                        "expression": "Original_Effective_Date",
+                        "group": "",
+                        "upstream": [
+                          [
+                            {
+                              "instance": "SQ_demo_source2",
+                              "port": "Original_Effective_Date",
+                              "line": 913,
+                              "expression": "",
+                              "group": "",
+                              "upstream": [
+                                [
+                                  {
+                                    "instance": "demo_source2",
+                                    "port": "Original_Effective_Date",
+                                    "line": 76,
+                                    "expression": "",
+                                    "group": "",
+                                    "upstream": []
+                                  }
+                                ]
+                              ]
+                            }
+                          ]
+                        ]
+                      }
+                    ]
+                  ]
+                }
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "dead_ports": [
+    {
+      "instance": "RTRTRANS",
+      "port": "LEAD_CO_MNE11",
+      "line": 215,
+      "expression": "",
+      "group": "Insert"
+    },
+    {
+      "instance": "RTRTRANS",
+      "port": "BRANCH_CO_MNE11",
+      "line": 216,
+      "expression": "",
+      "group": "Insert"
+    },
+    {
+      "instance": "RTRTRANS",
+      "port": "MIS_DATE11",
+      "line": 217,
+      "expression": "",
+      "group": "Insert"
+    },
+    {
+      "instance": "RTRTRANS",
+      "port": "DESCRIPTION11",
+      "line": 218,
+      "expression": "",
+      "group": "Insert"
+    },
+    {
+      "instance": "RTRTRANS",
+      "port": "SHORT_NAME11",
+      "line": 219,
+      "expression": "",
+      "group": "Insert"
+    },
+    {
+      "instance": "RTRTRANS",
+      "port": "New_Flag1",
+      "line": 220,
+      "expression": "",
+      "group": "Insert"
+    },
+    {
+      "instance": "RTRTRANS",
+      "port": "Changed_Flag1",
+      "line": 221,
+      "expression": "",
+      "group": "Insert"
+    },
+    {
+      "instance": "RTRTRANS",
+      "port": "o_UPDATED_BY1",
+      "line": 224,
+      "expression": "",
+      "group": "Insert"
+    },
+    {
+      "instance": "RTRTRANS",
+      "port": "o_UPDATED_TIME1",
+      "line": 225,
+      "expression": "",
+      "group": "Insert"
+    },
+    {
+      "instance": "RTRTRANS",
+      "port": "Key1",
+      "line": 226,
+      "expression": "",
+      "group": "Insert"
+    },
+    {
+      "instance": "RTRTRANS",
+      "port": "LEAD_CO_MNE13",
+      "line": 233,
+      "expression": "",
+      "group": "Update"
+    },
+    {
+      "instance": "RTRTRANS",
+      "port": "BRANCH_CO_MNE13",
+      "line": 234,
+      "expression": "",
+      "group": "Update"
+    },
+    {
+      "instance": "RTRTRANS",
+      "port": "MIS_DATE13",
+      "line": 235,
+      "expression": "",
+      "group": "Update"
+    },
+    {
+      "instance": "RTRTRANS",
+      "port": "DESCRIPTION13",
+      "line": 236,
+      "expression": "",
+      "group": "Update"
+    },
+    {
+      "instance": "RTRTRANS",
+      "port": "SHORT_NAME13",
+      "line": 237,
+      "expression": "",
+      "group": "Update"
+    },
+    {
+      "instance": "RTRTRANS",
+      "port": "LEAD_CO_MNE3",
+      "line": 245,
+      "expression": "",
+      "group": "DEFAULT1"
+    },
+    {
+      "instance": "RTRTRANS",
+      "port": "BRANCH_CO_MNE3",
+      "line": 246,
+      "expression": "",
+      "group": "DEFAULT1"
+    },
+    {
+      "instance": "RTRTRANS",
+      "port": "MIS_DATE3",
+      "line": 247,
+      "expression": "",
+      "group": "DEFAULT1"
+    },
+    {
+      "instance": "RTRTRANS",
+      "port": "ID2",
+      "line": 248,
+      "expression": "",
+      "group": "DEFAULT1"
+    },
+    {
+      "instance": "RTRTRANS",
+      "port": "DESCRIPTION3",
+      "line": 249,
+      "expression": "",
+      "group": "DEFAULT1"
+    },
+    {
+      "instance": "RTRTRANS",
+      "port": "SHORT_NAME3",
+      "line": 250,
+      "expression": "",
+      "group": "DEFAULT1"
+    },
+    {
+      "instance": "RTRTRANS",
+      "port": "LEAD_CO_MNE12",
+      "line": 251,
+      "expression": "",
+      "group": "DEFAULT1"
+    },
+    {
+      "instance": "RTRTRANS",
+      "port": "BRANCH_CO_MNE12",
+      "line": 252,
+      "expression": "",
+      "group": "DEFAULT1"
+    },
+    {
+      "instance": "RTRTRANS",
+      "port": "MIS_DATE12",
+      "line": 253,
+      "expression": "",
+      "group": "DEFAULT1"
+    },
+    {
+      "instance": "RTRTRANS",
+      "port": "DESCRIPTION12",
+      "line": 254,
+      "expression": "",
+      "group": "DEFAULT1"
+    },
+    {
+      "instance": "RTRTRANS",
+      "port": "SHORT_NAME12",
+      "line": 255,
+      "expression": "",
+      "group": "DEFAULT1"
+    },
+    {
+      "instance": "RTRTRANS",
+      "port": "New_Flag2",
+      "line": 256,
+      "expression": "",
+      "group": "DEFAULT1"
+    },
+    {
+      "instance": "RTRTRANS",
+      "port": "Changed_Flag2",
+      "line": 257,
+      "expression": "",
+      "group": "DEFAULT1"
+    },
+    {
+      "instance": "RTRTRANS",
+      "port": "o_CREATED_BY2",
+      "line": 258,
+      "expression": "",
+      "group": "DEFAULT1"
+    },
+    {
+      "instance": "RTRTRANS",
+      "port": "o_CREATED_TIME2",
+      "line": 259,
+      "expression": "",
+      "group": "DEFAULT1"
+    },
+    {
+      "instance": "RTRTRANS",
+      "port": "o_UPDATED_BY2",
+      "line": 260,
+      "expression": "",
+      "group": "DEFAULT1"
+    },
+    {
+      "instance": "RTRTRANS",
+      "port": "o_UPDATED_TIME2",
+      "line": 261,
+      "expression": "",
+      "group": "DEFAULT1"
+    },
+    {
+      "instance": "RTRTRANS",
+      "port": "Key2",
+      "line": 262,
+      "expression": "",
+      "group": "DEFAULT1"
+    },
+    {
+      "instance": "SEQTRANS",
+      "port": "CURRVAL",
+      "line": 431,
+      "expression": "",
+      "group": ""
+    },
+    {
+      "instance": "SEQ_GEN",
+      "port": "CURRVAL",
+      "line": 431,
+      "expression": "",
+      "group": ""
+    },
+    {
+      "instance": "rtr_TRANS",
+      "port": "BAL_AMT1",
+      "line": 687,
+      "expression": "",
+      "group": "demo_target6_GRP"
+    },
+    {
+      "instance": "rtr_TRANS",
+      "port": "ACCT_TYP1",
+      "line": 693,
+      "expression": "",
+      "group": "demo_target6_GRP"
+    },
+    {
+      "instance": "rtr_TRANS",
+      "port": "LAST_NM1",
+      "line": 695,
+      "expression": "",
+      "group": "demo_target6_GRP"
+    },
+    {
+      "instance": "rtr_TRANS",
+      "port": "FIRST_NM1",
+      "line": 701,
+      "expression": "",
+      "group": "demo_target6_GRP"
+    },
+    {
+      "instance": "rtr_TRANS",
+      "port": "CRDT_SCORE1",
+      "line": 702,
+      "expression": "",
+      "group": "demo_target6_GRP"
+    },
+    {
+      "instance": "rtr_TRANS",
+      "port": "o_ACCT_ID2",
+      "line": 705,
+      "expression": "",
+      "group": "demo_target5_GRP"
+    },
+    {
+      "instance": "rtr_TRANS",
+      "port": "o_acc_trim2",
+      "line": 706,
+      "expression": "",
+      "group": "demo_target5_GRP"
+    },
+    {
+      "instance": "rtr_TRANS",
+      "port": "TX_DTTM2",
+      "line": 707,
+      "expression": "",
+      "group": "demo_target5_GRP"
+    },
+    {
+      "instance": "rtr_TRANS",
+      "port": "TX_ID2",
+      "line": 708,
+      "expression": "",
+      "group": "demo_target5_GRP"
+    },
+    {
+      "instance": "rtr_TRANS",
+      "port": "ACCT_TYP2",
+      "line": 709,
+      "expression": "",
+      "group": "demo_target5_GRP"
+    },
+    {
+      "instance": "rtr_TRANS",
+      "port": "TX_AMT2",
+      "line": 710,
+      "expression": "",
+      "group": "demo_target5_GRP"
+    },
+    {
+      "instance": "rtr_TRANS",
+      "port": "CLSR_DT2",
+      "line": 712,
+      "expression": "",
+      "group": "demo_target5_GRP"
+    },
+    {
+      "instance": "rtr_TRANS",
+      "port": "ACCT_STAT_CD2",
+      "line": 713,
+      "expression": "",
+      "group": "demo_target5_GRP"
+    },
+    {
+      "instance": "rtr_TRANS",
+      "port": "o_ACCT_DESC2",
+      "line": 714,
+      "expression": "",
+      "group": "demo_target5_GRP"
+    },
+    {
+      "instance": "rtr_TRANS",
+      "port": "CR8_DT2",
+      "line": 715,
+      "expression": "",
+      "group": "demo_target5_GRP"
+    },
+    {
+      "instance": "rtr_TRANS",
+      "port": "o_crdt_trim2",
+      "line": 716,
+      "expression": "",
+      "group": "demo_target5_GRP"
+    },
+    {
+      "instance": "rtr_TRANS",
+      "port": "BAL_AMT3",
+      "line": 719,
+      "expression": "",
+      "group": "DEFAULT1"
+    },
+    {
+      "instance": "rtr_TRANS",
+      "port": "ACCT_ID3",
+      "line": 720,
+      "expression": "",
+      "group": "DEFAULT1"
+    },
+    {
+      "instance": "rtr_TRANS",
+      "port": "o_ACCT_ID3",
+      "line": 721,
+      "expression": "",
+      "group": "DEFAULT1"
+    },
+    {
+      "instance": "rtr_TRANS",
+      "port": "o_acc_trim3",
+      "line": 722,
+      "expression": "",
+      "group": "DEFAULT1"
+    },
+    {
+      "instance": "rtr_TRANS",
+      "port": "TX_DTTM3",
+      "line": 723,
+      "expression": "",
+      "group": "DEFAULT1"
+    },
+    {
+      "instance": "rtr_TRANS",
+      "port": "TX_ID3",
+      "line": 724,
+      "expression": "",
+      "group": "DEFAULT1"
+    },
+    {
+      "instance": "rtr_TRANS",
+      "port": "ACCT_TYP3",
+      "line": 725,
+      "expression": "",
+      "group": "DEFAULT1"
+    },
+    {
+      "instance": "rtr_TRANS",
+      "port": "TX_AMT3",
+      "line": 726,
+      "expression": "",
+      "group": "DEFAULT1"
+    },
+    {
+      "instance": "rtr_TRANS",
+      "port": "LAST_NM3",
+      "line": 727,
+      "expression": "",
+      "group": "DEFAULT1"
+    },
+    {
+      "instance": "rtr_TRANS",
+      "port": "CLSR_DT3",
+      "line": 728,
+      "expression": "",
+      "group": "DEFAULT1"
+    },
+    {
+      "instance": "rtr_TRANS",
+      "port": "ACCT_STAT_CD3",
+      "line": 729,
+      "expression": "",
+      "group": "DEFAULT1"
+    },
+    {
+      "instance": "rtr_TRANS",
+      "port": "o_ACCT_DESC3",
+      "line": 730,
+      "expression": "",
+      "group": "DEFAULT1"
+    },
+    {
+      "instance": "rtr_TRANS",
+      "port": "CR8_DT3",
+      "line": 731,
+      "expression": "",
+      "group": "DEFAULT1"
+    },
+    {
+      "instance": "rtr_TRANS",
+      "port": "o_crdt_trim3",
+      "line": 732,
+      "expression": "",
+      "group": "DEFAULT1"
+    },
+    {
+      "instance": "rtr_TRANS",
+      "port": "FIRST_NM3",
+      "line": 733,
+      "expression": "",
+      "group": "DEFAULT1"
+    },
+    {
+      "instance": "rtr_TRANS",
+      "port": "CRDT_SCORE3",
+      "line": 734,
+      "expression": "",
+      "group": "DEFAULT1"
+    },
+    {
+      "instance": "RTRTRANS",
+      "port": "Title2",
+      "line": 993,
+      "expression": "",
+      "group": "DEFAULT1"
+    },
+    {
+      "instance": "RTRTRANS",
+      "port": "First_Name2",
+      "line": 994,
+      "expression": "",
+      "group": "DEFAULT1"
+    },
+    {
+      "instance": "RTRTRANS",
+      "port": "Middle_Name2",
+      "line": 995,
+      "expression": "",
+      "group": "DEFAULT1"
+    },
+    {
+      "instance": "RTRTRANS",
+      "port": "Last_Name2",
+      "line": 996,
+      "expression": "",
+      "group": "DEFAULT1"
+    },
+    {
+      "instance": "RTRTRANS",
+      "port": "Member_ID2",
+      "line": 997,
+      "expression": "",
+      "group": "DEFAULT1"
+    },
+    {
+      "instance": "RTRTRANS",
+      "port": "Member_Suffix2",
+      "line": 998,
+      "expression": "",
+      "group": "DEFAULT1"
+    },
+    {
+      "instance": "RTRTRANS",
+      "port": "Birth_Date2",
+      "line": 999,
+      "expression": "",
+      "group": "DEFAULT1"
+    },
+    {
+      "instance": "RTRTRANS",
+      "port": "Gender_Code2",
+      "line": 1000,
+      "expression": "",
+      "group": "DEFAULT1"
+    },
+    {
+      "instance": "RTRTRANS",
+      "port": "Member_Record_Number2",
+      "line": 1001,
+      "expression": "",
+      "group": "DEFAULT1"
+    },
+    {
+      "instance": "RTRTRANS",
+      "port": "Social_Security_Number2",
+      "line": 1002,
+      "expression": "",
+      "group": "DEFAULT1"
+    },
+    {
+      "instance": "RTRTRANS",
+      "port": "Member_Type_Code2",
+      "line": 1003,
+      "expression": "",
+      "group": "DEFAULT1"
+    },
+    {
+      "instance": "RTRTRANS",
+      "port": "Original_Effective_Date2",
+      "line": 1004,
+      "expression": "",
+      "group": "DEFAULT1"
+    },
+    {
+      "instance": "RTRTRANS",
+      "port": "Relationship_to_Subscriber_Code2",
+      "line": 1005,
+      "expression": "",
+      "group": "DEFAULT1"
+    },
+    {
+      "instance": "RTRTRANS",
+      "port": "Relationship_to_Subscriber_Code_Label2",
+      "line": 1006,
+      "expression": "",
+      "group": "DEFAULT1"
+    }
+  ]
+}
