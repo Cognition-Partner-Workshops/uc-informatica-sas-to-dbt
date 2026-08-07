@@ -51,12 +51,12 @@ def run(ctx: RunContext) -> dict:
         isnull("Relationship_to_Subscriber_Code_Label"),
         ABORT_MESSAGE,
     )
+    # The iif true branch is ABORT(), realised by abort_if above.
     expression = filtered.withColumn(
         "o_Relationship_to_Subscriber_Code_Label",
         F.col("Relationship_to_Subscriber_Code_Label"),
     )
 
-    # The iif true branch is ABORT(), realised by abort_if above.
     target_groups = {
         "demo_target2": expression.where(isnull("Social_Security_Number")),
         "demo_target21": expression.where(not_isnull("Social_Security_Number")),
