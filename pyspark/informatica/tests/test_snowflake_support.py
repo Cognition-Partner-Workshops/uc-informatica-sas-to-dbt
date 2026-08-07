@@ -62,6 +62,20 @@ def test_loader_value_conversion_preserves_nulls_and_spaces():
     assert loader._python_value("  8000", StringType()) == "  8000"
 
 
+def test_loader_source_override_falls_back_per_file(tmp_path):
+    loader = _loader_module()
+    override = tmp_path / "demo_source2.csv"
+    override.write_text("override")
+
+    assert loader._source_path(tmp_path, "demo_source2") == override
+    assert loader._source_path(tmp_path, "demo_source2").read_text() == "override"
+    for table in loader.SOURCE_TABLES:
+        path = loader._source_path(tmp_path, table)
+        assert path.exists()
+        if table != "demo_source2":
+            assert path == REPO_ROOT / "legacy" / "informatica" / "data" / f"{table}.csv"
+
+
 def test_registry_names_and_order_match_xml():
     root = ET.parse(
         REPO_ROOT / "legacy" / "informatica" / "wf_demo_mapping.XML"
