@@ -67,15 +67,17 @@ class SnowflakeIO:
             "sfRole": cfg.role,
             "sfWarehouse": cfg.warehouse,
             "sfDatabase": cfg.database,
-            "sfSchema": cfg.migrated_target_schema or cfg.schema,
         }
         if cfg.private_key_path:
             self.options["pem_private_key"] = str(cfg.private_key_path)
 
+    def _options(self, schema):
+        return {**self.options, "sfSchema": schema}
+
     def read(self, name: str) -> DataFrame:
         df = (
             self.spark.read.format("snowflake")
-            .options(**self.options)
+            .options(**self._options(self.cfg.source_schema or self.cfg.schema))
             .option("dbtable", name)
             .load()
         )
@@ -89,6 +91,8 @@ class SnowflakeIO:
             df.drop("__line_ordinal")
             if "__line_ordinal" in df.columns
             else df
-        ).write.format("snowflake").options(**self.options).option(
+        ).write.format("snowflake").options(
+            **self._options(self.cfg.migrated_target_schema or self.cfg.schema)
+        ).option(
             "dbtable", instance
         ).mode("overwrite").save()
