@@ -10,7 +10,11 @@ BASE = "https://maven-central.storage-download.googleapis.com/maven2"
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--output", type=Path, default=Path("/tmp/snowflake-spark-jars"))
+    parser.add_argument(
+        "--output",
+        type=Path,
+        default=Path.home() / ".cache" / "informatica-snowflake-jars",
+    )
     parser.add_argument("--connector-version", default="3.2.1-spark_3.5")
     parser.add_argument("--jdbc-version", default="4.0.2")
     args = parser.parse_args()

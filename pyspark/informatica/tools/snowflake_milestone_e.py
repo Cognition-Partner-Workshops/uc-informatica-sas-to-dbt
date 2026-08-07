@@ -40,7 +40,13 @@ TARGETS = [
     "demo_target5",
     "demo_target6",
 ]
-ORDINAL_INPUTS = {"lkp_demo_source1", "lkp_demo_source2", "lkp_demo_source3", "demo_target1"}
+ORDINAL_INPUTS = {
+    "demo_source1",
+    "lkp_demo_source1",
+    "lkp_demo_source2",
+    "lkp_demo_source3",
+    "demo_target1",
+}
 
 
 def quote_ident(value):
