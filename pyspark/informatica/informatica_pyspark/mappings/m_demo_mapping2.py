@@ -3,7 +3,7 @@
 from pyspark.sql import Window, functions as F
 
 from ..context import MappingContext, MappingResult
-from ..functions import aes_decrypt, concat, iif, isnull, md5, not_, substr
+from ..functions import aes_decrypt, concat, iif, isnull, last_value, md5, not_, substr
 from ..io.base import ORDINAL_COL
 
 MAPPING_NAME = "m_demo_mapping2"
@@ -13,13 +13,9 @@ TARGET_INSTANCES = ("demo_target1_INS", "demo_target1_UPD")
 
 def run(ctx: MappingContext) -> MappingResult:
     source = ctx.sources["demo_source1"].alias("source")
-    lookup_window = Window.partitionBy("ID").orderBy(F.col(ORDINAL_COL).desc())
     lookup = (
-        ctx.sources["demo_target1"]
+        last_value(ctx.sources["demo_target1"], "ID")
         .withColumn("Key", F.col("Key").cast("double"))
-        .withColumn("WRK_LOOKUP_RANK", F.row_number().over(lookup_window))
-        .where(F.col("WRK_LOOKUP_RANK") == 1)
-        .drop("WRK_LOOKUP_RANK")
         .alias("lookup")
     )
     joined = source.join(
@@ -77,6 +73,8 @@ def run(ctx: MappingContext) -> MappingResult:
 
     insert_rows = transformed.where(F.col("New_Flag") == F.lit("Insert"))
     update_rows = transformed.where(F.col("Changed_Flag") == F.lit("Update"))
+    # RECOVERED: SQ_demo_source1 has no sorted ports, so physical source
+    # ordinal is the row order entering the sequence generator.
     sequence_window = Window.orderBy(F.col(ORDINAL_COL))
     insert_rows = insert_rows.withColumn(
         "WRK_SEQUENCE_KEY",

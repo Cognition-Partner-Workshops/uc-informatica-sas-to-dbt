@@ -4,7 +4,7 @@ from datetime import date
 
 from .config import RunConfig
 from .lineage import generate_lineage
-from .workflow.runner import run_mapping, run_workflow
+from .workflow.runner import run_mapping, run_workflow, workflow_exit_code
 
 
 def _config(args):
@@ -39,7 +39,7 @@ def main(argv=None):
     if args.command == "run-mapping":
         return run_mapping(args.mapping, _config(args))
     result = run_workflow(_config(args))
-    return 1 if result.failed else 0
+    return workflow_exit_code(result)
 
 
 if __name__ == "__main__":

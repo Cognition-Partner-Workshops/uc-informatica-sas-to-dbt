@@ -1,3 +1,8 @@
+import os
+import subprocess
+import sys
+from pathlib import Path
+
 from pyspark.sql import functions as F
 
 from informatica_pyspark.config import RunConfig
@@ -110,3 +115,54 @@ def test_real_data_abort_fixture(tmp_path, capsys):
     )
     assert not (abort_dir / "demo_target2.csv").exists()
     assert not (abort_dir / "demo_target21.csv").exists()
+
+
+def _run_cli(*arguments):
+    env = os.environ.copy()
+    env["PYTHONPATH"] = str(Path(__file__).resolve().parents[1])
+    return subprocess.run(
+        [sys.executable, "-m", "informatica_pyspark.cli", *arguments],
+        cwd=Path(__file__).resolve().parents[3],
+        env=env,
+        text=True,
+        capture_output=True,
+    )
+
+
+def test_real_data_workflow_abort_writes_prior_sessions_only(tmp_path):
+    target_dir = tmp_path / "workflow-abort"
+    completed = _run_cli(
+        "run-workflow",
+        "--io", "local",
+        "--source-variant", "abort",
+        "--target-dir", str(target_dir),
+    )
+    assert completed.returncode != 0
+    assert completed.stderr.splitlines()[-1] == (
+        "ABORT('Relationship_to_Subscriber_Code_Labe valuel is null')\n"
+    ).rstrip("\n")
+    assert "Failed_Email3: subject='Execution Status' text='Dataload  s_m_demo_mapping3t was failed to execute'" in completed.stdout
+    # §5 forbids partial writes within the aborting session; at workflow
+    # level, earlier sessions already completed and their targets remain.
+    for target in (
+        "demo_target1_INS", "demo_target1_UPD", "demo_target3",
+        "demo_target5", "demo_target6",
+    ):
+        assert (target_dir / f"{target}.csv").exists()
+    assert not (target_dir / "demo_target2.csv").exists()
+    assert not (target_dir / "demo_target21.csv").exists()
+
+
+def test_real_data_workflow_normal_writes_all_targets(tmp_path):
+    target_dir = tmp_path / "workflow-normal"
+    completed = _run_cli(
+        "run-workflow",
+        "--io", "local",
+        "--target-dir", str(target_dir),
+    )
+    assert completed.returncode == 0
+    for target in (
+        "demo_target1_INS", "demo_target1_UPD", "demo_target2",
+        "demo_target21", "demo_target3", "demo_target5", "demo_target6",
+    ):
+        assert (target_dir / f"{target}.csv").exists()

@@ -63,6 +63,7 @@ class SessionOutcome:
 class WorkflowResult:
     sessions: dict[str, SessionOutcome] = field(default_factory=dict)
     emails: list[tuple[str, str, str]] = field(default_factory=list)
+    executed_tasks: list[str] = field(default_factory=list)
     failed: bool = False
 
 
@@ -90,6 +91,11 @@ def _prepare_writer(writer) -> None:
     prepare = getattr(writer, "prepare", None)
     if prepare is not None:
         prepare()
+
+
+def workflow_exit_code(result: WorkflowResult) -> int:
+    """Return the contract's process status for a completed workflow."""
+    return int(result.failed)
 
 
 def _run_session(name: str, mapping_name: str, config: RunConfig, spark, reader, writer,
@@ -157,21 +163,29 @@ def run_workflow(config: RunConfig, mapping_runner=None, reader=None, writer=Non
     _prepare_writer(writer)
 
     decisions = {}
+    result.executed_tasks.append("Start")
     result.sessions["s_m_demo_mapping2"] = _run_session(
         "s_m_demo_mapping2", "m_demo_mapping2", config, spark, reader, writer, mapping_runner)
+    result.executed_tasks.append("s_m_demo_mapping2")
     mapping2_ok = result.sessions["s_m_demo_mapping2"].status == 1
     decisions["Decision1"] = mapping2_ok
+    result.executed_tasks.append("Decision1")
     if _link_enabled(_workflow_condition("Decision1", "Failed_Email1"), decisions):
         _emit_email("Failed_Email1", result.emails, log)
+        result.executed_tasks.append("Failed_Email1")
 
     if _link_enabled(_workflow_condition("Decision1", "s_m_demo_mapping1"),
                      decisions):
         result.sessions["s_m_demo_mapping1"] = _run_session(
             "s_m_demo_mapping1", "m_demo_mapping1", config, spark, reader, writer, mapping_runner)
+        result.executed_tasks.append("s_m_demo_mapping1")
         mapping1_ok = result.sessions["s_m_demo_mapping1"].status == 1
         decisions["Decision2"] = mapping1_ok
+        result.executed_tasks.append("Decision2")
         if _link_enabled(_workflow_condition("Decision2", "Failed_Email2"), decisions):
             _emit_email("Failed_Email2", result.emails, log)
+            result.executed_tasks.append("Failed_Email2")
+            result.executed_tasks.append("Control")
             result.failed = True
             return result
     else:
@@ -181,12 +195,16 @@ def run_workflow(config: RunConfig, mapping_runner=None, reader=None, writer=Non
             _workflow_condition("Decision2", "s_m_demo_mapping3"), decisions):
         result.sessions["s_m_demo_mapping3"] = _run_session(
             "s_m_demo_mapping3", "m_demo_mapping3", config, spark, reader, writer, mapping_runner)
+        result.executed_tasks.append("s_m_demo_mapping3")
         mapping3_ok = result.sessions["s_m_demo_mapping3"].status == 1
         decisions["Decision3"] = mapping3_ok
+        result.executed_tasks.append("Decision3")
         if _link_enabled(_workflow_condition("Decision3", "SuccessEmail"), decisions):
             _emit_email("SuccessEmail", result.emails, log)
+            result.executed_tasks.append("SuccessEmail")
         if _link_enabled(_workflow_condition("Decision3", "Failed_Email3"), decisions):
             _emit_email("Failed_Email3", result.emails, log)
+            result.executed_tasks.append("Failed_Email3")
 
     result.failed = any(outcome.status == 0 for outcome in result.sessions.values())
     return result
