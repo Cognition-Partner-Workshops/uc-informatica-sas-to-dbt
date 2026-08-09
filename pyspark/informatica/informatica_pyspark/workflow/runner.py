@@ -24,14 +24,17 @@ EMAILS = {
 
 WORKFLOW_TASKS = (
     "Start",
-    "Failed_Email2",
-    "SuccessEmail",
-    "Failed_Email1",
-    "Control",
-    "Decision2",
+    "s_m_demo_mapping1",
+    "s_m_demo_mapping2",
+    "s_m_demo_mapping3",
     "Decision1",
+    "Decision2",
     "Decision3",
+    "Failed_Email1",
+    "Failed_Email2",
     "Failed_Email3",
+    "SuccessEmail",
+    "Control",
 )
 
 WORKFLOW_LINKS = (
@@ -161,7 +164,8 @@ def run_workflow(config: RunConfig, mapping_runner=None, reader=None, writer=Non
     if _link_enabled(_workflow_condition("Decision1", "Failed_Email1"), decisions):
         _emit_email("Failed_Email1", result.emails, log)
 
-    if _link_enabled("", decisions):
+    if _link_enabled(_workflow_condition("Decision1", "s_m_demo_mapping1"),
+                     decisions):
         result.sessions["s_m_demo_mapping1"] = _run_session(
             "s_m_demo_mapping1", "m_demo_mapping1", config, spark, reader, writer, mapping_runner)
         mapping1_ok = result.sessions["s_m_demo_mapping1"].status == 1

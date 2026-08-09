@@ -1,4 +1,6 @@
 from pyspark.sql import functions as F
+from pathlib import Path
+from xml.etree import ElementTree
 
 from informatica_pyspark.config import RunConfig
 from informatica_pyspark.context import MappingResult
@@ -65,8 +67,9 @@ def test_mapping3_failure_emits_failed_email(spark):
 
 def test_workflow_declarations_preserve_xml_conditions():
     assert WORKFLOW_TASKS == (
-        "Start", "Failed_Email2", "SuccessEmail", "Failed_Email1", "Control",
-        "Decision2", "Decision1", "Decision3", "Failed_Email3",
+        "Start", "s_m_demo_mapping1", "s_m_demo_mapping2", "s_m_demo_mapping3",
+        "Decision1", "Decision2", "Decision3", "Failed_Email1", "Failed_Email2",
+        "Failed_Email3", "SuccessEmail", "Control",
     )
     assert sorted(WORKFLOW_LINKS) == sorted((
         ("Decision2", "Failed_Email2", "$Decision2.Condition = 0"),
@@ -81,6 +84,21 @@ def test_workflow_declarations_preserve_xml_conditions():
         ("s_m_demo_mapping3", "Decision3", ""),
         ("Decision3", "Failed_Email3", "$Decision3.Condition = 0"),
     ))
+
+
+def test_workflow_declarations_match_xml_source():
+    xml_path = Path(__file__).resolve().parents[3] / "legacy/informatica/wf_demo_mapping.XML"
+    root = ElementTree.parse(xml_path).getroot()
+    xml_tasks = {
+        task.attrib["NAME"]
+        for task in root.iter("TASKINSTANCE")
+    }
+    xml_links = {
+        (link.attrib["FROMTASK"], link.attrib["TOTASK"], link.attrib["CONDITION"])
+        for link in root.iter("WORKFLOWLINK")
+    }
+    assert set(WORKFLOW_TASKS) == xml_tasks, "XML task declarations changed"
+    assert set(WORKFLOW_LINKS) == xml_links, "XML lines 1465-1475: workflow links changed"
 
 
 def test_target_projection_helpers_and_declared_sort_keys(spark):
