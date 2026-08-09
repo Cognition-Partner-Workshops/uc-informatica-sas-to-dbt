@@ -58,3 +58,23 @@ These behaviors are intentionally reproduced rather than fixed:
   ports and XML line 949 defines the default group, but no DEFAULT1 port has an outgoing connector.
   The implementation reproduces the missing edge and does not route DEFAULT1 anywhere; the
   mutually exclusive conditions make it unreachable in the normal seed.
+
+## Milestone 4
+
+- **RECOVERED DEFECT — empty Decision1 mapping link.** XML line 1470 leaves the
+  `Decision1 → s_m_demo_mapping1` CONDITION empty, so mapping1 executes even
+  when mapping2 fails. The injected workflow fixture confirms the failure email,
+  mapping1 execution, and subsequent mapping3 execution.
+- **RECOVERED DEFECT — workflow-level abort retains prior writes.** XML workflow
+  traversal and the baseline abort fixture show mapping1 and mapping2 outputs
+  remain written before mapping3 aborts. Mapping3 itself writes neither target,
+  preserving the §5 session-level no-partial-write rule.
+- **OBSERVED CONTRACT DIVERGENCE — helper names.** Mapping2 and mapping3
+  intermediates retain source Informatica port names instead of §6 `SRC_`/`WRK_`
+  prefixes. The runner projection removes them, and no rename was made because
+  the names are part of lineage and changing them is outside this milestone.
+- **OBSERVED CONTRACT DIVERGENCE — physical/source datatype mismatch.** XML
+  `demo_target3.PRODUCT_ID` is declared `number`, while XML Source Qualifier
+  ports carry the string value `PRD0001`. The conversion preserves the string
+  and does not cast it; the executable type contract test records this explicit
+  exception.

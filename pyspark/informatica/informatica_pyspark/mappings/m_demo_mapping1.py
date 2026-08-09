@@ -1,6 +1,6 @@
 """PySpark conversion of Informatica mapping m_demo_mapping1."""
 
-from pyspark.sql import DataFrame, Window, functions as F
+from pyspark.sql import Window, functions as F
 
 from .. import functions
 from ..context import MappingContext, MappingResult
@@ -61,29 +61,18 @@ def run(ctx: MappingContext) -> MappingResult:
         functions.ltrim(F.col("CRDT_LN")).alias("WRK_O_CRDT_TRIM"),
     )
 
-    def last_value(frame: DataFrame, key: str, columns: tuple[str, ...]) -> DataFrame:
-        rank = Window.partitionBy(key).orderBy(F.col(ORDINAL_COL).desc())
-        return (
-            frame.withColumn("WRK_LOOKUP_RANK", F.row_number().over(rank))
-            .where(F.col("WRK_LOOKUP_RANK") == 1)
-            .select(key, *columns)
-        )
-
-    lookup1 = last_value(
+    lookup1 = functions.last_value(
         ctx.sources["lkp_demo_source1"],
         "ACCT_ID",
-        ("FIRST_NM",),
-    ).alias("lookup1")
-    lookup2 = last_value(
+    ).select("ACCT_ID", "FIRST_NM").alias("lookup1")
+    lookup2 = functions.last_value(
         ctx.sources["lkp_demo_source2"],
         "CUST_ID",
-        ("CRDT_SCORE",),
-    ).alias("lookup2")
-    lookup3 = last_value(
+    ).select("CUST_ID", "CRDT_SCORE").alias("lookup2")
+    lookup3 = functions.last_value(
         ctx.sources["lkp_demo_source3"],
         "ACCT_ID",
-        ("TX_TYPE_CD",),
-    ).alias("lookup3")
+    ).select("ACCT_ID", "TX_TYPE_CD").alias("lookup3")
 
     enriched = (
         exp_trans.alias("exp")
@@ -113,6 +102,8 @@ def run(ctx: MappingContext) -> MappingResult:
         ))
         .where(F.col("WRK_AGG_ROW") == 1)
     )
+    # RECOVERED: sq_demo_source4 has one sorted port, ACCT_ID, so the
+    # sequence consumes rows in the Source Qualifier sorted-port order.
     sequence_window = Window.orderBy(F.col("ACCT_ID"))
     target6 = sb.select(
         "ACCT_ID",
@@ -123,7 +114,7 @@ def run(ctx: MappingContext) -> MappingResult:
         "CLSR_DT",
         "ACCT_STAT_CD",
         "TX_ID",
-        (F.lit(280) + F.row_number().over(sequence_window)).alias("ACCT_KEY"),
+        (F.lit(280) + F.row_number().over(sequence_window)).cast("long").alias("ACCT_KEY"),
         "TX_DTTM",
         F.col("WRK_SUM_TX_AMT").alias("TX_AMT"),
         F.col("WRK_O_ACCT_ID").alias("TX_TYPE_CD"),

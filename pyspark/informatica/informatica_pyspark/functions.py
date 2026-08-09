@@ -3,7 +3,9 @@
 import re
 from datetime import date, datetime, time
 from py4j.protocol import Py4JError, Py4JJavaError
-from pyspark.sql import Column, functions as F
+from pyspark.sql import Column, DataFrame, Window, functions as F
+
+from .io.base import ORDINAL_COL
 
 INFORMATICA_DEFAULT_DATE_MASK = "MM/DD/YYYY HH24:MI:SS"
 _MASK_TOKENS = {
@@ -68,6 +70,23 @@ def ltrim(value: Column) -> Column:
 
 def rtrim(value: Column) -> Column:
     return F.rtrim(value)
+
+
+def last_value(frame: DataFrame, key_columns: str | tuple[str, ...]) -> DataFrame:
+    """Keep the last physical source row for each lookup key.
+
+    Informatica Use Last Value and the migration's Use Any Value decision both
+    use the contract-sanctioned physical source ordinal as their tie-break.
+    """
+    keys = (key_columns,) if isinstance(key_columns, str) else key_columns
+    rank = Window.partitionBy(*(F.col(key) for key in keys)).orderBy(
+        F.col(ORDINAL_COL).desc()
+    )
+    return (
+        frame.withColumn("WRK_LOOKUP_RANK", F.row_number().over(rank))
+        .where(F.col("WRK_LOOKUP_RANK") == 1)
+        .drop("WRK_LOOKUP_RANK")
+    )
 
 
 def strcmp(left: Column, right: Column) -> Column:
