@@ -28,7 +28,7 @@ def test_abort_check_prevents_writes(spark):
     def aborting(_ctx):
         return MappingResult(
             targets={"target": spark.range(1)},
-            abort_checks=[AbortCheck(spark.range(1).select(F.lit(1)), 
+            abort_checks=[AbortCheck(spark.range(1).select(F.lit(1)),
                                      "Relationship_to_Subscriber_Code_Labe valuel is null")],
         )
 
