@@ -1,0 +1,36 @@
+name: pyspark-informatica
+
+on:
+  pull_request:
+    branches:
+      - integration/informatica-pyspark-v2
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m venv /tmp/pyspark-informatica
+      - run: /tmp/pyspark-informatica/bin/pip install -r pyspark/informatica/requirements.txt
+      - run: PYTHONPATH=pyspark/informatica /tmp/pyspark-informatica/bin/pytest pyspark/informatica/tests
+      - run: /tmp/pyspark-informatica/bin/python tools/informatica_baseline.py
+      - name: Detect unfinished mappings
+        id: mappings
+        shell: bash
+        run: |
+          if grep -R -q 'NotImplementedError' pyspark/informatica/informatica_pyspark/mappings/; then
+            echo "unfinished=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "unfinished=false" >> "$GITHUB_OUTPUT"
+          fi
+      # This gate disappears by itself when the last mapping lands.
+      - name: Run parity
+        if: steps.mappings.outputs.unfinished == 'false'
+        run: /tmp/pyspark-informatica/bin/python pyspark/informatica/scripts/run_parity.py
