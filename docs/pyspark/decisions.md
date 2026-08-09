@@ -57,3 +57,29 @@
 - **RECOVERED — source typing.** String CSV inputs are cast according to XML port types:
   numeric account/transaction/customer identifiers to long, amounts to double, dates to
   date, transaction time to timestamp, and `CRDT_LN` remains string for LTRIM.
+
+## m_demo_mapping3
+
+- **RECOVERED — source casts.** XML lines 907–916 define Member_ID, Member_Record_Number,
+  Social_Security_Number, Member_Type_Code, and Relationship_to_Subscriber_Code as double, and
+  Birth_Date and Original_Effective_Date as date/time. The implementation casts the numeric ports
+  to double and the date ports to Spark `DateType`.
+- **DECISION — date representation.** `DateType` is used rather than `TimestampType`, although
+  the XML says date/time, because the CSV writer pins `timestampFormat=yyyy-MM-dd HH:mm:ss` while
+  the baseline emits bare `1990-07-12`; TimestampType would produce a false string mismatch.
+  The rejected alternative is TimestampType. This is safe only because the seed data has no
+  time-of-day component.
+- **RECOVERED — ABORT default and interface.** XML line 943 supplies the guarded output expression
+  and `ERROR('transformation error')` default. The exact typo in
+  `ABORT('Relationship_to_Subscriber_Code_Labe valuel is null')` is preserved; ERROR is unreachable
+  because the ABORT guard wins.
+- **DECISION — abort timing.** The runner evaluates the single post-SQL abort predicate before
+  writing either mapping3 target. The rejected alternative is PowerCenter's possible mid-stream
+  partial write behavior. The no-partial-write guarantee is scoped to mapping3's own targets;
+  the legacy runner writes mapping1 and mapping2 outputs before mapping3 aborts.
+- **RECOVERED — router groups and target bindings.** XML lines 948–950 define NEWGROUP1 as
+  `ISNULL(Social_Security_Number)` and NEWGROUP2 as its negation. XML connector lines 1017–1044
+  determine all 14 physical target bindings, including the guarded `o_` label port.
+- **DECISION — target row ordering.** Both instances use `sort_keys = ("Member_Identifier",)`.
+  The rejected alternative is the runner's sort-by-all-columns fallback. `SRC_ORDINAL` cannot be
+  used because the runner drops helper columns before ordering.

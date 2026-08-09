@@ -29,3 +29,17 @@ These mapping-1 defects are reproduced rather than fixed:
   `TO_CHAR` rendering is `01/31/2024 00:00:00`, which cannot be parsed by
   `DD/MM/YYYY`, so `demo_target3.SELL_ST_DT` is NULL for all four rows. The defect
   is intentionally reproduced rather than replaced with the business date.
+
+## m_demo_mapping3
+
+- **RECOVERED DEFECT — SQL override silently discards NULL member types.** XML line 916 filters
+  with `demo_source2.Member_Type_Code is not null`; the implementation reproduces this and the
+  seed row Member_ID 30005 is absent from both outputs rather than fixing the discard.
+- **RECOVERED DEFECT — dead same-name label port.** XML line 1086 connects
+  `EXPTRANS.o_Relationship_to_Subscriber_Code_Label` to the router. The pass-through port at
+  XML line 942 has no outgoing connector, so the implementation reproduces the guarded `o_` port
+  as the label source rather than name-matching the dead port.
+- **RECOVERED DEFECT — DEFAULT1 silently drops rows.** XML lines 993–1006 define DEFAULT1 output
+  ports and XML line 949 defines the default group, but no DEFAULT1 port has an outgoing connector.
+  The implementation reproduces the missing edge and does not route DEFAULT1 anywhere; the
+  mutually exclusive conditions make it unreachable in the normal seed.
