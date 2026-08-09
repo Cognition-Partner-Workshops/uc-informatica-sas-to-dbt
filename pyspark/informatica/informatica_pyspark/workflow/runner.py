@@ -112,7 +112,7 @@ def _run_session(name: str, mapping_name: str, config: RunConfig, spark, reader,
             frame = frame.drop(*helper_columns)
             missing = [column for column in expected if column not in frame.columns]
             for column in missing:
-                frame = frame.withColumn(column, F.lit(None))
+                frame = frame.withColumn(column, F.lit(None).cast("string"))
             frame = frame.select(*expected)
             keys = result.sort_keys.get(instance)
             if keys:
