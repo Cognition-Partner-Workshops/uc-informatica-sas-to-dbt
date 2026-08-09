@@ -5,6 +5,7 @@ from xml.etree import ElementTree
 from informatica_pyspark.config import RunConfig
 from informatica_pyspark.context import MappingResult
 from informatica_pyspark.workflow.runner import (
+    EMAILS,
     WORKFLOW_LINKS,
     WORKFLOW_TASKS,
     run_workflow,
@@ -157,8 +158,6 @@ def test_email_payloads_match_xml_source():
             attributes["Email Subject"],
             attributes["Email Text"],
         )
-    from informatica_pyspark.workflow.runner import EMAILS
-
     assert {
         name: (subject, text)
         for name, (subject, text) in EMAILS.items()

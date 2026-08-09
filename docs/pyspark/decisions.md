@@ -42,7 +42,8 @@
 
 - **DECISION — aggregator pass-through tie-break.** The SQL override at line 580 orders
   by account but does not define intra-account order. The conversion selects the greatest
-  `TX_ID` per `ACCT_ID` for the aggregator's pass-through ports. Physical `SRC_ORDINAL`
+  `TX_ID` per `ACCT_ID` for the aggregator's pass-through ports, including `TX_DTTM`.
+  Physical `SRC_ORDINAL`
   order was rejected: it happens to choose the same seed row, so parity cannot distinguish
   the alternatives.
 - **DECISION — lookup Use Last Value.** Lookup rows are ranked by maximum `SRC_ORDINAL`
@@ -65,7 +66,8 @@
 - **DECISION — AES_DECRYPT representation.** The mapping calls `functions.aes_decrypt` with the
   XML arguments and receives the scaffold's `LEGACY_AES_VALUE` constant. A real AES-256 decrypt
   and NULL were rejected because the key/material are unavailable and neither can change the
-  result unless it equals the target's 32-character MD5 digest exactly.
+  result unless it equals the target's 32-character MD5 digest exactly. This governs the
+  low-confidence `MD5_src` row.
 - **DECISION — Use Any Value tie-break.** Duplicate lookup IDs retain the greatest `SRC_ORDINAL`
   (the physical source order sanctioned by the contract). Choosing the highest Key happens to
   select the same row in this seed, while choosing the lowest ordinal selects Key 2 and fails
@@ -87,7 +89,8 @@
   Social_Security_Number, Member_Type_Code, and Relationship_to_Subscriber_Code as double, and
   Birth_Date and Original_Effective_Date as date/time. The implementation casts the numeric ports
   to double and the date ports to Spark `DateType`.
-- **DECISION — date representation.** `DateType` is used rather than `TimestampType`, although
+- **DECISION — date representation.** `DateType` is used rather than `TimestampType` for
+  `Birth_Date` and `Original_Effective_Date`, although
   the XML says date/time, because the CSV writer pins `timestampFormat=yyyy-MM-dd HH:mm:ss` while
   the baseline emits bare `1990-07-12`; TimestampType would produce a false string mismatch.
   The rejected alternative is TimestampType. This is safe only because the seed data has no

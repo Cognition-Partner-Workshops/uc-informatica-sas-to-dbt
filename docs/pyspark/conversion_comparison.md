@@ -44,19 +44,21 @@
 - **MEDIUM** `wf_demo_mapping` / `Link` / `s_m_demo_mapping1 → Decision2` (XML 1472): Empty condition is unexercised on a green run; closing action: injected outcome tests.
 - **MEDIUM** `wf_demo_mapping` / `Link` / `s_m_demo_mapping2 → Decision1` (XML 1473): Empty condition is unexercised on a green run; closing action: retain injected outcome tests.
 - **MEDIUM** `wf_demo_mapping` / `Link` / `s_m_demo_mapping3 → Decision3` (XML 1474): Empty condition is unexercised on a green run; closing action: injected outcome tests.
-- **MEDIUM** `wf_demo_mapping` / `Workflow abort` / `Earlier sessions write; aborting session writes none` (XML 5, 11): The session contract forbids partial writes for the aborting mapping, while workflow execution preserves completed earlier-session targets; closing action: retain the real-data workflow abort fixture.
-- **MEDIUM** `wf_demo_mapping` / `Workflow exit` / `Any failed session task` (XML 8): PowerCenter's FAIL_PARENT_IF_INSTANCE_FAILS attributes would leave the parent successful, but the migration contract requires a non-zero process status; closing action: retain injected outcome and real abort tests.
+- **MEDIUM** `wf_demo_mapping` / `Workflow abort` / `Earlier sessions write; aborting session writes none` (XML 943; 1458): The session contract forbids partial writes for the aborting mapping, while workflow execution preserves completed earlier-session targets; closing action: retain the real-data workflow abort fixture.
+- **MEDIUM** `wf_demo_mapping` / `Workflow exit` / `Any failed session task` (XML 1454-1460; n/a — CONTRACT §8): PowerCenter's FAIL_PARENT_IF_INSTANCE_FAILS attributes would leave the parent successful, but the migration contract requires a non-zero process status; closing action: retain injected outcome and real abort tests.
 
 ## LOW rows grouped by underlying decision
 
-### Milestone 0
+### DECISION — AES_DECRYPT representation [m_demo_mapping2]
+- `m_demo_mapping2` / `EXPTRANS` / `MD5_src` (XML 177)
+### DECISION — Use Any Value tie-break [m_demo_mapping2]
+- `m_demo_mapping2` / `LKPTRANS` / `Lookup policy on multiple match` (XML 285)
+### DECISION — aggregator pass-through tie-break [m_demo_mapping1]
 - `m_demo_mapping1` / `agg_TRANS` / `TX_ID` (XML 447)
 - `m_demo_mapping1` / `agg_TRANS` / `TX_DTTM` (XML 449)
-- `m_demo_mapping2` / `EXPTRANS` / `MD5_src` (XML 177)
+### DECISION — date representation [m_demo_mapping3]
 - `m_demo_mapping3` / `EXPTRANS` / `Birth_Date` (XML 935)
 - `m_demo_mapping3` / `EXPTRANS` / `Original_Effective_Date` (XML 940)
-### m_demo_mapping1
-- `m_demo_mapping2` / `LKPTRANS` / `Lookup policy on multiple match` (XML 285)
 
 ## Confidence rubric
 
@@ -303,5 +305,5 @@
 | wf_demo_mapping | Binding | s_m_demo_mapping3 → m_demo_mapping3 | 1169 | `MAPPINGNAME = "m_demo_mapping3"` | `workflow/runner.py:25-49 WORKFLOW_TASKS/WORKFLOW_LINKS` mapping dispatch | HIGH | Session binding is target-file load-bearing and a wrong binding would change target CSVs; note that session/mapping digits do not match source/target name digits. |
 | wf_demo_mapping | Binding | s_m_demo_mapping1 → m_demo_mapping1 | 1236 | `MAPPINGNAME = "m_demo_mapping1"` | `workflow/runner.py:25-49 WORKFLOW_TASKS/WORKFLOW_LINKS` mapping dispatch | HIGH | Session binding is target-file load-bearing and a wrong binding would change target CSVs; note that session/mapping digits do not match source/target name digits. |
 | wf_demo_mapping | Binding | s_m_demo_mapping2 → m_demo_mapping2 | 1365 | `MAPPINGNAME = "m_demo_mapping2"` | `workflow/runner.py:25-49 WORKFLOW_TASKS/WORKFLOW_LINKS` mapping dispatch | HIGH | Session binding is target-file load-bearing and a wrong binding would change target CSVs; note that session/mapping digits do not match source/target name digits. |
-| wf_demo_mapping | Workflow exit | Any failed session task | 8 | `run-workflow exits non-zero if ANY session task failed` | `workflow/runner.py:73-75 workflow_exit_code` | MEDIUM | PowerCenter's FAIL_PARENT_IF_INSTANCE_FAILS attributes would leave the parent successful, but the migration contract requires a non-zero process status; closing action: retain injected outcome and real abort tests. |
-| wf_demo_mapping | Workflow abort | Earlier sessions write; aborting session writes none | 5, 11 | `ABORT(...)` / session-level no-partial-write rule | `workflow/runner.py:96-111 _run_session; runner.py:196-200 workflow traversal` | MEDIUM | The session contract forbids partial writes for the aborting mapping, while workflow execution preserves completed earlier-session targets; closing action: retain the real-data workflow abort fixture. |
+| wf_demo_mapping | Workflow exit | Any failed session task | 1454-1460; n/a — CONTRACT §8 | `run-workflow exits non-zero if ANY session task failed` | `workflow/runner.py:73-75 workflow_exit_code` | MEDIUM | PowerCenter's FAIL_PARENT_IF_INSTANCE_FAILS attributes would leave the parent successful, but the migration contract requires a non-zero process status; closing action: retain injected outcome and real abort tests. |
+| wf_demo_mapping | Workflow abort | Earlier sessions write; aborting session writes none | 943; 1458 | `ABORT(...)` / session-level no-partial-write rule | `workflow/runner.py:96-111 _run_session; runner.py:196-200 workflow traversal` | MEDIUM | The session contract forbids partial writes for the aborting mapping, while workflow execution preserves completed earlier-session targets; closing action: retain the real-data workflow abort fixture. |

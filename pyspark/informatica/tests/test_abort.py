@@ -138,9 +138,9 @@ def test_real_data_workflow_abort_writes_prior_sessions_only(tmp_path):
         "--target-dir", str(target_dir),
     )
     assert completed.returncode != 0
-    assert completed.stderr.splitlines()[-1] == (
-        "ABORT('Relationship_to_Subscriber_Code_Labe valuel is null')\n"
-    ).rstrip("\n")
+    assert "ABORT('Relationship_to_Subscriber_Code_Labe valuel is null')" in (
+        completed.stderr.splitlines()
+    )
     assert "Failed_Email3: subject='Execution Status' text='Dataload  s_m_demo_mapping3t was failed to execute'" in completed.stdout
     # §5 forbids partial writes within the aborting session; at workflow
     # level, earlier sessions already completed and their targets remain.

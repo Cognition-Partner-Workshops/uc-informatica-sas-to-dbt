@@ -195,20 +195,71 @@ def _decision_groups(root, low_rows):
             current = line[3:].strip()
             sections[current] = []
         elif current and line.startswith("- **"):
-            sections[current].append(line.lower())
+            sections[current].append(line)
+        elif current and sections[current] and line.strip():
+            sections[current][-1] += f" {line.strip()}"
+
+    for section, bullets in sections.items():
+        parsed = []
+        for bullet in bullets:
+            match = re.match(r"- \*\*(.+?)\.\*\*\.?\s*(.*)", bullet)
+            if match:
+                parsed.append(
+                    {
+                        "title": match.group(1),
+                        "text": match.group(2),
+                    }
+                )
+        sections[section] = parsed
+
+    def score(row, bullet):
+        haystack = " ".join(
+            (row["transformation"], row["object"], row["original"], row["reason"])
+        ).lower()
+        bullet_text = f"{bullet['title']} {bullet['text']}".lower()
+        score = 0
+        if row["transformation"].lower() in bullet_text:
+            score += 4
+        if row["object"].lower() in bullet_text:
+            score += 4
+        original_terms = [
+            term.strip("`'(),")
+            for term in row["original"].split()
+            if len(term.strip("`'(),")) > 4
+        ]
+        score += sum(term.lower() in bullet_text for term in original_terms)
+        if "use any value" in haystack and "use any value" in bullet_text:
+            score += 4
+        if "aes_decrypt" in haystack and "aes_decrypt" in bullet_text:
+            score += 4
+        if "timestamptype" in haystack and "timestamptype" in bullet_text:
+            score += 4
+        return score
+
     groups = defaultdict(list)
     for row in low_rows:
-        haystack = f"{row['transformation']} {row['object']} {row['reason']}".lower()
-        candidates = [
-            section for section, bullets in sections.items()
-            if any(
-                token in bullet
-                for bullet in bullets
-                for token in haystack.replace("`", "").replace("(", " ").split()
-                if len(token) > 4
-            )
+        candidate_sections = [
+            section for section in sections
+            if section == row["mapping"] or section.startswith("Milestone ")
         ]
-        groups[candidates[0] if candidates else "No matching decisions.md entry"].append(row)
+        candidates = [
+            (score(row, bullet), -index, section, bullet)
+            for index, section in enumerate(candidate_sections)
+            for bullet in sections[section]
+            if score(row, bullet) > 0
+        ]
+        if not candidates:
+            label = "No matching decisions.md entry"
+        else:
+            _, _, section, bullet = max(
+                candidates,
+                key=lambda candidate: (
+                    candidate[0], candidate[1], candidate[2],
+                    candidate[3]["title"],
+                ),
+            )
+            label = f"{bullet['title']} [{section}]"
+        groups[label].append(row)
     return groups
 
 
