@@ -44,3 +44,17 @@ These behaviors are intentionally reproduced rather than fixed:
   `DESCRIPTION1`, and `SHORT_NAME1` are carried into the expression/router but have no target
   connector; RTRTRANS `DEFAULT1` (XML lines 245-262) has no outgoing connector. These are
   reproduced as dead/not-migrated outputs rather than invented target writes.
+
+## m_demo_mapping3
+
+- **RECOVERED DEFECT — SQL override silently discards NULL member types.** XML line 916 filters
+  with `demo_source2.Member_Type_Code is not null`; the implementation reproduces this and the
+  seed row Member_ID 30005 is absent from both outputs rather than fixing the discard.
+- **RECOVERED DEFECT — dead same-name label port.** XML line 1086 connects
+  `EXPTRANS.o_Relationship_to_Subscriber_Code_Label` to the router. The pass-through port at
+  XML line 942 has no outgoing connector, so the implementation reproduces the guarded `o_` port
+  as the label source rather than name-matching the dead port.
+- **RECOVERED DEFECT — DEFAULT1 silently drops rows.** XML lines 993–1006 define DEFAULT1 output
+  ports and XML line 949 defines the default group, but no DEFAULT1 port has an outgoing connector.
+  The implementation reproduces the missing edge and does not route DEFAULT1 anywhere; the
+  mutually exclusive conditions make it unreachable in the normal seed.

@@ -1,4 +1,3 @@
-import pytest
 from pyspark.sql import functions as F
 
 from informatica_pyspark.config import RunConfig
@@ -93,6 +92,21 @@ def test_abort_preserves_prior_mapping_outputs_but_not_aborting_targets(spark):
     ]
 
 
-@pytest.mark.skip(reason="Real mapping3 remains a Milestone 0 stub.")
-def test_real_data_abort_fixture():
-    pass
+def test_real_data_abort_fixture(tmp_path, capsys):
+    normal_dir = tmp_path / "normal"
+    abort_dir = tmp_path / "abort"
+    assert run_mapping(
+        "m_demo_mapping3", RunConfig(target_dir=str(normal_dir))
+    ) == 0
+    assert (normal_dir / "demo_target2.csv").exists()
+    assert (normal_dir / "demo_target21.csv").exists()
+
+    assert run_mapping(
+        "m_demo_mapping3",
+        RunConfig(source_variant="abort", target_dir=str(abort_dir)),
+    ) != 0
+    assert capsys.readouterr().err == (
+        "ABORT('Relationship_to_Subscriber_Code_Labe valuel is null')\n"
+    )
+    assert not (abort_dir / "demo_target2.csv").exists()
+    assert not (abort_dir / "demo_target21.csv").exists()
