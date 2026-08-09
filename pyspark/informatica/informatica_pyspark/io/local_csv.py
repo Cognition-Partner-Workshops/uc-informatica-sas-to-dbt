@@ -25,6 +25,11 @@ class LocalCsvWriter(TargetWriter):
     def __init__(self, target_dir: str):
         self.target_dir = Path(target_dir)
 
+    def prepare(self) -> None:
+        self.target_dir.mkdir(parents=True, exist_ok=True)
+        for path in self.target_dir.glob("*.csv"):
+            path.unlink()
+
     def write(self, target_instance: str, df: DataFrame) -> None:
         self.target_dir.mkdir(parents=True, exist_ok=True)
         path = self.target_dir / f"{target_instance}.csv"
@@ -35,6 +40,8 @@ class LocalCsvWriter(TargetWriter):
             .coalesce(1)
             .write.mode("overwrite")
             .option("header", "true")
+            .option("dateFormat", "yyyy-MM-dd")
+            .option("timestampFormat", "yyyy-MM-dd HH:mm:ss")
             .csv(str(temp))
         )
         part = next(temp.glob("part-*.csv"))

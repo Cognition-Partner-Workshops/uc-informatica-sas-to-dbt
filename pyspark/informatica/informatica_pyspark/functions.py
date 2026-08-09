@@ -2,6 +2,7 @@
 
 import re
 from datetime import date, datetime, time
+from py4j.protocol import Py4JError, Py4JJavaError
 from pyspark.sql import Column, functions as F
 
 INFORMATICA_DEFAULT_DATE_MASK = "MM/DD/YYYY HH24:MI:SS"
@@ -24,9 +25,10 @@ def isnull(value: Column) -> Column:
 def iif(condition: Column, true_value: Column, false_value: Column | None = None) -> Column:
     if false_value is None:
         try:
+            # Spark otherwise resolves the untyped NULL branch as NullType.
             data_type = true_value._jc.expr().dataType().catalogString()
             false_value = F.lit(None).cast(data_type)
-        except Exception:
+        except (AttributeError, Py4JError, Py4JJavaError):
             false_value = F.lit(None)
     return F.when(condition, true_value).otherwise(false_value)
 

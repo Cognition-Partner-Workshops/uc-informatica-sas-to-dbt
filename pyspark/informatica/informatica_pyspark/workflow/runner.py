@@ -1,6 +1,9 @@
 """wf_demo_mapping workflow semantics, including its recovered defects."""
 
 from dataclasses import dataclass, field
+import re
+import sys
+import traceback
 from typing import Callable
 
 from pyspark.sql import functions as F
@@ -18,6 +21,32 @@ EMAILS = {
     "Failed_Email1": ("Execution Status", "Dataload s_m_demo_mapping2 was failed to execute"),
     "Failed_Email3": ("Execution Status", "Dataload  s_m_demo_mapping3t was failed to execute"),
 }
+
+WORKFLOW_TASKS = (
+    "Start",
+    "Failed_Email2",
+    "SuccessEmail",
+    "Failed_Email1",
+    "Control",
+    "Decision2",
+    "Decision1",
+    "Decision3",
+    "Failed_Email3",
+)
+
+WORKFLOW_LINKS = (
+    ("Decision2", "Failed_Email2", "$Decision2.Condition = 0"),
+    ("Decision3", "SuccessEmail", "$Decision3.Condition = 1"),
+    ("Decision1", "Failed_Email1", "$Decision1.Condition = 0"),
+    ("Failed_Email2", "Control", ""),
+    ("Decision1", "s_m_demo_mapping1", ""),
+    ("Decision2", "s_m_demo_mapping3", "$Decision2.Condition = 1"),
+    ("Start", "s_m_demo_mapping2", ""),
+    ("s_m_demo_mapping2", "Decision1", ""),
+    ("s_m_demo_mapping1", "Decision2", ""),
+    ("s_m_demo_mapping3", "Decision3", ""),
+    ("Decision3", "Failed_Email3", "$Decision3.Condition = 0"),
+)
 
 
 @dataclass
@@ -38,6 +67,26 @@ def _emit_email(name: str, emails: list, log: Callable[[str], None]):
     subject, text = EMAILS[name]
     emails.append((name, subject, text))
     log(f"{name}: subject={subject!r} text={text!r}")
+
+
+def _link_enabled(condition: str, decisions: dict[str, bool]) -> bool:
+    if not condition:
+        return True
+    match = re.fullmatch(r"\$([A-Za-z0-9_]+)\.Condition = ([01])", condition)
+    if match is None:
+        raise ValueError(f"Unsupported workflow condition: {condition!r}")
+    return decisions[match.group(1)] is (match.group(2) == "1")
+
+
+def _workflow_condition(source: str, target: str) -> str:
+    return next(condition for left, right, condition in WORKFLOW_LINKS
+                if left == source and right == target)
+
+
+def _prepare_writer(writer) -> None:
+    prepare = getattr(writer, "prepare", None)
+    if prepare is not None:
+        prepare()
 
 
 def _run_session(name: str, mapping_name: str, config: RunConfig, spark, reader, writer,
@@ -70,7 +119,11 @@ def _run_session(name: str, mapping_name: str, config: RunConfig, spark, reader,
                 frame = frame.orderBy(*frame.columns)
             writer.write(instance, frame)
         return SessionOutcome(1, result=result)
+    except InformaticaAbort as exc:
+        print(f"ABORT('{exc}')", file=sys.stderr)
+        return SessionOutcome(0, error=exc)
     except Exception as exc:
+        traceback.print_exc(file=sys.stderr)
         return SessionOutcome(0, error=exc)
 
 
@@ -81,10 +134,10 @@ def run_mapping(mapping_name: str, config: RunConfig, mapping_runner=None,
     if getattr(reader, "spark", None) is None:
         reader.spark = spark
     writer = writer or get_writer(config)
+    _prepare_writer(writer)
     outcome = _run_session("s_" + mapping_name, mapping_name, config, spark, reader, writer,
                            mapping_runner or MAPPINGS)
     if outcome.error:
-        print(str(outcome.error))
         return 1
     return 0
 
@@ -98,31 +151,37 @@ def run_workflow(config: RunConfig, mapping_runner=None, reader=None, writer=Non
     if getattr(reader, "spark", None) is None:
         reader.spark = spark
     writer = writer or get_writer(config)
+    _prepare_writer(writer)
 
-    # Start -> mapping2 -> Decision1.
+    decisions = {}
     result.sessions["s_m_demo_mapping2"] = _run_session(
         "s_m_demo_mapping2", "m_demo_mapping2", config, spark, reader, writer, mapping_runner)
     mapping2_ok = result.sessions["s_m_demo_mapping2"].status == 1
-    if not mapping2_ok:
+    decisions["Decision1"] = mapping2_ok
+    if _link_enabled(_workflow_condition("Decision1", "Failed_Email1"), decisions):
         _emit_email("Failed_Email1", result.emails, log)
 
-    # Empty Decision1 -> mapping1 link is intentional: mapping1 always runs.
-    result.sessions["s_m_demo_mapping1"] = _run_session(
-        "s_m_demo_mapping1", "m_demo_mapping1", config, spark, reader, writer, mapping_runner)
-    mapping1_ok = result.sessions["s_m_demo_mapping1"].status == 1
-    if not mapping1_ok:
-        _emit_email("Failed_Email2", result.emails, log)
-        # Control Option = Stop parent.
-        result.failed = True
-        return result
+    if _link_enabled("", decisions):
+        result.sessions["s_m_demo_mapping1"] = _run_session(
+            "s_m_demo_mapping1", "m_demo_mapping1", config, spark, reader, writer, mapping_runner)
+        mapping1_ok = result.sessions["s_m_demo_mapping1"].status == 1
+        decisions["Decision2"] = mapping1_ok
+        if _link_enabled(_workflow_condition("Decision2", "Failed_Email2"), decisions):
+            _emit_email("Failed_Email2", result.emails, log)
+            result.failed = True
+            return result
+    else:
+        mapping1_ok = False
 
-    if mapping1_ok:
+    if mapping1_ok and _link_enabled(
+            _workflow_condition("Decision2", "s_m_demo_mapping3"), decisions):
         result.sessions["s_m_demo_mapping3"] = _run_session(
             "s_m_demo_mapping3", "m_demo_mapping3", config, spark, reader, writer, mapping_runner)
         mapping3_ok = result.sessions["s_m_demo_mapping3"].status == 1
-        if mapping3_ok:
+        decisions["Decision3"] = mapping3_ok
+        if _link_enabled(_workflow_condition("Decision3", "SuccessEmail"), decisions):
             _emit_email("SuccessEmail", result.emails, log)
-        else:
+        if _link_enabled(_workflow_condition("Decision3", "Failed_Email3"), decisions):
             _emit_email("Failed_Email3", result.emails, log)
 
     result.failed = any(outcome.status == 0 for outcome in result.sessions.values())

@@ -1,4 +1,7 @@
 from datetime import date
+import re
+from pathlib import Path
+from xml.etree import ElementTree
 
 from pyspark.sql import functions as F
 
@@ -7,6 +10,7 @@ from informatica_pyspark.functions import (
     abort, aes_decrypt, concat, decode, error, iif, isnull, ltrim, md5, not_,
     rtrim, strcmp, substr, sysdate, systimestamp, to_char, to_date,
 )
+from informatica_pyspark.lineage import Lineage
 
 
 def value(spark, expression):
@@ -87,6 +91,27 @@ def test_decode_all_default_modes(spark):
 def test_concat_null_is_empty_string(spark):
     assert value(spark, concat(F.lit("A"), F.lit(None))) == "A"
     assert value(spark, concat(F.lit(None), F.lit(None))) == ""
+
+
+def test_concat_null_decision_is_unobservable_on_seed_inputs(spark):
+    xml_path = Path(__file__).resolve().parents[3] / "legacy/informatica/wf_demo_mapping.XML"
+    root = ElementTree.parse(xml_path).getroot()
+    expression = next(
+        field.attrib["EXPRESSION"]
+        for transformation in root.iter("TRANSFORMATION")
+        if transformation.attrib.get("NAME") == "EXPTRANS"
+        for field in transformation.findall("TRANSFORMFIELD")
+        if field.attrib.get("NAME") == "MD5_tgt"
+    )
+    operands = re.findall(r"\b[A-Za-z_][A-Za-z0-9_]*\b", expression.split("(", 1)[1])
+    operands = [name for name in operands if name != "MD5"]
+    graph = Lineage()
+    source = spark.read.option("header", "true").csv("legacy/informatica/data/demo_source1.csv")
+    for operand in operands:
+        terminal = graph.chain("m_demo_mapping2", "EXPTRANS", operand)[-1]
+        assert terminal[0] == "demo_source1", f"XML line 178: {operand} source changed"
+        assert source.where(F.col(terminal[1]).isNull()).count() == 0, (
+            f"XML line 178: seed NULL found in concatenated input {terminal[1]}")
 
 
 def test_error_is_null_and_abort_is_message_or_null(spark):

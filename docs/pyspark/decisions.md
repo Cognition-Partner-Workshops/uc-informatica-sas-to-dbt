@@ -8,8 +8,10 @@
   The primitive returns that literal. Rejected real AES-256 decryption because the key/material
   are not recoverable and would change Insert/Update classification.
 - **DECISION — NULL concatenation.** `||` treats NULL operands as empty strings. The baseline's
-  DuckDB operator is NULL-propagating, but no concatenated seed input is NULL and MD5 does not
-  drive classification. Rejected NULL propagation; closing action is a NULL-focused mapping test.
+  DuckDB operator is NULL-propagating, but the XML-derived concatenated inputs for the real seed
+  rows contain no NULLs, so the two implementations cannot produce different target values.
+  Rejected NULL propagation; `tests/test_functions.py` proves the XML-derived seed inputs are
+  non-NULL.
 - **RECOVERED — TO_DATE/IIF.** `legacy/informatica/wf_demo_mapping.XML` line 662 mask produces
   NULL in baseline `SELL_ST_DT`;
   two-argument false `IIF` produces NULL.

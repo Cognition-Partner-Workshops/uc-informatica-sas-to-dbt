@@ -1,6 +1,6 @@
-from pyspark.sql import DataFrame, SparkSession, Window, functions as F
+from pyspark.sql import DataFrame, SparkSession
 
-from .base import SourceReader, TargetWriter
+from .base import ORDINAL_COL, SourceReader, TargetWriter
 
 
 class SnowflakeReader(SourceReader):
@@ -15,10 +15,11 @@ class SnowflakeReader(SourceReader):
             .option("dbtable", logical_name)
             .load()
         )
-        return frame.withColumn(
-            "SRC_ORDINAL",
-            F.row_number().over(Window.orderBy(F.monotonically_increasing_id())) - 1,
-        )
+        if ORDINAL_COL not in frame.columns:
+            raise ValueError(
+                f"Snowflake source {logical_name!r} must contain persisted {ORDINAL_COL}"
+            )
+        return frame
 
 
 class SnowflakeWriter(TargetWriter):
@@ -31,6 +32,6 @@ class SnowflakeWriter(TargetWriter):
             output.write.format("snowflake")
             .options(**self.options)
             .option("dbtable", target_instance)
-            .mode("append")
+            .mode("overwrite")
             .save()
         )
