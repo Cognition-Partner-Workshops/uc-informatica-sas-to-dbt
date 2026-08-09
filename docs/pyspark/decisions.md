@@ -142,15 +142,13 @@
   sessions retain their outputs before the later mapping aborts; deleting those
   outputs would contradict the recovered runner behavior and the baseline abort
   fixture.
-- **OBSERVED DIVERGENCE — helper-column names.** Mapping2 and mapping3 retain
-  Informatica port names such as `New_Flag`, `MD5_src`, and
-  `o_Relationship_to_Subscriber_Code_Label` rather than the §6 `SRC_`/`WRK_`
-  convention. They are projected away before writes to preserve lineage and
-  output bytes; no rename was made pending a contract ruling.
-- **OBSERVED DIVERGENCE — mapping1 target5 sort keys.** `demo_target5` retains
-  `("ACCT_ID", "BAL_AMT")` while other targets use their parity key. This is
-  harmless for the current output and was not changed because changing output
-  ordering could alter emitted bytes.
+- **DECISION — helper-column names.** Mapping2 and mapping3 retain Informatica
+  port names such as `New_Flag`, `MD5_src`, and
+  `o_Relationship_to_Subscriber_Code_Label` to preserve lineage. These are real
+  XML ports, not synthesized helpers, and are projected away before writes.
+- **DECISION — mapping1 target5 sort keys.** `demo_target5` uses `("ACCT_ID",)` like
+  the other targets. Its two output rows have distinct `ACCT_ID` values (1003 and
+  1004), so dropping `BAL_AMT` is not load-bearing and preserves the output bytes.
 - **RECOVERED — task traversal recording.** Workflow results now record the
   ordered task instances actually executed, including `Control` on the
   `Failed_Email2 → Control` stop-parent path. This makes the early return

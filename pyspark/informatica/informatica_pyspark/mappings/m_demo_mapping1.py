@@ -139,7 +139,7 @@ def run(ctx: MappingContext) -> MappingResult:
         },
         sort_keys={
             "demo_target3": ("PRODUCT_ID",),
-            "demo_target5": ("ACCT_ID", "BAL_AMT"),
+            "demo_target5": ("ACCT_ID",),
             "demo_target6": ("ACCT_ID",),
         },
     )
