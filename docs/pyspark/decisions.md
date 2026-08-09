@@ -57,3 +57,24 @@
 - **RECOVERED — source typing.** String CSV inputs are cast according to XML port types:
   numeric account/transaction/customer identifiers to long, amounts to double, dates to
   date, transaction time to timestamp, and `CRDT_LN` remains string for LTRIM.
+
+## m_demo_mapping2
+
+- **DECISION — AES_DECRYPT representation.** The mapping calls `functions.aes_decrypt` with the
+  XML arguments and receives the scaffold's `LEGACY_AES_VALUE` constant. A real AES-256 decrypt
+  and NULL were rejected because the key/material are unavailable and neither can change the
+  result unless it equals the target's 32-character MD5 digest exactly.
+- **DECISION — Use Any Value tie-break.** Duplicate lookup IDs retain the greatest `SRC_ORDINAL`
+  (the physical source order sanctioned by the contract). Choosing the highest Key happens to
+  select the same row in this seed, while choosing the lowest ordinal selects Key 2 and fails
+  parity.
+- **DECISION — sequence assignment order.** Insert NEXTVAL values are `56 + row_number()` in
+  `SRC_ORDINAL` order. An arbitrary window order or `monotonically_increasing_id` was rejected
+  because it is not the physical Informatica pipeline order.
+- **DECISION — ERROR defaults.** `ERROR('transformation error')` remains the milestone-0
+  reject-default/NULL primitive. No expression in this mapping raises, so the defaults never
+  fire.
+- **DECISION — DD_UPDATE write semantics.** UPDTRANS forwards every Update-group row to the
+  `demo_target1_UPD` instance; no CSV/warehouse upsert semantics are modeled.
+- **DECISION — sort keys.** Both target instances use `sort_keys=("ID",)` to match the baseline
+  ordering.
