@@ -5,6 +5,7 @@ import pytest
 
 from informatica_pyspark.config import RunConfig
 from informatica_pyspark.context import MappingContext
+from informatica_pyspark import functions
 from informatica_pyspark.io.local_csv import LocalCsvReader
 from informatica_pyspark.mappings.m_demo_mapping1 import run
 from pyspark.sql import functions as F
@@ -36,15 +37,30 @@ def mapping_result_with_sources(spark):
 
 
 def test_positional_override_and_discarded_strcmp(spark):
-    result = mapping_result(spark)
+    config, sources = mapping_result_with_sources(spark)
+    result = run(MappingContext(spark=spark, config=config, sources=sources))
     target = result.targets["demo_target6"].orderBy("ACCT_ID").collect()
 
+    override_values = (
+        sources["demo_source3"].alias("source3")
+        .join(
+            sources["demo_source4"].alias("source4"),
+            F.col("source3.ACCT_ID") == F.col("source4.ACCT_ID"),
+            "inner",
+        )
+        .select(
+            functions.strcmp(
+                F.col("source4.ACCT_STAT_CD"), F.col("source3.TX_TYPE_CD")
+            ).alias("OVERRIDE_STRCMP")
+        )
+        .collect()
+    )
+    assert all(row.OVERRIDE_STRCMP is not None for row in override_values)
+    assert all(isinstance(row.OVERRIDE_STRCMP, int) for row in override_values)
+    assert {row.OVERRIDE_STRCMP for row in override_values} == {-1, 1}
     assert target[0]["CR8_DT"].isoformat() == "2024-01-31"
     assert target[0]["TX_TYPE_CD"] == "DR"
     assert "WRK_SQL_TX_TYPE_CD" not in result.targets["demo_target6"].columns
-    # The SQL override's STRCMP(A, DR) is -1, but the unconnected SQ port is
-    # not allowed to reach any target.
-    assert result.targets["demo_target6"].where("TX_TYPE_CD = -1").count() == 0
 
 
 def test_unconnected_lookup_returns_last_tx_type_code(spark):
