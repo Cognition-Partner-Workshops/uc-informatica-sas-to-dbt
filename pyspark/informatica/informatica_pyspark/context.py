@@ -21,6 +21,7 @@ class AbortCheck:
 class MappingResult:
     targets: dict[str, DataFrame] = field(default_factory=dict)
     abort_checks: list[AbortCheck] = field(default_factory=list)
+    sort_keys: dict[str, tuple[str, ...]] = field(default_factory=dict)
 
 
 @dataclass

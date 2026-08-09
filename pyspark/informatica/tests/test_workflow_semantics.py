@@ -1,3 +1,5 @@
+from pyspark.sql import functions as F
+
 from informatica_pyspark.config import RunConfig
 from informatica_pyspark.context import MappingResult
 from informatica_pyspark.workflow.runner import EMAILS, run_workflow
@@ -11,9 +13,11 @@ class Reader:
 class Writer:
     def __init__(self):
         self.writes = []
+        self.frames = {}
 
     def write(self, name, frame):
         self.writes.append(name)
+        self.frames[name] = frame
 
 
 def outcomes(spark, statuses):
@@ -57,3 +61,28 @@ def test_mapping1_failure_stops_parent_before_mapping3(spark):
 def test_mapping3_failure_emits_failed_email(spark):
     result = run(spark, {"m_demo_mapping1": 1, "m_demo_mapping2": 1, "m_demo_mapping3": 0})
     assert result.emails == [("Failed_Email3", *EMAILS["Failed_Email3"])]
+
+
+def test_target_projection_helpers_and_declared_sort_keys(spark):
+    writer = Writer()
+
+    def mapping(_ctx):
+        frame = spark.createDataFrame([(2, "x", "helper")], ["ID", "DESCRIPTION", "WRK_TEMP"])
+        return MappingResult(
+            targets={"demo_target1_INS": frame},
+            sort_keys={"demo_target1_INS": ("ID",)},
+        )
+
+    result = run_workflow(
+        RunConfig(), mapping_runner={
+            "m_demo_mapping1": mapping,
+            "m_demo_mapping2": lambda _: MappingResult(),
+            "m_demo_mapping3": lambda _: MappingResult(),
+        }, reader=Reader(), writer=writer, spark=spark, log=lambda _: None)
+    assert result.sessions["s_m_demo_mapping2"].status == 1
+    assert writer.frames["demo_target1_INS"].columns == [
+        "Key", "LEAD_CO_MNE", "BRANCH_CO_MNE", "MIS_DATE", "ID", "DESCRIPTION", "SHORT_NAME",
+        "CREATED_BY", "CREATED_TIME", "UPDATED_BY", "UPDATED_TIME", "ACTIVE_FLAG", "START_DATE",
+        "END_DATE",
+    ]
+    assert "WRK_TEMP" not in writer.frames["demo_target1_INS"].columns

@@ -1,6 +1,20 @@
 """Column-level Informatica expression primitives."""
 
+import re
+from datetime import date, datetime, time
 from pyspark.sql import Column, functions as F
+
+INFORMATICA_DEFAULT_DATE_MASK = "MM/DD/YYYY HH24:MI:SS"
+_MASK_TOKENS = {
+    "HH24": "HH", "HH12": "hh", "MONTH": "MMMM", "MON": "MMM",
+    "YYYY": "yyyy", "YY": "yy", "MI": "mm", "US": "SSSSSS",
+    "DD": "dd", "MM": "MM", "SS": "ss",
+}
+
+
+def informatica_mask(mask: str) -> str:
+    pattern = "|".join(sorted(_MASK_TOKENS, key=len, reverse=True))
+    return re.sub(pattern, lambda match: _MASK_TOKENS[match.group(0)], mask.upper())
 
 
 def isnull(value: Column) -> Column:
@@ -8,8 +22,17 @@ def isnull(value: Column) -> Column:
 
 
 def iif(condition: Column, true_value: Column, false_value: Column | None = None) -> Column:
-    false_value = F.lit(None) if false_value is None else false_value
+    if false_value is None:
+        try:
+            data_type = true_value._jc.expr().dataType().catalogString()
+            false_value = F.lit(None).cast(data_type)
+        except Exception:
+            false_value = F.lit(None)
     return F.when(condition, true_value).otherwise(false_value)
+
+
+def not_(value: Column) -> Column:
+    return ~value
 
 
 def concat(*values: Column) -> Column:
@@ -26,15 +49,15 @@ def aes_decrypt(*_args: Column) -> Column:
 
 
 def to_date(value: Column, mask: str) -> Column:
-    return F.to_date(value, mask)
+    return F.to_date(value, informatica_mask(mask))
 
 
 def to_char(value: Column, mask: str | None = None) -> Column:
-    return F.date_format(value, mask) if mask else value.cast("string")
+    return F.date_format(value, informatica_mask(mask or INFORMATICA_DEFAULT_DATE_MASK))
 
 
-def substr(value: Column, start: int, length: int) -> Column:
-    return F.substring(value, start, length)
+def substr(value: Column, start: int, length: int | None = None) -> Column:
+    return F.substring(value, start, length if length is not None else 2147483647)
 
 
 def ltrim(value: Column) -> Column:
@@ -46,7 +69,12 @@ def rtrim(value: Column) -> Column:
 
 
 def strcmp(left: Column, right: Column) -> Column:
-    return F.when(left == right, F.lit(0)).when(left < right, F.lit(-1)).otherwise(F.lit(1))
+    return (
+        F.when(left.isNull() | right.isNull(), F.lit(None))
+        .when(left == right, F.lit(0))
+        .when(left < right, F.lit(-1))
+        .otherwise(F.lit(1))
+    )
 
 
 def decode(value: Column, *pairs: Column) -> Column:
@@ -67,3 +95,11 @@ def error(_message: str) -> Column:
 
 def abort(value: Column, message: str) -> Column:
     return F.when(value, F.lit(message)).otherwise(F.lit(None))
+
+
+def sysdate(business_date: date) -> Column:
+    return F.lit(business_date)
+
+
+def systimestamp(business_date: date) -> Column:
+    return F.lit(datetime.combine(business_date, time.min))

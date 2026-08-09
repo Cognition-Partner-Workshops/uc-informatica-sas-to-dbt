@@ -41,9 +41,18 @@ class Lineage:
                                        a["TOINSTANCE"], a["TOFIELD"], line_no))
         self.incoming = {}
         self.outgoing = {}
+        self.field_lines = {}
         for edge in self.edges:
             self.incoming.setdefault((edge.mapping, edge.to_instance, edge.to_field), []).append(edge)
             self.outgoing.setdefault((edge.mapping, edge.from_instance, edge.from_field), []).append(edge)
+        mapping = ""
+        for line_no, line in enumerate(self.lines, 1):
+            if "<MAPPING " in line:
+                mapping = _attrs(line).get("NAME", "")
+            if "<TRANSFORMFIELD " in line:
+                attrs = _attrs(line)
+                if attrs.get("NAME"):
+                    self.field_lines[(mapping, attrs.get("NAME"), attrs["NAME"])] = line_no
 
     def mappings(self):
         return self.root.findall(".//MAPPING")
@@ -54,6 +63,21 @@ class Lineage:
     def target_instances(self, mapping: str):
         mp = next(m for m in self.mappings() if m.attrib["NAME"] == mapping)
         return [i.attrib for i in mp.findall("./INSTANCE") if i.attrib.get("TYPE") == "TARGET"]
+
+    def instance_line(self, mapping: str, instance: str) -> int:
+        start = next(i for i, line in enumerate(self.lines, 1)
+                     if f'<MAPPING ' in line and f'NAME ="{mapping}"' in line)
+        return next(i for i in range(start, len(self.lines) + 1)
+                    if "<INSTANCE " in self.lines[i - 1] and
+                    _attrs(self.lines[i - 1]).get("NAME") == instance)
+
+    def session_bindings(self):
+        bindings = []
+        for line_no, line in enumerate(self.lines, 1):
+            if "<SESSION " in line:
+                attrs = _attrs(line)
+                bindings.append((attrs["NAME"], attrs["MAPPINGNAME"], line_no))
+        return bindings
 
     def target_fields(self, physical: str):
         target = next(t for t in self.root.findall(".//TARGET") if t.attrib["NAME"] == physical)
@@ -69,20 +93,77 @@ class Lineage:
         return next(f.attrib.get("EXPRESSION", "") for f in t.findall("./TRANSFORMFIELD")
                     if f.attrib["NAME"] == port)
 
-    def chain(self, mapping: str, instance: str, field: str) -> list[tuple[str, str, int | None]]:
+    def _field(self, mapping: str, instance: str, field: str):
+        transformation = self.transformations(mapping).get(instance)
+        if transformation is None:
+            return None
+        return next((f for f in transformation.findall("./TRANSFORMFIELD")
+                     if f.attrib.get("NAME") == field), None)
+
+    def lookup_details(self, mapping: str, instance: str) -> dict[str, str | int]:
+        transformation = self.transformations(mapping)[instance]
+        attrs = {a.attrib["NAME"]: a.attrib.get("VALUE", "")
+                 for a in transformation.findall("./TABLEATTRIBUTE")}
+        line_numbers = {}
+        for line_no, line in enumerate(self.lines, 1):
+            if f'<TRANSFORMATION ' in line and f'NAME ="{instance}"' in line:
+                start = line_no
+                break
+        else:
+            start = 1
+        for name in ("Lookup table name", "Lookup condition", "Lookup policy on multiple match"):
+            line_numbers[name] = next(
+                (n for n in range(start, len(self.lines) + 1)
+                 if f'NAME ="{name}"' in self.lines[n - 1]), start)
+        return {
+            "table": attrs.get("Lookup table name", ""),
+            "condition": attrs.get("Lookup condition", ""),
+            "policy": attrs.get("Lookup policy on multiple match", ""),
+            "table_line": line_numbers["Lookup table name"],
+            "condition_line": line_numbers["Lookup condition"],
+            "policy_line": line_numbers["Lookup policy on multiple match"],
+        }
+
+    def router_details(self, mapping: str, instance: str, field: str) -> dict[str, str] | None:
+        transformation = self.transformations(mapping).get(instance)
+        if transformation is None or transformation.attrib.get("TYPE") != "Router":
+            return None
+        port = self._field(mapping, instance, field)
+        if port is None or not port.attrib.get("REF_FIELD"):
+            return None
+        group_name = port.attrib.get("GROUP", "")
+        group = next((g for g in transformation.findall("./GROUP")
+                      if g.attrib.get("NAME") == group_name), None)
+        return {
+            "group": group_name,
+            "expression": group.attrib.get("EXPRESSION", "") if group is not None else "",
+        }
+
+    def lookup_call(self, mapping: str, instance: str, field: str) -> str | None:
+        port = self._field(mapping, instance, field)
+        expression = port.attrib.get("EXPRESSION", "") if port is not None else ""
+        match = re.search(r":LKP\.([A-Za-z0-9_]+)\(", expression)
+        return match.group(1) if match else None
+
+    def chain(self, mapping: str, instance: str, field: str,
+              incoming_line: int | None = None) -> list[tuple[str, str, int | None]]:
         edges = self.incoming.get((mapping, instance, field), [])
         if not edges:
-            # Router output ports are numbered copies of their input ports. The
-            # XML has no intra-router CONNECTOR; collapse that implicit hop.
-            match = re.match(r"^(.*?)(\d+)$", field)
-            if instance.startswith("rtr_") and match:
-                base_edges = self.incoming.get((mapping, instance, match.group(1)), [])
-                if base_edges:
-                    edge = base_edges[0]
-                    return self.chain(mapping, edge.from_instance, edge.from_field)
-            return [(instance, field, None)]
+            port = self._field(mapping, instance, field)
+            ref_field = port.attrib.get("REF_FIELD") if port is not None else None
+            if ref_field:
+                ref_edges = self.incoming.get((mapping, instance, ref_field), [])
+                result = [(instance, field, incoming_line)]
+                if ref_edges:
+                    edge = ref_edges[0]
+                    result.append((instance, ref_field, edge.line))
+                    result.extend(self.chain(mapping, edge.from_instance, edge.from_field,
+                                             edge.line))
+                return result
+            return [(instance, field, incoming_line)]
         result = [(instance, field, edges[0].line)]
-        result.extend(self.chain(mapping, edges[0].from_instance, edges[0].from_field))
+        result.extend(self.chain(mapping, edges[0].from_instance, edges[0].from_field,
+                                 edges[0].line))
         return result
 
     def dead_ports(self, mapping: str) -> set[str]:
@@ -121,10 +202,34 @@ class Lineage:
                 rows.append(f"### {target['NAME']} (`{physical}`)")
                 for field in self.target_fields(physical):
                     chain = self.chain(mapping, target["NAME"], field)
-                    rendered = " <- ".join(
-                        f"`{instance}.{port}`" + (f" [XML line {line}]" if line else "")
-                        for instance, port, line in chain
-                    )
+                    rendered_parts = []
+                    for instance, port, line in chain:
+                        suffix = f" [XML line {line}]" if line else ""
+                        router = self.router_details(mapping, instance, port)
+                        if router:
+                            suffix += (f" [GROUP {router['group']}; "
+                                       f"EXPRESSION {router['expression'] or '<default>'}]")
+                        transformation = self.transformations(mapping).get(instance)
+                        if transformation is not None and transformation.attrib.get("TYPE") == "Lookup Procedure":
+                            details = self.lookup_details(mapping, instance)
+                            suffix += (f" [LOOKUP {details['table']} line {details['table_line']}; "
+                                       f"CONDITION {details['condition']} line {details['condition_line']}; "
+                                       f"POLICY {details['policy']} line {details['policy_line']}]")
+                        lookup_name = self.lookup_call(mapping, instance, port)
+                        if lookup_name:
+                            details = self.lookup_details(mapping, lookup_name)
+                            return_port = next(
+                                field.attrib["NAME"]
+                                for field in self.transformations(mapping)[lookup_name]
+                                .findall("./TRANSFORMFIELD")
+                                if "LOOKUP/RETURN" in field.attrib.get("PORTTYPE", "")
+                            )
+                            suffix += (f" [LOOKUP CALL {lookup_name} RETURN {return_port}; "
+                                       f"TABLE {details['table']} line {details['table_line']}; "
+                                       f"CONDITION {details['condition']} line {details['condition_line']}; "
+                                       f"POLICY {details['policy']} line {details['policy_line']}]")
+                        rendered_parts.append(f"`{instance}.{port}`{suffix}")
+                    rendered = " <- ".join(rendered_parts)
                     rows.append(f"- `{field}`: {rendered}")
                 rows.append("")
         return "\n".join(rows).rstrip() + "\n"

@@ -19,8 +19,20 @@ jobs:
           python-version: '3.12'
       - run: python -m venv /tmp/pyspark-informatica
       - run: /tmp/pyspark-informatica/bin/pip install -r pyspark/informatica/requirements.txt
-      - run: PYTHONPATH=pyspark/informatica /tmp/pyspark-informatica/bin/pytest pyspark/informatica/tests
+      - run: /tmp/pyspark-informatica/bin/pytest pyspark/informatica/tests
       - run: /tmp/pyspark-informatica/bin/python tools/informatica_baseline.py
+      - name: Verify abort leaves no targets
+        shell: bash
+        run: |
+          target_dir="$(mktemp -d)"
+          set +e
+          PYTHONPATH=pyspark/informatica /tmp/pyspark-informatica/bin/python \
+            -m informatica_pyspark.cli run-workflow \
+            --source-variant abort --target-dir "$target_dir"
+          status=$?
+          set -e
+          test "$status" -ne 0
+          test -z "$(find "$target_dir" -type f -print -quit)"
       - name: Detect unfinished mappings
         id: mappings
         shell: bash

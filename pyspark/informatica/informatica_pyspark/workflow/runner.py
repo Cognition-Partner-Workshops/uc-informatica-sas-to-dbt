@@ -1,14 +1,16 @@
 """wf_demo_mapping workflow semantics, including its recovered defects."""
 
 from dataclasses import dataclass, field
-from pathlib import Path
 from typing import Callable
 
+from pyspark.sql import functions as F
+
 from ..config import RunConfig
-from ..context import AbortCheck, InformaticaAbort, MappingContext, MappingResult
+from ..context import InformaticaAbort, MappingContext, MappingResult
 from ..io import get_reader, get_writer
-from ..mappings import MAPPINGS
+from ..mappings import MAPPINGS, MappingSpec
 from ..session import build_spark
+from ..targets import columns_for
 
 EMAILS = {
     "Failed_Email2": ("Run status", "Sessio 's_m_demo_mapping1' failed"),
@@ -22,7 +24,7 @@ EMAILS = {
 class SessionOutcome:
     status: int
     result: MappingResult | None = None
-    error: BaseException | None = None
+    error: Exception | None = None
 
 
 @dataclass
@@ -41,27 +43,35 @@ def _emit_email(name: str, emails: list, log: Callable[[str], None]):
 def _run_session(name: str, mapping_name: str, config: RunConfig, spark, reader, writer,
                  mapping_runner) -> SessionOutcome:
     try:
-        run = mapping_runner[mapping_name]
-        sources = {logical: reader.read(logical) for logical in _sources(mapping_name)}
+        spec = mapping_runner[mapping_name]
+        if isinstance(spec, MappingSpec):
+            run, source_names = spec.run, spec.sources
+        else:
+            run, source_names = spec, MAPPINGS[mapping_name].sources
+        sources = {logical: reader.read(logical) for logical in source_names}
         result = run(MappingContext(spark=spark, config=config, sources=sources))
         for check in result.abort_checks:
             if check.predicate_df.limit(1).count():
                 raise InformaticaAbort(check.message)
         for instance, frame in result.targets.items():
-            writer.write(instance, frame.orderBy(*frame.columns))
+            expected = columns_for(instance)
+            helper_columns = [column for column in frame.columns
+                              if column.startswith(("SRC_", "WRK_"))]
+            frame = frame.drop(*helper_columns)
+            missing = [column for column in expected if column not in frame.columns]
+            for column in missing:
+                frame = frame.withColumn(column, F.lit(None))
+            frame = frame.select(*expected)
+            keys = result.sort_keys.get(instance)
+            if keys:
+                frame = frame.orderBy(*keys)
+            else:
+                # Fallback is deterministic but mappings should supply legacy sort keys.
+                frame = frame.orderBy(*frame.columns)
+            writer.write(instance, frame)
         return SessionOutcome(1, result=result)
-    except BaseException as exc:
+    except Exception as exc:
         return SessionOutcome(0, error=exc)
-
-
-def _sources(mapping_name):
-    from ..mappings import m_demo_mapping1, m_demo_mapping2, m_demo_mapping3
-    modules = {
-        "m_demo_mapping1": m_demo_mapping1,
-        "m_demo_mapping2": m_demo_mapping2,
-        "m_demo_mapping3": m_demo_mapping3,
-    }
-    return modules[mapping_name].SOURCES
 
 
 def run_mapping(mapping_name: str, config: RunConfig, mapping_runner=None,

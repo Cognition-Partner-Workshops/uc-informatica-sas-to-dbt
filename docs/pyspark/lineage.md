@@ -3,31 +3,31 @@
 ## m_demo_mapping2
 
 ### demo_target1_UPD (`demo_target1`)
-- `Key`: `demo_target1_UPD.Key` [XML line 356] <- `UPDTRANS.Key2` [XML line 423] <- `RTRTRANS.Key3`
-- `LEAD_CO_MNE`: `demo_target1_UPD.LEAD_CO_MNE` [XML line 357] <- `UPDTRANS.LEAD_CO_MNE3` [XML line 411] <- `RTRTRANS.LEAD_CO_MNE4`
-- `BRANCH_CO_MNE`: `demo_target1_UPD.BRANCH_CO_MNE` [XML line 358] <- `UPDTRANS.BRANCH_CO_MNE3` [XML line 412] <- `RTRTRANS.BRANCH_CO_MNE4`
-- `MIS_DATE`: `demo_target1_UPD.MIS_DATE` [XML line 359] <- `UPDTRANS.MIS_DATE3` [XML line 413] <- `RTRTRANS.MIS_DATE4`
-- `ID`: `demo_target1_UPD.ID` [XML line 360] <- `UPDTRANS.ID2` [XML line 414] <- `RTRTRANS.ID3`
-- `DESCRIPTION`: `demo_target1_UPD.DESCRIPTION` [XML line 361] <- `UPDTRANS.DESCRIPTION3` [XML line 415] <- `RTRTRANS.DESCRIPTION4`
-- `SHORT_NAME`: `demo_target1_UPD.SHORT_NAME` [XML line 362] <- `UPDTRANS.SHORT_NAME3` [XML line 416] <- `RTRTRANS.SHORT_NAME4`
+- `Key`: `demo_target1_UPD.Key` [XML line 356] <- `UPDTRANS.Key2` [XML line 423] <- `RTRTRANS.Key3` [XML line 423] [GROUP Update; EXPRESSION Changed_Flag='Update'] <- `RTRTRANS.Key` [XML line 409] <- `EXPTRANS.Key` [XML line 392] <- `LKPTRANS.Key` [XML line 392] [LOOKUP demo_target1 line 282; CONDITION ID = ID1 line 286; POLICY Use Any Value line 285]
+- `LEAD_CO_MNE`: `demo_target1_UPD.LEAD_CO_MNE` [XML line 357] <- `UPDTRANS.LEAD_CO_MNE3` [XML line 411] <- `RTRTRANS.LEAD_CO_MNE4` [XML line 411] [GROUP Update; EXPRESSION Changed_Flag='Update'] <- `RTRTRANS.LEAD_CO_MNE` [XML line 393] <- `EXPTRANS.LEAD_CO_MNE` [XML line 380] <- `SQ_demo_source1.LEAD_CO_MNE` [XML line 374] <- `demo_source1.LEAD_CO_MNE` [XML line 374]
+- `BRANCH_CO_MNE`: `demo_target1_UPD.BRANCH_CO_MNE` [XML line 358] <- `UPDTRANS.BRANCH_CO_MNE3` [XML line 412] <- `RTRTRANS.BRANCH_CO_MNE4` [XML line 412] [GROUP Update; EXPRESSION Changed_Flag='Update'] <- `RTRTRANS.BRANCH_CO_MNE` [XML line 394] <- `EXPTRANS.BRANCH_CO_MNE` [XML line 381] <- `SQ_demo_source1.BRANCH_CO_MNE` [XML line 375] <- `demo_source1.BRANCH_CO_MNE` [XML line 375]
+- `MIS_DATE`: `demo_target1_UPD.MIS_DATE` [XML line 359] <- `UPDTRANS.MIS_DATE3` [XML line 413] <- `RTRTRANS.MIS_DATE4` [XML line 413] [GROUP Update; EXPRESSION Changed_Flag='Update'] <- `RTRTRANS.MIS_DATE` [XML line 410] <- `EXPTRANS.MIS_DATE` [XML line 382] <- `SQ_demo_source1.MIS_DATE` [XML line 376] <- `demo_source1.MIS_DATE` [XML line 376]
+- `ID`: `demo_target1_UPD.ID` [XML line 360] <- `UPDTRANS.ID2` [XML line 414] <- `RTRTRANS.ID3` [XML line 414] [GROUP Update; EXPRESSION Changed_Flag='Update'] <- `RTRTRANS.ID` [XML line 395] <- `EXPTRANS.ID` [XML line 383] <- `SQ_demo_source1.ID` [XML line 377] <- `demo_source1.ID` [XML line 377]
+- `DESCRIPTION`: `demo_target1_UPD.DESCRIPTION` [XML line 361] <- `UPDTRANS.DESCRIPTION3` [XML line 415] <- `RTRTRANS.DESCRIPTION4` [XML line 415] [GROUP Update; EXPRESSION Changed_Flag='Update'] <- `RTRTRANS.DESCRIPTION` [XML line 396] <- `EXPTRANS.DESCRIPTION` [XML line 384] <- `SQ_demo_source1.DESCRIPTION` [XML line 378] <- `demo_source1.DESCRIPTION` [XML line 378]
+- `SHORT_NAME`: `demo_target1_UPD.SHORT_NAME` [XML line 362] <- `UPDTRANS.SHORT_NAME3` [XML line 416] <- `RTRTRANS.SHORT_NAME4` [XML line 416] [GROUP Update; EXPRESSION Changed_Flag='Update'] <- `RTRTRANS.SHORT_NAME` [XML line 397] <- `EXPTRANS.SHORT_NAME` [XML line 385] <- `SQ_demo_source1.SHORT_NAME` [XML line 379] <- `demo_source1.SHORT_NAME` [XML line 379]
 - `CREATED_BY`: `demo_target1_UPD.CREATED_BY`
 - `CREATED_TIME`: `demo_target1_UPD.CREATED_TIME`
-- `UPDATED_BY`: `demo_target1_UPD.UPDATED_BY` [XML line 363] <- `UPDTRANS.o_UPDATED_BY2` [XML line 421] <- `RTRTRANS.o_UPDATED_BY3`
-- `UPDATED_TIME`: `demo_target1_UPD.UPDATED_TIME` [XML line 364] <- `UPDTRANS.o_UPDATED_TIME2` [XML line 422] <- `RTRTRANS.o_UPDATED_TIME3`
+- `UPDATED_BY`: `demo_target1_UPD.UPDATED_BY` [XML line 363] <- `UPDTRANS.o_UPDATED_BY2` [XML line 421] <- `RTRTRANS.o_UPDATED_BY3` [XML line 421] [GROUP Update; EXPRESSION Changed_Flag='Update'] <- `RTRTRANS.o_UPDATED_BY` [XML line 407] <- `EXPTRANS.o_UPDATED_BY` [XML line 407]
+- `UPDATED_TIME`: `demo_target1_UPD.UPDATED_TIME` [XML line 364] <- `UPDTRANS.o_UPDATED_TIME2` [XML line 422] <- `RTRTRANS.o_UPDATED_TIME3` [XML line 422] [GROUP Update; EXPRESSION Changed_Flag='Update'] <- `RTRTRANS.o_UPDATED_TIME` [XML line 408] <- `EXPTRANS.o_UPDATED_TIME` [XML line 408]
 - `ACTIVE_FLAG`: `demo_target1_UPD.ACTIVE_FLAG`
 - `START_DATE`: `demo_target1_UPD.START_DATE`
 - `END_DATE`: `demo_target1_UPD.END_DATE`
 
 ### demo_target1_INS (`demo_target1`)
-- `Key`: `demo_target1_INS.Key` [XML line 373] <- `SEQTRANS.NEXTVAL`
-- `LEAD_CO_MNE`: `demo_target1_INS.LEAD_CO_MNE` [XML line 365] <- `RTRTRANS.LEAD_CO_MNE2`
-- `BRANCH_CO_MNE`: `demo_target1_INS.BRANCH_CO_MNE` [XML line 366] <- `RTRTRANS.BRANCH_CO_MNE2`
-- `MIS_DATE`: `demo_target1_INS.MIS_DATE` [XML line 367] <- `RTRTRANS.MIS_DATE2`
-- `ID`: `demo_target1_INS.ID` [XML line 368] <- `RTRTRANS.ID1`
-- `DESCRIPTION`: `demo_target1_INS.DESCRIPTION` [XML line 369] <- `RTRTRANS.DESCRIPTION2`
-- `SHORT_NAME`: `demo_target1_INS.SHORT_NAME` [XML line 370] <- `RTRTRANS.SHORT_NAME2`
-- `CREATED_BY`: `demo_target1_INS.CREATED_BY` [XML line 371] <- `RTRTRANS.o_CREATED_BY1`
-- `CREATED_TIME`: `demo_target1_INS.CREATED_TIME` [XML line 372] <- `RTRTRANS.o_CREATED_TIME1`
+- `Key`: `demo_target1_INS.Key` [XML line 373] <- `SEQTRANS.NEXTVAL` [XML line 373]
+- `LEAD_CO_MNE`: `demo_target1_INS.LEAD_CO_MNE` [XML line 365] <- `RTRTRANS.LEAD_CO_MNE2` [XML line 365] [GROUP Insert; EXPRESSION New_Flag='Insert'] <- `RTRTRANS.LEAD_CO_MNE` [XML line 393] <- `EXPTRANS.LEAD_CO_MNE` [XML line 380] <- `SQ_demo_source1.LEAD_CO_MNE` [XML line 374] <- `demo_source1.LEAD_CO_MNE` [XML line 374]
+- `BRANCH_CO_MNE`: `demo_target1_INS.BRANCH_CO_MNE` [XML line 366] <- `RTRTRANS.BRANCH_CO_MNE2` [XML line 366] [GROUP Insert; EXPRESSION New_Flag='Insert'] <- `RTRTRANS.BRANCH_CO_MNE` [XML line 394] <- `EXPTRANS.BRANCH_CO_MNE` [XML line 381] <- `SQ_demo_source1.BRANCH_CO_MNE` [XML line 375] <- `demo_source1.BRANCH_CO_MNE` [XML line 375]
+- `MIS_DATE`: `demo_target1_INS.MIS_DATE` [XML line 367] <- `RTRTRANS.MIS_DATE2` [XML line 367] [GROUP Insert; EXPRESSION New_Flag='Insert'] <- `RTRTRANS.MIS_DATE` [XML line 410] <- `EXPTRANS.MIS_DATE` [XML line 382] <- `SQ_demo_source1.MIS_DATE` [XML line 376] <- `demo_source1.MIS_DATE` [XML line 376]
+- `ID`: `demo_target1_INS.ID` [XML line 368] <- `RTRTRANS.ID1` [XML line 368] [GROUP Insert; EXPRESSION New_Flag='Insert'] <- `RTRTRANS.ID` [XML line 395] <- `EXPTRANS.ID` [XML line 383] <- `SQ_demo_source1.ID` [XML line 377] <- `demo_source1.ID` [XML line 377]
+- `DESCRIPTION`: `demo_target1_INS.DESCRIPTION` [XML line 369] <- `RTRTRANS.DESCRIPTION2` [XML line 369] [GROUP Insert; EXPRESSION New_Flag='Insert'] <- `RTRTRANS.DESCRIPTION` [XML line 396] <- `EXPTRANS.DESCRIPTION` [XML line 384] <- `SQ_demo_source1.DESCRIPTION` [XML line 378] <- `demo_source1.DESCRIPTION` [XML line 378]
+- `SHORT_NAME`: `demo_target1_INS.SHORT_NAME` [XML line 370] <- `RTRTRANS.SHORT_NAME2` [XML line 370] [GROUP Insert; EXPRESSION New_Flag='Insert'] <- `RTRTRANS.SHORT_NAME` [XML line 397] <- `EXPTRANS.SHORT_NAME` [XML line 385] <- `SQ_demo_source1.SHORT_NAME` [XML line 379] <- `demo_source1.SHORT_NAME` [XML line 379]
+- `CREATED_BY`: `demo_target1_INS.CREATED_BY` [XML line 371] <- `RTRTRANS.o_CREATED_BY1` [XML line 371] [GROUP Insert; EXPRESSION New_Flag='Insert'] <- `RTRTRANS.o_CREATED_BY` [XML line 405] <- `EXPTRANS.o_CREATED_BY` [XML line 405]
+- `CREATED_TIME`: `demo_target1_INS.CREATED_TIME` [XML line 372] <- `RTRTRANS.o_CREATED_TIME1` [XML line 372] [GROUP Insert; EXPRESSION New_Flag='Insert'] <- `RTRTRANS.o_CREATED_TIME` [XML line 406] <- `EXPTRANS.o_CREATED_TIME` [XML line 406]
 - `UPDATED_BY`: `demo_target1_INS.UPDATED_BY`
 - `UPDATED_TIME`: `demo_target1_INS.UPDATED_TIME`
 - `ACTIVE_FLAG`: `demo_target1_INS.ACTIVE_FLAG`
@@ -37,66 +37,66 @@
 ## m_demo_mapping1
 
 ### demo_target6 (`demo_target6`)
-- `ACCT_ID`: `demo_target6.ACCT_ID` [XML line 790] <- `agg_TRANS.ACCT_ID` [XML line 817] <- `exp_TRANS1.ACCT_ID` [XML line 827] <- `exp_TRANS.ACCT_ID` [XML line 875] <- `sq_demo_source4.ACCT_ID` [XML line 852] <- `demo_source4.ACCT_ID`
-- `ACCT_TYP`: `demo_target6.ACCT_TYP` [XML line 787] <- `agg_TRANS.o_acc_trim` [XML line 816] <- `exp_TRANS1.o_acc_trim` [XML line 829] <- `exp_TRANS.o_acc_trim`
-- `ACCT_DESC`: `demo_target6.ACCT_DESC` [XML line 793] <- `agg_TRANS.o_ACCT_DESC` [XML line 807] <- `exp_TRANS1.o_ACCT_DESC`
-- `CR8_DT`: `demo_target6.CR8_DT` [XML line 792] <- `agg_TRANS.CR8_DT` [XML line 814] <- `exp_TRANS1.CR8_DT` [XML line 828] <- `exp_TRANS.CR8_DT` [XML line 876] <- `sq_demo_source4.CR8_DT` [XML line 856] <- `demo_source4.CR8_DT`
-- `CRDT_LN`: `demo_target6.CRDT_LN` [XML line 788] <- `agg_TRANS.o_crdt_trim` [XML line 809] <- `exp_TRANS1.o_crdt_trim` [XML line 830] <- `exp_TRANS.o_crdt_trim`
-- `CLSR_DT`: `demo_target6.CLSR_DT` [XML line 789] <- `agg_TRANS.CLSR_DT` [XML line 810] <- `exp_TRANS1.CLSR_DT` [XML line 818] <- `exp_TRANS.CLSR_DT` [XML line 866] <- `sq_demo_source4.CLSR_DT` [XML line 863] <- `demo_source4.CLSR_DT`
-- `ACCT_STAT_CD`: `demo_target6.ACCT_STAT_CD` [XML line 783] <- `agg_TRANS.ACCT_STAT_CD` [XML line 812] <- `exp_TRANS1.ACCT_STAT_CD` [XML line 823] <- `exp_TRANS.ACCT_STAT_CD` [XML line 871] <- `sq_demo_source4.ACCT_STAT_CD` [XML line 864] <- `demo_source4.ACCT_STAT_CD`
-- `TX_ID`: `demo_target6.TX_ID` [XML line 784] <- `agg_TRANS.TX_ID` [XML line 811] <- `exp_TRANS1.TX_ID` [XML line 824] <- `exp_TRANS.TX_ID` [XML line 872] <- `sq_demo_source4.TX_ID` [XML line 857] <- `demo_source3.TX_ID`
-- `ACCT_KEY`: `demo_target6.ACCT_KEY` [XML line 785] <- `SEQ_GEN.NEXTVAL`
-- `TX_DTTM`: `demo_target6.TX_DTTM` [XML line 782] <- `agg_TRANS.TX_DTTM` [XML line 813] <- `exp_TRANS1.TX_DTTM` [XML line 819] <- `exp_TRANS.TX_DTTM` [XML line 867] <- `sq_demo_source4.TX_DTTM` [XML line 859] <- `demo_source3.TX_DTTM`
-- `TX_AMT`: `demo_target6.TX_AMT` [XML line 791] <- `agg_TRANS.o_TX_AMT`
-- `TX_TYPE_CD`: `demo_target6.TX_TYPE_CD` [XML line 786] <- `agg_TRANS.o_ACCT_ID` [XML line 815] <- `exp_TRANS1.o_ACCT_ID` [XML line 831] <- `exp_TRANS.o_ACCT_ID`
+- `ACCT_ID`: `demo_target6.ACCT_ID` [XML line 790] <- `agg_TRANS.ACCT_ID` [XML line 817] <- `rtr_TRANS.ACCT_ID1` [XML line 817] [GROUP demo_target6_GRP; EXPRESSION ACCT_TYP = 'SB'] <- `rtr_TRANS.ACCT_ID` [XML line 841] <- `exp_TRANS1.ACCT_ID` [XML line 827] <- `exp_TRANS.ACCT_ID` [XML line 875] <- `sq_demo_source4.ACCT_ID` [XML line 852] <- `demo_source4.ACCT_ID` [XML line 852]
+- `ACCT_TYP`: `demo_target6.ACCT_TYP` [XML line 787] <- `agg_TRANS.o_acc_trim` [XML line 816] <- `rtr_TRANS.o_acc_trim1` [XML line 816] [GROUP demo_target6_GRP; EXPRESSION ACCT_TYP = 'SB'] <- `rtr_TRANS.o_acc_trim` [XML line 834] <- `exp_TRANS1.o_acc_trim` [XML line 829] <- `exp_TRANS.o_acc_trim` [XML line 829]
+- `ACCT_DESC`: `demo_target6.ACCT_DESC` [XML line 793] <- `agg_TRANS.o_ACCT_DESC` [XML line 807] <- `rtr_TRANS.o_ACCT_DESC1` [XML line 807] [GROUP demo_target6_GRP; EXPRESSION ACCT_TYP = 'SB'] <- `rtr_TRANS.o_ACCT_DESC` [XML line 845] <- `exp_TRANS1.o_ACCT_DESC` [XML line 845]
+- `CR8_DT`: `demo_target6.CR8_DT` [XML line 792] <- `agg_TRANS.CR8_DT` [XML line 814] <- `rtr_TRANS.CR8_DT1` [XML line 814] [GROUP demo_target6_GRP; EXPRESSION ACCT_TYP = 'SB'] <- `rtr_TRANS.CR8_DT` [XML line 846] <- `exp_TRANS1.CR8_DT` [XML line 828] <- `exp_TRANS.CR8_DT` [XML line 876] <- `sq_demo_source4.CR8_DT` [XML line 856] <- `demo_source4.CR8_DT` [XML line 856]
+- `CRDT_LN`: `demo_target6.CRDT_LN` [XML line 788] <- `agg_TRANS.o_crdt_trim` [XML line 809] <- `rtr_TRANS.o_crdt_trim1` [XML line 809] [GROUP demo_target6_GRP; EXPRESSION ACCT_TYP = 'SB'] <- `rtr_TRANS.o_crdt_trim` [XML line 847] <- `exp_TRANS1.o_crdt_trim` [XML line 830] <- `exp_TRANS.o_crdt_trim` [XML line 830]
+- `CLSR_DT`: `demo_target6.CLSR_DT` [XML line 789] <- `agg_TRANS.CLSR_DT` [XML line 810] <- `rtr_TRANS.CLSR_DT1` [XML line 810] [GROUP demo_target6_GRP; EXPRESSION ACCT_TYP = 'SB'] <- `rtr_TRANS.CLSR_DT` [XML line 843] <- `exp_TRANS1.CLSR_DT` [XML line 818] <- `exp_TRANS.CLSR_DT` [XML line 866] <- `sq_demo_source4.CLSR_DT` [XML line 863] <- `demo_source4.CLSR_DT` [XML line 863]
+- `ACCT_STAT_CD`: `demo_target6.ACCT_STAT_CD` [XML line 783] <- `agg_TRANS.ACCT_STAT_CD` [XML line 812] <- `rtr_TRANS.ACCT_STAT_CD1` [XML line 812] [GROUP demo_target6_GRP; EXPRESSION ACCT_TYP = 'SB'] <- `rtr_TRANS.ACCT_STAT_CD` [XML line 844] <- `exp_TRANS1.ACCT_STAT_CD` [XML line 823] <- `exp_TRANS.ACCT_STAT_CD` [XML line 871] <- `sq_demo_source4.ACCT_STAT_CD` [XML line 864] <- `demo_source4.ACCT_STAT_CD` [XML line 864]
+- `TX_ID`: `demo_target6.TX_ID` [XML line 784] <- `agg_TRANS.TX_ID` [XML line 811] <- `rtr_TRANS.TX_ID1` [XML line 811] [GROUP demo_target6_GRP; EXPRESSION ACCT_TYP = 'SB'] <- `rtr_TRANS.TX_ID` [XML line 836] <- `exp_TRANS1.TX_ID` [XML line 824] <- `exp_TRANS.TX_ID` [XML line 872] <- `sq_demo_source4.TX_ID` [XML line 857] <- `demo_source3.TX_ID` [XML line 857]
+- `ACCT_KEY`: `demo_target6.ACCT_KEY` [XML line 785] <- `SEQ_GEN.NEXTVAL` [XML line 785]
+- `TX_DTTM`: `demo_target6.TX_DTTM` [XML line 782] <- `agg_TRANS.TX_DTTM` [XML line 813] <- `rtr_TRANS.TX_DTTM1` [XML line 813] [GROUP demo_target6_GRP; EXPRESSION ACCT_TYP = 'SB'] <- `rtr_TRANS.TX_DTTM` [XML line 835] <- `exp_TRANS1.TX_DTTM` [XML line 819] <- `exp_TRANS.TX_DTTM` [XML line 867] <- `sq_demo_source4.TX_DTTM` [XML line 859] <- `demo_source3.TX_DTTM` [XML line 859]
+- `TX_AMT`: `demo_target6.TX_AMT` [XML line 791] <- `agg_TRANS.o_TX_AMT` [XML line 791]
+- `TX_TYPE_CD`: `demo_target6.TX_TYPE_CD` [XML line 786] <- `agg_TRANS.o_ACCT_ID` [XML line 815] <- `rtr_TRANS.o_ACCT_ID1` [XML line 815] [GROUP demo_target6_GRP; EXPRESSION ACCT_TYP = 'SB'] <- `rtr_TRANS.o_ACCT_ID` [XML line 842] <- `exp_TRANS1.o_ACCT_ID` [XML line 831] <- `exp_TRANS.o_ACCT_ID` [XML line 831] [LOOKUP CALL lkp_TRANS1 RETURN TX_TYPE_CD; TABLE lkp_demo_source3 line 533; CONDITION ACCT_ID =  IN_ACCT_ID line 537; POLICY Use Last Value line 536]
 
 ### demo_target5 (`demo_target5`)
-- `ACCT_ID`: `demo_target5.ACCT_ID` [XML line 795] <- `exp_TRANS1.ACCT_ID` [XML line 827] <- `exp_TRANS.ACCT_ID` [XML line 875] <- `sq_demo_source4.ACCT_ID` [XML line 852] <- `demo_source4.ACCT_ID`
-- `FIRST_NM`: `demo_target5.FIRST_NM` [XML line 797] <- `exp_TRANS1.FIRST_NM` [XML line 832] <- `lkp_TRANS2.FIRST_NM`
-- `LAST_NM`: `demo_target5.LAST_NM` [XML line 796] <- `exp_TRANS1.LAST_NM` [XML line 825] <- `exp_TRANS.LAST_NM` [XML line 873] <- `sq_demo_source4.LAST_NM` [XML line 858] <- `demo_source3.LAST_NM`
-- `BAL_AMT`: `demo_target5.BAL_AMT` [XML line 798] <- `exp_TRANS1.BAL_AMT` [XML line 820] <- `exp_TRANS.BAL_AMT` [XML line 868] <- `sq_demo_source4.BAL_AMT` [XML line 862] <- `demo_source3.BAL_AMT`
-- `CRDT_SCORE`: `demo_target5.CRDT_SCORE` [XML line 794] <- `exp_TRANS1.CRDT_SCORE` [XML line 833] <- `lkp_TRANS3.CRDT_SCORE`
+- `ACCT_ID`: `demo_target5.ACCT_ID` [XML line 795] <- `rtr_TRANS.ACCT_ID2` [XML line 795] [GROUP demo_target5_GRP; EXPRESSION ACCT_TYP != 'SB'] <- `rtr_TRANS.ACCT_ID` [XML line 841] <- `exp_TRANS1.ACCT_ID` [XML line 827] <- `exp_TRANS.ACCT_ID` [XML line 875] <- `sq_demo_source4.ACCT_ID` [XML line 852] <- `demo_source4.ACCT_ID` [XML line 852]
+- `FIRST_NM`: `demo_target5.FIRST_NM` [XML line 797] <- `rtr_TRANS.FIRST_NM2` [XML line 797] [GROUP demo_target5_GRP; EXPRESSION ACCT_TYP != 'SB'] <- `rtr_TRANS.FIRST_NM` [XML line 848] <- `exp_TRANS1.FIRST_NM` [XML line 832] <- `lkp_TRANS2.FIRST_NM` [XML line 832] [LOOKUP lkp_demo_source1 line 495; CONDITION ACCT_ID = IN_ACCT_ID line 499; POLICY Use Last Value line 498]
+- `LAST_NM`: `demo_target5.LAST_NM` [XML line 796] <- `rtr_TRANS.LAST_NM2` [XML line 796] [GROUP demo_target5_GRP; EXPRESSION ACCT_TYP != 'SB'] <- `rtr_TRANS.LAST_NM` [XML line 839] <- `exp_TRANS1.LAST_NM` [XML line 825] <- `exp_TRANS.LAST_NM` [XML line 873] <- `sq_demo_source4.LAST_NM` [XML line 858] <- `demo_source3.LAST_NM` [XML line 858]
+- `BAL_AMT`: `demo_target5.BAL_AMT` [XML line 798] <- `rtr_TRANS.BAL_AMT2` [XML line 798] [GROUP demo_target5_GRP; EXPRESSION ACCT_TYP != 'SB'] <- `rtr_TRANS.BAL_AMT` [XML line 840] <- `exp_TRANS1.BAL_AMT` [XML line 820] <- `exp_TRANS.BAL_AMT` [XML line 868] <- `sq_demo_source4.BAL_AMT` [XML line 862] <- `demo_source3.BAL_AMT` [XML line 862]
+- `CRDT_SCORE`: `demo_target5.CRDT_SCORE` [XML line 794] <- `rtr_TRANS.CRDT_SCORE2` [XML line 794] [GROUP demo_target5_GRP; EXPRESSION ACCT_TYP != 'SB'] <- `rtr_TRANS.CRDT_SCORE` [XML line 849] <- `exp_TRANS1.CRDT_SCORE` [XML line 833] <- `lkp_TRANS3.CRDT_SCORE` [XML line 833] [LOOKUP lkp_demo_source2 line 621; CONDITION CUST_ID = IN_CUST_ID line 625; POLICY Use Last Value line 624]
 
 ### demo_target3 (`demo_target3`)
-- `PRODUCT_ID`: `demo_target3.PRODUCT_ID` [XML line 799] <- `exp_TRANS2.PRODUCT_ID` [XML line 879] <- `SQ_demo_source5.PRODUCT_ID` [XML line 887] <- `demo_source5.PRODUCT_ID`
-- `PRODUCT_NM`: `demo_target3.PRODUCT_NM` [XML line 801] <- `exp_TRANS2.PRODUCT_NM` [XML line 880] <- `SQ_demo_source5.PRODUCT_NM` [XML line 888] <- `demo_source5.PRODUCT_NM`
-- `PRODUCT_NO`: `demo_target3.PRODUCT_NO` [XML line 800] <- `exp_TRANS2.PRODUCT_NO` [XML line 881] <- `SQ_demo_source5.PRODUCT_NO` [XML line 889] <- `demo_source5.PRODUCT_NO`
-- `COLOR`: `demo_target3.COLOR` [XML line 803] <- `exp_TRANS2.COLOR` [XML line 882] <- `SQ_demo_source5.COLOR` [XML line 890] <- `demo_source5.COLOR`
-- `STD_COST`: `demo_target3.STD_COST` [XML line 802] <- `exp_TRANS2.STD_COST` [XML line 883] <- `SQ_demo_source5.STD_COST` [XML line 891] <- `demo_source5.STD_COST`
-- `LIST_PRICE`: `demo_target3.LIST_PRICE` [XML line 804] <- `exp_TRANS2.LIST_PRICE` [XML line 884] <- `SQ_demo_source5.LIST_PRICE` [XML line 892] <- `demo_source5.LIST_PRICE`
-- `SELL_ST_DT`: `demo_target3.SELL_ST_DT` [XML line 805] <- `exp_TRANS2.o_SELL_ST_DT`
-- `SELL_ED_DT`: `demo_target3.SELL_ED_DT` [XML line 806] <- `exp_TRANS2.o_SELL_ED_DT`
+- `PRODUCT_ID`: `demo_target3.PRODUCT_ID` [XML line 799] <- `exp_TRANS2.PRODUCT_ID` [XML line 879] <- `SQ_demo_source5.PRODUCT_ID` [XML line 887] <- `demo_source5.PRODUCT_ID` [XML line 887]
+- `PRODUCT_NM`: `demo_target3.PRODUCT_NM` [XML line 801] <- `exp_TRANS2.PRODUCT_NM` [XML line 880] <- `SQ_demo_source5.PRODUCT_NM` [XML line 888] <- `demo_source5.PRODUCT_NM` [XML line 888]
+- `PRODUCT_NO`: `demo_target3.PRODUCT_NO` [XML line 800] <- `exp_TRANS2.PRODUCT_NO` [XML line 881] <- `SQ_demo_source5.PRODUCT_NO` [XML line 889] <- `demo_source5.PRODUCT_NO` [XML line 889]
+- `COLOR`: `demo_target3.COLOR` [XML line 803] <- `exp_TRANS2.COLOR` [XML line 882] <- `SQ_demo_source5.COLOR` [XML line 890] <- `demo_source5.COLOR` [XML line 890]
+- `STD_COST`: `demo_target3.STD_COST` [XML line 802] <- `exp_TRANS2.STD_COST` [XML line 883] <- `SQ_demo_source5.STD_COST` [XML line 891] <- `demo_source5.STD_COST` [XML line 891]
+- `LIST_PRICE`: `demo_target3.LIST_PRICE` [XML line 804] <- `exp_TRANS2.LIST_PRICE` [XML line 884] <- `SQ_demo_source5.LIST_PRICE` [XML line 892] <- `demo_source5.LIST_PRICE` [XML line 892]
+- `SELL_ST_DT`: `demo_target3.SELL_ST_DT` [XML line 805] <- `exp_TRANS2.o_SELL_ST_DT` [XML line 805]
+- `SELL_ED_DT`: `demo_target3.SELL_ED_DT` [XML line 806] <- `exp_TRANS2.o_SELL_ED_DT` [XML line 806]
 
 ## m_demo_mapping3
 
 ### demo_target21 (`demo_target2`)
-- `Title`: `demo_target21.Title` [XML line 1017] <- `RTRTRANS.Title3`
-- `Gender`: `demo_target21.Gender` [XML line 1024] <- `RTRTRANS.Gender_Code3`
-- `First_Name`: `demo_target21.First_Name` [XML line 1018] <- `RTRTRANS.First_Name3`
-- `Middle_Name`: `demo_target21.Middle_Name` [XML line 1019] <- `RTRTRANS.Middle_Name3`
-- `Last_Name`: `demo_target21.Last_Name` [XML line 1020] <- `RTRTRANS.Last_Name3`
-- `Member_Identifier`: `demo_target21.Member_Identifier` [XML line 1021] <- `RTRTRANS.Member_ID3`
-- `Member_Suffix`: `demo_target21.Member_Suffix` [XML line 1022] <- `RTRTRANS.Member_Suffix3`
-- `Date_of_Birth`: `demo_target21.Date_of_Birth` [XML line 1023] <- `RTRTRANS.Birth_Date3`
-- `Member_Number`: `demo_target21.Member_Number` [XML line 1026] <- `RTRTRANS.Member_Record_Number3`
-- `Soc_Number`: `demo_target21.Soc_Number` [XML line 1025] <- `RTRTRANS.Social_Security_Number3`
-- `Type_Code`: `demo_target21.Type_Code` [XML line 1027] <- `RTRTRANS.Member_Type_Code3`
-- `Relationship_to_Subscriber_Code`: `demo_target21.Relationship_to_Subscriber_Code` [XML line 1029] <- `RTRTRANS.Relationship_to_Subscriber_Code3`
-- `Relationship_to_Subscriber_Code_Label`: `demo_target21.Relationship_to_Subscriber_Code_Label` [XML line 1030] <- `RTRTRANS.Relationship_to_Subscriber_Code_Label3`
-- `Effective_Date`: `demo_target21.Effective_Date` [XML line 1028] <- `RTRTRANS.Original_Effective_Date3`
+- `Title`: `demo_target21.Title` [XML line 1017] <- `RTRTRANS.Title3` [XML line 1017] [GROUP NEWGROUP2; EXPRESSION NOT ISNULL(Social_Security_Number)] <- `RTRTRANS.Title` [XML line 1073] <- `EXPTRANS.Title` [XML line 1059] <- `SQ_demo_source2.Title` [XML line 1045] <- `demo_source2.Title` [XML line 1045]
+- `Gender`: `demo_target21.Gender` [XML line 1024] <- `RTRTRANS.Gender_Code3` [XML line 1024] [GROUP NEWGROUP2; EXPRESSION NOT ISNULL(Social_Security_Number)] <- `RTRTRANS.Gender_Code` [XML line 1080] <- `EXPTRANS.Gender_Code` [XML line 1066] <- `SQ_demo_source2.Gender_Code` [XML line 1052] <- `demo_source2.Gender_Code` [XML line 1052]
+- `First_Name`: `demo_target21.First_Name` [XML line 1018] <- `RTRTRANS.First_Name3` [XML line 1018] [GROUP NEWGROUP2; EXPRESSION NOT ISNULL(Social_Security_Number)] <- `RTRTRANS.First_Name` [XML line 1074] <- `EXPTRANS.First_Name` [XML line 1060] <- `SQ_demo_source2.First_Name` [XML line 1046] <- `demo_source2.First_Name` [XML line 1046]
+- `Middle_Name`: `demo_target21.Middle_Name` [XML line 1019] <- `RTRTRANS.Middle_Name3` [XML line 1019] [GROUP NEWGROUP2; EXPRESSION NOT ISNULL(Social_Security_Number)] <- `RTRTRANS.Middle_Name` [XML line 1075] <- `EXPTRANS.Middle_Name` [XML line 1061] <- `SQ_demo_source2.Middle_Name` [XML line 1047] <- `demo_source2.Middle_Name` [XML line 1047]
+- `Last_Name`: `demo_target21.Last_Name` [XML line 1020] <- `RTRTRANS.Last_Name3` [XML line 1020] [GROUP NEWGROUP2; EXPRESSION NOT ISNULL(Social_Security_Number)] <- `RTRTRANS.Last_Name` [XML line 1076] <- `EXPTRANS.Last_Name` [XML line 1062] <- `SQ_demo_source2.Last_Name` [XML line 1048] <- `demo_source2.Last_Name` [XML line 1048]
+- `Member_Identifier`: `demo_target21.Member_Identifier` [XML line 1021] <- `RTRTRANS.Member_ID3` [XML line 1021] [GROUP NEWGROUP2; EXPRESSION NOT ISNULL(Social_Security_Number)] <- `RTRTRANS.Member_ID` [XML line 1077] <- `EXPTRANS.Member_ID` [XML line 1063] <- `SQ_demo_source2.Member_ID` [XML line 1049] <- `demo_source2.Member_ID` [XML line 1049]
+- `Member_Suffix`: `demo_target21.Member_Suffix` [XML line 1022] <- `RTRTRANS.Member_Suffix3` [XML line 1022] [GROUP NEWGROUP2; EXPRESSION NOT ISNULL(Social_Security_Number)] <- `RTRTRANS.Member_Suffix` [XML line 1078] <- `EXPTRANS.Member_Suffix` [XML line 1064] <- `SQ_demo_source2.Member_Suffix` [XML line 1050] <- `demo_source2.Member_Suffix` [XML line 1050]
+- `Date_of_Birth`: `demo_target21.Date_of_Birth` [XML line 1023] <- `RTRTRANS.Birth_Date3` [XML line 1023] [GROUP NEWGROUP2; EXPRESSION NOT ISNULL(Social_Security_Number)] <- `RTRTRANS.Birth_Date` [XML line 1079] <- `EXPTRANS.Birth_Date` [XML line 1065] <- `SQ_demo_source2.Birth_Date` [XML line 1051] <- `demo_source2.Birth_Date` [XML line 1051]
+- `Member_Number`: `demo_target21.Member_Number` [XML line 1026] <- `RTRTRANS.Member_Record_Number3` [XML line 1026] [GROUP NEWGROUP2; EXPRESSION NOT ISNULL(Social_Security_Number)] <- `RTRTRANS.Member_Record_Number` [XML line 1081] <- `EXPTRANS.Member_Record_Number` [XML line 1067] <- `SQ_demo_source2.Member_Record_Number` [XML line 1053] <- `demo_source2.Member_Record_Number` [XML line 1053]
+- `Soc_Number`: `demo_target21.Soc_Number` [XML line 1025] <- `RTRTRANS.Social_Security_Number3` [XML line 1025] [GROUP NEWGROUP2; EXPRESSION NOT ISNULL(Social_Security_Number)] <- `RTRTRANS.Social_Security_Number` [XML line 1082] <- `EXPTRANS.Social_Security_Number` [XML line 1068] <- `SQ_demo_source2.Social_Security_Number` [XML line 1054] <- `demo_source2.Social_Security_Number` [XML line 1054]
+- `Type_Code`: `demo_target21.Type_Code` [XML line 1027] <- `RTRTRANS.Member_Type_Code3` [XML line 1027] [GROUP NEWGROUP2; EXPRESSION NOT ISNULL(Social_Security_Number)] <- `RTRTRANS.Member_Type_Code` [XML line 1083] <- `EXPTRANS.Member_Type_Code` [XML line 1069] <- `SQ_demo_source2.Member_Type_Code` [XML line 1055] <- `demo_source2.Member_Type_Code` [XML line 1055]
+- `Relationship_to_Subscriber_Code`: `demo_target21.Relationship_to_Subscriber_Code` [XML line 1029] <- `RTRTRANS.Relationship_to_Subscriber_Code3` [XML line 1029] [GROUP NEWGROUP2; EXPRESSION NOT ISNULL(Social_Security_Number)] <- `RTRTRANS.Relationship_to_Subscriber_Code` [XML line 1085] <- `EXPTRANS.Relationship_to_Subscriber_Code` [XML line 1071] <- `SQ_demo_source2.Relationship_to_Subscriber_Code` [XML line 1057] <- `demo_source2.Relationship_to_Subscriber_Code` [XML line 1057]
+- `Relationship_to_Subscriber_Code_Label`: `demo_target21.Relationship_to_Subscriber_Code_Label` [XML line 1030] <- `RTRTRANS.Relationship_to_Subscriber_Code_Label3` [XML line 1030] [GROUP NEWGROUP2; EXPRESSION NOT ISNULL(Social_Security_Number)] <- `RTRTRANS.Relationship_to_Subscriber_Code_Label` [XML line 1086] <- `EXPTRANS.o_Relationship_to_Subscriber_Code_Label` [XML line 1086]
+- `Effective_Date`: `demo_target21.Effective_Date` [XML line 1028] <- `RTRTRANS.Original_Effective_Date3` [XML line 1028] [GROUP NEWGROUP2; EXPRESSION NOT ISNULL(Social_Security_Number)] <- `RTRTRANS.Original_Effective_Date` [XML line 1084] <- `EXPTRANS.Original_Effective_Date` [XML line 1070] <- `SQ_demo_source2.Original_Effective_Date` [XML line 1056] <- `demo_source2.Original_Effective_Date` [XML line 1056]
 
 ### demo_target2 (`demo_target2`)
-- `Title`: `demo_target2.Title` [XML line 1031] <- `RTRTRANS.Title1`
-- `Gender`: `demo_target2.Gender` [XML line 1044] <- `RTRTRANS.Gender_Code1`
-- `First_Name`: `demo_target2.First_Name` [XML line 1032] <- `RTRTRANS.First_Name1`
-- `Middle_Name`: `demo_target2.Middle_Name` [XML line 1033] <- `RTRTRANS.Middle_Name1`
-- `Last_Name`: `demo_target2.Last_Name` [XML line 1034] <- `RTRTRANS.Last_Name1`
-- `Member_Identifier`: `demo_target2.Member_Identifier` [XML line 1035] <- `RTRTRANS.Member_ID1`
-- `Member_Suffix`: `demo_target2.Member_Suffix` [XML line 1036] <- `RTRTRANS.Member_Suffix1`
-- `Date_of_Birth`: `demo_target2.Date_of_Birth` [XML line 1037] <- `RTRTRANS.Birth_Date1`
-- `Member_Number`: `demo_target2.Member_Number` [XML line 1043] <- `RTRTRANS.Member_Record_Number1`
-- `Soc_Number`: `demo_target2.Soc_Number` [XML line 1042] <- `RTRTRANS.Social_Security_Number1`
-- `Type_Code`: `demo_target2.Type_Code` [XML line 1041] <- `RTRTRANS.Member_Type_Code1`
-- `Relationship_to_Subscriber_Code`: `demo_target2.Relationship_to_Subscriber_Code` [XML line 1038] <- `RTRTRANS.Relationship_to_Subscriber_Code1`
-- `Relationship_to_Subscriber_Code_Label`: `demo_target2.Relationship_to_Subscriber_Code_Label` [XML line 1039] <- `RTRTRANS.Relationship_to_Subscriber_Code_Label1`
-- `Effective_Date`: `demo_target2.Effective_Date` [XML line 1040] <- `RTRTRANS.Original_Effective_Date1`
+- `Title`: `demo_target2.Title` [XML line 1031] <- `RTRTRANS.Title1` [XML line 1031] [GROUP NEWGROUP1; EXPRESSION ISNULL(Social_Security_Number)] <- `RTRTRANS.Title` [XML line 1073] <- `EXPTRANS.Title` [XML line 1059] <- `SQ_demo_source2.Title` [XML line 1045] <- `demo_source2.Title` [XML line 1045]
+- `Gender`: `demo_target2.Gender` [XML line 1044] <- `RTRTRANS.Gender_Code1` [XML line 1044] [GROUP NEWGROUP1; EXPRESSION ISNULL(Social_Security_Number)] <- `RTRTRANS.Gender_Code` [XML line 1080] <- `EXPTRANS.Gender_Code` [XML line 1066] <- `SQ_demo_source2.Gender_Code` [XML line 1052] <- `demo_source2.Gender_Code` [XML line 1052]
+- `First_Name`: `demo_target2.First_Name` [XML line 1032] <- `RTRTRANS.First_Name1` [XML line 1032] [GROUP NEWGROUP1; EXPRESSION ISNULL(Social_Security_Number)] <- `RTRTRANS.First_Name` [XML line 1074] <- `EXPTRANS.First_Name` [XML line 1060] <- `SQ_demo_source2.First_Name` [XML line 1046] <- `demo_source2.First_Name` [XML line 1046]
+- `Middle_Name`: `demo_target2.Middle_Name` [XML line 1033] <- `RTRTRANS.Middle_Name1` [XML line 1033] [GROUP NEWGROUP1; EXPRESSION ISNULL(Social_Security_Number)] <- `RTRTRANS.Middle_Name` [XML line 1075] <- `EXPTRANS.Middle_Name` [XML line 1061] <- `SQ_demo_source2.Middle_Name` [XML line 1047] <- `demo_source2.Middle_Name` [XML line 1047]
+- `Last_Name`: `demo_target2.Last_Name` [XML line 1034] <- `RTRTRANS.Last_Name1` [XML line 1034] [GROUP NEWGROUP1; EXPRESSION ISNULL(Social_Security_Number)] <- `RTRTRANS.Last_Name` [XML line 1076] <- `EXPTRANS.Last_Name` [XML line 1062] <- `SQ_demo_source2.Last_Name` [XML line 1048] <- `demo_source2.Last_Name` [XML line 1048]
+- `Member_Identifier`: `demo_target2.Member_Identifier` [XML line 1035] <- `RTRTRANS.Member_ID1` [XML line 1035] [GROUP NEWGROUP1; EXPRESSION ISNULL(Social_Security_Number)] <- `RTRTRANS.Member_ID` [XML line 1077] <- `EXPTRANS.Member_ID` [XML line 1063] <- `SQ_demo_source2.Member_ID` [XML line 1049] <- `demo_source2.Member_ID` [XML line 1049]
+- `Member_Suffix`: `demo_target2.Member_Suffix` [XML line 1036] <- `RTRTRANS.Member_Suffix1` [XML line 1036] [GROUP NEWGROUP1; EXPRESSION ISNULL(Social_Security_Number)] <- `RTRTRANS.Member_Suffix` [XML line 1078] <- `EXPTRANS.Member_Suffix` [XML line 1064] <- `SQ_demo_source2.Member_Suffix` [XML line 1050] <- `demo_source2.Member_Suffix` [XML line 1050]
+- `Date_of_Birth`: `demo_target2.Date_of_Birth` [XML line 1037] <- `RTRTRANS.Birth_Date1` [XML line 1037] [GROUP NEWGROUP1; EXPRESSION ISNULL(Social_Security_Number)] <- `RTRTRANS.Birth_Date` [XML line 1079] <- `EXPTRANS.Birth_Date` [XML line 1065] <- `SQ_demo_source2.Birth_Date` [XML line 1051] <- `demo_source2.Birth_Date` [XML line 1051]
+- `Member_Number`: `demo_target2.Member_Number` [XML line 1043] <- `RTRTRANS.Member_Record_Number1` [XML line 1043] [GROUP NEWGROUP1; EXPRESSION ISNULL(Social_Security_Number)] <- `RTRTRANS.Member_Record_Number` [XML line 1081] <- `EXPTRANS.Member_Record_Number` [XML line 1067] <- `SQ_demo_source2.Member_Record_Number` [XML line 1053] <- `demo_source2.Member_Record_Number` [XML line 1053]
+- `Soc_Number`: `demo_target2.Soc_Number` [XML line 1042] <- `RTRTRANS.Social_Security_Number1` [XML line 1042] [GROUP NEWGROUP1; EXPRESSION ISNULL(Social_Security_Number)] <- `RTRTRANS.Social_Security_Number` [XML line 1082] <- `EXPTRANS.Social_Security_Number` [XML line 1068] <- `SQ_demo_source2.Social_Security_Number` [XML line 1054] <- `demo_source2.Social_Security_Number` [XML line 1054]
+- `Type_Code`: `demo_target2.Type_Code` [XML line 1041] <- `RTRTRANS.Member_Type_Code1` [XML line 1041] [GROUP NEWGROUP1; EXPRESSION ISNULL(Social_Security_Number)] <- `RTRTRANS.Member_Type_Code` [XML line 1083] <- `EXPTRANS.Member_Type_Code` [XML line 1069] <- `SQ_demo_source2.Member_Type_Code` [XML line 1055] <- `demo_source2.Member_Type_Code` [XML line 1055]
+- `Relationship_to_Subscriber_Code`: `demo_target2.Relationship_to_Subscriber_Code` [XML line 1038] <- `RTRTRANS.Relationship_to_Subscriber_Code1` [XML line 1038] [GROUP NEWGROUP1; EXPRESSION ISNULL(Social_Security_Number)] <- `RTRTRANS.Relationship_to_Subscriber_Code` [XML line 1085] <- `EXPTRANS.Relationship_to_Subscriber_Code` [XML line 1071] <- `SQ_demo_source2.Relationship_to_Subscriber_Code` [XML line 1057] <- `demo_source2.Relationship_to_Subscriber_Code` [XML line 1057]
+- `Relationship_to_Subscriber_Code_Label`: `demo_target2.Relationship_to_Subscriber_Code_Label` [XML line 1039] <- `RTRTRANS.Relationship_to_Subscriber_Code_Label1` [XML line 1039] [GROUP NEWGROUP1; EXPRESSION ISNULL(Social_Security_Number)] <- `RTRTRANS.Relationship_to_Subscriber_Code_Label` [XML line 1086] <- `EXPTRANS.o_Relationship_to_Subscriber_Code_Label` [XML line 1086]
+- `Effective_Date`: `demo_target2.Effective_Date` [XML line 1040] <- `RTRTRANS.Original_Effective_Date1` [XML line 1040] [GROUP NEWGROUP1; EXPRESSION ISNULL(Social_Security_Number)] <- `RTRTRANS.Original_Effective_Date` [XML line 1084] <- `EXPTRANS.Original_Effective_Date` [XML line 1070] <- `SQ_demo_source2.Original_Effective_Date` [XML line 1056] <- `demo_source2.Original_Effective_Date` [XML line 1056]
