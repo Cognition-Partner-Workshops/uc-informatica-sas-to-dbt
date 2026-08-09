@@ -15,7 +15,6 @@ These behaviors are intentionally reproduced rather than fixed:
 - Email typos and spacing are preserved: lines 1140, 1150, and 1167.
 
 ## m_demo_mapping1
-
 These mapping-1 defects are reproduced rather than fixed:
 
 - **XML line 580 — positional SQL override discard.** The fourteenth SELECT
@@ -31,7 +30,6 @@ These mapping-1 defects are reproduced rather than fixed:
   is intentionally reproduced rather than replaced with the business date.
 
 ## m_demo_mapping2
-
 These behaviors are intentionally reproduced rather than fixed:
 
 - **AES/MD5 comparison defect (XML lines 177-179).** `AES_DECRYPT(...)` produces a value
