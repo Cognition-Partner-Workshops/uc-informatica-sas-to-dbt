@@ -2,8 +2,7 @@
 
 from pyspark.sql import functions as F
 
-from ..context import MappingContext, MappingResult
-from ..context import AbortCheck
+from ..context import AbortCheck, MappingContext, MappingResult
 from ..functions import abort, iif, isnull, not_
 
 MAPPING_NAME = "m_demo_mapping3"
@@ -36,27 +35,26 @@ def run(ctx: MappingContext) -> MappingResult:
         isnull(transformed.Relationship_to_Subscriber_Code_Label)
     )
 
-    bindings = {
-        "Title": "Title",
-        "Gender": "Gender_Code",
-        "First_Name": "First_Name",
-        "Middle_Name": "Middle_Name",
-        "Last_Name": "Last_Name",
-        "Member_Identifier": "Member_ID",
-        "Member_Suffix": "Member_Suffix",
-        "Date_of_Birth": "Birth_Date",
-        "Member_Number": "Member_Record_Number",
-        "Soc_Number": "Social_Security_Number",
-        "Type_Code": "Member_Type_Code",
-        "Relationship_to_Subscriber_Code": "Relationship_to_Subscriber_Code",
-        "Relationship_to_Subscriber_Code_Label": "o_Relationship_to_Subscriber_Code_Label",
-        "Effective_Date": "Original_Effective_Date",
-    }
-
     def projected(frame):
         return frame.select(
-            *[F.col(source_name).alias(target_name)
-              for target_name, source_name in bindings.items()]
+            F.col("Title").alias("Title"),
+            F.col("Gender_Code").alias("Gender"),
+            F.col("First_Name").alias("First_Name"),
+            F.col("Middle_Name").alias("Middle_Name"),
+            F.col("Last_Name").alias("Last_Name"),
+            F.col("Member_ID").alias("Member_Identifier"),
+            F.col("Member_Suffix").alias("Member_Suffix"),
+            F.col("Birth_Date").alias("Date_of_Birth"),
+            F.col("Member_Record_Number").alias("Member_Number"),
+            F.col("Social_Security_Number").alias("Soc_Number"),
+            F.col("Member_Type_Code").alias("Type_Code"),
+            F.col("Relationship_to_Subscriber_Code").alias(
+                "Relationship_to_Subscriber_Code"
+            ),
+            F.col("o_Relationship_to_Subscriber_Code_Label").alias(
+                "Relationship_to_Subscriber_Code_Label"
+            ),
+            F.col("Original_Effective_Date").alias("Effective_Date"),
         )
 
     no_ssn = transformed.where(isnull(transformed.Social_Security_Number))
