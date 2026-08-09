@@ -25,7 +25,7 @@ def _cast_source(frame):
 
 def run(ctx: MappingContext) -> MappingResult:
     source = _cast_source(ctx.sources["demo_source2"])
-    source = source.where(source.Member_Type_Code.isNotNull())
+    source = source.where(not_(isnull(source.Member_Type_Code)))
     label = iif(
         isnull(source.Relationship_to_Subscriber_Code_Label),
         abort(F.lit(True), _ABORT_MESSAGE),
