@@ -7,6 +7,7 @@ from informatica_pyspark.config import RunConfig
 from informatica_pyspark.context import MappingContext
 from informatica_pyspark.io.local_csv import LocalCsvReader
 from informatica_pyspark.mappings.m_demo_mapping1 import run
+from pyspark.sql import functions as F
 
 
 DATA = Path(__file__).resolve().parents[3] / "legacy" / "informatica" / "data"
@@ -21,6 +22,17 @@ def mapping_result(spark):
     )
     sources = {name: reader.read(name) for name in names}
     return run(MappingContext(spark=spark, config=config, sources=sources))
+
+
+def mapping_result_with_sources(spark):
+    config = RunConfig(business_date=date(2024, 1, 31))
+    reader = LocalCsvReader(spark, str(DATA))
+    names = (
+        "demo_source3", "demo_source4", "demo_source5",
+        "lkp_demo_source1", "lkp_demo_source2", "lkp_demo_source3",
+    )
+    sources = {name: reader.read(name) for name in names}
+    return config, sources
 
 
 def test_positional_override_and_discarded_strcmp(spark):
@@ -50,6 +62,18 @@ def test_all_lookup_use_last_value(spark):
     ]
     target6 = result.targets["demo_target6"].orderBy("ACCT_ID").collect()
     assert target6[1].TX_TYPE_CD == "DR"
+
+
+def test_lookup_duplicates_are_last_value_for_first_name_and_score(spark):
+    config, sources = mapping_result_with_sources(spark)
+    sources["demo_source4"] = sources["demo_source4"].withColumn(
+        "ACCT_TYP",
+        F.when(F.col("ACCT_ID") == "1002", F.lit("CA")).otherwise(F.col("ACCT_TYP")),
+    )
+    result = run(MappingContext(spark=spark, config=config, sources=sources))
+    row = result.targets["demo_target5"].where("ACCT_ID = 1002").first()
+    assert row.FIRST_NM == "ZOE"
+    assert row.CRDT_SCORE == 450
 
 
 def test_router_null_account_type_is_dropped_and_aggregator_is_deterministic(spark):
