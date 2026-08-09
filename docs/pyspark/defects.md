@@ -30,8 +30,22 @@ These mapping-1 defects are reproduced rather than fixed:
   `DD/MM/YYYY`, so `demo_target3.SELL_ST_DT` is NULL for all four rows. The defect
   is intentionally reproduced rather than replaced with the business date.
 
-## m_demo_mapping3
+## m_demo_mapping2
 
+These behaviors are intentionally reproduced rather than fixed:
+
+- **AES/MD5 comparison defect (XML lines 177-179).** `AES_DECRYPT(...)` produces a value
+  incomparable with the hexadecimal `MD5(...)`, so every matched row is flagged `Update`.
+  The migration reproduces this defect rather than fixing the comparison.
+- **Two-argument IIF NULL branches (XML lines 176 and 179).** `New_Flag` is NULL for matched
+  rows and `Changed_Flag` is NULL for unmatched rows. The migration reproduces this defect rather
+  than adding false branches.
+- **Dead ports and DEFAULT1 group.** Lookup ports `BRANCH_CO_MNE1`, `MIS_DATE1`,
+  `DESCRIPTION1`, and `SHORT_NAME1` are carried into the expression/router but have no target
+  connector; RTRTRANS `DEFAULT1` (XML lines 245-262) has no outgoing connector. These are
+  reproduced as dead/not-migrated outputs rather than invented target writes.
+
+## m_demo_mapping3
 - **RECOVERED DEFECT — SQL override silently discards NULL member types.** XML line 916 filters
   with `demo_source2.Member_Type_Code is not null`; the implementation reproduces this and the
   seed row Member_ID 30005 is absent from both outputs rather than fixing the discard.
