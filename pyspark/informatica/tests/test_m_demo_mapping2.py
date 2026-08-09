@@ -6,20 +6,19 @@ from pyspark.sql import functions as F
 from informatica_pyspark.config import RunConfig
 from informatica_pyspark.context import MappingContext
 from informatica_pyspark.functions import iif, isnull
-from informatica_pyspark.io.base import ORDINAL_COL
+from informatica_pyspark.io.local_csv import LocalCsvReader
 from informatica_pyspark.mappings.m_demo_mapping2 import run
 
 
 DATA = Path(__file__).resolve().parents[3] / "legacy/informatica/data"
 
 
-def _source(spark, name):
-    return (
-        spark.read.option("header", "true")
-        .option("inferSchema", "false")
-        .csv(str(DATA / f"{name}.csv"))
-        .withColumn(ORDINAL_COL, F.monotonically_increasing_id().cast("long"))
-    )
+def _sources(spark):
+    reader = LocalCsvReader(spark, str(DATA))
+    return {
+        "demo_source1": reader.read("demo_source1"),
+        "demo_target1": reader.read("demo_target1"),
+    }
 
 
 def _result(spark):
@@ -28,22 +27,32 @@ def _result(spark):
         MappingContext(
             spark=spark,
             config=config,
-            sources={
-                "demo_source1": _source(spark, "demo_source1"),
-                "demo_target1": _source(spark, "demo_target1"),
-            },
+            sources=_sources(spark),
         )
     )
 
 
 def test_md5_defect_flags_genuinely_unchanged_matched_row_as_update(spark):
-    result = _result(spark)
-    row = result.targets["demo_target1_UPD"].where("ID = 'REC00001'").first()
-    expected = spark.sql(
-        "SELECT md5('BNK01BR1012024-01-31General ledger account 1GL0001')"
-    ).first()[0]
-    assert expected != "LEGACY_AES_VALUE"
-    assert row.UPDATED_BY == "IDWUSER"
+    sources = _sources(spark)
+    unchanged = sources["demo_target1"].where("ID = 'REC00001'").select(
+        "LEAD_CO_MNE",
+        "BRANCH_CO_MNE",
+        "MIS_DATE",
+        "ID",
+        "DESCRIPTION",
+        "SHORT_NAME",
+        "SRC_ORDINAL",
+    )
+    result = run(
+        MappingContext(
+            spark=spark,
+            config=RunConfig(business_date=date(2024, 1, 31)),
+            sources={"demo_source1": unchanged, "demo_target1": sources["demo_target1"]},
+        )
+    )
+    assert result.targets["demo_target1_INS"].count() == 0
+    row = result.targets["demo_target1_UPD"].first()
+    assert row.ID == "REC00001"
     assert row.Key == 1.0
 
 

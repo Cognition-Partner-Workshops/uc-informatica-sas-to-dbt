@@ -17,9 +17,9 @@ def run(ctx: MappingContext) -> MappingResult:
     lookup = (
         ctx.sources["demo_target1"]
         .withColumn("Key", F.col("Key").cast("double"))
-        .withColumn("_lookup_rank", F.row_number().over(lookup_window))
-        .where(F.col("_lookup_rank") == 1)
-        .drop("_lookup_rank")
+        .withColumn("WRK_LOOKUP_RANK", F.row_number().over(lookup_window))
+        .where(F.col("WRK_LOOKUP_RANK") == 1)
+        .drop("WRK_LOOKUP_RANK")
         .alias("lookup")
     )
     joined = source.join(
@@ -79,12 +79,12 @@ def run(ctx: MappingContext) -> MappingResult:
     update_rows = transformed.where(F.col("Changed_Flag") == F.lit("Update"))
     sequence_window = Window.orderBy(F.col(ORDINAL_COL))
     insert_rows = insert_rows.withColumn(
-        "_sequence_key",
+        "WRK_SEQUENCE_KEY",
         (F.lit(56) + F.row_number().over(sequence_window)).cast("long"),
     )
 
     ins = insert_rows.select(
-        F.col("_sequence_key").alias("Key"),
+        F.col("WRK_SEQUENCE_KEY").alias("Key"),
         "LEAD_CO_MNE",
         "BRANCH_CO_MNE",
         "MIS_DATE",
