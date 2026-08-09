@@ -1,0 +1,64 @@
+name: pyspark-informatica
+
+on:
+  pull_request:
+    branches:
+      - integration/informatica-pyspark-v2
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m venv /tmp/pyspark-informatica
+      - run: /tmp/pyspark-informatica/bin/pip install -r pyspark/informatica/requirements.txt
+      - run: /tmp/pyspark-informatica/bin/pytest pyspark/informatica/tests
+      - run: /tmp/pyspark-informatica/bin/python tools/informatica_baseline.py
+      - name: Detect unfinished mappings
+        id: mappings
+        shell: bash
+        run: |
+          if grep -R -q 'NotImplementedError' pyspark/informatica/informatica_pyspark/mappings/; then
+            echo "unfinished=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "unfinished=false" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Verify abort leaves aborting mapping targets absent
+        shell: bash
+        run: |
+          target_dir="$(mktemp -d)"
+          set +e
+          PYTHONPATH=pyspark/informatica /tmp/pyspark-informatica/bin/python \
+            -m informatica_pyspark.cli run-workflow \
+            --source-variant abort --target-dir "$target_dir"
+          status=$?
+          set -e
+          test "$status" -ne 0
+          test ! -e "$target_dir/demo_target2.csv"
+          test ! -e "$target_dir/demo_target21.csv"
+      - name: Verify abort preserves completed mapping targets
+        if: steps.mappings.outputs.unfinished == 'false'
+        shell: bash
+        run: |
+          target_dir="$(mktemp -d)"
+          set +e
+          PYTHONPATH=pyspark/informatica /tmp/pyspark-informatica/bin/python \
+            -m informatica_pyspark.cli run-workflow \
+            --source-variant abort --target-dir "$target_dir"
+          status=$?
+          set -e
+          test "$status" -ne 0
+          for target in demo_target1_INS demo_target1_UPD demo_target3 demo_target5 demo_target6; do
+            test -e "$target_dir/$target.csv"
+          done
+      # This gate disappears by itself when the last mapping lands.
+      - name: Run parity
+        if: steps.mappings.outputs.unfinished == 'false'
+        run: /tmp/pyspark-informatica/bin/python pyspark/informatica/scripts/run_parity.py
