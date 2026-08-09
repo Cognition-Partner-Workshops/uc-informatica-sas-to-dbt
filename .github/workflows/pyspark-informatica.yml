@@ -30,6 +30,12 @@ jobs:
           else
             echo "unfinished=false" >> "$GITHUB_OUTPUT"
           fi
+      - name: Run full workflow
+        if: steps.mappings.outputs.unfinished == 'false'
+        run: |
+          PYTHONPATH=pyspark/informatica /tmp/pyspark-informatica/bin/python \
+            -m informatica_pyspark.cli run-workflow \
+            --io local --target-dir out/pyspark/local
       - name: Verify abort leaves aborting mapping targets absent
         shell: bash
         run: |
