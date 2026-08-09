@@ -38,6 +38,26 @@
   absent. The runner projects physical target FIELDNUMBER order and removes `SRC_`/`WRK_` helpers
   before writing, so mapping children do not own IO-specific output shaping.
 
+## m_demo_mapping1
+
+- **DECISION — aggregator pass-through tie-break.** The SQL override at line 580 orders
+  by account but does not define intra-account order. The conversion selects the greatest
+  `TX_ID` per `ACCT_ID` for the aggregator's pass-through ports. Physical `SRC_ORDINAL`
+  order was rejected: it happens to choose the same seed row, so parity cannot distinguish
+  the alternatives.
+- **DECISION — lookup Use Last Value.** Lookup rows are ranked by maximum `SRC_ORDINAL`
+  per key, preserving physical file order. First-value and arbitrary-value selection were
+  rejected because the XML explicitly says Use Last Value (lines 498, 536, and 624).
+- **DECISION — sequence allocation.** `ACCT_KEY` starts at 281 and uses a deterministic
+  1-based `ACCT_ID` ordering over aggregated rows. Partition-natural order was rejected
+  because Spark does not define it.
+- **DECISION — CR8_DT rendering.** The regenerated baseline contains `2024-01-31`,
+  not a timestamp string, so the pinned SYSTIMESTAMP is materialized as a DATE before
+  writing. Keeping a timestamp would render `2024-01-31 00:00:00` and fail comparison.
+- **RECOVERED — source typing.** String CSV inputs are cast according to XML port types:
+  numeric account/transaction/customer identifiers to long, amounts to double, dates to
+  date, transaction time to timestamp, and `CRDT_LN` remains string for LTRIM.
+
 ## m_demo_mapping3
 
 - **RECOVERED — source casts.** XML lines 907–916 define Member_ID, Member_Record_Number,
