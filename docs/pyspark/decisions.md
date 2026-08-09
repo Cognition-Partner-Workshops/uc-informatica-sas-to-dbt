@@ -39,6 +39,7 @@
   before writing, so mapping children do not own IO-specific output shaping.
 
 ## m_demo_mapping1
+
 - **DECISION — aggregator pass-through tie-break.** The SQL override at line 580 orders
   by account but does not define intra-account order. The conversion selects the greatest
   `TX_ID` per `ACCT_ID` for the aggregator's pass-through ports. Physical `SRC_ORDINAL`
@@ -58,6 +59,7 @@
   date, transaction time to timestamp, and `CRDT_LN` remains string for LTRIM.
 
 ## m_demo_mapping2
+
 - **DECISION — AES_DECRYPT representation.** The mapping calls `functions.aes_decrypt` with the
   XML arguments and receives the scaffold's `LEGACY_AES_VALUE` constant. A real AES-256 decrypt
   and NULL were rejected because the key/material are unavailable and neither can change the
@@ -78,6 +80,7 @@
   ordering.
 
 ## m_demo_mapping3
+
 - **RECOVERED — source casts.** XML lines 907–916 define Member_ID, Member_Record_Number,
   Social_Security_Number, Member_Type_Code, and Relationship_to_Subscriber_Code as double, and
   Birth_Date and Original_Effective_Date as date/time. The implementation casts the numeric ports

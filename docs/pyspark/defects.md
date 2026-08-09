@@ -15,6 +15,7 @@ These behaviors are intentionally reproduced rather than fixed:
 - Email typos and spacing are preserved: lines 1140, 1150, and 1167.
 
 ## m_demo_mapping1
+
 These mapping-1 defects are reproduced rather than fixed:
 
 - **XML line 580 — positional SQL override discard.** The fourteenth SELECT
@@ -30,6 +31,7 @@ These mapping-1 defects are reproduced rather than fixed:
   is intentionally reproduced rather than replaced with the business date.
 
 ## m_demo_mapping2
+
 These behaviors are intentionally reproduced rather than fixed:
 
 - **AES/MD5 comparison defect (XML lines 177-179).** `AES_DECRYPT(...)` produces a value
@@ -44,6 +46,7 @@ These behaviors are intentionally reproduced rather than fixed:
   reproduced as dead/not-migrated outputs rather than invented target writes.
 
 ## m_demo_mapping3
+
 - **RECOVERED DEFECT — SQL override silently discards NULL member types.** XML line 916 filters
   with `demo_source2.Member_Type_Code is not null`; the implementation reproduces this and the
   seed row Member_ID 30005 is absent from both outputs rather than fixing the discard.
