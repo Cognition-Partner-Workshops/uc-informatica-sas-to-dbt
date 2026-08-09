@@ -154,7 +154,10 @@ def run(ctx: MappingContext) -> MappingResult: ...
   `demo_target1_INS`/`demo_target1_UPD` share physical `demo_target1`; `demo_target2`/`demo_target21`
   share physical `demo_target2` (INSTANCE `TRANSFORMATION_NAME` proves it). Represent this in
   `targets.py` as one physical definition with two writer instances — record the decision.
-- Helper columns are uppercase and prefixed `SRC_`/`WRK_`; all are dropped before write.
+- A column corresponding to a real Informatica port keeps that port's name. Columns synthesized
+  with no XML port behind them must be uppercase and prefixed `SRC_`/`WRK_`. The runner's
+  prefix-drop is a safety net, not the mechanism that guarantees the target schema; projection
+  to the physical TARGET field order is what guarantees the output schema.
 
 ## 7. Business date
 
