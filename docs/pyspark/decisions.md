@@ -153,3 +153,38 @@
   ordered task instances actually executed, including `Control` on the
   `Failed_Email2 → Control` stop-parent path. This makes the early return
   observable without changing its semantics.
+
+## Milestone 5 (Snowflake execution + warehouse parity)
+
+- **DECISION — run identifier and schema naming.** The run uses
+  `SOURCE_INFORMATICA_20260809T234500Z`, `PYSPARK_INFORMATICA_20260809T234500Z`, and
+  `BASELINE_INFORMATICA_20260809T234500Z`. The three names were checked against
+  `information_schema.schemata` before creation and are left standing as evidence.
+  Reusing an existing schema was rejected because it would collide with prior runs'
+  evidence.
+- **DECISION — identifier casing.** Table names are unquoted and therefore uppercase in
+  Snowflake. Column names are quoted with exact TARGETFIELD/CSV casing, and
+  `keep_column_case=on` is used on both Spark Snowflake reads and writes. `SRC_ORDINAL`
+  round-trips as uppercase. Uppercasing every identifier was rejected because it loses
+  the exact-case column naming required by CONTRACT §6.
+- **DECISION — all-string Snowflake sources.** Source business columns are all `VARCHAR`,
+  with `SRC_ORDINAL NUMBER(38,0)`, so Snowflake supplies the same all-string frames as the
+  local CSV reader and the identical transformation code runs in both modes (CONTRACT §4).
+  Typed source tables were rejected because they would move casts into the warehouse and
+  diverge the two paths.
+- **DECISION — persisted source ordinal.** `SRC_ORDINAL` is a persisted physical column
+  carrying CSV file order and is cast to Spark `long` in the adapter. Relying on Snowflake
+  natural row order or metadata pseudo-columns was rejected because that order is
+  nondeterministic and the Use Last Value/Use Any Value lookups depend on file order.
+- **DECISION — empty CSV fields.** Empty CSV fields load as `NULL` in both source and
+  baseline loads. This is justified by the measured zero empty-string values on the
+  migrated side. Staging all values as `VARCHAR` and applying explicit `NULLIF` casts
+  was rejected because it produces the same result with more machinery.
+- **DECISION — typed baseline comparison.** Baseline tables are created with `LIKE` the
+  migrated tables so MINUS is typed and column-aligned. Casting both sides to `VARCHAR`
+  was rejected because formatting differences could produce both false mismatches and
+  false passes.
+- **DECISION — JDBC account URL.** The adapter expands an account identifier such as
+  `YD76133.us-east-2.aws` to the fully qualified
+  `YD76133.us-east-2.aws.snowflakecomputing.com` JDBC host. Passing the shorthand
+  identifier directly was rejected because the JDBC driver could not resolve it.
