@@ -75,8 +75,8 @@ order by acct_id;
 
 -- 4. m_demo_mapping2 insert/update detection, and the two different Key provenances.
 --    A source ID absent from the demo_target1 lookup is an Insert and draws the sequence
---    (bigint, renders 57..60); a matched ID is an Update and carries the lookup's double Key
---    (renders 1.0 / 99.0 / 3.0). Same physical column, two upstream connectors.
+--    (bigint, renders 57..60); a matched ID is an Update carrying the lookup's double Key.
+--    The .0 rendering of lookup values is a local-CSV artifact, not a Snowflake result.
 with lookup_last as (
     select "ID" as id, "Key" as existing_key
     from (
@@ -102,9 +102,8 @@ left join DEVIN_MIGRATION_DEMO.PYSPARK_INFORMATICA_20260809T234500Z.DEMO_TARGET1
 left join DEVIN_MIGRATION_DEMO.PYSPARK_INFORMATICA_20260809T234500Z.DEMO_TARGET1_UPD u on u."ID" = s."ID"
 order by s."SRC_ORDINAL"::number;
 
--- 5. m_demo_mapping3: exactly one row (Member_ID 30005) is dropped by the SQL override; DEFAULT1 catches nothing because the router groups are complementary.
---    NEWGROUP1 (SSN is null) -> demo_target2; NEWGROUP2 (SSN not null) -> demo_target21;
---    a NULL Member_Type_Code is dropped by the SQL override, and DEFAULT1 has no connectors.
+-- 5. m_demo_mapping3: NEWGROUP1 (SSN is null) -> demo_target2; NEWGROUP2 (SSN not null) -> demo_target21.
+--    The SQL override drops only Member_ID 30005; DEFAULT1 is unreachable here because the groups are complementary.
 select s."Member_ID"                          as member_id,
        s."Member_Type_Code"                   as member_type_code,
        s."Social_Security_Number"             as ssn,

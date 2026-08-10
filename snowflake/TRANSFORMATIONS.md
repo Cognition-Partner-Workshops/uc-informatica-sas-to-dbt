@@ -47,8 +47,6 @@ This demonstrates that the target CR8_DT comes from the positional SYSTIMESTAMP 
 **Statement as run**
 
 ```sql
-
-
 -- 2. agg_TRANS SUM, the sequence generator, and the unconnected lookup call, in one row each.
 --    migrated_tx_amt is SUM(TX_AMT) over the account's transactions; sequence_key continues
 --    the XML's Current Value = 281; migrated_tx_type_cd comes from :LKP.lkp_TRANS1(ACCT_ID)
@@ -100,8 +98,6 @@ This demonstrates the aggregate SUM, continuing sequence value, and Use Last Val
 **Statement as run**
 
 ```sql
-
-
 -- 3. RTRIM / LTRIM ports: exp_TRANS o_acc_trim, o_ACCT_DESC, o_crdt_trim.
 --    Compare the raw source string lengths with the migrated ones.
 select s."ACCT_ID"                as acct_id,
@@ -134,12 +130,10 @@ This demonstrates the trimming transformations by showing source and migrated st
 **Statement as run**
 
 ```sql
-
-
 -- 4. m_demo_mapping2 insert/update detection, and the two different Key provenances.
 --    A source ID absent from the demo_target1 lookup is an Insert and draws the sequence
---    (bigint, renders 57..60); a matched ID is an Update and carries the lookup's double Key
---    (renders 1.0 / 99.0 / 3.0). Same physical column, two upstream connectors.
+--    (bigint, renders 57..60); a matched ID is an Update carrying the lookup's double Key.
+--    The .0 rendering of lookup values is a local-CSV artifact, not a Snowflake result.
 with lookup_last as (
     select "ID" as id, "Key" as existing_key
     from (
@@ -186,11 +180,8 @@ This demonstrates router-style insert/update detection and the separate sequence
 **Statement as run**
 
 ```sql
-
-
--- 5. m_demo_mapping3: exactly one row (Member_ID 30005) is dropped by the SQL override; DEFAULT1 catches nothing because the router groups are complementary.
---    NEWGROUP1 (SSN is null) -> demo_target2; NEWGROUP2 (SSN not null) -> demo_target21;
---    a NULL Member_Type_Code is dropped by the SQL override, and DEFAULT1 has no connectors.
+-- 5. m_demo_mapping3: NEWGROUP1 (SSN is null) -> demo_target2; NEWGROUP2 (SSN not null) -> demo_target21.
+--    The SQL override drops only Member_ID 30005; DEFAULT1 is unreachable here because the groups are complementary.
 select s."Member_ID"                          as member_id,
        s."Member_Type_Code"                   as member_type_code,
        s."Social_Security_Number"             as ssn,
@@ -230,8 +221,6 @@ This demonstrates the complementary router groups and the single NULL Member_Typ
 **Statement as run**
 
 ```sql
-
-
 -- 6. The preserved legacy defect: exp_TRANS2.o_SELL_ST_DT is TO_DATE(TO_CHAR(SYSDATE),'DD/MM/YYYY'),
 --    a mask that cannot parse its own input, so every migrated SELL_ST_DT is NULL even though the
 --    source column is populated. SELL_ED_DT, which uses a compatible mask, converts fine.
