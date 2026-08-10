@@ -4,6 +4,7 @@ on:
   pull_request:
     branches:
       - integration/informatica-pyspark-v2
+      - main
 
 jobs:
   verify:
