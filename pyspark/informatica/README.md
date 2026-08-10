@@ -25,8 +25,15 @@ changes mapping transformation code.
 
 ## Verification
 
+The committed parity evidence at `docs/parity/informatica_pyspark_parity.md` is re-runnable:
+regenerate it with the baseline, workflow, and parity commands below; the generated file is
+expected to be committed.
+
 ```bash
 pytest pyspark/informatica/tests
 python tools/informatica_baseline.py
+PYTHONPATH=pyspark/informatica python -m informatica_pyspark.cli run-workflow \
+  --io local --target-dir out/pyspark/local
+python pyspark/informatica/scripts/run_parity.py --actual out/pyspark/local
 python pyspark/informatica/scripts/run_parity.py --help
 ```
