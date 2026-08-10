@@ -110,3 +110,6 @@ The SQL files can also be run individually in order:
 `06_verdict.sql` is a single copy-pasteable statement. `run_proof.py` executes all
 six SQL files and writes the captured result rows, together with schema/table
 evidence and three migrated-target samples, to `PROOF.md`.
+
+The transformation demonstration SQL and its captured warehouse output are documented
+in [`TRANSFORMATIONS.md`](TRANSFORMATIONS.md).
