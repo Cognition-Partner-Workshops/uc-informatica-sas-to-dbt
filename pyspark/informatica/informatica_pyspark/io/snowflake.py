@@ -19,7 +19,7 @@ class SnowflakeReader(SourceReader):
             raise ValueError(
                 f"Snowflake source {logical_name!r} must contain persisted {ORDINAL_COL}"
             )
-        return frame
+        return frame.withColumn(ORDINAL_COL, frame[ORDINAL_COL].cast("long"))
 
 
 class SnowflakeWriter(TargetWriter):
@@ -27,7 +27,7 @@ class SnowflakeWriter(TargetWriter):
         self.options = options
 
     def write(self, target_instance: str, df: DataFrame) -> None:
-        output = df.drop("SRC_ORDINAL") if "SRC_ORDINAL" in df.columns else df
+        output = df.drop(ORDINAL_COL) if ORDINAL_COL in df.columns else df
         (
             output.write.format("snowflake")
             .options(**self.options)

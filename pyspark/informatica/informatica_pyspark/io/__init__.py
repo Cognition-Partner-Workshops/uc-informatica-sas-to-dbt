@@ -6,18 +6,22 @@ from .snowflake import SnowflakeReader, SnowflakeWriter
 
 
 def _snowflake_options(config, schema):
+    account = config.account
+    if account and not account.startswith(("http://", "https://")):
+        account = f"{account}.snowflakecomputing.com"
     options = {
         key: value
         for key, value in {
-            "sfURL": config.account,
+            "sfURL": account,
             "sfUser": config.user,
             "sfRole": config.role,
             "sfWarehouse": config.warehouse,
             "sfDatabase": config.database,
             "sfSchema": schema,
-    }.items()
+        }.items()
         if value
     }
+    options["keep_column_case"] = "on"
     if config.private_key_path:
         from cryptography.hazmat.primitives import serialization
 
