@@ -1,0 +1,19 @@
+name: Informatica before-state determinism
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  before-state-determinism:
+    name: before-state determinism
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - run: python -m pip install duckdb dbt-duckdb pandas
+      - run: python tools/informatica_before_state_check.py
