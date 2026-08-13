@@ -9,6 +9,7 @@ Contract for the migration helper tools. Every tool is plain Python 3 (stdlib + 
 |---|---|---|
 | `informatica_lineage.py` | `legacy/informatica/wf_demo_mapping.XML` | `docs/stm/informatica_stm.json` + `docs/stm/informatica_stm.md` — per mapping: sources, targets, transformations, port-level lineage (target column → expression chain → source column), lookup conditions, router groups, SQL overrides |
 | `informatica_baseline.py` | XML + `legacy/informatica/data/` seed CSVs | `baseline/informatica/<target>.csv` — deterministic execution of each mapping's semantics in DuckDB |
+| `informatica_before_state_check.py` | The two Informatica tools + seed data | Temporary two-pass smoke test; verifies expected outputs are non-empty and byte-identical |
 
 ## SAS track
 
