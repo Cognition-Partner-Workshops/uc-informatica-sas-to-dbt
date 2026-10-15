@@ -10,7 +10,6 @@ Baseline: `snowflake/BASELINE_SF_20261015_DS`  |  Actual: `snowflake/SCAI_SF_202
 ## DEMO_TARGET21
 - rows: baseline=3 actual=3
 - columns compared: 14
-- **MISMATCH**:
-  - column GENDER: 3/3 rows differ (first at {'MEMBER_IDENTIFIER': np.float64(30002.0)}: baseline=np.False_ actual='F')
+- result: **MATCH** (all values within tolerance)
 
-**Overall: PARITY FAILED**
+**Overall: PARITY VERIFIED**
