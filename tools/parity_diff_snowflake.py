@@ -50,7 +50,7 @@ def export(cur, schema: str, tables: list, out_dir: str) -> None:
         # Timestamps are read as text: some loaded values lie past year 9999, which Python
         # datetimes cannot hold; those stay as Snowflake renders them.
         select = ", ".join(
-            f"to_varchar(\"{c}\", 'YYYY-MM-DD HH24:MI:SS') as \"{c}\"" if d.startswith("TIMESTAMP") else f'"{c}"'
+            f"to_varchar(\"{c}\", 'YYYY-MM-DD HH24:MI:SS.FF6') as \"{c}\"" if d.startswith("TIMESTAMP") else f'"{c}"'
             for c, d in cols
         )
         cur.execute(f'select {select} from "{schema}"."{t.upper()}"')
@@ -66,8 +66,9 @@ def export(cur, schema: str, tables: list, out_dir: str) -> None:
 
 def copy_csv(src_dir: str, tables: list, out_dir: str) -> None:
     os.makedirs(out_dir, exist_ok=True)
+    by_upper = {os.path.splitext(f)[0].upper(): f for f in os.listdir(src_dir) if f.lower().endswith(".csv")}
     for t in tables:
-        shutil.copy(os.path.join(src_dir, f"{t}.csv"), os.path.join(out_dir, f"{t}.csv"))
+        shutil.copy(os.path.join(src_dir, by_upper[t.upper()]), os.path.join(out_dir, f"{t}.csv"))
 
 
 def main():

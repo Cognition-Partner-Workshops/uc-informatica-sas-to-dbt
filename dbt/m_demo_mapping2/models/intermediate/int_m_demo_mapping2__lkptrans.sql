@@ -20,7 +20,7 @@ WITH lookup_reference AS
    QUALIFY
       ROW_NUMBER() OVER (
       PARTITION BY
-         ID
+         UPPER(ID)
       ORDER BY
          Key DESC, SEED_ROW DESC) = 1
 ),
