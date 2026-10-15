@@ -28,7 +28,7 @@ Scores are Pain (1 to 5, how much this hurts the bank today) times Async-cloud f
 
 Session `ca69c38544184defb75a9d44463ddd91`, titled "Inventory before funding": https://partner-workshops.devinenterprise.com/sessions/ca69c38544184defb75a9d44463ddd91
 
-Open the timeline at the inventory table, which lists twenty-three units across the two repositories, each with its source system, rows loaded in `SOURCE_SF_20261015_DS`, what `scai` converts on its own, what needs a human-style rewrite, and a risk from 1 to 5. The PowerCenter exports from the health-records repository show 567 personal-data fields counted by name and no quoted values; the wave plan puts them in a blocked fourth wave until a masking policy, landed source data and a baseline exist.
+Open the timeline at the inventory table, which lists twenty-three units across the two repositories (three Informatica mappings, six SAS programs, eleven PowerCenter workflows and three Oracle scripts), each with its source system, rows loaded in `SOURCE_SF_20261015_DS`, what `scai` converts on its own, what needs a human-style rewrite, and a risk from 1 to 5. The PowerCenter exports from the health-records repository show 567 personal-data fields counted by name and no quoted values; the wave plan puts them in a blocked fourth wave until a masking policy, landed source data and a baseline exist.
 
 Devin asked one question, whether to migrate the insurance SAS programs in this wave or only banking. It waited, then took the default ("both tracks") when the answer came late. The persona later gave the same answer. The wave plan names `load_customer_accounts` as the fastest honest first result, and act 5 starts it live.
 
