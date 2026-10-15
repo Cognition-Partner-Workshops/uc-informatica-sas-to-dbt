@@ -4,11 +4,11 @@ with adjudication_rules as (
         case
             when FRAUD_RISK = 'HIGH' then 'DENY'
             when FRAUD_RISK = 'LOW'
-                and CLAIMED_AMOUNT <= 5000
+                and (CLAIMED_AMOUNT is null or CLAIMED_AMOUNT <= 5000)
                 and POLICY_TYPE in ('AUTO', 'HOME', 'RENT') then 'APPR'
             when FRAUD_RISK = 'LOW'
-                and CLAIMED_AMOUNT <= SUM_INSURED * 0.25
-                and CLAIMED_AMOUNT <= 50000 then 'APPR'
+                and (CLAIMED_AMOUNT is null or CLAIMED_AMOUNT <= SUM_INSURED * 0.25)
+                and (CLAIMED_AMOUNT is null or CLAIMED_AMOUNT <= 50000) then 'APPR'
             else 'PEND'
         end as ADJUDICATION_RESULT
     from {{ ref('int_claims_processing__fraud_check') }}
@@ -36,7 +36,7 @@ select
         when ADJUDICATION_RESULT = 'DENY' then 'High fraud risk - SIU referral'
         when ADJUDICATION_RESULT = 'APPR'
             and FRAUD_RISK = 'LOW'
-            and CLAIMED_AMOUNT <= 5000
+            and (CLAIMED_AMOUNT is null or CLAIMED_AMOUNT <= 5000)
             and POLICY_TYPE in ('AUTO', 'HOME', 'RENT')
             then 'Auto-approved: low risk, small claim'
         when ADJUDICATION_RESULT = 'APPR' then
@@ -45,8 +45,13 @@ select
             array_to_string(
                 array_construct_compact(
                     iff(FRAUD_RISK = 'MEDIUM', 'Medium fraud risk', null),
-                    iff(CLAIMED_AMOUNT > 50000, 'Large claim', null),
-                    iff(CLAIMED_AMOUNT > SUM_INSURED * 0.25, 'Exceeds 25% threshold', null)
+                    iff(CLAIMED_AMOUNT is not null and CLAIMED_AMOUNT > 50000, 'Large claim', null),
+                    iff(
+                        (CLAIMED_AMOUNT is not null and SUM_INSURED * 0.25 is null)
+                            or CLAIMED_AMOUNT > SUM_INSURED * 0.25,
+                        'Exceeds 25% threshold',
+                        null
+                    )
                 ),
                 '; '
             ),

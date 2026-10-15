@@ -35,15 +35,21 @@ select
     SUM_INSURED,
     DEDUCTIBLE,
     case
-        when MATCHED_POLICY_ID is null then 'Policy not found or inactive: ' || POLICY_ID
-        when LOSS_DATE < EFFECTIVE_DATE or LOSS_DATE > EXPIRATION_DATE then
-            'Loss date ' || upper(to_char(LOSS_DATE, 'DDMONYYYY')) ||
+        when MATCHED_POLICY_ID is null then
+            'Policy not found or inactive:' ||
+            coalesce(' ' || nullif(trim(POLICY_ID), ''), '')
+        when (
+            (LOSS_DATE is null and EFFECTIVE_DATE is not null) or LOSS_DATE < EFFECTIVE_DATE
+            or (LOSS_DATE is not null and EXPIRATION_DATE is null) or LOSS_DATE > EXPIRATION_DATE
+        ) then
+            'Loss date ' || coalesce(upper(to_char(LOSS_DATE, 'DDMONYYYY')), '.') ||
             ' outside policy period ' ||
-            upper(to_char(EFFECTIVE_DATE, 'DDMONYYYY')) || ' - ' ||
-            upper(to_char(EXPIRATION_DATE, 'DDMONYYYY'))
-        when CLAIMED_AMOUNT > SUM_INSURED then
-            'Claimed amount ' || trim(to_varchar(CLAIMED_AMOUNT, '$999,999,999,990.00')) ||
-            ' exceeds sum insured ' || trim(to_varchar(SUM_INSURED, '$999,999,999,990.00'))
+            coalesce(upper(to_char(EFFECTIVE_DATE, 'DDMONYYYY')), '.') || ' - ' ||
+            coalesce(upper(to_char(EXPIRATION_DATE, 'DDMONYYYY')), '.')
+        when (CLAIMED_AMOUNT is not null and SUM_INSURED is null)
+            or CLAIMED_AMOUNT > SUM_INSURED then
+            'Claimed amount ' || coalesce(trim(to_varchar(CLAIMED_AMOUNT, '$999,999,999,990.00')), '.') ||
+            ' exceeds sum insured ' || coalesce(trim(to_varchar(SUM_INSURED, '$999,999,999,990.00')), '.')
         else null
     end as VALIDATION_ERROR
 from claims_with_active_policy
