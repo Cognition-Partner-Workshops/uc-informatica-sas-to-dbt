@@ -1,0 +1,13 @@
+version: 2
+
+seeds:
+  - name: claims_processing__fmt_clmstat
+    config:
+      column_types:
+        CODE: varchar
+        LABEL: varchar
+    columns:
+      - name: CODE
+        data_tests:
+          - not_null
+          - unique

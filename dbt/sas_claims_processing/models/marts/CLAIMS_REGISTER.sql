@@ -1,0 +1,25 @@
+-- Prior STG_INS append state is absent from SOURCE_; this table represents this run's append.
+select
+    CLAIM_ID,
+    POLICY_ID,
+    CLAIMANT_ID,
+    LOSS_DATE,
+    REPORTED_DATE,
+    CLAIMED_AMOUNT,
+    CAUSE_CODE,
+    DESCRIPTION,
+    POLICY_TYPE,
+    EFFECTIVE_DATE,
+    EXPIRATION_DATE,
+    SUM_INSURED,
+    DEDUCTIBLE,
+    FRAUD_SCORE,
+    INDICATOR_FLAGS,
+    FRAUD_RISK,
+    ADJUDICATION_RESULT,
+    ADJUDICATION_REASON,
+    APPROVED_AMOUNT,
+    PROCESSING_DATE,
+    CLAIM_STATUS,
+    CLAIM_STATUS_DESC
+from {{ ref('int_claims_processing__claims_combined') }}

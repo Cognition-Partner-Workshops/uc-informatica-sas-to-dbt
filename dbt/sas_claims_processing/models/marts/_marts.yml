@@ -1,0 +1,63 @@
+version: 2
+
+models:
+  - name: CLAIMS_REGISTER
+    columns:
+      - name: CLAIM_ID
+        data_tests:
+          - not_null
+          - unique
+      - name: FRAUD_RISK
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ["HIGH", "MEDIUM", "LOW"]
+      - name: ADJUDICATION_RESULT
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ["APPR", "DENY", "PEND"]
+      - name: CLAIM_STATUS
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ["NEW", "OPEN", "INV", "ADJ", "PEND", "APPR", "DENY", "PAID", "CLOS", "REOP", "SUSP", "LITI"]
+          - relationships:
+              arguments:
+                to: ref('claims_processing__fmt_clmstat')
+                field: CODE
+      - name: CLAIM_STATUS_DESC
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('claims_processing__fmt_clmstat')
+                field: LABEL
+
+  - name: CLAIMS_REVIEW_QUEUE
+    columns:
+      - name: CLAIM_ID
+        data_tests:
+          - not_null
+          - unique
+      - name: FRAUD_RISK
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ["HIGH", "MEDIUM", "LOW"]
+      - name: ADJUDICATION_RESULT
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ["DENY", "PEND"]
+
+  - name: FRAUD_ALERTS
+    columns:
+      - name: CLAIM_ID
+        data_tests:
+          - not_null
+          - unique
+      - name: FRAUD_RISK
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ["HIGH"]
