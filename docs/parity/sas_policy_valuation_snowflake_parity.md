@@ -1,6 +1,6 @@
 # Parity Report
 
-Baseline: `/tmp/parity_sf_iz3y2gh4/baseline`  |  Actual: `/tmp/parity_sf_iz3y2gh4/actual`
+Baseline: `/tmp/parity_sf_au7879yu/baseline`  |  Actual: `/tmp/parity_sf_au7879yu/actual`
 
 ## LOSS_RATIO_SUMMARY
 - rows: baseline=8 actual=8

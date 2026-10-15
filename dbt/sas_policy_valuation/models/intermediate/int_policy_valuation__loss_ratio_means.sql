@@ -9,5 +9,5 @@ select
     sum(TOTAL_RESERVE) as TOTAL_RESERVES,
     sum(IBNR_ESTIMATE) as TOTAL_IBNR
 from {{ ref('int_policy_valuation__valuation') }}
-where POLICY_TYPE is not null
+where nullif(trim(POLICY_TYPE), '') is not null
 group by POLICY_TYPE
