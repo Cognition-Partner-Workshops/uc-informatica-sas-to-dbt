@@ -11,7 +11,7 @@ The frozen legacy answer for one demo run of the Informatica plus SAS to dbt on 
 | Schema | `DEVIN_MIGRATION_DEMO.DBT_SF_20261015_DS` | Empty; the dbt children build here |
 | Schema | `DEVIN_MIGRATION_DEMO.SCAI_SF_20261015_DS` | Empty; the SnowConvert AI replatform deploys here |
 | Schema | `DEVIN_MIGRATION_DEMO.ORACLE_SF_20261015_DS` | Empty; converted Oracle objects go here if their tables can be stubbed |
-| Warehouse | `SF_20261015_DS_WH` | X-Small, auto-suspend 60 s, auto-resume, created suspended. The only warehouse the run may use |
+| Warehouse | `SF_20261015_DS_WH` | X-Small Gen1, auto-suspend 30 s, auto-resume, query acceleration off, created suspended. The only warehouse the run may use |
 | Resource monitor | `SF_20261015_DS_MON` | 5 credit quota, notify at 80 percent, suspend at 100 percent, attached to the run warehouse only |
 | Role | `SF_20261015_DS_DBT` | Usage on database and warehouse, select on SOURCE_ and BASELINE_, all privileges plus future grants on DBT_, SCAI_, ORACLE_, imported privileges on SNOWFLAKE for ACCOUNT_USAGE |
 | Role | `SF_20261015_DS_READER` | Usage and select on the five schemas, monitor on the warehouse and the resource monitor |

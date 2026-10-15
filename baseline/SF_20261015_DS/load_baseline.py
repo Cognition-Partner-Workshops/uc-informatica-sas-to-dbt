@@ -102,8 +102,11 @@ class Runner:
 
     def warehouse(self):
         self.sql(f"""CREATE WAREHOUSE IF NOT EXISTS {self.wh} WITH WAREHOUSE_SIZE = XSMALL
-            AUTO_SUSPEND = 60 AUTO_RESUME = TRUE INITIALLY_SUSPENDED = TRUE
+            GENERATION = '1' AUTO_SUSPEND = 30 AUTO_RESUME = TRUE
+            ENABLE_QUERY_ACCELERATION = FALSE INITIALLY_SUSPENDED = TRUE
             COMMENT = 'demo run {self.token}; dropped by baseline/{self.token}/teardown.sh'""")
+        # converge an existing warehouse left over from a previous load
+        self.sql(f"ALTER WAREHOUSE {self.wh} SET GENERATION = '1' AUTO_SUSPEND = 30 ENABLE_QUERY_ACCELERATION = FALSE")
         if not self.sql(f"SHOW RESOURCE MONITORS LIKE '{self.mon}'"):
             self.sql(f"""CREATE RESOURCE MONITOR {self.mon} WITH CREDIT_QUOTA = 5
                 FREQUENCY = NEVER START_TIMESTAMP = IMMEDIATELY
