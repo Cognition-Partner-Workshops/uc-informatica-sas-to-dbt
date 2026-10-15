@@ -1,0 +1,351 @@
+[
+  {
+    "id": "S01_validation_rules",
+    "description": "Each validation rule rejects one row (missing/blank-only TRANSACTION_ID, missing ACCOUNT_ID, missing amount, |amount| > 1e7 both signs, invalid / blank / lower-case type, future date, multi-rule failure); boundary rows pass (|amount| = 1e7, date = run date, earlier date, missing date). The missing-date row sorts first in its BY group.",
+    "decision_ids": [
+      "DAI-D02",
+      "DAI-D05",
+      "DAI-D06",
+      "DAI-D07",
+      "DAI-D08",
+      "DAI-D09",
+      "DAI-D10",
+      "DAI-D11",
+      "DAI-D22"
+    ],
+    "params": {
+      "txn_date": "31JAN2024"
+    },
+    "targets": [
+      "DAILY_TRANSACTIONS",
+      "TXN_ANOMALIES",
+      "RUNNING_BALANCES"
+    ]
+  },
+  {
+    "id": "S02_running_balance",
+    "description": "RETAIN running balance across all ten valid types in two accounts: reset at FIRST.ACCOUNT_ID, credit/debit/signed groups, negative amount on a debit type (abs), missing-date row first, same-date ties ordered by TRANSACTION_ID; second account goes overdrawn (OVERDRAFT outranks LARGE_WITHDRAWAL).",
+    "decision_ids": [
+      "DAI-D16",
+      "DAI-D17",
+      "DAI-D19",
+      "DAI-D20",
+      "DAI-D22",
+      "DAI-D28",
+      "DAI-D29",
+      "DAI-D31",
+      "DAI-D32"
+    ],
+    "params": {
+      "txn_date": "31JAN2024"
+    },
+    "targets": [
+      "DAILY_TRANSACTIONS",
+      "TXN_ANOMALIES",
+      "RUNNING_BALANCES"
+    ]
+  },
+  {
+    "id": "S03_join_paths",
+    "description": "LEFT JOIN to STG_BANK.CUST_ACCOUNTS_DAILY: duplicated snapshot row (fan-out), missing CUSTOMER_ID (ORPHAN_ACCOUNT reached), missing CURRENT_BALANCE (missing propagates to POST/RUNNING_BALANCE -> OVERDRAFT), orphan WDR where LARGE_WITHDRAWAL outranks ORPHAN, account absent from snapshot with history (HIGH_AMOUNT despite missing balance) and without history (OVERDRAFT).",
+    "decision_ids": [
+      "DAI-D14",
+      "DAI-D18",
+      "DAI-D21",
+      "DAI-D27",
+      "DAI-D28",
+      "DAI-D29",
+      "DAI-D30",
+      "DAI-D32"
+    ],
+    "params": {
+      "txn_date": "31JAN2024"
+    },
+    "targets": [
+      "DAILY_TRANSACTIONS",
+      "TXN_ANOMALIES",
+      "RUNNING_BALANCES"
+    ]
+  },
+  {
+    "id": "S04_stats_window",
+    "description": "PROC SQL history statistics: 90-day lower bound inclusive (02NOV2023 in, 01NOV2023 out), missing-date history excluded, history dated after the run date included (no upper bound), STD = 0, single history row (STD missing), missing history amount ignored by AVG/STD, no history; Z_SCORE exactly 3 is not HIGH_AMOUNT.",
+    "decision_ids": [
+      "DAI-D23",
+      "DAI-D24",
+      "DAI-D25",
+      "DAI-D26",
+      "DAI-D27",
+      "DAI-D31"
+    ],
+    "params": {
+      "txn_date": "31JAN2024"
+    },
+    "targets": [
+      "DAILY_TRANSACTIONS",
+      "TXN_ANOMALIES",
+      "RUNNING_BALANCES"
+    ]
+  },
+  {
+    "id": "S05_anomaly_priority",
+    "description": "Anomaly CASE boundaries and priority: WDR exactly 0.9 x PRE (not LARGE_WITHDRAWAL) vs just above, RUNNING_BALANCE exactly 0 (not OVERDRAFT), HIGH_AMOUNT outranks OVERDRAFT and LARGE_WITHDRAWAL, OVERDRAFT outranks LARGE_WITHDRAWAL after an earlier credit, LARGE_WITHDRAWAL tests the snapshot PRE balance not the running balance.",
+    "decision_ids": [
+      "DAI-D27",
+      "DAI-D28",
+      "DAI-D29",
+      "DAI-D31",
+      "DAI-D32"
+    ],
+    "params": {
+      "txn_date": "31JAN2024"
+    },
+    "targets": [
+      "DAILY_TRANSACTIONS",
+      "TXN_ANOMALIES",
+      "RUNNING_BALANCES"
+    ]
+  },
+  {
+    "id": "S06_prior_anomalies_append",
+    "description": "CURATED.TXN_ANOMALIES already exists with two rows: new anomalies are PROC APPENDed after them; a feed TRANSACTION_ID already present in history is appended again (no de-duplication) to CURATED.DAILY_TRANSACTIONS.",
+    "decision_ids": [
+      "DAI-D33",
+      "DAI-D34",
+      "DAI-D35",
+      "DAI-D37"
+    ],
+    "params": {
+      "txn_date": "31JAN2024"
+    },
+    "targets": [
+      "DAILY_TRANSACTIONS",
+      "TXN_ANOMALIES",
+      "RUNNING_BALANCES"
+    ]
+  },
+  {
+    "id": "S07_no_new_anomalies",
+    "description": "No feed row is anomalous (%nobs(WORK.TXN_ANOMALIES)=0): the PROC APPEND to CURATED.TXN_ANOMALIES is skipped, so the pre-existing table is left unchanged.",
+    "decision_ids": [
+      "DAI-D31",
+      "DAI-D33",
+      "DAI-D34"
+    ],
+    "params": {
+      "txn_date": "31JAN2024"
+    },
+    "targets": [
+      "DAILY_TRANSACTIONS",
+      "TXN_ANOMALIES",
+      "RUNNING_BALANCES"
+    ]
+  },
+  {
+    "id": "S08_empty_feed",
+    "description": "Feed dataset exists but has 0 rows: all work tables are empty, nothing is appended to DAILY_TRANSACTIONS, RUNNING_BALANCES is replaced by an empty table, TXN_ANOMALIES is not created.",
+    "decision_ids": [
+      "DAI-D04",
+      "DAI-D12",
+      "DAI-D33"
+    ],
+    "params": {
+      "txn_date": "31JAN2024"
+    },
+    "targets": [
+      "DAILY_TRANSACTIONS",
+      "TXN_ANOMALIES",
+      "RUNNING_BALANCES"
+    ]
+  },
+  {
+    "id": "S09_all_rejected",
+    "description": "Feed has rows but every row fails validation: same outputs as an empty feed (no append, empty RUNNING_BALANCES, no anomalies).",
+    "decision_ids": [
+      "DAI-D04",
+      "DAI-D05",
+      "DAI-D07",
+      "DAI-D10",
+      "DAI-D12",
+      "DAI-D33"
+    ],
+    "params": {
+      "txn_date": "31JAN2024"
+    },
+    "targets": [
+      "DAILY_TRANSACTIONS",
+      "TXN_ANOMALIES",
+      "RUNNING_BALANCES"
+    ]
+  },
+  {
+    "id": "S10_empty_history",
+    "description": "CURATED.DAILY_TRANSACTIONS exists with 0 rows: no statistics, every Z_SCORE missing, no HIGH_AMOUNT even for a very large deposit; output DAILY_TRANSACTIONS holds only the new rows.",
+    "decision_ids": [
+      "DAI-D24",
+      "DAI-D26",
+      "DAI-D27",
+      "DAI-D28",
+      "DAI-D35"
+    ],
+    "params": {
+      "txn_date": "31JAN2024"
+    },
+    "targets": [
+      "DAILY_TRANSACTIONS",
+      "TXN_ANOMALIES",
+      "RUNNING_BALANCES"
+    ]
+  },
+  {
+    "id": "S11_history_absent",
+    "description": "CURATED.DAILY_TRANSACTIONS does not exist. LOW CONFIDENCE: the TXN_STATS PROC SQL errors, WORK.TXN_ANOMALIES is not created, %nobs returns blank and the %if comparison stops the macro after PROC APPEND has created CURATED.DAILY_TRANSACTIONS from WORK.TXN_WITH_BALANCE (19 columns); RUNNING_BALANCES and TXN_ANOMALIES are not written.",
+    "decision_ids": [
+      "DAI-D35",
+      "DAI-D33"
+    ],
+    "params": {
+      "txn_date": "31JAN2024"
+    },
+    "targets": [
+      "DAILY_TRANSACTIONS",
+      "TXN_ANOMALIES",
+      "RUNNING_BALANCES"
+    ]
+  },
+  {
+    "id": "S12_feed_absent",
+    "description": "RAW_BANK.TXN_FEED_20240131 does not exist (only the previous day feed is present): %goto ABORT, all targets unchanged.",
+    "decision_ids": [
+      "DAI-D03"
+    ],
+    "params": {
+      "txn_date": "31JAN2024"
+    },
+    "targets": [
+      "DAILY_TRANSACTIONS",
+      "TXN_ANOMALIES",
+      "RUNNING_BALANCES"
+    ]
+  },
+  {
+    "id": "S13_blank_txn_date",
+    "description": "txn_date passed blank. LOW CONFIDENCE: %parmv flags the missing parameter but its result is not tested; the feed name resolves without a date, exist() is false and the macro aborts with all targets unchanged.",
+    "decision_ids": [
+      "DAI-D01"
+    ],
+    "params": {
+      "txn_date": ""
+    },
+    "targets": [
+      "DAILY_TRANSACTIONS",
+      "TXN_ANOMALIES",
+      "RUNNING_BALANCES"
+    ]
+  },
+  {
+    "id": "S14_lock_held",
+    "description": "CURATED.DAILY_TRANSACTIONS is locked by another session for the whole run (operational precondition, not data). LOW CONFIDENCE: the %lock call is positional against a keyword-only macro so no lock is acquired; PROC APPEND fails with a lock error and DAILY_TRANSACTIONS is unchanged, while RUNNING_BALANCES and TXN_ANOMALIES are still written (assumes no OBS=0 syntax-check escalation).",
+    "decision_ids": [
+      "DAI-D36"
+    ],
+    "params": {
+      "txn_date": "31JAN2024"
+    },
+    "targets": [
+      "DAILY_TRANSACTIONS",
+      "TXN_ANOMALIES",
+      "RUNNING_BALANCES"
+    ]
+  },
+  {
+    "id": "S15_trailing_blanks",
+    "description": "Trailing blanks in TRANSACTION_TYPE and ACCOUNT_ID: SAS character comparison pads with blanks, so \"DEP \" is a valid type and \"A9000131 \" joins to and sorts with \"A9000131\".",
+    "decision_ids": [
+      "DAI-D09",
+      "DAI-D13",
+      "DAI-D15",
+      "DAI-D29"
+    ],
+    "params": {
+      "txn_date": "31JAN2024"
+    },
+    "targets": [
+      "DAILY_TRANSACTIONS",
+      "TXN_ANOMALIES",
+      "RUNNING_BALANCES"
+    ]
+  },
+  {
+    "id": "S16_mid_month_date",
+    "description": "Mid-month run date 15JAN2024: feed TXN_FEED_20240115; 90-day stats window starts 17OCT2023 (included) and excludes 16OCT2023; next-day row rejected as future-dated.",
+    "decision_ids": [
+      "DAI-D02",
+      "DAI-D10",
+      "DAI-D23",
+      "DAI-D27"
+    ],
+    "params": {
+      "txn_date": "15JAN2024"
+    },
+    "targets": [
+      "DAILY_TRANSACTIONS",
+      "TXN_ANOMALIES",
+      "RUNNING_BALANCES"
+    ]
+  },
+  {
+    "id": "S17_leap_day_date",
+    "description": "Leap-day run date 29FEB2024: feed TXN_FEED_20240229; 90-day stats window starts 01DEC2023 (included) and excludes 30NOV2023; next-day row rejected as future-dated.",
+    "decision_ids": [
+      "DAI-D02",
+      "DAI-D10",
+      "DAI-D23",
+      "DAI-D27"
+    ],
+    "params": {
+      "txn_date": "29FEB2024"
+    },
+    "targets": [
+      "DAILY_TRANSACTIONS",
+      "TXN_ANOMALIES",
+      "RUNNING_BALANCES"
+    ]
+  },
+  {
+    "id": "S18_quarter_end_date",
+    "description": "Quarter-end run date 31MAR2024: feed TXN_FEED_20240331; 90-day stats window starts 01JAN2024 (included) and excludes 31DEC2023; next-day row rejected as future-dated.",
+    "decision_ids": [
+      "DAI-D02",
+      "DAI-D10",
+      "DAI-D23",
+      "DAI-D27"
+    ],
+    "params": {
+      "txn_date": "31MAR2024"
+    },
+    "targets": [
+      "DAILY_TRANSACTIONS",
+      "TXN_ANOMALIES",
+      "RUNNING_BALANCES"
+    ]
+  },
+  {
+    "id": "S19_year_end_date",
+    "description": "Year-end run date 31DEC2023: feed TXN_FEED_20231231; 90-day stats window starts 02OCT2023 (included) and excludes 01OCT2023; next-day row rejected as future-dated.",
+    "decision_ids": [
+      "DAI-D02",
+      "DAI-D10",
+      "DAI-D23",
+      "DAI-D27"
+    ],
+    "params": {
+      "txn_date": "31DEC2023"
+    },
+    "targets": [
+      "DAILY_TRANSACTIONS",
+      "TXN_ANOMALIES",
+      "RUNNING_BALANCES"
+    ]
+  }
+]
