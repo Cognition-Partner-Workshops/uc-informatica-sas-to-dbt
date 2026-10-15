@@ -1,0 +1,4 @@
+17:23:22  Running with dbt=1.9.4
+17:23:22  Registered adapter: snowflake=1.9.4
+17:23:23  Found 2 data tests, 2 seeds, 481 macros
+17:23:55  apply_pii_tags: applied 127 column tags; skipped 0 rows for missing tables

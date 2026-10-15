@@ -1,0 +1,7 @@
+version: 2
+
+data_tests:
+  - name: assert_classified_columns_have_pii_tag
+    description: "Fails for every classified column missing its PII_CATEGORY tag or carrying a different value."
+  - name: assert_classified_columns_are_masked
+    description: "Fails for every classified column without a masking policy reference attached through PII_CATEGORY."

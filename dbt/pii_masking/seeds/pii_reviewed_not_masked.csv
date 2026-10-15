@@ -1,0 +1,52 @@
+schema_name,table_name,column_name,data_type,source,reason_left_clear
+BASELINE_SF_20261015_DS,ACCT_EXCEPTIONS,ACCT_AGE_MONTHS,NUMBER,SYSTEM$CLASSIFY said AGE (LOW); overruled,"Age of the account, not of a person (SYSTEM$CLASSIFY false positive)"
+BASELINE_SF_20261015_DS,ACCT_EXCEPTIONS,BRANCH_ID,TEXT,column name,"Branch code (B015 ...): organisational unit, not a person (decision option A)"
+BASELINE_SF_20261015_DS,ACCT_EXCEPTIONS,REGION_CODE,TEXT,SYSTEM$CLASSIFY said ADMINISTRATIVE_AREA_1 (LOW); overruled,"Six coarse sales regions (NE, MW, W ...); not identifying on its own"
+BASELINE_SF_20261015_DS,CUST_ACCOUNTS_DAILY,ACCT_AGE_MONTHS,NUMBER,SYSTEM$CLASSIFY said AGE (LOW); overruled,"Age of the account, not of a person (SYSTEM$CLASSIFY false positive)"
+BASELINE_SF_20261015_DS,CUST_ACCOUNTS_DAILY,BRANCH_ID,TEXT,column name,"Branch code (B015 ...): organisational unit, not a person (decision option A)"
+BASELINE_SF_20261015_DS,CUST_ACCOUNTS_DAILY,REGION_CODE,TEXT,column name,"Six coarse sales regions (NE, MW, W ...); not identifying on its own"
+BASELINE_SF_20261015_DS,DELINQUENCY_AGING,REGION_CODE,TEXT,column name,"Six coarse sales regions (NE, MW, W ...); not identifying on its own"
+BASELINE_SF_20261015_DS,DEMO_TARGET1_INS,BRANCH_CO_MNE,TEXT,column name,Branch company mnemonic (BR101 ...): organisational unit (decision option A)
+BASELINE_SF_20261015_DS,DEMO_TARGET1_INS,CREATED_BY,TEXT,column name,Always the service account IDWUSER
+BASELINE_SF_20261015_DS,DEMO_TARGET1_INS,LEAD_CO_MNE,TEXT,column name,Tenant/company mnemonic (BNK01 ...): organisational unit (decision option A)
+BASELINE_SF_20261015_DS,DEMO_TARGET1_INS,UPDATED_BY,TEXT,column name,Always the service account IDWUSER
+BASELINE_SF_20261015_DS,DEMO_TARGET1_UPD,BRANCH_CO_MNE,TEXT,column name,Branch company mnemonic (BR101 ...): organisational unit (decision option A)
+BASELINE_SF_20261015_DS,DEMO_TARGET1_UPD,CREATED_BY,TEXT,column name,Always the service account IDWUSER
+BASELINE_SF_20261015_DS,DEMO_TARGET1_UPD,LEAD_CO_MNE,TEXT,column name,Tenant/company mnemonic (BNK01 ...): organisational unit (decision option A)
+BASELINE_SF_20261015_DS,DEMO_TARGET1_UPD,UPDATED_BY,TEXT,column name,Always the service account IDWUSER
+BASELINE_SF_20261015_DS,POLICY_VALUATION,BRANCH_CODE,TEXT,column name,"Branch code (BR016 ...): organisational unit, not a person (decision option A)"
+BASELINE_SF_20261015_DS,POLICY_VALUATION,POLICY_AGE_MONTHS,NUMBER,SYSTEM$CLASSIFY said AGE (HIGH); overruled,"Age of the policy, not of a person (SYSTEM$CLASSIFY false positive)"
+BASELINE_SF_20261015_DS,RISK_SCORES,ACCT_AGE_MONTHS,NUMBER,SYSTEM$CLASSIFY said AGE (LOW); overruled,"Age of the account, not of a person (SYSTEM$CLASSIFY false positive)"
+BASELINE_SF_20261015_DS,RISK_SCORES,REGION_CODE,TEXT,column name,"Six coarse sales regions (NE, MW, W ...); not identifying on its own"
+BASELINE_SF_20261015_DS,TXN_ANOMALIES,BRANCH_ID,TEXT,column name,"Branch code (B015 ...): organisational unit, not a person (decision option A)"
+BASELINE_SF_20261015_DS,TXN_ANOMALIES,REGION_CODE,TEXT,column name,"Six coarse sales regions (NE, MW, W ...); not identifying on its own"
+DBT_SF_20261015_DS,ACCT_EXCEPTIONS,ACCT_AGE_MONTHS,NUMBER,SYSTEM$CLASSIFY said AGE (LOW); overruled,"Age of the account, not of a person (SYSTEM$CLASSIFY false positive)"
+DBT_SF_20261015_DS,ACCT_EXCEPTIONS,BRANCH_ID,TEXT,column name,"Branch code (B015 ...): organisational unit, not a person (decision option A)"
+DBT_SF_20261015_DS,ACCT_EXCEPTIONS,REGION_CODE,TEXT,SYSTEM$CLASSIFY said ADMINISTRATIVE_AREA_1 (LOW); overruled,"Six coarse sales regions (NE, MW, W ...); not identifying on its own"
+DBT_SF_20261015_DS,CUST_ACCOUNTS_DAILY,ACCT_AGE_MONTHS,NUMBER,SYSTEM$CLASSIFY said AGE (LOW); overruled,"Age of the account, not of a person (SYSTEM$CLASSIFY false positive)"
+DBT_SF_20261015_DS,CUST_ACCOUNTS_DAILY,BRANCH_ID,TEXT,column name,"Branch code (B015 ...): organisational unit, not a person (decision option A)"
+DBT_SF_20261015_DS,CUST_ACCOUNTS_DAILY,REGION_CODE,TEXT,column name,"Six coarse sales regions (NE, MW, W ...); not identifying on its own"
+DBT_SF_20261015_DS,DELINQUENCY_AGING,REGION_CODE,TEXT,column name,"Six coarse sales regions (NE, MW, W ...); not identifying on its own"
+DBT_SF_20261015_DS,POLICY_VALUATION,BRANCH_CODE,TEXT,column name,"Branch code (BR016 ...): organisational unit, not a person (decision option A)"
+DBT_SF_20261015_DS,POLICY_VALUATION,POLICY_AGE_MONTHS,NUMBER,SYSTEM$CLASSIFY said AGE (HIGH); overruled,"Age of the policy, not of a person (SYSTEM$CLASSIFY false positive)"
+DBT_SF_20261015_DS,RISK_SCORES,ACCT_AGE_MONTHS,NUMBER,SYSTEM$CLASSIFY said AGE (LOW); overruled,"Age of the account, not of a person (SYSTEM$CLASSIFY false positive)"
+DBT_SF_20261015_DS,RISK_SCORES,REGION_CODE,TEXT,column name,"Six coarse sales regions (NE, MW, W ...); not identifying on its own"
+DBT_SF_20261015_DS,TXN_ANOMALIES,BRANCH_ID,TEXT,column name,"Branch code (B015 ...): organisational unit, not a person (decision option A)"
+DBT_SF_20261015_DS,TXN_ANOMALIES,REGION_CODE,TEXT,column name,"Six coarse sales regions (NE, MW, W ...); not identifying on its own"
+SCAI_SF_20261015_DS,DEMO_TARGET1_INS,BRANCH_CO_MNE,TEXT,column name,Branch company mnemonic (BR101 ...): organisational unit (decision option A)
+SCAI_SF_20261015_DS,DEMO_TARGET1_INS,CREATED_BY,TEXT,column name,Always the service account IDWUSER
+SCAI_SF_20261015_DS,DEMO_TARGET1_INS,LEAD_CO_MNE,TEXT,column name,Tenant/company mnemonic (BNK01 ...): organisational unit (decision option A)
+SCAI_SF_20261015_DS,DEMO_TARGET1_INS,UPDATED_BY,TEXT,column name,Always the service account IDWUSER
+SCAI_SF_20261015_DS,DEMO_TARGET1_UPD,BRANCH_CO_MNE,TEXT,column name,Branch company mnemonic (BR101 ...): organisational unit (decision option A)
+SCAI_SF_20261015_DS,DEMO_TARGET1_UPD,CREATED_BY,TEXT,column name,Always the service account IDWUSER
+SCAI_SF_20261015_DS,DEMO_TARGET1_UPD,LEAD_CO_MNE,TEXT,column name,Tenant/company mnemonic (BNK01 ...): organisational unit (decision option A)
+SCAI_SF_20261015_DS,DEMO_TARGET1_UPD,UPDATED_BY,TEXT,column name,Always the service account IDWUSER
+SOURCE_SF_20261015_DS,DEMO_SOURCE1,BRANCH_CO_MNE,TEXT,column name,Branch company mnemonic (BR101 ...): organisational unit (decision option A)
+SOURCE_SF_20261015_DS,DEMO_SOURCE1,LEAD_CO_MNE,TEXT,column name,Tenant/company mnemonic (BNK01 ...): organisational unit (decision option A)
+SOURCE_SF_20261015_DS,DEMO_TARGET1,BRANCH_CO_MNE,TEXT,column name,Branch company mnemonic (BR101 ...): organisational unit (decision option A)
+SOURCE_SF_20261015_DS,DEMO_TARGET1,CREATED_BY,TEXT,column name,Always the service account IDWUSER
+SOURCE_SF_20261015_DS,DEMO_TARGET1,LEAD_CO_MNE,TEXT,column name,Tenant/company mnemonic (BNK01 ...): organisational unit (decision option A)
+SOURCE_SF_20261015_DS,DEMO_TARGET1,UPDATED_BY,TEXT,column name,Always the service account IDWUSER
+SOURCE_SF_20261015_DS,ORA_DW_CUST_ACCOUNTS,BRANCH_ID,TEXT,column name,"Branch code (B015 ...): organisational unit, not a person (decision option A)"
+SOURCE_SF_20261015_DS,ORA_DW_CUST_DEMOGRAPHICS,REGION_CODE,TEXT,column name,"Six coarse sales regions (NE, MW, W ...); not identifying on its own"
+SOURCE_SF_20261015_DS,RAW_INS_POLICIES,BRANCH_CODE,TEXT,column name,"Branch code (BR016 ...): organisational unit, not a person (decision option A)"

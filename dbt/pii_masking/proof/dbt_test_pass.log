@@ -1,0 +1,16 @@
+17:24:14  Running with dbt=1.9.4
+17:24:15  Registered adapter: snowflake=1.9.4
+17:24:15  Found 2 data tests, 2 seeds, 481 macros
+17:24:15
+17:24:15  Concurrency: 4 threads (target='snowflake')
+17:24:15
+17:24:17  1 of 2 START test assert_classified_columns_are_masked ......................... [RUN]
+17:24:17  2 of 2 START test assert_classified_columns_have_pii_tag ....................... [RUN]
+17:24:26  1 of 2 PASS assert_classified_columns_are_masked ............................... [PASS in 9.85s]
+17:24:27  2 of 2 PASS assert_classified_columns_have_pii_tag ............................. [PASS in 10.14s]
+17:24:27
+17:24:27  Finished running 2 data tests in 0 hours 0 minutes and 12.19 seconds (12.19s).
+17:24:27
+17:24:27  Completed successfully
+17:24:27
+17:24:27  Done. PASS=2 WARN=0 ERROR=0 SKIP=0 TOTAL=2
