@@ -9,7 +9,7 @@ SELECT
    demo_source4.ACCT_STAT_CD,
    demo_source3.TX_ID,
    demo_source3.LAST_NM,
-   {{ epoch_us_repair('demo_source3.TX_DTTM') }} AS TX_DTTM,
+   demo_source3.TX_DTTM,
    demo_source3.TX_AMT,
    demo_source3.BAL_AMT,
    demo_source3.CUST_ID,
