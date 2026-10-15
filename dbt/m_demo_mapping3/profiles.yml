@@ -1,12 +1,14 @@
-YOUR_PROFILE_NAME:
-  target: dev
+snowflake:
+  target: snowflake
   outputs:
-    dev:
+    snowflake:
       type: snowflake
-      role: ROLE
-      warehouse: WAREHOUSE
-      database: DATABASE
-      schema: SCHEMA
-      account: ACCOUNT
-      user: USERNAME
-      threads: 1
+      account: "{{ env_var('SNOWFLAKE_ACCOUNT') }}"
+      host: "{{ env_var('SNOWFLAKE_HOST') }}"
+      user: "{{ env_var('SF_DEMO_USER') }}"
+      password: "{{ env_var('SF_DEMO_PASSWORD') }}"
+      role: "{{ env_var('SF_DEMO_ROLE') }}"
+      warehouse: "{{ env_var('SF_DEMO_WAREHOUSE') }}"
+      database: "{{ env_var('SF_DEMO_DATABASE') }}"
+      schema: "SCAI_{{ env_var('SF_RUN_TOKEN') }}"
+      threads: 4

@@ -1,0 +1,10 @@
+version: 2
+models:
+  - name: DEMO_TARGET1_INS
+    columns:
+      - name: ID
+        tests: [not_null, unique]
+  - name: DEMO_TARGET1_UPD
+    columns:
+      - name: ID
+        tests: [not_null, unique]

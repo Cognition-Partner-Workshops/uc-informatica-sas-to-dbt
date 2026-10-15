@@ -1,7 +1,7 @@
 version: 2
 sources:
   - name: raw
-    schema: YOUR_SCHEMA
-    database: YOUR_DB
+    database: "{{ env_var('SF_DEMO_DATABASE') }}"
+    schema: "SOURCE_{{ env_var('SF_RUN_TOKEN') }}"
     tables:
       - name: demo_source2

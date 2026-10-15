@@ -1,0 +1,47 @@
+WITH source_data AS
+(
+   SELECT
+      LEAD_CO_MNE,
+      BRANCH_CO_MNE,
+      MIS_DATE,
+      ID,
+      DESCRIPTION,
+      SHORT_NAME,
+      LEAD_CO_MNE1,
+      BRANCH_CO_MNE1,
+      MIS_DATE1,
+      DESCRIPTION1,
+      SHORT_NAME1,
+      New_Flag,
+      Changed_Flag,
+      o_CREATED_BY,
+      o_CREATED_TIME,
+      o_UPDATED_BY,
+      o_UPDATED_TIME,
+      Key
+   FROM
+      {{ ref('int_m_demo_mapping2__exptrans') }}
+)
+SELECT
+   LEAD_CO_MNE LEAD_CO_MNE2,
+   BRANCH_CO_MNE BRANCH_CO_MNE2,
+   MIS_DATE MIS_DATE2,
+   ID ID1,
+   DESCRIPTION DESCRIPTION2,
+   SHORT_NAME SHORT_NAME2,
+   LEAD_CO_MNE1 LEAD_CO_MNE11,
+   BRANCH_CO_MNE1 BRANCH_CO_MNE11,
+   MIS_DATE1 MIS_DATE11,
+   DESCRIPTION1 DESCRIPTION11,
+   SHORT_NAME1 SHORT_NAME11,
+   New_Flag New_Flag1,
+   Changed_Flag Changed_Flag1,
+   o_CREATED_BY o_CREATED_BY1,
+   o_CREATED_TIME o_CREATED_TIME1,
+   o_UPDATED_BY o_UPDATED_BY1,
+   o_UPDATED_TIME o_UPDATED_TIME1,
+   Key Key1
+FROM
+   source_data
+WHERE
+   New_Flag = 'Insert'

@@ -1,0 +1,10 @@
+version: 2
+models:
+  - name: DEMO_TARGET2
+    columns:
+      - name: Member_Identifier
+        tests: [not_null, unique]
+  - name: DEMO_TARGET21
+    columns:
+      - name: Member_Identifier
+        tests: [not_null, unique]

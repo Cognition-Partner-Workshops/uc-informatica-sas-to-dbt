@@ -1,7 +1,7 @@
-name: YOUR_PROJECT_NAME
+name: m_demo_mapping2
 version: 1.0.0
 config-version: 2
-profile: YOUR_PROFILE_NAME
+profile: snowflake
 model-paths:
   - models
 analysis-paths:
@@ -15,19 +15,21 @@ macro-paths:
 snapshot-paths:
   - snapshots
 models:
-  YOUR_PROJECT_NAME:
+  m_demo_mapping2:
+    +tags: ["RUN:{{ env_var('SF_RUN_TOKEN') }}"]
+    +meta:
+      legacy_unit: m_demo_mapping2
     staging:
       +materialized: view
     intermediate:
       +materialized: ephemeral
     marts:
-      +materialized: incremental
+      +materialized: table
 vars:
+  business_date: "2024-01-31"
   SESSSTARTTIME: "1753-01-01 00:00:00"
   WORKFLOWSTARTTIME: "1753-01-01 00:00:00"
   PMSESSIONNAME: null
   PMWORKFLOWNAME: null
   PMFOLDERNAME: null
-  sc_override_lkptrans_db: YOUR_DB
-  sc_override_lkptrans_schema: YOUR_SCHEMA
-  sc_override_lkptrans_table: demo_target1
+  sc_override_lkptrans_table: DEMO_TARGET1
