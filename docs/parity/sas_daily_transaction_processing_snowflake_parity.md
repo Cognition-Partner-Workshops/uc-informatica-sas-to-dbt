@@ -1,6 +1,6 @@
 # Parity Report
 
-Baseline: `/tmp/parity_sf_34wowu2w/baseline`  |  Actual: `/tmp/parity_sf_34wowu2w/actual`
+Baseline: `/tmp/parity_sf_thaoa7s0/baseline`  |  Actual: `/tmp/parity_sf_thaoa7s0/actual`
 
 ## DAILY_TRANSACTIONS
 - rows: baseline=18903 actual=18903

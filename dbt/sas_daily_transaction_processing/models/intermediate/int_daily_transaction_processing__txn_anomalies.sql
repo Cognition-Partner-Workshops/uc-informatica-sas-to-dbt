@@ -28,7 +28,7 @@ classified_transactions as (
             when s.TRANSACTION_TYPE = 'WDR'
                 and (s.PRE_TXN_BALANCE is null or abs(s.TRANSACTION_AMOUNT) > s.PRE_TXN_BALANCE * 0.9)
                 then 'LARGE_WITHDRAWAL'
-            when s.CUSTOMER_ID is null then 'ORPHAN_ACCOUNT'
+            when nullif(trim(s.CUSTOMER_ID), '') is null then 'ORPHAN_ACCOUNT'
             else ''
         end as ANOMALY_TYPE
     from scored_transactions s

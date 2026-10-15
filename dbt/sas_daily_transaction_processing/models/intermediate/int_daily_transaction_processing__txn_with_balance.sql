@@ -35,7 +35,7 @@ select
     t.PRE_TXN_BALANCE
         + sum(t.TXN_BALANCE_DELTA) over (
             partition by t.ACCOUNT_ID
-            order by t.TRANSACTION_DATE, t.TRANSACTION_ID
+            order by t.TRANSACTION_DATE nulls first, t.TRANSACTION_ID nulls first
             rows between unbounded preceding and current row
         ) as RUNNING_BALANCE
 from transaction_deltas t
