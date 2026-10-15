@@ -1,0 +1,275 @@
+[
+  {
+    "id": "S01_core_rules",
+    "description": "Default run: hash hit/miss, policy-period and sum-insured boundaries, fraud tiers incl. 50/80 boundaries, every adjudication rule and PEND reason combination",
+    "decision_ids": [
+      "CLA-D05",
+      "CLA-D07",
+      "CLA-D08",
+      "CLA-D09",
+      "CLA-D10",
+      "CLA-D11",
+      "CLA-D13",
+      "CLA-D15",
+      "CLA-D16",
+      "CLA-D17",
+      "CLA-D18",
+      "CLA-D21",
+      "CLA-D22",
+      "CLA-D23",
+      "CLA-D24",
+      "CLA-D25",
+      "CLA-D26",
+      "CLA-D27",
+      "CLA-D28"
+    ],
+    "params": {
+      "proc_date": "31JAN2024"
+    },
+    "targets": [
+      "CLAIMS_REGISTER",
+      "CLAIMS_REVIEW_QUEUE",
+      "FRAUD_ALERTS"
+    ]
+  },
+  {
+    "id": "S02_missing_values",
+    "description": "Default run: SAS missing-value semantics in policy-period, sum-insured, adjudication thresholds, max() and fraud score",
+    "decision_ids": [
+      "CLA-D09",
+      "CLA-D10",
+      "CLA-D11",
+      "CLA-D16",
+      "CLA-D22",
+      "CLA-D23",
+      "CLA-D24",
+      "CLA-D25",
+      "CLA-D26",
+      "CLA-D27"
+    ],
+    "params": {
+      "proc_date": "31JAN2024"
+    },
+    "targets": [
+      "CLAIMS_REGISTER",
+      "CLAIMS_REVIEW_QUEUE",
+      "FRAUD_ALERTS"
+    ]
+  },
+  {
+    "id": "S03_blank_keys",
+    "description": "Default run: blank POLICY_ID hits a blank-keyed ACTIVE policy in the hash; blank CLAIMANT_ID matches a blank-keyed fraud row in the PROC SQL join (SAS blank = blank)",
+    "decision_ids": [
+      "CLA-D08",
+      "CLA-D15",
+      "CLA-D16",
+      "CLA-D21"
+    ],
+    "params": {
+      "proc_date": "31JAN2024"
+    },
+    "targets": [
+      "CLAIMS_REGISTER",
+      "CLAIMS_REVIEW_QUEUE",
+      "FRAUD_ALERTS"
+    ]
+  },
+  {
+    "id": "S04_duplicate_keys",
+    "description": "Default run: duplicate ACTIVE POLICY_ID in POLICIES (hash keeps first) and duplicate (POLICY_ID, CLAIMANT_ID) in FRAUD_INDICATORS (join fans out)",
+    "decision_ids": [
+      "CLA-D06",
+      "CLA-D14",
+      "CLA-D16",
+      "CLA-D21",
+      "CLA-D23"
+    ],
+    "params": {
+      "proc_date": "31JAN2024"
+    },
+    "targets": [
+      "CLAIMS_REGISTER",
+      "CLAIMS_REVIEW_QUEUE",
+      "FRAUD_ALERTS"
+    ],
+    "note": "CLAIMS_REGISTER/CLAIMS_REVIEW_QUEUE contain CLAIM_ID GC0402 twice; align rows on CLAIM_ID+FRAUD_SCORE."
+  },
+  {
+    "id": "S05_fractional_scores",
+    "description": "Default run: non-integer FRAUD_SCORE values; put(FRAUD_SCORE,4.) rounds half away from zero",
+    "decision_ids": [
+      "CLA-D16",
+      "CLA-D19"
+    ],
+    "params": {
+      "proc_date": "31JAN2024"
+    },
+    "targets": [
+      "CLAIMS_REGISTER",
+      "CLAIMS_REVIEW_QUEUE",
+      "FRAUD_ALERTS"
+    ]
+  },
+  {
+    "id": "S06_no_high_fraud",
+    "description": "Default run: no HIGH fraud rows, so %nobs(FRAUD_ALERTS)=0 and FRAUD_ALERTS append + sendmail are skipped",
+    "decision_ids": [
+      "CLA-D20"
+    ],
+    "params": {
+      "proc_date": "31JAN2024"
+    },
+    "targets": [
+      "CLAIMS_REGISTER",
+      "CLAIMS_REVIEW_QUEUE",
+      "FRAUD_ALERTS"
+    ]
+  },
+  {
+    "id": "S07_prior_state",
+    "description": "Default run against existing STG_INS base tables (rows from a 30JAN2024 run): PROC APPEND keeps prior rows and adds this run's rows",
+    "decision_ids": [
+      "CLA-D29",
+      "CLA-D20"
+    ],
+    "params": {
+      "proc_date": "31JAN2024"
+    },
+    "targets": [
+      "CLAIMS_REGISTER",
+      "CLAIMS_REVIEW_QUEUE",
+      "FRAUD_ALERTS"
+    ]
+  },
+  {
+    "id": "S08_feed_missing_abort",
+    "description": "Default run date but RAW_INS.CLAIMS_FEED_20240131 does not exist (only the 30JAN2024 feed): %goto ABORT, nothing appended, existing STG_INS tables unchanged",
+    "decision_ids": [
+      "CLA-D03",
+      "CLA-D29"
+    ],
+    "params": {
+      "proc_date": "31JAN2024"
+    },
+    "targets": [
+      "CLAIMS_REGISTER",
+      "CLAIMS_REVIEW_QUEUE",
+      "FRAUD_ALERTS"
+    ]
+  },
+  {
+    "id": "S09_empty_feed",
+    "description": "Default run with a zero-observation feed: empty CLAIMS_VALID, empty register/queue appends, no FRAUD_ALERTS append",
+    "decision_ids": [
+      "CLA-D04",
+      "CLA-D12",
+      "CLA-D20"
+    ],
+    "params": {
+      "proc_date": "31JAN2024"
+    },
+    "targets": [
+      "CLAIMS_REGISTER",
+      "CLAIMS_REVIEW_QUEUE",
+      "FRAUD_ALERTS"
+    ]
+  },
+  {
+    "id": "S10_no_active_policies",
+    "description": "Default run where POLICIES has no ACTIVE row: empty hash, every claim invalid, %nobs(CLAIMS_VALID)=0",
+    "decision_ids": [
+      "CLA-D05",
+      "CLA-D07",
+      "CLA-D12",
+      "CLA-D20"
+    ],
+    "params": {
+      "proc_date": "31JAN2024"
+    },
+    "targets": [
+      "CLAIMS_REGISTER",
+      "CLAIMS_REVIEW_QUEUE",
+      "FRAUD_ALERTS"
+    ]
+  },
+  {
+    "id": "S11_mid_month",
+    "description": "Run date 15JAN2024 (mid-month): feed CLAIMS_FEED_20240115; PROCESSING_DATE/ALERT_DATE = 15JAN2024",
+    "decision_ids": [
+      "CLA-D02",
+      "CLA-D16"
+    ],
+    "params": {
+      "proc_date": "15JAN2024"
+    },
+    "targets": [
+      "CLAIMS_REGISTER",
+      "CLAIMS_REVIEW_QUEUE",
+      "FRAUD_ALERTS"
+    ]
+  },
+  {
+    "id": "S12_leap_day",
+    "description": "Run date 29FEB2024 (leap day): feed CLAIMS_FEED_20240229; PROCESSING_DATE/ALERT_DATE = 29FEB2024",
+    "decision_ids": [
+      "CLA-D02",
+      "CLA-D16"
+    ],
+    "params": {
+      "proc_date": "29FEB2024"
+    },
+    "targets": [
+      "CLAIMS_REGISTER",
+      "CLAIMS_REVIEW_QUEUE",
+      "FRAUD_ALERTS"
+    ]
+  },
+  {
+    "id": "S13_quarter_end",
+    "description": "Run date 31MAR2024 (quarter-end): feed CLAIMS_FEED_20240331; PROCESSING_DATE/ALERT_DATE = 31MAR2024",
+    "decision_ids": [
+      "CLA-D02",
+      "CLA-D16"
+    ],
+    "params": {
+      "proc_date": "31MAR2024"
+    },
+    "targets": [
+      "CLAIMS_REGISTER",
+      "CLAIMS_REVIEW_QUEUE",
+      "FRAUD_ALERTS"
+    ]
+  },
+  {
+    "id": "S14_year_end",
+    "description": "Run date 31DEC2024 (year-end): feed CLAIMS_FEED_20241231; PROCESSING_DATE/ALERT_DATE = 31DEC2024",
+    "decision_ids": [
+      "CLA-D02",
+      "CLA-D16"
+    ],
+    "params": {
+      "proc_date": "31DEC2024"
+    },
+    "targets": [
+      "CLAIMS_REGISTER",
+      "CLAIMS_REVIEW_QUEUE",
+      "FRAUD_ALERTS"
+    ]
+  },
+  {
+    "id": "S15_blank_proc_date",
+    "description": "proc_date passed blank: %parmv reports the required parameter, the feed name cannot be resolved, exist()=0, %goto ABORT, nothing written",
+    "decision_ids": [
+      "CLA-D01",
+      "CLA-D03"
+    ],
+    "params": {
+      "proc_date": ""
+    },
+    "targets": [
+      "CLAIMS_REGISTER",
+      "CLAIMS_REVIEW_QUEUE",
+      "FRAUD_ALERTS"
+    ]
+  }
+]
