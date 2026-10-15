@@ -1,0 +1,9 @@
+version: 2
+
+models:
+  - name: stg_daily_transaction_processing__txn_feed
+    description: "Typed, explicit projection of the daily raw transaction feed."
+  - name: stg_daily_transaction_processing__curated_daily_transactions
+    description: "Typed, explicit projection of pre-existing curated transaction history."
+  - name: stg_daily_transaction_processing__cust_accounts_daily
+    description: "Typed, explicit projection of the upstream daily customer account snapshot."

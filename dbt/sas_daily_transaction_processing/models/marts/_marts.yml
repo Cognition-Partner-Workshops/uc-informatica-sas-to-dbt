@@ -1,0 +1,47 @@
+version: 2
+
+models:
+  - name: DAILY_TRANSACTIONS
+    description: "Legacy Step 5 append of existing curated history and this run's validated transactions."
+    columns:
+      - name: TRANSACTION_ID
+        data_tests:
+          - not_null
+          - unique
+      - name: TRANSACTION_TYPE
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [DEP, WDR, TRF, PMT, FEE, INT, ADJ, REV, CHG, REF]
+          - relationships:
+              arguments:
+                to: ref('daily_transaction_processing__fmt_txncat')
+                field: code
+  - name: RUNNING_BALANCES
+    description: "Legacy Step 6 persisted account balances after processing each current-run transaction."
+    columns:
+      - name: TRANSACTION_ID
+        data_tests:
+          - not_null
+          - unique
+  - name: TXN_ANOMALIES
+    description: "Legacy Step 5 anomaly append; prior curated anomaly state is absent from the supplied source."
+    columns:
+      - name: TRANSACTION_ID
+        data_tests:
+          - not_null
+          - unique
+      - name: TRANSACTION_TYPE
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [DEP, WDR, TRF, PMT, FEE, INT, ADJ, REV, CHG, REF]
+          - relationships:
+              arguments:
+                to: ref('daily_transaction_processing__fmt_txncat')
+                field: code
+      - name: ANOMALY_TYPE
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [HIGH_AMOUNT, OVERDRAFT, LARGE_WITHDRAWAL, ORPHAN_ACCOUNT]
