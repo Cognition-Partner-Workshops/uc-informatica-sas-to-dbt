@@ -89,6 +89,27 @@ At its 04:51 UTC pull the page showed 1.129 credits for the run: dbt builds 0.36
 
 Say: "the whole migration, baseline included, cost under two credits on an X-Small warehouse, and every one of those credits has a unit and a phase against it".
 
+### Act 6. The Migrations page (Pain 4, Fit 5, score 20)
+
+Session `f44163a7c9034bb185a8d76ddbb4acee`, titled "Plan, approve, tickets run": https://partner-workshops.devinenterprise.com/sessions/f44163a7c9034bb185a8d76ddbb4acee. Board: https://partner-workshops.devinenterprise.com/org/partner-demo-viewonly/boards/8f0ad0aad6454dccb858fc9c4c2a116b (key `UNT5`).
+
+The persona opened the Migrations page and typed one sentence: "Move the 11 Informatica PowerCenter workflows in Cognition-Partner-Workshops/ts-informatica-powercenter to dbt on Snowflake, same target standard and parity gate as baseline/SF_20261015_DS; nothing merges." Nothing else was attached. The Migration Agent read both repositories, counted 108 mappings across the 11 exports and drafted a plan of five phases and 22 steps in the Plan view: access and target standard, inventory of the 11 workflows, source data and legacy baseline, the dbt units (a Pay_Calendar pilot, then ten more), and the parity gate with a roll-up report.
+
+Open the Plan view first and show what it asked for before approval. The decision on the run hosting the ts track was answered with the recommended option, add the ts track to the `SF_20261015_DS` schemas, so one run, one gate and one warehouse stay in place. The blocker "loading SOURCE_ and BASELINE_ needs ACCOUNTADMIN" was cleared with a note in its discussion: the builder who holds the admin credential runs the loader extension on their own machine, and workers keep `SF_20261015_DS_DBT` only. The agent rewrote the load step around that and the persona approved; the plan view reads "Approved by Snowflake (Read-Only)". Approval created 22 tickets with the plan's dependencies between them, and the board dispatched a worker to each ticket with nothing ahead of it.
+
+Then open the board, where six tickets landed, each with a status note the manager checked against the branch:
+
+| Ticket | Worker session | Result |
+|---|---|---|
+| UNT5-1 Set up the ts migration branch | `55fd658eb2e04d588c65afae98014a67` | Branch `migration/ts-powercenter` off the baseline, 11 exports copied byte for byte, commit e355c95 |
+| UNT5-2 Verify Snowflake access and run budget | `4167f9c525174d36ae4cd11688a63358` | Signed in as the DBT role on the run warehouse, read and write checks, monitor at 1.33 of 5; found the dbt profile needs `host` as well as `account` |
+| UNT5-3 Lineage extractor for folder exports | `c64fd4f8b9554f96867a61317e79957c` | `tools/ts_lineage.py`, counts match the XML (108 mappings, 752 transformations), commit 84cc246 |
+| UNT5-4 STMs and inventory for 11 workflows | `b05ab6bb9a7041bf9c1532a91063f974` | 11 STM pairs and `docs/stm/ts/INVENTORY.md`, personal-data gate at zero hits, commit 3020c0d |
+| UNT5-5 Key file for the ts targets | `9957893bbbfb43aabf391e8e600f7eba` | `tools/keys/ts_keys.json` for 102 targets, 50 of them keyed on all columns, commit 11aafd2 |
+| UNT5-6 Gap register and scope line | `6df8369f8c2a468c86870250a3db4c57` | `docs/stm/ts/GAPS.md`, 11 XML workflows in scope, shell scripts out, commit 9397674 |
+
+The manager asked these workers to commit straight to `migration/ts-powercenter`, so there are no PRs from the first six tickets; the plan's first PRs come with the unit tickets in phase 4. The persona then paused the board from its chat, since the board has no pause button: the agent stopped the worker it had just started on UNT5-7 (session `39b6a59652ef4cfe80f6b23227177859`, stopped before it pushed anything), moved the ticket back to Todo and left UNT5-7 to UNT5-22 unclaimed. That stop is deliberate. The act shows the plan, the decisions and the first tickets running; the remaining 16 tickets would spend the run's credits and expiry on 108 mappings, which is a project, and the board can be resumed from the same chat. Nothing is red; the act cost 24.4 ACU across the parent and seven workers.
+
 ## Pitch, one session per sentence
 
 | Session | Sentence |
@@ -98,6 +119,7 @@ Say: "the whole migration, baseline included, cost under two credits on an X-Sma
 | Six SAS programs, six PRs (`4ea9db2df4bb4d12b82251720ae5ed87`) | Devin fanned six SAS programs out to six engineers, collected six proven PRs, and then worked the review comments on all of them. |
 | One honest red (`7b73810896e24de3b3dee1ff8ccae8a5`) | Devin compared every target to the legacy answer row by row inside Snowflake and left the one failing unit red with the reason. |
 | Credits (`6ff944c32e3c4db6a370fc0282befdc1`) | Devin read ACCOUNT_USAGE and put a credit figure against every unit and phase of the migration, waste included. |
+| Plan, approve, tickets run (`f44163a7c9034bb185a8d76ddbb4acee`) | Work arrives as tickets from an approved plan, and the first six landed on a branch before anyone wrote a unit. |
 | The live one | A SAS program the audience watched start from an empty prompt box comes back as a tested, parity-checked PR. |
 
 ## The live prompt
@@ -114,6 +136,7 @@ The pre-run version of this same unit is PR #56, so the room can compare its res
 
 ## Known limits
 
+- Act 6 stops after six tickets. The board was paused on purpose from the persona's chat; UNT5-7 to UNT5-22 sit in Todo, no unit PR exists yet, and the worker started on UNT5-7 was stopped before it pushed. The 50 targets with no natural key are compared on all columns.
 - PR #56 is red. Three dbt tests fail (`not_null` on `UTILIZATION_PCT` and `RISK_RATING`, the composite key on `ACCT_EXCEPTIONS`). The baseline fails them identically, so the cause is the legacy data. The tests stay because the target standard requires them.
 - Oracle converted 0 percent. The three `ts-informatica-powercenter` scripts are ksh wrappers and procedure calls; the SQL bodies they call are not in the repository and there are no table definitions to stub, so `ORACLE_SF_20261015_DS` is empty and act 1 documents why.
 - **Act 1 built into `SCAI_SF_20261015_DS`**, not `DBT_SF_20261015_DS`, by instruction, so SnowConvert's output and the hand-written SAS projects can be told apart in Snowflake.
