@@ -73,6 +73,17 @@ It returns 24 rows and matches the CSV row counts in `baseline/informatica/` and
 
 The baseline load ran 323 queries on `SF_20261015_DS_WH` in about two minutes of warehouse time. The first metering row from `INFORMATION_SCHEMA.WAREHOUSE_METERING_HISTORY` is 0.078 credits (0.000 cloud services). The resource monitor shows 0.08 of 5.00.
 
+## Reload of 2026-10-15 04:40 UTC
+
+The SnowConvert session (PR #60) found two loader faults. Timestamps written to Parquet by DuckDB are microseconds, and `COPY INTO` read them as seconds, so every timestamp column in `SOURCE_SF_20261015_DS` and `TX_DTTM` in `BASELINE_SF_20261015_DS.DEMO_TARGET6` carried years such as 54041295. DuckDB's CSV sniffer also read `GENDER` (always `F`) in `DEMO_TARGET21` as a boolean. The loader now passes `USE_LOGICAL_TYPE = TRUE` on the Parquet copy and re-reads any column the sniffer calls boolean as text, and it has a `--reload --tables` mode that rewrites named tables in place and leaves roles, users and passwords alone:
+
+```bash
+python3 baseline/SF_20261015_DS/load_baseline.py --token SF_20261015_DS --expires 2026-10-18T02:32:20Z \
+  --reload --tables DEMO_SOURCE2,DEMO_SOURCE3,DEMO_TARGET1,DEMO_TARGET6,DEMO_TARGET21
+```
+
+Timings: load SOURCE 11.1 s, load BASELINE 4.5 s, tags 2.2 s, proof query 2.1 s, credits 1.0 s, total 20.8 s (`reload_report.json`). Row counts are unchanged (24 targets, 21,141 rows); `min(TX_DTTM)` in `DEMO_TARGET6` reads 2024-01-14 05:49 and `GENDER` reads `F`. The reload is about twenty seconds of X-Small time, well under 0.01 credits; the monitor read 0.80 of 5.00 afterwards, and most of that came from the migration sessions' dbt builds. dbt projects built before the reload compare against the old values and need their parity re-run.
+
 ## Teardown
 
 ```bash

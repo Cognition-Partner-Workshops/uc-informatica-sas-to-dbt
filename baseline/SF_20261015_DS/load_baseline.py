@@ -172,7 +172,7 @@ class Runner:
         stage = f"{schema_fq}.%\"{table}\""
         self.cs.execute(f"PUT 'file://{path}' @{stage} AUTO_COMPRESS = FALSE OVERWRITE = TRUE")
         self.cs.execute(f"""COPY INTO {schema_fq}."{table}" FROM @{stage}
-            FILE_FORMAT = (TYPE = PARQUET) MATCH_BY_COLUMN_NAME = CASE_INSENSITIVE PURGE = TRUE""")
+            FILE_FORMAT = (TYPE = PARQUET USE_LOGICAL_TYPE = TRUE) MATCH_BY_COLUMN_NAME = CASE_INSENSITIVE PURGE = TRUE""")
         n = self.cs.execute(f'SELECT COUNT(*) FROM {schema_fq}."{table}"').fetchone()[0]
         print(f"    {schema_fq}.{table}: {n} rows")
         return n
@@ -191,13 +191,14 @@ class Runner:
             "LKP_DEMO_SOURCE2": "SELECT __seed_row AS SEED_ROW, * EXCLUDE (__seed_row) FROM lkp_demo_source2_raw",
             "LKP_DEMO_SOURCE3": "SELECT __seed_row AS SEED_ROW, * EXCLUDE (__seed_row) FROM lkp_demo_source3_raw",
         }
-        counts = {t: self._load_table(s, t, q) for t, q in inf.items()}
+        counts = {t: self._load_table(s, t, q) for t, q in inf.items() if self.want(t)}
         sas_load_raw.load_all(self.duck)
         for schema, prefix in SAS_PREFIX.items():
             for (tbl,) in self.duck.execute(
                     f"SELECT table_name FROM information_schema.tables WHERE table_schema = '{schema}' ORDER BY 1").fetchall():
                 name = f"{prefix}_{tbl.upper()}"
-                counts[name] = self._load_table(s, name, f"SELECT * FROM {schema}.{tbl}")
+                if self.want(name):
+                    counts[name] = self._load_table(s, name, f"SELECT * FROM {schema}.{tbl}")
         return counts
 
     def load_baseline(self):
@@ -206,9 +207,22 @@ class Runner:
         for track in ("informatica", "sas"):
             for csv in sorted(glob.glob(os.path.join(REPO, "baseline", track, "*.csv"))):
                 name = os.path.splitext(os.path.basename(csv))[0].upper()
-                q = f"SELECT * FROM read_csv_auto('{csv.replace(chr(92), '/')}', header = true, sample_size = -1)"
-                counts[name] = self._load_table(s, name, q)
+                if self.want(name):
+                    counts[name] = self._load_table(s, name, self._csv_query(csv))
         return counts
+
+    def _csv_query(self, csv):
+        path = csv.replace(chr(92), "/")
+        q = f"SELECT * FROM read_csv_auto('{path}', header = true, sample_size = -1)"
+        flagged = [c[0] for c in self.duck.execute(f"DESCRIBE {q}").fetchall() if c[1].upper() == "BOOLEAN"]
+        if flagged:
+            # one-letter codes such as GENDER = 'F' are text in the legacy output, not booleans
+            types = ", ".join(f"'{c}': 'VARCHAR'" for c in flagged)
+            q = f"SELECT * FROM read_csv_auto('{path}', header = true, sample_size = -1, types = {{{types}}})"
+        return q
+
+    def want(self, table):
+        return not self.args.tables or table in self.args.tables
 
     def tag_objects(self):
         tags = f"{DB}.PUBLIC.RUN = '{self.token}', {DB}.PUBLIC.EXPIRES = '{self.expires}'"
@@ -256,6 +270,8 @@ class Runner:
         print(f"    credentials written to {path} (mode 600)")
 
     def run(self):
+        if self.args.reload:
+            return self.reload()
         self.step("tags", self.tags)
         self.step("warehouse and resource monitor", self.warehouse)
         self.step("schemas", self.schemas)
@@ -280,12 +296,36 @@ class Runner:
         print(f"    {'total':32s} {sum(s for _, s in self.timings):7.1f}s")
 
 
+    def reload(self):
+        """Reload named tables in place (same DDL path, same tags); no roles, users or passwords touched."""
+        src = self.step("load SOURCE", self.load_source)
+        base = self.step("load BASELINE", self.load_baseline)
+        self.step("tags on objects", self.tag_objects)
+        proof = self.step("proof query", self.proof)
+        cred = self.step("credits", self.credits)
+        report = {
+            "token": self.token, "reload_at": dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds"),
+            "tables": sorted(self.args.tables or []),
+            "timings_seconds": {n: round(s, 1) for n, s in self.timings},
+            "source_rows": src, "baseline_rows": base, "proof": [[t, n] for t, n in proof], "credits": cred,
+        }
+        with open(os.path.join(REPO, "baseline", self.token, "reload_report.json"), "w") as fh:
+            json.dump(report, fh, indent=2)
+        print("\n== timings")
+        for n, s in self.timings:
+            print(f"    {n:32s} {s:7.1f}s")
+        print(f"    {'total':32s} {sum(s for _, s in self.timings):7.1f}s")
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--token", required=True, help="run token, e.g. SF_20261015_DS")
     ap.add_argument("--expires", default=(dt.datetime.now(dt.timezone.utc) + dt.timedelta(hours=72)).strftime("%Y-%m-%dT%H:%M:%SZ"))
     ap.add_argument("--creds-out", default=None, help="where the generated passwords go (default /dev/shm/sf_<token>.env)")
+    ap.add_argument("--tables", default="", help="comma list: load only these SOURCE_/BASELINE_ tables")
+    ap.add_argument("--reload", action="store_true", help="reload --tables in place; skip tags, warehouse, schemas, roles and users")
     args = ap.parse_args()
+    args.tables = {t.strip().upper() for t in args.tables.split(",") if t.strip()}
     args.creds_out = args.creds_out or f"/dev/shm/sf_{args.token}.env"
     Runner(args).run()
 
