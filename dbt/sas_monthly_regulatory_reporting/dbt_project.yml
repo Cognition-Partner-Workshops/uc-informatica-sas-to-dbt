@@ -1,0 +1,50 @@
+name: sas_monthly_regulatory_reporting
+version: "1.0.0"
+config-version: 2
+
+profile: snowflake
+
+model-paths: ["models"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+test-paths: ["tests"]
+analysis-paths: ["analyses"]
+snapshot-paths: ["snapshots"]
+clean-targets:
+  - target
+  - dbt_packages
+  - logs
+
+vars:
+  report_month: "202401"
+
+models:
+  sas_monthly_regulatory_reporting:
+    +tags: ["RUN:SF_20261015_DS"]
+    +meta:
+      legacy_unit: monthly_regulatory_reporting
+    staging:
+      +materialized: view
+    intermediate:
+      +materialized: ephemeral
+    marts:
+      +materialized: table
+
+seeds:
+  sas_monthly_regulatory_reporting:
+    +tags: ["RUN:SF_20261015_DS"]
+    +meta:
+      legacy_unit: monthly_regulatory_reporting
+    +quote_columns: false
+    monthly_regulatory_reporting__fmt_accttype:
+      +column_types:
+        code: varchar
+        label: varchar
+    monthly_regulatory_reporting__fmt_custseg:
+      +column_types:
+        code: varchar
+        label: varchar
+    monthly_regulatory_reporting__fmt_region:
+      +column_types:
+        code: varchar
+        label: varchar

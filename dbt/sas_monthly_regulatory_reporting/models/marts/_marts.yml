@@ -1,0 +1,105 @@
+version: 2
+
+models:
+  - name: MONTHLY_RWA
+    columns:
+      - name: ACCOUNT_TYPE
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [CHK, SAV, MMA, CD, IRA, LOC, MTG, AUTO, PERS, CC, HELC]
+          - relationships:
+              arguments:
+                to: ref('monthly_regulatory_reporting__fmt_accttype')
+                field: code
+      - name: CUSTOMER_SEGMENT
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [RET, PREM, PB, SMB, COMM, CORP]
+          - relationships:
+              arguments:
+                to: ref('monthly_regulatory_reporting__fmt_custseg')
+                field: code
+      - name: RISK_WEIGHT
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [0.0, 0.35, 0.5, 0.75, 1.0]
+                quote: false
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [ACCOUNT_TYPE, CUSTOMER_SEGMENT, RISK_WEIGHT]
+
+  - name: DELINQUENCY_AGING
+    columns:
+      - name: ACCOUNT_TYPE
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [MTG, AUTO, PERS, CC, LOC, HELC]
+          - relationships:
+              arguments:
+                to: ref('monthly_regulatory_reporting__fmt_accttype')
+                field: code
+      - name: REGION_CODE
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [NE, SE, MW, SW, W, NW, HQ]
+          - relationships:
+              arguments:
+                to: ref('monthly_regulatory_reporting__fmt_region')
+                field: code
+      - name: DELINQ_BUCKET
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [Current, "1-29", "30-59", "60-89", "90-119", "120-179", "180+", Unknown]
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [ACCOUNT_TYPE, REGION_CODE, DELINQ_BUCKET]
+
+  - name: LLP_COVERAGE
+    columns:
+      - name: ACCOUNT_TYPE
+        data_tests:
+          - not_null
+          - unique
+          - accepted_values:
+              arguments:
+                values: [MTG, AUTO, PERS, CC, LOC, HELC]
+          - relationships:
+              arguments:
+                to: ref('monthly_regulatory_reporting__fmt_accttype')
+                field: code
+
+  - name: CAPITAL_ADEQUACY
+    columns:
+      - name: REPORT_MONTH
+        data_tests:
+          - not_null
+          - unique
+      - name: CET1_STATUS
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [PASS, FAIL]
+      - name: TIER1_STATUS
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [PASS, FAIL]
+      - name: TOTAL_CAPITAL_STATUS
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [PASS, FAIL]

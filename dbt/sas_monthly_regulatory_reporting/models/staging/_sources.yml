@@ -1,0 +1,32 @@
+version: 2
+
+sources:
+  - name: source_sf
+    database: "{{ target.database }}"
+    schema: "SOURCE_{{ env_var('SF_RUN_TOKEN') }}"
+    tables:
+      - name: ORA_DW_LOAN_DETAILS
+        columns:
+          - name: ACCOUNT_ID
+            data_type: text
+          - name: LOAN_PURPOSE
+            data_type: text
+          - name: ORIG_AMOUNT
+            data_type: float
+          - name: ORIG_DATE
+            data_type: date
+          - name: TERM_MONTHS
+            data_type: number
+          - name: LTV
+            data_type: float
+          - name: DAYS_PAST_DUE
+            data_type: number
+          - name: PAST_DUE_AMOUNT
+            data_type: float
+          - name: ALLOWANCE_AMT
+            data_type: float
+  - name: upstream_dbt
+    database: "{{ target.database }}"
+    schema: "DBT_{{ env_var('SF_RUN_TOKEN') }}"
+    tables:
+      - name: CUST_ACCOUNTS_DAILY
