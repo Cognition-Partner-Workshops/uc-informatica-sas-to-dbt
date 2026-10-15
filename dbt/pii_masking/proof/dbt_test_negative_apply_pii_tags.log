@@ -1,0 +1,26 @@
+17:23:05  Running with dbt=1.9.4
+17:23:05  Registered adapter: snowflake=1.9.4
+17:23:05  Found 2 data tests, 2 seeds, 481 macros
+17:23:05
+17:23:05  Concurrency: 4 threads (target='snowflake')
+17:23:05
+17:23:07  1 of 2 START test assert_classified_columns_are_masked ......................... [RUN]
+17:23:07  2 of 2 START test assert_classified_columns_have_pii_tag ....................... [RUN]
+17:23:16  1 of 2 FAIL 1 assert_classified_columns_are_masked ............................. [FAIL 1 in 8.93s]
+17:23:16  2 of 2 FAIL 1 assert_classified_columns_have_pii_tag ........................... [FAIL 1 in 9.57s]
+17:23:17
+17:23:17  Finished running 2 data tests in 0 hours 0 minutes and 11.67 seconds (11.67s).
+17:23:17
+17:23:17  Completed with 2 errors, 0 partial successes, and 0 warnings:
+17:23:17
+17:23:17  Failure in test assert_classified_columns_are_masked (tests/assert_classified_columns_are_masked.sql)
+17:23:17    Got 1 result, configured to fail if != 0
+17:23:17
+17:23:17    compiled code at target/compiled/pii_masking/tests/assert_classified_columns_are_masked.sql
+17:23:17
+17:23:17  Failure in test assert_classified_columns_have_pii_tag (tests/assert_classified_columns_have_pii_tag.sql)
+17:23:17    Got 1 result, configured to fail if != 0
+17:23:17
+17:23:17    compiled code at target/compiled/pii_masking/tests/assert_classified_columns_have_pii_tag.sql
+17:23:17
+17:23:17  Done. PASS=0 WARN=0 ERROR=2 SKIP=0 TOTAL=2

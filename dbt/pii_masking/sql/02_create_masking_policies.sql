@@ -5,8 +5,11 @@
 -- Run as SF_20261015_DS_DBT (CREATE MASKING POLICY on the run's schemas).
 create masking policy if not exists DEVIN_MIGRATION_DEMO.DBT_SF_20261015_DS.PII_MASK_VARCHAR
   as (val varchar) returns varchar ->
-  case when current_role() = 'SF_20261015_DS_DBT' then val else '***MASKED***' end
+  case when val is null then null when current_role() = 'SF_20261015_DS_DBT' then val else '***MASKED***' end
   comment = 'PII masking for VARCHAR columns tagged PII_CATEGORY, run SF_20261015_DS';
+
+alter masking policy DEVIN_MIGRATION_DEMO.DBT_SF_20261015_DS.PII_MASK_VARCHAR
+  set body -> case when val is null then null when current_role() = 'SF_20261015_DS_DBT' then val else '***MASKED***' end;
 
 create masking policy if not exists DEVIN_MIGRATION_DEMO.DBT_SF_20261015_DS.PII_MASK_NUMBER
   as (val number) returns number ->

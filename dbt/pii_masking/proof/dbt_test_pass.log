@@ -1,34 +1,16 @@
-16:58:50  Running with dbt=1.9.4
-16:58:51  Registered adapter: snowflake=1.9.4
-16:58:51  Found 2 data tests, 2 seeds, 480 macros
-16:58:51
-16:58:51  Concurrency: 4 threads (target='snowflake')
-16:58:51
-16:58:53  1 of 2 START test assert_classified_columns_are_masked ......................... [RUN]
-16:58:53  2 of 2 START test assert_classified_columns_have_pii_tag ....................... [RUN]
-16:58:59  1 of 2 PASS assert_classified_columns_are_masked ............................... [PASS in 5.52s]
-16:58:59  2 of 2 PASS assert_classified_columns_have_pii_tag ............................. [PASS in 6.49s]
-16:59:00
-16:59:00  Finished running 2 data tests in 0 hours 0 minutes and 8.46 seconds (8.46s).
-16:59:00
-16:59:00  Completed successfully
-16:59:00
-16:59:00  Done. PASS=2 WARN=0 ERROR=0 SKIP=0 TOTAL=2
-
---- dbt test after restoring FIRST_NM PII_CATEGORY tag ---
-17:00:21  Running with dbt=1.9.4
-17:00:21  Registered adapter: snowflake=1.9.4
-17:00:22  Found 2 data tests, 2 seeds, 480 macros
-17:00:22
-17:00:22  Concurrency: 4 threads (target='snowflake')
-17:00:22
-17:00:24  1 of 2 START test assert_classified_columns_are_masked ......................... [RUN]
-17:00:24  2 of 2 START test assert_classified_columns_have_pii_tag ....................... [RUN]
-17:00:31  1 of 2 PASS assert_classified_columns_are_masked ............................... [PASS in 6.64s]
-17:00:33  2 of 2 PASS assert_classified_columns_have_pii_tag ............................. [PASS in 8.61s]
-17:00:33
-17:00:33  Finished running 2 data tests in 0 hours 0 minutes and 11.61 seconds (11.61s).
-17:00:33
-17:00:33  Completed successfully
-17:00:33
-17:00:33  Done. PASS=2 WARN=0 ERROR=0 SKIP=0 TOTAL=2
+17:24:14  Running with dbt=1.9.4
+17:24:15  Registered adapter: snowflake=1.9.4
+17:24:15  Found 2 data tests, 2 seeds, 481 macros
+17:24:15
+17:24:15  Concurrency: 4 threads (target='snowflake')
+17:24:15
+17:24:17  1 of 2 START test assert_classified_columns_are_masked ......................... [RUN]
+17:24:17  2 of 2 START test assert_classified_columns_have_pii_tag ....................... [RUN]
+17:24:26  1 of 2 PASS assert_classified_columns_are_masked ............................... [PASS in 9.85s]
+17:24:27  2 of 2 PASS assert_classified_columns_have_pii_tag ............................. [PASS in 10.14s]
+17:24:27
+17:24:27  Finished running 2 data tests in 0 hours 0 minutes and 12.19 seconds (12.19s).
+17:24:27
+17:24:27  Completed successfully
+17:24:27
+17:24:27  Done. PASS=2 WARN=0 ERROR=0 SKIP=0 TOTAL=2

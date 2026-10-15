@@ -23,3 +23,25 @@ select v.CUSTOMER_ID, v.FIRST_NAME, v.PRIMARY_EMAIL, v.DATE_OF_BIRTH, v.CUSTOMER
 from DEVIN_MIGRATION_DEMO.DBT_SF_20261015_DS.STG_LOAD_CUSTOMER_ACCOUNTS__CUST_DEMOGRAPHICS v
 order by v.CUSTOMER_SEGMENT
 limit 3;
+
+-- The baseline copy is tagged too; clear identity values must be masked for the reader role.
+select b.ACCOUNT_ID, b.BRANCH_ID, b.FIRST_NAME, b.PRIMARY_EMAIL, b.SSN_HASH, b.DATE_OF_BIRTH
+from DEVIN_MIGRATION_DEMO.BASELINE_SF_20261015_DS.CUST_ACCOUNTS_DAILY b
+order by b.ACCOUNT_ID
+limit 5;
+
+-- Preserve NULLs in a tagged VARCHAR column while masking non-NULL values for the reader role.
+with null_rows as (
+    select MEMBER_SUFFIX
+    from DEVIN_MIGRATION_DEMO.SCAI_SF_20261015_DS.DEMO_TARGET2
+    where MEMBER_SUFFIX is null
+    limit 3
+), one_nonnull as (
+    select MEMBER_SUFFIX
+    from DEVIN_MIGRATION_DEMO.SCAI_SF_20261015_DS.DEMO_TARGET2
+    where MEMBER_SUFFIX is not null
+    limit 1
+)
+select MEMBER_SUFFIX from null_rows
+union all
+select MEMBER_SUFFIX from one_nonnull;

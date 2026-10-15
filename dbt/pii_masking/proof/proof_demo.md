@@ -33,3 +33,21 @@
 | C0000031 | Jennifer | jennifer.miller31@example.com | 2003-01-01 | COMM |
 | C0000083 | Joseph | joseph.miller83@example.com | 1987-06-27 | COMM |
 | C0000106 | Linda | linda.jackson106@example.com | 1980-03-09 | COMM |
+
+## Query 5
+
+| ACCOUNT_ID | BRANCH_ID | FIRST_NAME | PRIMARY_EMAIL | SSN_HASH | DATE_OF_BIRTH |
+|---|---|---|---|---|---|
+| A00000001 | B015 | Linda | linda.lopez1@example.com | a47401f094a96eef71465948a306129a | 1958-08-12 |
+| A00000002 | B024 | Thomas | thomas.baker2@example.com | e8f6ac86478b28d9ff260f354890039e | 1999-04-17 |
+| A00000003 | B019 | Thomas | thomas.baker2@example.com | e8f6ac86478b28d9ff260f354890039e | 1999-04-17 |
+| A00000004 | B032 | Richard | richard.carter3@example.com | 94994914e7f58574ead7ccda59c1224c | 1974-01-17 |
+| A00000005 | B035 | Richard | richard.carter3@example.com | 94994914e7f58574ead7ccda59c1224c | 1974-01-17 |
+
+## Query 6
+
+| MEMBER_SUFFIX |
+|---|
+| NULL |
+| NULL |
+| II |

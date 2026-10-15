@@ -33,3 +33,21 @@
 | ***MASKED*** | ***MASKED*** | ***MASKED*** | NULL | COMM |
 | ***MASKED*** | ***MASKED*** | ***MASKED*** | NULL | COMM |
 | ***MASKED*** | ***MASKED*** | ***MASKED*** | NULL | COMM |
+
+## Query 5
+
+| ACCOUNT_ID | BRANCH_ID | FIRST_NAME | PRIMARY_EMAIL | SSN_HASH | DATE_OF_BIRTH |
+|---|---|---|---|---|---|
+| A00000001 | B015 | ***MASKED*** | ***MASKED*** | ***MASKED*** | NULL |
+| A00000002 | B024 | ***MASKED*** | ***MASKED*** | ***MASKED*** | NULL |
+| A00000003 | B019 | ***MASKED*** | ***MASKED*** | ***MASKED*** | NULL |
+| A00000004 | B032 | ***MASKED*** | ***MASKED*** | ***MASKED*** | NULL |
+| A00000005 | B035 | ***MASKED*** | ***MASKED*** | ***MASKED*** | NULL |
+
+## Query 6
+
+| MEMBER_SUFFIX |
+|---|
+| NULL |
+| NULL |
+| ***MASKED*** |
