@@ -1,0 +1,4 @@
+Title,Gender,First_Name,Middle_Name,Last_Name,Member_Identifier,Member_Suffix,Date_of_Birth,Member_Number,Soc_Number,Type_Code,Relationship_to_Subscriber_Code,Relationship_to_Subscriber_Code_Label,Effective_Date
+MR,F,Omar,K,Okafor,30002.0,,1990-11-16,500001.0,100000037.0,2.0,19.0,SELF,2016-09-01
+MS,F,Ravi,O,Weiss,30004.0,,1948-12-22,500003.0,100000111.0,2.0,18.0,OTHER,2019-02-01
+MS,F,Tara,S,Young,30006.0,,1982-11-01,500005.0,100000222.0,1.0,1.0,SPOUSE,2021-07-01
