@@ -1,0 +1,11 @@
+version: 2
+
+models:
+  - name: stg_credit_risk_scoring__cust_accounts_daily
+    description: "STG_BANK.CUST_ACCOUNTS_DAILY (upstream load_customer_accounts mart): columns read by credit_risk_scoring."
+  - name: stg_credit_risk_scoring__bureau_scores
+    description: "ORA_DW.BUREAU_SCORES."
+  - name: stg_credit_risk_scoring__payment_history
+    description: "ORA_DW.PAYMENT_HISTORY."
+  - name: stg_credit_risk_scoring__collateral
+    description: "ORA_DW.COLLATERAL."

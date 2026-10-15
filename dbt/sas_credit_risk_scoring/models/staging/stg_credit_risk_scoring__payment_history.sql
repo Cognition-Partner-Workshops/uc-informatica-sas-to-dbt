@@ -1,0 +1,10 @@
+select
+    ACCOUNT_ID,
+    PMT_ONTIME_12MO,
+    PMT_LATE_30_12MO,
+    PMT_LATE_60_12MO,
+    PMT_LATE_90_12MO,
+    MAX_DAYS_PAST_DUE_EVER,
+    cast(MONTHS_SINCE_LAST_DPD as float) as MONTHS_SINCE_LAST_DPD,
+    cast(AVG_PMT_RATIO_12MO as float) as AVG_PMT_RATIO_12MO
+from {{ source('source_sf', 'ORA_DW_PAYMENT_HISTORY') }}

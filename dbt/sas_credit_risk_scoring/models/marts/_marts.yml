@@ -1,0 +1,96 @@
+version: 2
+
+models:
+  - name: RISK_SCORES
+    description: "Legacy CURATED.RISK_SCORES (Step 4 PROC APPEND of WORK.SCORED); SCORE_TIMESTAMP wall-clock omitted."
+    columns:
+      - name: ACCOUNT_ID
+        data_tests:
+          - not_null
+          - unique
+      - name: ACCOUNT_TYPE
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [MTG, AUTO, PERS, CC, LOC, HELC]
+          - relationships:
+              arguments:
+                to: ref('credit_risk_scoring__fmt_accttype')
+                field: code
+      - name: NEW_RISK_RATING
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [1, 2, 3, 4, 5, 6, 7]
+                quote: false
+          - relationships:
+              arguments:
+                to: ref('credit_risk_scoring__fmt_riskrate')
+                field: code
+      - name: MODEL_ID
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ["CRM-2023-Q4-v2"]
+  - name: RISK_MIGRATION
+    description: "Legacy CURATED.RISK_MIGRATION (Step 3/4): accounts whose new rating differs from the prior rating or have no prior rating."
+    columns:
+      - name: ACCOUNT_ID
+        data_tests:
+          - not_null
+          - unique
+      - name: PREV_RATING
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [1, 2, 3, 4, 5, 6, 7]
+                quote: false
+          - relationships:
+              arguments:
+                to: ref('credit_risk_scoring__fmt_riskrate')
+                field: code
+      - name: CURR_RATING
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [1, 2, 3, 4, 5, 6, 7]
+                quote: false
+          - relationships:
+              arguments:
+                to: ref('credit_risk_scoring__fmt_riskrate')
+                field: code
+      - name: MIGRATION_DIRECTION
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [NEW, UPGRADE, DOWNGRADE, STABLE]
+  - name: RISK_SUMMARY
+    description: "Legacy REPORTS.RISK_SUMMARY (Step 5 PROC MEANS NWAY CLASS ACCOUNT_TYPE x NEW_RISK_RATING)."
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+              - ACCOUNT_TYPE
+              - NEW_RISK_RATING
+    columns:
+      - name: ACCOUNT_TYPE
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [MTG, AUTO, PERS, CC, LOC, HELC]
+          - relationships:
+              arguments:
+                to: ref('credit_risk_scoring__fmt_accttype')
+                field: code
+      - name: NEW_RISK_RATING
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [1, 2, 3, 4, 5, 6, 7]
+                quote: false
+          - relationships:
+              arguments:
+                to: ref('credit_risk_scoring__fmt_riskrate')
+                field: code
