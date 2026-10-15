@@ -1,0 +1,2936 @@
+{
+ "DBT_SF_20261015_DS.ACCT_EXCEPTIONS": {
+  "classification_result": {
+   "ACCOUNT_ID": {
+    "alternates": []
+   },
+   "ACCOUNT_STATUS": {
+    "alternates": []
+   },
+   "ACCOUNT_TYPE": {
+    "alternates": []
+   },
+   "ACCT_AGE_MONTHS": {
+    "alternates": [],
+    "recommendation": {
+     "confidence": "LOW",
+     "coverage": 0.4375,
+     "details": [],
+     "privacy_category": "QUASI_IDENTIFIER",
+     "semantic_category": "AGE",
+     "tags": [
+      {
+       "tag_applied": false,
+       "tag_name": "snowflake.core.semantic_category",
+       "tag_value": "AGE"
+      },
+      {
+       "tag_applied": false,
+       "tag_name": "snowflake.core.privacy_category",
+       "tag_value": "QUASI_IDENTIFIER"
+      }
+     ]
+    },
+    "valid_value_ratio": 1
+   },
+   "AVAILABLE_BALANCE": {
+    "alternates": []
+   },
+   "BRANCH_ID": {
+    "alternates": []
+   },
+   "CLOSE_DATE": {
+    "alternates": []
+   },
+   "CREDIT_LIMIT": {
+    "alternates": []
+   },
+   "CURRENT_BALANCE": {
+    "alternates": []
+   },
+   "CUSTOMER_ID": {
+    "alternates": []
+   },
+   "CUSTOMER_SEGMENT": {
+    "alternates": []
+   },
+   "DATE_OF_BIRTH": {
+    "alternates": [],
+    "recommendation": {
+     "confidence": "HIGH",
+     "coverage": 1,
+     "details": [],
+     "privacy_category": "QUASI_IDENTIFIER",
+     "semantic_category": "DATE_OF_BIRTH",
+     "tags": [
+      {
+       "tag_applied": false,
+       "tag_name": "snowflake.core.semantic_category",
+       "tag_value": "DATE_OF_BIRTH"
+      },
+      {
+       "tag_applied": false,
+       "tag_name": "snowflake.core.privacy_category",
+       "tag_value": "QUASI_IDENTIFIER"
+      }
+     ]
+    },
+    "valid_value_ratio": 1
+   },
+   "DAYS_INACTIVE": {
+    "alternates": []
+   },
+   "DORMANCY_FLAG": {
+    "alternates": []
+   },
+   "FIRST_NAME": {
+    "alternates": [],
+    "recommendation": {
+     "confidence": "HIGH",
+     "coverage": 1,
+     "details": [],
+     "privacy_category": "IDENTIFIER",
+     "semantic_category": "NAME",
+     "tags": [
+      {
+       "tag_applied": false,
+       "tag_name": "snowflake.core.semantic_category",
+       "tag_value": "NAME"
+      },
+      {
+       "tag_applied": false,
+       "tag_name": "snowflake.core.privacy_category",
+       "tag_value": "IDENTIFIER"
+      }
+     ]
+    },
+    "valid_value_ratio": 1
+   },
+   "HIGH_BALANCE_FLAG": {
+    "alternates": []
+   },
+   "INTEREST_RATE": {
+    "alternates": []
+   },
+   "LAST_ACTIVITY_DATE": {
+    "alternates": []
+   },
+   "LAST_NAME": {
+    "alternates": [],
+    "recommendation": {
+     "confidence": "HIGH",
+     "coverage": 1,
+     "details": [],
+     "privacy_category": "IDENTIFIER",
+     "semantic_category": "NAME",
+     "tags": [
+      {
+       "tag_applied": false,
+       "tag_name": "snowflake.core.semantic_category",
+       "tag_value": "NAME"
+      },
+      {
+       "tag_applied": false,
+       "tag_name": "snowflake.core.privacy_category",
+       "tag_value": "IDENTIFIER"
+      }
+     ]
+    },
+    "valid_value_ratio": 1
+   },
+   "OFFICER_ID": {
+    "alternates": []
+   },
+   "OPEN_DATE": {
+    "alternates": []
+   },
+   "PHONE_NUMBER": {
+    "alternates": [],
+    "recommendation": {
+     "confidence": "HIGH",
+     "coverage": 1,
+     "details": [
+      {
+       "coverage": 1,
+       "semantic_category": "UK_PHONE_NUMBER"
+      }
+     ],
+     "privacy_category": "IDENTIFIER",
+     "semantic_category": "PHONE_NUMBER",
+     "tags": [
+      {
+       "tag_applied": false,
+       "tag_name": "snowflake.core.semantic_category",
+       "tag_value": "PHONE_NUMBER"
+      },
+      {
+       "tag_applied": false,
+       "tag_name": "snowflake.core.privacy_category",
+       "tag_value": "IDENTIFIER"
+      }
+     ]
+    },
+    "valid_value_ratio": 1
+   },
+   "PRIMARY_EMAIL": {
+    "alternates": [],
+    "recommendation": {
+     "confidence": "HIGH",
+     "coverage": 1,
+     "details": [],
+     "privacy_category": "IDENTIFIER",
+     "semantic_category": "EMAIL",
+     "tags": [
+      {
+       "tag_applied": false,
+       "tag_name": "snowflake.core.semantic_category",
+       "tag_value": "EMAIL"
+      },
+      {
+       "tag_applied": false,
+       "tag_name": "snowflake.core.privacy_category",
+       "tag_value": "IDENTIFIER"
+      }
+     ]
+    },
+    "valid_value_ratio": 1
+   },
+   "REGION_CODE": {
+    "alternates": [],
+    "recommendation": {
+     "confidence": "LOW",
+     "coverage": 0.25,
+     "details": [
+      {
+       "coverage": 0.25,
+       "semantic_category": "US_STATE_OR_TERRITORY"
+      }
+     ],
+     "privacy_category": "QUASI_IDENTIFIER",
+     "semantic_category": "ADMINISTRATIVE_AREA_1",
+     "tags": [
+      {
+       "tag_applied": false,
+       "tag_name": "snowflake.core.semantic_category",
+       "tag_value": "ADMINISTRATIVE_AREA_1"
+      },
+      {
+       "tag_applied": false,
+       "tag_name": "snowflake.core.privacy_category",
+       "tag_value": "QUASI_IDENTIFIER"
+      }
+     ]
+    },
+    "valid_value_ratio": 1
+   },
+   "RISK_RATING": {
+    "alternates": []
+   },
+   "SNAPSHOT_DATE": {
+    "alternates": []
+   },
+   "SSN_HASH": {
+    "alternates": []
+   },
+   "UTILIZATION_PCT": {
+    "alternates": []
+   }
+  }
+ },
+ "DBT_SF_20261015_DS.CAPITAL_ADEQUACY": {
+  "classification_result": {
+   "CET1_CAPITAL": {
+    "alternates": []
+   },
+   "CET1_RATIO": {
+    "alternates": []
+   },
+   "CET1_STATUS": {
+    "alternates": []
+   },
+   "REPORT_MONTH": {
+    "alternates": []
+   },
+   "TIER1_CAPITAL": {
+    "alternates": []
+   },
+   "TIER1_RATIO": {
+    "alternates": []
+   },
+   "TIER1_STATUS": {
+    "alternates": []
+   },
+   "TOTAL_CAPITAL": {
+    "alternates": []
+   },
+   "TOTAL_CAPITAL_RATIO": {
+    "alternates": []
+   },
+   "TOTAL_CAPITAL_STATUS": {
+    "alternates": []
+   },
+   "TOTAL_RWA": {
+    "alternates": []
+   }
+  }
+ },
+ "DBT_SF_20261015_DS.CLAIMS_PROCESSING__FMT_CLMSTAT": {
+  "classification_result": {
+   "CODE": {
+    "alternates": []
+   },
+   "LABEL": {
+    "alternates": []
+   }
+  }
+ },
+ "DBT_SF_20261015_DS.CLAIMS_REGISTER": {
+  "classification_result": {
+   "ADJUDICATION_REASON": {
+    "alternates": []
+   },
+   "ADJUDICATION_RESULT": {
+    "alternates": []
+   },
+   "APPROVED_AMOUNT": {
+    "alternates": []
+   },
+   "CAUSE_CODE": {
+    "alternates": []
+   },
+   "CLAIMANT_ID": {
+    "alternates": []
+   },
+   "CLAIMED_AMOUNT": {
+    "alternates": []
+   },
+   "CLAIM_ID": {
+    "alternates": []
+   },
+   "CLAIM_STATUS": {
+    "alternates": []
+   },
+   "CLAIM_STATUS_DESC": {
+    "alternates": []
+   },
+   "DEDUCTIBLE": {
+    "alternates": []
+   },
+   "DESCRIPTION": {
+    "alternates": []
+   },
+   "EFFECTIVE_DATE": {
+    "alternates": []
+   },
+   "EXPIRATION_DATE": {
+    "alternates": []
+   },
+   "FRAUD_RISK": {
+    "alternates": []
+   },
+   "FRAUD_SCORE": {
+    "alternates": []
+   },
+   "INDICATOR_FLAGS": {
+    "alternates": []
+   },
+   "LOSS_DATE": {
+    "alternates": []
+   },
+   "POLICY_ID": {
+    "alternates": []
+   },
+   "POLICY_TYPE": {
+    "alternates": []
+   },
+   "PROCESSING_DATE": {
+    "alternates": []
+   },
+   "REPORTED_DATE": {
+    "alternates": []
+   },
+   "SUM_INSURED": {
+    "alternates": []
+   }
+  }
+ },
+ "DBT_SF_20261015_DS.CLAIMS_REVIEW_QUEUE": {
+  "classification_result": {
+   "ADJUDICATION_REASON": {
+    "alternates": []
+   },
+   "ADJUDICATION_RESULT": {
+    "alternates": []
+   },
+   "APPROVED_AMOUNT": {
+    "alternates": []
+   },
+   "CAUSE_CODE": {
+    "alternates": []
+   },
+   "CLAIMANT_ID": {
+    "alternates": []
+   },
+   "CLAIMED_AMOUNT": {
+    "alternates": []
+   },
+   "CLAIM_ID": {
+    "alternates": []
+   },
+   "DEDUCTIBLE": {
+    "alternates": []
+   },
+   "DESCRIPTION": {
+    "alternates": []
+   },
+   "EFFECTIVE_DATE": {
+    "alternates": []
+   },
+   "EXPIRATION_DATE": {
+    "alternates": []
+   },
+   "FRAUD_RISK": {
+    "alternates": []
+   },
+   "FRAUD_SCORE": {
+    "alternates": []
+   },
+   "INDICATOR_FLAGS": {
+    "alternates": []
+   },
+   "LOSS_DATE": {
+    "alternates": []
+   },
+   "POLICY_ID": {
+    "alternates": []
+   },
+   "POLICY_TYPE": {
+    "alternates": []
+   },
+   "REPORTED_DATE": {
+    "alternates": []
+   },
+   "SUM_INSURED": {
+    "alternates": []
+   }
+  }
+ },
+ "DBT_SF_20261015_DS.CREDIT_RISK_SCORING__FMT_ACCTTYPE": {
+  "classification_result": {
+   "CODE": {
+    "alternates": []
+   },
+   "LABEL": {
+    "alternates": []
+   }
+  }
+ },
+ "DBT_SF_20261015_DS.CREDIT_RISK_SCORING__FMT_RISKRATE": {
+  "classification_result": {
+   "CODE": {
+    "alternates": []
+   },
+   "LABEL": {
+    "alternates": []
+   }
+  }
+ },
+ "DBT_SF_20261015_DS.CUST_ACCOUNTS_DAILY": {
+  "classification_result": {
+   "ACCOUNT_ID": {
+    "alternates": []
+   },
+   "ACCOUNT_STATUS": {
+    "alternates": []
+   },
+   "ACCOUNT_STATUS_DESC": {
+    "alternates": []
+   },
+   "ACCOUNT_TYPE": {
+    "alternates": []
+   },
+   "ACCOUNT_TYPE_DESC": {
+    "alternates": []
+   },
+   "ACCT_AGE_MONTHS": {
+    "alternates": [],
+    "recommendation": {
+     "confidence": "LOW",
+     "coverage": 0.444206,
+     "details": [],
+     "privacy_category": "QUASI_IDENTIFIER",
+     "semantic_category": "AGE",
+     "tags": [
+      {
+       "tag_applied": false,
+       "tag_name": "snowflake.core.semantic_category",
+       "tag_value": "AGE"
+      },
+      {
+       "tag_applied": false,
+       "tag_name": "snowflake.core.privacy_category",
+       "tag_value": "QUASI_IDENTIFIER"
+      }
+     ]
+    },
+    "valid_value_ratio": 1
+   },
+   "AVAILABLE_BALANCE": {
+    "alternates": []
+   },
+   "BRANCH_ID": {
+    "alternates": []
+   },
+   "CLOSE_DATE": {
+    "alternates": []
+   },
+   "CREDIT_LIMIT": {
+    "alternates": []
+   },
+   "CURRENT_BALANCE": {
+    "alternates": []
+   },
+   "CUSTOMER_ID": {
+    "alternates": []
+   },
+   "CUSTOMER_SEGMENT": {
+    "alternates": []
+   },
+   "CUSTOMER_SEGMENT_DESC": {
+    "alternates": []
+   },
+   "DATE_OF_BIRTH": {
+    "alternates": [],
+    "recommendation": {
+     "confidence": "HIGH",
+     "coverage": 1,
+     "details": [],
+     "privacy_category": "QUASI_IDENTIFIER",
+     "semantic_category": "DATE_OF_BIRTH",
+     "tags": [
+      {
+       "tag_applied": false,
+       "tag_name": "snowflake.core.semantic_category",
+       "tag_value": "DATE_OF_BIRTH"
+      },
+      {
+       "tag_applied": false,
+       "tag_name": "snowflake.core.privacy_category",
+       "tag_value": "QUASI_IDENTIFIER"
+      }
+     ]
+    },
+    "valid_value_ratio": 1
+   },
+   "DAYS_INACTIVE": {
+    "alternates": []
+   },
+   "DORMANCY_FLAG": {
+    "alternates": []
+   },
+   "FIRST_NAME": {
+    "alternates": [],
+    "recommendation": {
+     "confidence": "HIGH",
+     "coverage": 1,
+     "details": [],
+     "privacy_category": "IDENTIFIER",
+     "semantic_category": "NAME",
+     "tags": [
+      {
+       "tag_applied": false,
+       "tag_name": "snowflake.core.semantic_category",
+       "tag_value": "NAME"
+      },
+      {
+       "tag_applied": false,
+       "tag_name": "snowflake.core.privacy_category",
+       "tag_value": "IDENTIFIER"
+      }
+     ]
+    },
+    "valid_value_ratio": 1
+   },
+   "HIGH_BALANCE_FLAG": {
+    "alternates": []
+   },
+   "INTEREST_RATE": {
+    "alternates": []
+   },
+   "LAST_ACTIVITY_DATE": {
+    "alternates": []
+   },
+   "LAST_NAME": {
+    "alternates": [],
+    "recommendation": {
+     "confidence": "HIGH",
+     "coverage": 1,
+     "details": [],
+     "privacy_category": "IDENTIFIER",
+     "semantic_category": "NAME",
+     "tags": [
+      {
+       "tag_applied": false,
+       "tag_name": "snowflake.core.semantic_category",
+       "tag_value": "NAME"
+      },
+      {
+       "tag_applied": false,
+       "tag_name": "snowflake.core.privacy_category",
+       "tag_value": "IDENTIFIER"
+      }
+     ]
+    },
+    "valid_value_ratio": 1
+   },
+   "OFFICER_ID": {
+    "alternates": []
+   },
+   "OPEN_DATE": {
+    "alternates": []
+   },
+   "PHONE_NUMBER": {
+    "alternates": [],
+    "recommendation": {
+     "confidence": "HIGH",
+     "coverage": 1,
+     "details": [
+      {
+       "coverage": 1,
+       "semantic_category": "UK_PHONE_NUMBER"
+      }
+     ],
+     "privacy_category": "IDENTIFIER",
+     "semantic_category": "PHONE_NUMBER",
+     "tags": [
+      {
+       "tag_applied": false,
+       "tag_name": "snowflake.core.semantic_category",
+       "tag_value": "PHONE_NUMBER"
+      },
+      {
+       "tag_applied": false,
+       "tag_name": "snowflake.core.privacy_category",
+       "tag_value": "IDENTIFIER"
+      }
+     ]
+    },
+    "valid_value_ratio": 1
+   },
+   "PRIMARY_EMAIL": {
+    "alternates": [],
+    "recommendation": {
+     "confidence": "HIGH",
+     "coverage": 1,
+     "details": [],
+     "privacy_category": "IDENTIFIER",
+     "semantic_category": "EMAIL",
+     "tags": [
+      {
+       "tag_applied": false,
+       "tag_name": "snowflake.core.semantic_category",
+       "tag_value": "EMAIL"
+      },
+      {
+       "tag_applied": false,
+       "tag_name": "snowflake.core.privacy_category",
+       "tag_value": "IDENTIFIER"
+      }
+     ]
+    },
+    "valid_value_ratio": 1
+   },
+   "REGION_CODE": {
+    "alternates": []
+   },
+   "REGION_CODE_DESC": {
+    "alternates": []
+   },
+   "RISK_RATING": {
+    "alternates": []
+   },
+   "RISK_RATING_DESC": {
+    "alternates": []
+   },
+   "SNAPSHOT_DATE": {
+    "alternates": []
+   },
+   "SSN_HASH": {
+    "alternates": []
+   },
+   "UTILIZATION_PCT": {
+    "alternates": []
+   }
+  }
+ },
+ "DBT_SF_20261015_DS.DAILY_TRANSACTIONS": {
+  "classification_result": {
+   "ACCOUNT_ID": {
+    "alternates": []
+   },
+   "CHANNEL": {
+    "alternates": []
+   },
+   "CURRENCY_CODE": {
+    "alternates": []
+   },
+   "DESCRIPTION": {
+    "alternates": []
+   },
+   "MERCHANT_CATEGORY": {
+    "alternates": []
+   },
+   "POST_DATE": {
+    "alternates": []
+   },
+   "TRANSACTION_AMOUNT": {
+    "alternates": []
+   },
+   "TRANSACTION_DATE": {
+    "alternates": []
+   },
+   "TRANSACTION_ID": {
+    "alternates": []
+   },
+   "TRANSACTION_TYPE": {
+    "alternates": []
+   }
+  }
+ },
+ "DBT_SF_20261015_DS.DAILY_TRANSACTION_PROCESSING__FMT_TXNCAT": {
+  "classification_result": {
+   "CODE": {
+    "alternates": []
+   },
+   "LABEL": {
+    "alternates": []
+   }
+  }
+ },
+ "DBT_SF_20261015_DS.DELINQUENCY_AGING": {
+  "classification_result": {
+   "ACCOUNT_TYPE": {
+    "alternates": []
+   },
+   "DELINQ_BUCKET": {
+    "alternates": []
+   },
+   "N_ACCOUNTS": {
+    "alternates": []
+   },
+   "REGION_CODE": {
+    "alternates": []
+   },
+   "REPORT_MONTH": {
+    "alternates": []
+   },
+   "TOTAL_BALANCE": {
+    "alternates": []
+   },
+   "TOTAL_PAST_DUE": {
+    "alternates": []
+   }
+  }
+ },
+ "DBT_SF_20261015_DS.FRAUD_ALERTS": {
+  "classification_result": {
+   "ALERT_DATE": {
+    "alternates": []
+   },
+   "ALERT_REASON": {
+    "alternates": []
+   },
+   "CAUSE_CODE": {
+    "alternates": []
+   },
+   "CLAIMANT_ID": {
+    "alternates": []
+   },
+   "CLAIMED_AMOUNT": {
+    "alternates": []
+   },
+   "CLAIM_ID": {
+    "alternates": []
+   },
+   "DEDUCTIBLE": {
+    "alternates": []
+   },
+   "DESCRIPTION": {
+    "alternates": []
+   },
+   "EFFECTIVE_DATE": {
+    "alternates": []
+   },
+   "EXPIRATION_DATE": {
+    "alternates": []
+   },
+   "FRAUD_RISK": {
+    "alternates": []
+   },
+   "FRAUD_SCORE": {
+    "alternates": []
+   },
+   "INDICATOR_FLAGS": {
+    "alternates": []
+   },
+   "LOSS_DATE": {
+    "alternates": []
+   },
+   "POLICY_ID": {
+    "alternates": []
+   },
+   "POLICY_TYPE": {
+    "alternates": []
+   },
+   "REPORTED_DATE": {
+    "alternates": []
+   },
+   "SUM_INSURED": {
+    "alternates": []
+   }
+  }
+ },
+ "DBT_SF_20261015_DS.LLP_COVERAGE": {
+  "classification_result": {
+   "ACCOUNT_TYPE": {
+    "alternates": []
+   },
+   "COVERAGE_PCT": {
+    "alternates": []
+   },
+   "GROSS_LOANS": {
+    "alternates": []
+   },
+   "NPL_BALANCE": {
+    "alternates": []
+   },
+   "NPL_COVERAGE_PCT": {
+    "alternates": []
+   },
+   "N_LOANS": {
+    "alternates": []
+   },
+   "REPORT_MONTH": {
+    "alternates": []
+   },
+   "TOTAL_ALLOWANCE": {
+    "alternates": []
+   }
+  }
+ },
+ "DBT_SF_20261015_DS.LOAD_CUSTOMER_ACCOUNTS__FMT_ACCTSTAT": {
+  "classification_result": {
+   "CODE": {
+    "alternates": []
+   },
+   "LABEL": {
+    "alternates": []
+   }
+  }
+ },
+ "DBT_SF_20261015_DS.LOAD_CUSTOMER_ACCOUNTS__FMT_ACCTTYPE": {
+  "classification_result": {
+   "CODE": {
+    "alternates": []
+   },
+   "LABEL": {
+    "alternates": []
+   }
+  }
+ },
+ "DBT_SF_20261015_DS.LOAD_CUSTOMER_ACCOUNTS__FMT_CUSTSEG": {
+  "classification_result": {
+   "CODE": {
+    "alternates": []
+   },
+   "LABEL": {
+    "alternates": []
+   }
+  }
+ },
+ "DBT_SF_20261015_DS.LOAD_CUSTOMER_ACCOUNTS__FMT_REGION": {
+  "classification_result": {
+   "CODE": {
+    "alternates": []
+   },
+   "LABEL": {
+    "alternates": []
+   }
+  }
+ },
+ "DBT_SF_20261015_DS.LOAD_CUSTOMER_ACCOUNTS__FMT_RISKRATE": {
+  "classification_result": {
+   "CODE": {
+    "alternates": []
+   },
+   "LABEL": {
+    "alternates": []
+   }
+  }
+ },
+ "DBT_SF_20261015_DS.LOSS_RATIO_SUMMARY": {
+  "classification_result": {
+   "AGG_COMBINED_RATIO": {
+    "alternates": []
+   },
+   "AGG_LOSS_RATIO": {
+    "alternates": []
+   },
+   "N_POLICIES": {
+    "alternates": []
+   },
+   "POLICY_TYPE": {
+    "alternates": []
+   },
+   "TOTAL_EARNED": {
+    "alternates": []
+   },
+   "TOTAL_IBNR": {
+    "alternates": []
+   },
+   "TOTAL_INCURRED": {
+    "alternates": []
+   },
+   "TOTAL_PAID": {
+    "alternates": []
+   },
+   "TOTAL_RESERVES": {
+    "alternates": []
+   }
+  }
+ },
+ "DBT_SF_20261015_DS.MONTHLY_REGULATORY_REPORTING__FMT_ACCTTYPE": {
+  "classification_result": {
+   "CODE": {
+    "alternates": []
+   },
+   "LABEL": {
+    "alternates": []
+   }
+  }
+ },
+ "DBT_SF_20261015_DS.MONTHLY_REGULATORY_REPORTING__FMT_CUSTSEG": {
+  "classification_result": {
+   "CODE": {
+    "alternates": []
+   },
+   "LABEL": {
+    "alternates": []
+   }
+  }
+ },
+ "DBT_SF_20261015_DS.MONTHLY_REGULATORY_REPORTING__FMT_REGION": {
+  "classification_result": {
+   "CODE": {
+    "alternates": []
+   },
+   "LABEL": {
+    "alternates": []
+   }
+  }
+ },
+ "DBT_SF_20261015_DS.MONTHLY_RWA": {
+  "classification_result": {
+   "ACCOUNT_TYPE": {
+    "alternates": []
+   },
+   "CUSTOMER_SEGMENT": {
+    "alternates": []
+   },
+   "N_ACCOUNTS": {
+    "alternates": []
+   },
+   "REPORT_MONTH": {
+    "alternates": []
+   },
+   "RISK_WEIGHT": {
+    "alternates": []
+   },
+   "RWA": {
+    "alternates": []
+   },
+   "TOTAL_EXPOSURE": {
+    "alternates": []
+   }
+  }
+ },
+ "DBT_SF_20261015_DS.POLICY_VALUATION": {
+  "classification_result": {
+   "AGENT_ID": {
+    "alternates": []
+   },
+   "ANNUAL_PREMIUM": {
+    "alternates": []
+   },
+   "BRANCH_CODE": {
+    "alternates": []
+   },
+   "COLLECTED_PREMIUM": {
+    "alternates": []
+   },
+   "COMBINED_RATIO": {
+    "alternates": []
+   },
+   "CUSTOMER_ID": {
+    "alternates": []
+   },
+   "DEDUCTIBLE": {
+    "alternates": []
+   },
+   "DENIED_CLAIMS": {
+    "alternates": []
+   },
+   "EFFECTIVE_DATE": {
+    "alternates": []
+   },
+   "EXPIRATION_DATE": {
+    "alternates": []
+   },
+   "IBNR_ESTIMATE": {
+    "alternates": []
+   },
+   "LAST_CLAIM_DATE": {
+    "alternates": []
+   },
+   "LAST_PAYMENT_DATE": {
+    "alternates": []
+   },
+   "LATE_PAYMENTS": {
+    "alternates": []
+   },
+   "LOSS_RATIO": {
+    "alternates": []
+   },
+   "MONTHS_TO_EXPIRY": {
+    "alternates": []
+   },
+   "NUM_CLAIMS": {
+    "alternates": []
+   },
+   "OPEN_RESERVES": {
+    "alternates": []
+   },
+   "POLICY_AGE_MONTHS": {
+    "alternates": [],
+    "recommendation": {
+     "confidence": "HIGH",
+     "coverage": 0.93373495,
+     "details": [],
+     "privacy_category": "QUASI_IDENTIFIER",
+     "semantic_category": "AGE",
+     "tags": [
+      {
+       "tag_applied": false,
+       "tag_name": "snowflake.core.semantic_category",
+       "tag_value": "AGE"
+      },
+      {
+       "tag_applied": false,
+       "tag_name": "snowflake.core.privacy_category",
+       "tag_value": "QUASI_IDENTIFIER"
+      }
+     ]
+    },
+    "valid_value_ratio": 1
+   },
+   "POLICY_ID": {
+    "alternates": []
+   },
+   "POLICY_TYPE": {
+    "alternates": []
+   },
+   "POLICY_TYPE_DESC": {
+    "alternates": []
+   },
+   "PREMIUM_ADEQUATE": {
+    "alternates": []
+   },
+   "RENEWAL_DUE_FLAG": {
+    "alternates": []
+   },
+   "RETURNED_PREMIUM": {
+    "alternates": []
+   },
+   "RISK_CATEGORY": {
+    "alternates": []
+   },
+   "RISK_CATEGORY_DESC": {
+    "alternates": []
+   },
+   "SUM_INSURED": {
+    "alternates": []
+   },
+   "TOTAL_INCURRED": {
+    "alternates": []
+   },
+   "TOTAL_PAID": {
+    "alternates": []
+   },
+   "TOTAL_RESERVE": {
+    "alternates": []
+   },
+   "TOTAL_RESERVED": {
+    "alternates": []
+   },
+   "UNDERWRITING_CLASS": {
+    "alternates": []
+   },
+   "VALUATION_DATE": {
+    "alternates": []
+   },
+   "YTD_EARNED_PREMIUM": {
+    "alternates": []
+   }
+  }
+ },
+ "DBT_SF_20261015_DS.POLICY_VALUATION__FMT_POLTYPE": {
+  "classification_result": {
+   "CODE": {
+    "alternates": []
+   },
+   "LABEL": {
+    "alternates": []
+   }
+  }
+ },
+ "DBT_SF_20261015_DS.POLICY_VALUATION__FMT_RISKCAT": {
+  "classification_result": {
+   "CODE": {
+    "alternates": []
+   },
+   "LABEL": {
+    "alternates": []
+   }
+  }
+ },
+ "DBT_SF_20261015_DS.RISK_MIGRATION": {
+  "classification_result": {
+   "ACCOUNT_ID": {
+    "alternates": []
+   },
+   "CURR_RATING": {
+    "alternates": []
+   },
+   "EXPECTED_LOSS": {
+    "alternates": []
+   },
+   "MIGRATION_DIRECTION": {
+    "alternates": []
+   },
+   "PD": {
+    "alternates": []
+   },
+   "PREV_RATING": {
+    "alternates": []
+   },
+   "SCORE_DATE": {
+    "alternates": []
+   }
+  }
+ },
+ "DBT_SF_20261015_DS.RISK_SCORES": {
+  "classification_result": {
+   "ACCOUNT_ID": {
+    "alternates": []
+   },
+   "ACCOUNT_TYPE": {
+    "alternates": []
+   },
+   "ACCT_AGE_MONTHS": {
+    "alternates": [],
+    "recommendation": {
+     "confidence": "LOW",
+     "coverage": 0.4618644,
+     "details": [],
+     "privacy_category": "QUASI_IDENTIFIER",
+     "semantic_category": "AGE",
+     "tags": [
+      {
+       "tag_applied": false,
+       "tag_name": "snowflake.core.semantic_category",
+       "tag_value": "AGE"
+      },
+      {
+       "tag_applied": false,
+       "tag_name": "snowflake.core.privacy_category",
+       "tag_value": "QUASI_IDENTIFIER"
+      }
+     ]
+    },
+    "valid_value_ratio": 1
+   },
+   "AVG_PMT_RATIO_12MO": {
+    "alternates": []
+   },
+   "BUREAU_DEROGS": {
+    "alternates": []
+   },
+   "BUREAU_INQS_6MO": {
+    "alternates": []
+   },
+   "BUREAU_OLDEST_TRADE_MO": {
+    "alternates": []
+   },
+   "BUREAU_TRADES_OPEN": {
+    "alternates": []
+   },
+   "BUREAU_UTIL_PCT": {
+    "alternates": []
+   },
+   "COLLATERAL_VALUE": {
+    "alternates": []
+   },
+   "CREDIT_LIMIT": {
+    "alternates": []
+   },
+   "CURRENT_BALANCE": {
+    "alternates": []
+   },
+   "CUSTOMER_ID": {
+    "alternates": []
+   },
+   "CUSTOMER_SEGMENT": {
+    "alternates": []
+   },
+   "DAYS_INACTIVE": {
+    "alternates": []
+   },
+   "EAD": {
+    "alternates": []
+   },
+   "EXPECTED_LOSS": {
+    "alternates": []
+   },
+   "FICO_SCORE": {
+    "alternates": []
+   },
+   "LAST_APPRAISAL_DATE": {
+    "alternates": []
+   },
+   "LGD": {
+    "alternates": []
+   },
+   "LTV": {
+    "alternates": []
+   },
+   "MAX_DAYS_PAST_DUE_EVER": {
+    "alternates": []
+   },
+   "MODEL_ID": {
+    "alternates": []
+   },
+   "MONTHS_SINCE_LAST_DPD": {
+    "alternates": []
+   },
+   "NEW_RISK_RATING": {
+    "alternates": []
+   },
+   "PD": {
+    "alternates": []
+   },
+   "PMT_LATE_30_12MO": {
+    "alternates": []
+   },
+   "PMT_LATE_60_12MO": {
+    "alternates": []
+   },
+   "PMT_LATE_90_12MO": {
+    "alternates": []
+   },
+   "PMT_ONTIME_12MO": {
+    "alternates": []
+   },
+   "REGION_CODE": {
+    "alternates": []
+   },
+   "SCORE_DATE": {
+    "alternates": []
+   },
+   "UTILIZATION_PCT": {
+    "alternates": []
+   },
+   "VANTAGE_SCORE": {
+    "alternates": []
+   }
+  }
+ },
+ "DBT_SF_20261015_DS.RISK_SUMMARY": {
+  "classification_result": {
+   "ACCOUNT_TYPE": {
+    "alternates": []
+   },
+   "AVG_LGD": {
+    "alternates": []
+   },
+   "AVG_PD": {
+    "alternates": []
+   },
+   "NEW_RISK_RATING": {
+    "alternates": []
+   },
+   "N_ACCOUNTS": {
+    "alternates": []
+   },
+   "TOTAL_EAD": {
+    "alternates": []
+   },
+   "TOTAL_EL": {
+    "alternates": []
+   }
+  }
+ },
+ "DBT_SF_20261015_DS.RUNNING_BALANCES": {
+  "classification_result": {
+   "ACCOUNT_ID": {
+    "alternates": []
+   },
+   "RUNNING_BALANCE": {
+    "alternates": []
+   },
+   "TRANSACTION_DATE": {
+    "alternates": []
+   },
+   "TRANSACTION_ID": {
+    "alternates": []
+   }
+  }
+ },
+ "DBT_SF_20261015_DS.TXN_ANOMALIES": {
+  "classification_result": {
+   "ACCOUNT_ID": {
+    "alternates": []
+   },
+   "ACCOUNT_TYPE": {
+    "alternates": []
+   },
+   "ANOMALY_TYPE": {
+    "alternates": []
+   },
+   "AVG_TXN_AMT": {
+    "alternates": []
+   },
+   "BRANCH_ID": {
+    "alternates": []
+   },
+   "CHANNEL": {
+    "alternates": []
+   },
+   "CURRENCY_CODE": {
+    "alternates": []
+   },
+   "CUSTOMER_ID": {
+    "alternates": []
+   },
+   "CUSTOMER_SEGMENT": {
+    "alternates": []
+   },
+   "DESCRIPTION": {
+    "alternates": []
+   },
+   "MERCHANT_CATEGORY": {
+    "alternates": []
+   },
+   "POST_DATE": {
+    "alternates": []
+   },
+   "POST_TXN_BALANCE": {
+    "alternates": []
+   },
+   "PRE_TXN_BALANCE": {
+    "alternates": []
+   },
+   "REGION_CODE": {
+    "alternates": []
+   },
+   "RISK_RATING": {
+    "alternates": []
+   },
+   "RUNNING_BALANCE": {
+    "alternates": []
+   },
+   "STD_TXN_AMT": {
+    "alternates": []
+   },
+   "TRANSACTION_AMOUNT": {
+    "alternates": []
+   },
+   "TRANSACTION_DATE": {
+    "alternates": []
+   },
+   "TRANSACTION_ID": {
+    "alternates": []
+   },
+   "TRANSACTION_TYPE": {
+    "alternates": []
+   },
+   "Z_SCORE": {
+    "alternates": []
+   }
+  }
+ },
+ "SCAI_SF_20261015_DS.DEMO_TARGET1_INS": {
+  "classification_result": {
+   "ACTIVE_FLAG": {
+    "alternates": []
+   },
+   "BRANCH_CO_MNE": {
+    "alternates": []
+   },
+   "CREATED_BY": {
+    "alternates": []
+   },
+   "CREATED_TIME": {
+    "alternates": []
+   },
+   "DESCRIPTION": {
+    "alternates": []
+   },
+   "END_DATE": {
+    "alternates": []
+   },
+   "ID": {
+    "alternates": []
+   },
+   "KEY": {
+    "alternates": []
+   },
+   "LEAD_CO_MNE": {
+    "alternates": []
+   },
+   "MIS_DATE": {
+    "alternates": []
+   },
+   "SHORT_NAME": {
+    "alternates": []
+   },
+   "START_DATE": {
+    "alternates": []
+   },
+   "UPDATED_BY": {
+    "alternates": []
+   },
+   "UPDATED_TIME": {
+    "alternates": []
+   }
+  }
+ },
+ "SCAI_SF_20261015_DS.DEMO_TARGET1_UPD": {
+  "classification_result": {
+   "ACTIVE_FLAG": {
+    "alternates": []
+   },
+   "BRANCH_CO_MNE": {
+    "alternates": []
+   },
+   "CREATED_BY": {
+    "alternates": []
+   },
+   "CREATED_TIME": {
+    "alternates": []
+   },
+   "DESCRIPTION": {
+    "alternates": []
+   },
+   "END_DATE": {
+    "alternates": []
+   },
+   "ID": {
+    "alternates": []
+   },
+   "KEY": {
+    "alternates": []
+   },
+   "LEAD_CO_MNE": {
+    "alternates": []
+   },
+   "MIS_DATE": {
+    "alternates": []
+   },
+   "SHORT_NAME": {
+    "alternates": []
+   },
+   "START_DATE": {
+    "alternates": []
+   },
+   "UPDATED_BY": {
+    "alternates": []
+   },
+   "UPDATED_TIME": {
+    "alternates": []
+   }
+  }
+ },
+ "SCAI_SF_20261015_DS.DEMO_TARGET2": {
+  "classification_result": {
+   "DATE_OF_BIRTH": {
+    "alternates": [],
+    "recommendation": {
+     "confidence": "HIGH",
+     "coverage": 1,
+     "details": [],
+     "privacy_category": "QUASI_IDENTIFIER",
+     "semantic_category": "DATE_OF_BIRTH",
+     "tags": [
+      {
+       "tag_applied": false,
+       "tag_name": "snowflake.core.semantic_category",
+       "tag_value": "DATE_OF_BIRTH"
+      },
+      {
+       "tag_applied": false,
+       "tag_name": "snowflake.core.privacy_category",
+       "tag_value": "QUASI_IDENTIFIER"
+      }
+     ]
+    },
+    "valid_value_ratio": 1
+   },
+   "EFFECTIVE_DATE": {
+    "alternates": []
+   },
+   "FIRST_NAME": {
+    "alternates": [],
+    "recommendation": {
+     "confidence": "HIGH",
+     "coverage": 1,
+     "details": [],
+     "privacy_category": "IDENTIFIER",
+     "semantic_category": "NAME",
+     "tags": [
+      {
+       "tag_applied": false,
+       "tag_name": "snowflake.core.semantic_category",
+       "tag_value": "NAME"
+      },
+      {
+       "tag_applied": false,
+       "tag_name": "snowflake.core.privacy_category",
+       "tag_value": "IDENTIFIER"
+      }
+     ]
+    },
+    "valid_value_ratio": 1
+   },
+   "GENDER": {
+    "alternates": [],
+    "recommendation": {
+     "confidence": "HIGH",
+     "coverage": 1,
+     "details": [],
+     "privacy_category": "QUASI_IDENTIFIER",
+     "semantic_category": "GENDER",
+     "tags": [
+      {
+       "tag_applied": false,
+       "tag_name": "snowflake.core.semantic_category",
+       "tag_value": "GENDER"
+      },
+      {
+       "tag_applied": false,
+       "tag_name": "snowflake.core.privacy_category",
+       "tag_value": "QUASI_IDENTIFIER"
+      }
+     ]
+    },
+    "valid_value_ratio": 1
+   },
+   "LAST_NAME": {
+    "alternates": [],
+    "recommendation": {
+     "confidence": "HIGH",
+     "coverage": 1,
+     "details": [],
+     "privacy_category": "IDENTIFIER",
+     "semantic_category": "NAME",
+     "tags": [
+      {
+       "tag_applied": false,
+       "tag_name": "snowflake.core.semantic_category",
+       "tag_value": "NAME"
+      },
+      {
+       "tag_applied": false,
+       "tag_name": "snowflake.core.privacy_category",
+       "tag_value": "IDENTIFIER"
+      }
+     ]
+    },
+    "valid_value_ratio": 1
+   },
+   "MEMBER_IDENTIFIER": {
+    "alternates": []
+   },
+   "MEMBER_NUMBER": {
+    "alternates": []
+   },
+   "MEMBER_SUFFIX": {
+    "alternates": []
+   },
+   "MIDDLE_NAME": {
+    "alternates": []
+   },
+   "RELATIONSHIP_TO_SUBSCRIBER_CODE": {
+    "alternates": []
+   },
+   "RELATIONSHIP_TO_SUBSCRIBER_CODE_LABEL": {
+    "alternates": []
+   },
+   "SOC_NUMBER": {
+    "alternates": []
+   },
+   "TITLE": {
+    "alternates": []
+   },
+   "TYPE_CODE": {
+    "alternates": []
+   }
+  }
+ },
+ "SCAI_SF_20261015_DS.DEMO_TARGET21": {
+  "classification_result": {
+   "DATE_OF_BIRTH": {
+    "alternates": [],
+    "recommendation": {
+     "confidence": "HIGH",
+     "coverage": 1,
+     "details": [],
+     "privacy_category": "QUASI_IDENTIFIER",
+     "semantic_category": "DATE_OF_BIRTH",
+     "tags": [
+      {
+       "tag_applied": false,
+       "tag_name": "snowflake.core.semantic_category",
+       "tag_value": "DATE_OF_BIRTH"
+      },
+      {
+       "tag_applied": false,
+       "tag_name": "snowflake.core.privacy_category",
+       "tag_value": "QUASI_IDENTIFIER"
+      }
+     ]
+    },
+    "valid_value_ratio": 1
+   },
+   "EFFECTIVE_DATE": {
+    "alternates": []
+   },
+   "FIRST_NAME": {
+    "alternates": [],
+    "recommendation": {
+     "confidence": "HIGH",
+     "coverage": 1,
+     "details": [],
+     "privacy_category": "IDENTIFIER",
+     "semantic_category": "NAME",
+     "tags": [
+      {
+       "tag_applied": false,
+       "tag_name": "snowflake.core.semantic_category",
+       "tag_value": "NAME"
+      },
+      {
+       "tag_applied": false,
+       "tag_name": "snowflake.core.privacy_category",
+       "tag_value": "IDENTIFIER"
+      }
+     ]
+    },
+    "valid_value_ratio": 1
+   },
+   "GENDER": {
+    "alternates": [],
+    "recommendation": {
+     "confidence": "HIGH",
+     "coverage": 1,
+     "details": [],
+     "privacy_category": "QUASI_IDENTIFIER",
+     "semantic_category": "GENDER",
+     "tags": [
+      {
+       "tag_applied": false,
+       "tag_name": "snowflake.core.semantic_category",
+       "tag_value": "GENDER"
+      },
+      {
+       "tag_applied": false,
+       "tag_name": "snowflake.core.privacy_category",
+       "tag_value": "QUASI_IDENTIFIER"
+      }
+     ]
+    },
+    "valid_value_ratio": 1
+   },
+   "LAST_NAME": {
+    "alternates": [],
+    "recommendation": {
+     "confidence": "HIGH",
+     "coverage": 1,
+     "details": [],
+     "privacy_category": "IDENTIFIER",
+     "semantic_category": "NAME",
+     "tags": [
+      {
+       "tag_applied": false,
+       "tag_name": "snowflake.core.semantic_category",
+       "tag_value": "NAME"
+      },
+      {
+       "tag_applied": false,
+       "tag_name": "snowflake.core.privacy_category",
+       "tag_value": "IDENTIFIER"
+      }
+     ]
+    },
+    "valid_value_ratio": 1
+   },
+   "MEMBER_IDENTIFIER": {
+    "alternates": []
+   },
+   "MEMBER_NUMBER": {
+    "alternates": []
+   },
+   "MEMBER_SUFFIX": {
+    "alternates": []
+   },
+   "MIDDLE_NAME": {
+    "alternates": []
+   },
+   "RELATIONSHIP_TO_SUBSCRIBER_CODE": {
+    "alternates": []
+   },
+   "RELATIONSHIP_TO_SUBSCRIBER_CODE_LABEL": {
+    "alternates": []
+   },
+   "SOC_NUMBER": {
+    "alternates": []
+   },
+   "TITLE": {
+    "alternates": []
+   },
+   "TYPE_CODE": {
+    "alternates": []
+   }
+  }
+ },
+ "SCAI_SF_20261015_DS.DEMO_TARGET3": {
+  "classification_result": {
+   "COLOR": {
+    "alternates": []
+   },
+   "LIST_PRICE": {
+    "alternates": []
+   },
+   "PRODUCT_ID": {
+    "alternates": []
+   },
+   "PRODUCT_NM": {
+    "alternates": []
+   },
+   "PRODUCT_NO": {
+    "alternates": []
+   },
+   "SELL_ED_DT": {
+    "alternates": []
+   },
+   "SELL_ST_DT": {
+    "alternates": []
+   },
+   "STD_COST": {
+    "alternates": []
+   }
+  }
+ },
+ "SCAI_SF_20261015_DS.DEMO_TARGET5": {
+  "classification_result": {
+   "ACCT_ID": {
+    "alternates": []
+   },
+   "BAL_AMT": {
+    "alternates": []
+   },
+   "CRDT_SCORE": {
+    "alternates": []
+   },
+   "FIRST_NM": {
+    "alternates": [],
+    "recommendation": {
+     "confidence": "HIGH",
+     "coverage": 1,
+     "details": [],
+     "privacy_category": "IDENTIFIER",
+     "semantic_category": "NAME",
+     "tags": [
+      {
+       "tag_applied": false,
+       "tag_name": "snowflake.core.semantic_category",
+       "tag_value": "NAME"
+      },
+      {
+       "tag_applied": false,
+       "tag_name": "snowflake.core.privacy_category",
+       "tag_value": "IDENTIFIER"
+      }
+     ]
+    },
+    "valid_value_ratio": 1
+   },
+   "LAST_NM": {
+    "alternates": [],
+    "recommendation": {
+     "confidence": "HIGH",
+     "coverage": 1,
+     "details": [],
+     "privacy_category": "IDENTIFIER",
+     "semantic_category": "NAME",
+     "tags": [
+      {
+       "tag_applied": false,
+       "tag_name": "snowflake.core.semantic_category",
+       "tag_value": "NAME"
+      },
+      {
+       "tag_applied": false,
+       "tag_name": "snowflake.core.privacy_category",
+       "tag_value": "IDENTIFIER"
+      }
+     ]
+    },
+    "valid_value_ratio": 1
+   }
+  }
+ },
+ "SCAI_SF_20261015_DS.DEMO_TARGET6": {
+  "classification_result": {
+   "ACCT_DESC": {
+    "alternates": []
+   },
+   "ACCT_ID": {
+    "alternates": []
+   },
+   "ACCT_KEY": {
+    "alternates": []
+   },
+   "ACCT_STAT_CD": {
+    "alternates": []
+   },
+   "ACCT_TYP": {
+    "alternates": []
+   },
+   "CLSR_DT": {
+    "alternates": []
+   },
+   "CR8_DT": {
+    "alternates": []
+   },
+   "CRDT_LN": {
+    "alternates": []
+   },
+   "TX_AMT": {
+    "alternates": []
+   },
+   "TX_DTTM": {
+    "alternates": []
+   },
+   "TX_ID": {
+    "alternates": []
+   },
+   "TX_TYPE_CD": {
+    "alternates": []
+   }
+  }
+ },
+ "SOURCE_SF_20261015_DS.CURATED_DAILY_TRANSACTIONS": {
+  "classification_result": {
+   "ACCOUNT_ID": {
+    "alternates": []
+   },
+   "CHANNEL": {
+    "alternates": []
+   },
+   "CURRENCY_CODE": {
+    "alternates": []
+   },
+   "DESCRIPTION": {
+    "alternates": []
+   },
+   "MERCHANT_CATEGORY": {
+    "alternates": []
+   },
+   "POST_DATE": {
+    "alternates": []
+   },
+   "TRANSACTION_AMOUNT": {
+    "alternates": []
+   },
+   "TRANSACTION_DATE": {
+    "alternates": []
+   },
+   "TRANSACTION_ID": {
+    "alternates": []
+   },
+   "TRANSACTION_TYPE": {
+    "alternates": []
+   }
+  }
+ },
+ "SOURCE_SF_20261015_DS.DEMO_SOURCE1": {
+  "classification_result": {
+   "BRANCH_CO_MNE": {
+    "alternates": []
+   },
+   "DESCRIPTION": {
+    "alternates": []
+   },
+   "ID": {
+    "alternates": []
+   },
+   "LEAD_CO_MNE": {
+    "alternates": []
+   },
+   "MIS_DATE": {
+    "alternates": []
+   },
+   "SHORT_NAME": {
+    "alternates": []
+   }
+  }
+ },
+ "SOURCE_SF_20261015_DS.DEMO_SOURCE2": {
+  "classification_result": {
+   "BIRTH_DATE": {
+    "alternates": [],
+    "recommendation": {
+     "confidence": "HIGH",
+     "coverage": 1,
+     "details": [],
+     "privacy_category": "QUASI_IDENTIFIER",
+     "semantic_category": "DATE_OF_BIRTH",
+     "tags": [
+      {
+       "tag_applied": false,
+       "tag_name": "snowflake.core.semantic_category",
+       "tag_value": "DATE_OF_BIRTH"
+      },
+      {
+       "tag_applied": false,
+       "tag_name": "snowflake.core.privacy_category",
+       "tag_value": "QUASI_IDENTIFIER"
+      }
+     ]
+    },
+    "valid_value_ratio": 1
+   },
+   "FIRST_NAME": {
+    "alternates": [],
+    "recommendation": {
+     "confidence": "HIGH",
+     "coverage": 1,
+     "details": [],
+     "privacy_category": "IDENTIFIER",
+     "semantic_category": "NAME",
+     "tags": [
+      {
+       "tag_applied": false,
+       "tag_name": "snowflake.core.semantic_category",
+       "tag_value": "NAME"
+      },
+      {
+       "tag_applied": false,
+       "tag_name": "snowflake.core.privacy_category",
+       "tag_value": "IDENTIFIER"
+      }
+     ]
+    },
+    "valid_value_ratio": 1
+   },
+   "GENDER_CODE": {
+    "alternates": [],
+    "recommendation": {
+     "confidence": "HIGH",
+     "coverage": 1,
+     "details": [],
+     "privacy_category": "QUASI_IDENTIFIER",
+     "semantic_category": "GENDER",
+     "tags": [
+      {
+       "tag_applied": false,
+       "tag_name": "snowflake.core.semantic_category",
+       "tag_value": "GENDER"
+      },
+      {
+       "tag_applied": false,
+       "tag_name": "snowflake.core.privacy_category",
+       "tag_value": "QUASI_IDENTIFIER"
+      }
+     ]
+    },
+    "valid_value_ratio": 1
+   },
+   "LAST_NAME": {
+    "alternates": [],
+    "recommendation": {
+     "confidence": "HIGH",
+     "coverage": 1,
+     "details": [],
+     "privacy_category": "IDENTIFIER",
+     "semantic_category": "NAME",
+     "tags": [
+      {
+       "tag_applied": false,
+       "tag_name": "snowflake.core.semantic_category",
+       "tag_value": "NAME"
+      },
+      {
+       "tag_applied": false,
+       "tag_name": "snowflake.core.privacy_category",
+       "tag_value": "IDENTIFIER"
+      }
+     ]
+    },
+    "valid_value_ratio": 1
+   },
+   "MEMBER_ID": {
+    "alternates": []
+   },
+   "MEMBER_RECORD_NUMBER": {
+    "alternates": []
+   },
+   "MEMBER_SUFFIX": {
+    "alternates": []
+   },
+   "MEMBER_TYPE_CODE": {
+    "alternates": []
+   },
+   "MIDDLE_NAME": {
+    "alternates": []
+   },
+   "ORIGINAL_EFFECTIVE_DATE": {
+    "alternates": []
+   },
+   "RELATIONSHIP_TO_SUBSCRIBER_CODE": {
+    "alternates": []
+   },
+   "RELATIONSHIP_TO_SUBSCRIBER_CODE_LABEL": {
+    "alternates": []
+   },
+   "SOCIAL_SECURITY_NUMBER": {
+    "alternates": [],
+    "recommendation": {
+     "confidence": "HIGH",
+     "coverage": 0.42857143,
+     "details": [
+      {
+       "coverage": 0.42857143,
+       "semantic_category": "HU_SSN"
+      }
+     ],
+     "privacy_category": "IDENTIFIER",
+     "semantic_category": "NATIONAL_IDENTIFIER",
+     "tags": [
+      {
+       "tag_applied": false,
+       "tag_name": "snowflake.core.semantic_category",
+       "tag_value": "NATIONAL_IDENTIFIER"
+      },
+      {
+       "tag_applied": false,
+       "tag_name": "snowflake.core.privacy_category",
+       "tag_value": "IDENTIFIER"
+      }
+     ]
+    },
+    "valid_value_ratio": 0.42857143
+   },
+   "TITLE": {
+    "alternates": []
+   }
+  }
+ },
+ "SOURCE_SF_20261015_DS.DEMO_SOURCE3": {
+  "classification_result": {
+   "ACCT_ID": {
+    "alternates": []
+   },
+   "BAL_AMT": {
+    "alternates": []
+   },
+   "CRDT_SCORE": {
+    "alternates": []
+   },
+   "CUST_ID": {
+    "alternates": []
+   },
+   "FIRST_NM": {
+    "alternates": [],
+    "recommendation": {
+     "confidence": "HIGH",
+     "coverage": 1,
+     "details": [],
+     "privacy_category": "IDENTIFIER",
+     "semantic_category": "NAME",
+     "tags": [
+      {
+       "tag_applied": false,
+       "tag_name": "snowflake.core.semantic_category",
+       "tag_value": "NAME"
+      },
+      {
+       "tag_applied": false,
+       "tag_name": "snowflake.core.privacy_category",
+       "tag_value": "IDENTIFIER"
+      }
+     ]
+    },
+    "valid_value_ratio": 1
+   },
+   "LAST_NM": {
+    "alternates": [],
+    "recommendation": {
+     "confidence": "HIGH",
+     "coverage": 1,
+     "details": [],
+     "privacy_category": "IDENTIFIER",
+     "semantic_category": "NAME",
+     "tags": [
+      {
+       "tag_applied": false,
+       "tag_name": "snowflake.core.semantic_category",
+       "tag_value": "NAME"
+      },
+      {
+       "tag_applied": false,
+       "tag_name": "snowflake.core.privacy_category",
+       "tag_value": "IDENTIFIER"
+      }
+     ]
+    },
+    "valid_value_ratio": 1
+   },
+   "TX_AMT": {
+    "alternates": []
+   },
+   "TX_DESC": {
+    "alternates": []
+   },
+   "TX_DTTM": {
+    "alternates": []
+   },
+   "TX_ID": {
+    "alternates": []
+   },
+   "TX_TYPE_CD": {
+    "alternates": []
+   }
+  }
+ },
+ "SOURCE_SF_20261015_DS.DEMO_SOURCE4": {
+  "classification_result": {
+   "ACCT_DESC": {
+    "alternates": []
+   },
+   "ACCT_ID": {
+    "alternates": []
+   },
+   "ACCT_STAT_CD": {
+    "alternates": []
+   },
+   "ACCT_TYP": {
+    "alternates": []
+   },
+   "CLSR_DT": {
+    "alternates": []
+   },
+   "CR8_DT": {
+    "alternates": []
+   },
+   "CRDT_LN": {
+    "alternates": []
+   }
+  }
+ },
+ "SOURCE_SF_20261015_DS.DEMO_SOURCE5": {
+  "classification_result": {
+   "COLOR": {
+    "alternates": []
+   },
+   "LIST_PRICE": {
+    "alternates": []
+   },
+   "PRODUCT_ID": {
+    "alternates": []
+   },
+   "PRODUCT_NM": {
+    "alternates": []
+   },
+   "PRODUCT_NO": {
+    "alternates": []
+   },
+   "SELL_ED_DT": {
+    "alternates": []
+   },
+   "SELL_ST_DT": {
+    "alternates": []
+   },
+   "STD_COST": {
+    "alternates": []
+   }
+  }
+ },
+ "SOURCE_SF_20261015_DS.DEMO_TARGET1": {
+  "classification_result": {
+   "ACTIVE_FLAG": {
+    "alternates": []
+   },
+   "BRANCH_CO_MNE": {
+    "alternates": []
+   },
+   "CREATED_BY": {
+    "alternates": []
+   },
+   "CREATED_TIME": {
+    "alternates": []
+   },
+   "DESCRIPTION": {
+    "alternates": []
+   },
+   "END_DATE": {
+    "alternates": []
+   },
+   "ID": {
+    "alternates": []
+   },
+   "KEY": {
+    "alternates": []
+   },
+   "LEAD_CO_MNE": {
+    "alternates": []
+   },
+   "MIS_DATE": {
+    "alternates": []
+   },
+   "SEED_ROW": {
+    "alternates": []
+   },
+   "SHORT_NAME": {
+    "alternates": []
+   },
+   "START_DATE": {
+    "alternates": []
+   },
+   "UPDATED_BY": {
+    "alternates": []
+   },
+   "UPDATED_TIME": {
+    "alternates": []
+   }
+  }
+ },
+ "SOURCE_SF_20261015_DS.LKP_DEMO_SOURCE1": {
+  "classification_result": {
+   "ACCT_ID": {
+    "alternates": []
+   },
+   "AGE": {
+    "alternates": [],
+    "recommendation": {
+     "confidence": "HIGH",
+     "coverage": 1,
+     "details": [],
+     "privacy_category": "QUASI_IDENTIFIER",
+     "semantic_category": "AGE",
+     "tags": [
+      {
+       "tag_applied": false,
+       "tag_name": "snowflake.core.semantic_category",
+       "tag_value": "AGE"
+      },
+      {
+       "tag_applied": false,
+       "tag_name": "snowflake.core.privacy_category",
+       "tag_value": "QUASI_IDENTIFIER"
+      }
+     ]
+    },
+    "valid_value_ratio": 1
+   },
+   "CUST_ADDR": {
+    "alternates": [],
+    "recommendation": {
+     "confidence": "HIGH",
+     "coverage": 1,
+     "details": [
+      {
+       "coverage": 1,
+       "semantic_category": "US_STREET_ADDRESS"
+      },
+      {
+       "coverage": 1,
+       "semantic_category": "CA_STREET_ADDRESS"
+      }
+     ],
+     "privacy_category": "IDENTIFIER",
+     "semantic_category": "STREET_ADDRESS",
+     "tags": [
+      {
+       "tag_applied": false,
+       "tag_name": "snowflake.core.semantic_category",
+       "tag_value": "STREET_ADDRESS"
+      },
+      {
+       "tag_applied": false,
+       "tag_name": "snowflake.core.privacy_category",
+       "tag_value": "IDENTIFIER"
+      }
+     ]
+    },
+    "valid_value_ratio": 1
+   },
+   "CUST_EML_ADDR": {
+    "alternates": [],
+    "recommendation": {
+     "confidence": "HIGH",
+     "coverage": 1,
+     "details": [],
+     "privacy_category": "IDENTIFIER",
+     "semantic_category": "EMAIL",
+     "tags": [
+      {
+       "tag_applied": false,
+       "tag_name": "snowflake.core.semantic_category",
+       "tag_value": "EMAIL"
+      },
+      {
+       "tag_applied": false,
+       "tag_name": "snowflake.core.privacy_category",
+       "tag_value": "IDENTIFIER"
+      }
+     ]
+    },
+    "valid_value_ratio": 1
+   },
+   "CUST_ID": {
+    "alternates": []
+   },
+   "CUST_PHN": {
+    "alternates": [],
+    "recommendation": {
+     "confidence": "MEDIUM",
+     "coverage": 0.6666667,
+     "details": [
+      {
+       "coverage": 0.6666667,
+       "semantic_category": "UK_PHONE_NUMBER"
+      },
+      {
+       "coverage": 0.5,
+       "semantic_category": "US_PHONE_NUMBER"
+      }
+     ],
+     "privacy_category": "IDENTIFIER",
+     "semantic_category": "PHONE_NUMBER",
+     "tags": [
+      {
+       "tag_applied": false,
+       "tag_name": "snowflake.core.semantic_category",
+       "tag_value": "PHONE_NUMBER"
+      },
+      {
+       "tag_applied": false,
+       "tag_name": "snowflake.core.privacy_category",
+       "tag_value": "IDENTIFIER"
+      }
+     ]
+    },
+    "valid_value_ratio": 1
+   },
+   "CUST_TYP": {
+    "alternates": []
+   },
+   "DOB": {
+    "alternates": [],
+    "recommendation": {
+     "confidence": "HIGH",
+     "coverage": 1,
+     "details": [],
+     "privacy_category": "QUASI_IDENTIFIER",
+     "semantic_category": "DATE_OF_BIRTH",
+     "tags": [
+      {
+       "tag_applied": false,
+       "tag_name": "snowflake.core.semantic_category",
+       "tag_value": "DATE_OF_BIRTH"
+      },
+      {
+       "tag_applied": false,
+       "tag_name": "snowflake.core.privacy_category",
+       "tag_value": "QUASI_IDENTIFIER"
+      }
+     ]
+    },
+    "valid_value_ratio": 1
+   },
+   "FIRST_NM": {
+    "alternates": [],
+    "recommendation": {
+     "confidence": "HIGH",
+     "coverage": 1,
+     "details": [],
+     "privacy_category": "IDENTIFIER",
+     "semantic_category": "NAME",
+     "tags": [
+      {
+       "tag_applied": false,
+       "tag_name": "snowflake.core.semantic_category",
+       "tag_value": "NAME"
+      },
+      {
+       "tag_applied": false,
+       "tag_name": "snowflake.core.privacy_category",
+       "tag_value": "IDENTIFIER"
+      }
+     ]
+    },
+    "valid_value_ratio": 1
+   },
+   "LAST_NM": {
+    "alternates": [],
+    "recommendation": {
+     "confidence": "HIGH",
+     "coverage": 1,
+     "details": [],
+     "privacy_category": "IDENTIFIER",
+     "semantic_category": "NAME",
+     "tags": [
+      {
+       "tag_applied": false,
+       "tag_name": "snowflake.core.semantic_category",
+       "tag_value": "NAME"
+      },
+      {
+       "tag_applied": false,
+       "tag_name": "snowflake.core.privacy_category",
+       "tag_value": "IDENTIFIER"
+      }
+     ]
+    },
+    "valid_value_ratio": 1
+   },
+   "SEED_ROW": {
+    "alternates": []
+   }
+  }
+ },
+ "SOURCE_SF_20261015_DS.LKP_DEMO_SOURCE2": {
+  "classification_result": {
+   "AVG_INC_AMT": {
+    "alternates": []
+   },
+   "CRDT_SCORE": {
+    "alternates": []
+   },
+   "CURR_CRDT_BAL_AMT": {
+    "alternates": []
+   },
+   "CUST_ID": {
+    "alternates": []
+   },
+   "MAX_CRDT_LMT": {
+    "alternates": []
+   },
+   "MAX_CRDT_SCORE": {
+    "alternates": []
+   },
+   "MIN_CRDT_SCORE": {
+    "alternates": []
+   },
+   "SEED_ROW": {
+    "alternates": []
+   }
+  }
+ },
+ "SOURCE_SF_20261015_DS.LKP_DEMO_SOURCE3": {
+  "classification_result": {
+   "ACCT_ID": {
+    "alternates": []
+   },
+   "SEED_ROW": {
+    "alternates": []
+   },
+   "TX_TYPE_CD": {
+    "alternates": []
+   },
+   "TX_TYPE_DESC": {
+    "alternates": []
+   }
+  }
+ },
+ "SOURCE_SF_20261015_DS.ORA_DW_BUREAU_SCORES": {
+  "classification_result": {
+   "BUREAU_DEROGS": {
+    "alternates": []
+   },
+   "BUREAU_INQS_6MO": {
+    "alternates": []
+   },
+   "BUREAU_OLDEST_TRADE_MO": {
+    "alternates": []
+   },
+   "BUREAU_TRADES_OPEN": {
+    "alternates": []
+   },
+   "BUREAU_UTIL_PCT": {
+    "alternates": []
+   },
+   "CUSTOMER_ID": {
+    "alternates": []
+   },
+   "FICO_SCORE": {
+    "alternates": []
+   },
+   "SCORE_DATE": {
+    "alternates": []
+   },
+   "VANTAGE_SCORE": {
+    "alternates": []
+   }
+  }
+ },
+ "SOURCE_SF_20261015_DS.ORA_DW_COLLATERAL": {
+  "classification_result": {
+   "ACCOUNT_ID": {
+    "alternates": []
+   },
+   "COLLATERAL_VALUE": {
+    "alternates": []
+   },
+   "LAST_APPRAISAL_DATE": {
+    "alternates": []
+   }
+  }
+ },
+ "SOURCE_SF_20261015_DS.ORA_DW_CUST_ACCOUNTS": {
+  "classification_result": {
+   "ACCOUNT_ID": {
+    "alternates": []
+   },
+   "ACCOUNT_STATUS": {
+    "alternates": []
+   },
+   "ACCOUNT_TYPE": {
+    "alternates": []
+   },
+   "AVAILABLE_BALANCE": {
+    "alternates": []
+   },
+   "BRANCH_ID": {
+    "alternates": []
+   },
+   "CLOSE_DATE": {
+    "alternates": []
+   },
+   "CREDIT_LIMIT": {
+    "alternates": []
+   },
+   "CURRENT_BALANCE": {
+    "alternates": []
+   },
+   "CUSTOMER_ID": {
+    "alternates": []
+   },
+   "INTEREST_RATE": {
+    "alternates": []
+   },
+   "LAST_ACTIVITY_DATE": {
+    "alternates": []
+   },
+   "OFFICER_ID": {
+    "alternates": []
+   },
+   "OPEN_DATE": {
+    "alternates": []
+   }
+  }
+ },
+ "SOURCE_SF_20261015_DS.ORA_DW_CUST_DEMOGRAPHICS": {
+  "classification_result": {
+   "CUSTOMER_ID": {
+    "alternates": []
+   },
+   "CUSTOMER_SEGMENT": {
+    "alternates": []
+   },
+   "DATE_OF_BIRTH": {
+    "alternates": [],
+    "recommendation": {
+     "confidence": "HIGH",
+     "coverage": 1,
+     "details": [],
+     "privacy_category": "QUASI_IDENTIFIER",
+     "semantic_category": "DATE_OF_BIRTH",
+     "tags": [
+      {
+       "tag_applied": false,
+       "tag_name": "snowflake.core.semantic_category",
+       "tag_value": "DATE_OF_BIRTH"
+      },
+      {
+       "tag_applied": false,
+       "tag_name": "snowflake.core.privacy_category",
+       "tag_value": "QUASI_IDENTIFIER"
+      }
+     ]
+    },
+    "valid_value_ratio": 1
+   },
+   "FIRST_NAME": {
+    "alternates": [],
+    "recommendation": {
+     "confidence": "HIGH",
+     "coverage": 1,
+     "details": [],
+     "privacy_category": "IDENTIFIER",
+     "semantic_category": "NAME",
+     "tags": [
+      {
+       "tag_applied": false,
+       "tag_name": "snowflake.core.semantic_category",
+       "tag_value": "NAME"
+      },
+      {
+       "tag_applied": false,
+       "tag_name": "snowflake.core.privacy_category",
+       "tag_value": "IDENTIFIER"
+      }
+     ]
+    },
+    "valid_value_ratio": 1
+   },
+   "LAST_NAME": {
+    "alternates": [],
+    "recommendation": {
+     "confidence": "HIGH",
+     "coverage": 1,
+     "details": [],
+     "privacy_category": "IDENTIFIER",
+     "semantic_category": "NAME",
+     "tags": [
+      {
+       "tag_applied": false,
+       "tag_name": "snowflake.core.semantic_category",
+       "tag_value": "NAME"
+      },
+      {
+       "tag_applied": false,
+       "tag_name": "snowflake.core.privacy_category",
+       "tag_value": "IDENTIFIER"
+      }
+     ]
+    },
+    "valid_value_ratio": 1
+   },
+   "PHONE_NUMBER": {
+    "alternates": [],
+    "recommendation": {
+     "confidence": "HIGH",
+     "coverage": 1,
+     "details": [
+      {
+       "coverage": 1,
+       "semantic_category": "UK_PHONE_NUMBER"
+      }
+     ],
+     "privacy_category": "IDENTIFIER",
+     "semantic_category": "PHONE_NUMBER",
+     "tags": [
+      {
+       "tag_applied": false,
+       "tag_name": "snowflake.core.semantic_category",
+       "tag_value": "PHONE_NUMBER"
+      },
+      {
+       "tag_applied": false,
+       "tag_name": "snowflake.core.privacy_category",
+       "tag_value": "IDENTIFIER"
+      }
+     ]
+    },
+    "valid_value_ratio": 1
+   },
+   "PRIMARY_EMAIL": {
+    "alternates": [],
+    "recommendation": {
+     "confidence": "HIGH",
+     "coverage": 1,
+     "details": [],
+     "privacy_category": "IDENTIFIER",
+     "semantic_category": "EMAIL",
+     "tags": [
+      {
+       "tag_applied": false,
+       "tag_name": "snowflake.core.semantic_category",
+       "tag_value": "EMAIL"
+      },
+      {
+       "tag_applied": false,
+       "tag_name": "snowflake.core.privacy_category",
+       "tag_value": "IDENTIFIER"
+      }
+     ]
+    },
+    "valid_value_ratio": 1
+   },
+   "REGION_CODE": {
+    "alternates": []
+   },
+   "RISK_RATING": {
+    "alternates": []
+   },
+   "SSN_HASH": {
+    "alternates": []
+   }
+  }
+ },
+ "SOURCE_SF_20261015_DS.ORA_DW_LOAN_DETAILS": {
+  "classification_result": {
+   "ACCOUNT_ID": {
+    "alternates": []
+   },
+   "ALLOWANCE_AMT": {
+    "alternates": []
+   },
+   "DAYS_PAST_DUE": {
+    "alternates": []
+   },
+   "LOAN_PURPOSE": {
+    "alternates": []
+   },
+   "LTV": {
+    "alternates": []
+   },
+   "ORIG_AMOUNT": {
+    "alternates": []
+   },
+   "ORIG_DATE": {
+    "alternates": []
+   },
+   "PAST_DUE_AMOUNT": {
+    "alternates": []
+   },
+   "TERM_MONTHS": {
+    "alternates": []
+   }
+  }
+ },
+ "SOURCE_SF_20261015_DS.ORA_DW_PAYMENT_HISTORY": {
+  "classification_result": {
+   "ACCOUNT_ID": {
+    "alternates": []
+   },
+   "AVG_PMT_RATIO_12MO": {
+    "alternates": []
+   },
+   "MAX_DAYS_PAST_DUE_EVER": {
+    "alternates": []
+   },
+   "MONTHS_SINCE_LAST_DPD": {
+    "alternates": []
+   },
+   "PMT_LATE_30_12MO": {
+    "alternates": []
+   },
+   "PMT_LATE_60_12MO": {
+    "alternates": []
+   },
+   "PMT_LATE_90_12MO": {
+    "alternates": []
+   },
+   "PMT_ONTIME_12MO": {
+    "alternates": []
+   }
+  }
+ },
+ "SOURCE_SF_20261015_DS.RAW_BANK_DAILY_RATES": {
+  "classification_result": {
+   "RATE_DATE": {
+    "alternates": []
+   },
+   "RATE_TYPE": {
+    "alternates": []
+   },
+   "RATE_VALUE": {
+    "alternates": []
+   }
+  }
+ },
+ "SOURCE_SF_20261015_DS.RAW_BANK_TXN_FEED_20240131": {
+  "classification_result": {
+   "ACCOUNT_ID": {
+    "alternates": []
+   },
+   "CHANNEL": {
+    "alternates": []
+   },
+   "CURRENCY_CODE": {
+    "alternates": []
+   },
+   "DESCRIPTION": {
+    "alternates": []
+   },
+   "MERCHANT_CATEGORY": {
+    "alternates": []
+   },
+   "POST_DATE": {
+    "alternates": []
+   },
+   "TRANSACTION_AMOUNT": {
+    "alternates": []
+   },
+   "TRANSACTION_DATE": {
+    "alternates": []
+   },
+   "TRANSACTION_ID": {
+    "alternates": []
+   },
+   "TRANSACTION_TYPE": {
+    "alternates": []
+   }
+  }
+ },
+ "SOURCE_SF_20261015_DS.RAW_INS_CLAIMS": {
+  "classification_result": {
+   "CLAIMANT_ID": {
+    "alternates": []
+   },
+   "CLAIM_ID": {
+    "alternates": []
+   },
+   "CLAIM_STATUS": {
+    "alternates": []
+   },
+   "INCURRED_AMOUNT": {
+    "alternates": []
+   },
+   "LOSS_DATE": {
+    "alternates": []
+   },
+   "PAID_AMOUNT": {
+    "alternates": []
+   },
+   "POLICY_ID": {
+    "alternates": []
+   },
+   "REPORT_DATE": {
+    "alternates": []
+   },
+   "RESERVED_AMOUNT": {
+    "alternates": []
+   }
+  }
+ },
+ "SOURCE_SF_20261015_DS.RAW_INS_CLAIMS_FEED_20240131": {
+  "classification_result": {
+   "CAUSE_CODE": {
+    "alternates": []
+   },
+   "CLAIMANT_ID": {
+    "alternates": []
+   },
+   "CLAIMED_AMOUNT": {
+    "alternates": []
+   },
+   "CLAIM_ID": {
+    "alternates": []
+   },
+   "DESCRIPTION": {
+    "alternates": []
+   },
+   "LOSS_DATE": {
+    "alternates": []
+   },
+   "POLICY_ID": {
+    "alternates": []
+   },
+   "REPORTED_DATE": {
+    "alternates": []
+   }
+  }
+ },
+ "SOURCE_SF_20261015_DS.RAW_INS_FRAUD_INDICATORS": {
+  "classification_result": {
+   "CLAIMANT_ID": {
+    "alternates": []
+   },
+   "FRAUD_SCORE": {
+    "alternates": []
+   },
+   "INDICATOR_FLAGS": {
+    "alternates": []
+   },
+   "POLICY_ID": {
+    "alternates": []
+   }
+  }
+ },
+ "SOURCE_SF_20261015_DS.RAW_INS_POLICIES": {
+  "classification_result": {
+   "AGENT_ID": {
+    "alternates": []
+   },
+   "ANNUAL_PREMIUM": {
+    "alternates": []
+   },
+   "BRANCH_CODE": {
+    "alternates": []
+   },
+   "CUSTOMER_ID": {
+    "alternates": []
+   },
+   "DEDUCTIBLE": {
+    "alternates": []
+   },
+   "EFFECTIVE_DATE": {
+    "alternates": []
+   },
+   "EXPIRATION_DATE": {
+    "alternates": []
+   },
+   "POLICY_ID": {
+    "alternates": []
+   },
+   "POLICY_TYPE": {
+    "alternates": []
+   },
+   "RISK_CATEGORY": {
+    "alternates": []
+   },
+   "STATUS": {
+    "alternates": []
+   },
+   "SUM_INSURED": {
+    "alternates": []
+   },
+   "UNDERWRITING_CLASS": {
+    "alternates": []
+   }
+  }
+ },
+ "SOURCE_SF_20261015_DS.RAW_INS_PREMIUMS": {
+  "classification_result": {
+   "PAYMENT_DATE": {
+    "alternates": []
+   },
+   "PAYMENT_ID": {
+    "alternates": []
+   },
+   "PAYMENT_STATUS": {
+    "alternates": []
+   },
+   "POLICY_ID": {
+    "alternates": []
+   },
+   "PREMIUM_AMOUNT": {
+    "alternates": []
+   }
+  }
+ }
+}

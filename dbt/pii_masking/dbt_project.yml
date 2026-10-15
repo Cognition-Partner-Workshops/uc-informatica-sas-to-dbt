@@ -1,0 +1,35 @@
+name: pii_masking
+version: 1.0.0
+config-version: 2
+profile: pii_masking
+
+seed-paths:
+  - seeds
+test-paths:
+  - tests
+macro-paths:
+  - macros
+
+seeds:
+  pii_masking:
+    pii_classification:
+      +column_types:
+        schema_name: varchar
+        table_name: varchar
+        column_name: varchar
+        data_type: varchar
+        pii_category: varchar
+        source: varchar
+        confidence: varchar
+      +post-hook:
+        - "alter table {{ this }} set tag DEVIN_MIGRATION_DEMO.PUBLIC.RUN = 'SF_20261015_DS', DEVIN_MIGRATION_DEMO.PUBLIC.EXPIRES = '2026-10-18T02:32:20Z'"
+    pii_reviewed_not_masked:
+      +column_types:
+        schema_name: varchar
+        table_name: varchar
+        column_name: varchar
+        data_type: varchar
+        source: varchar
+        reason_left_clear: varchar
+      +post-hook:
+        - "alter table {{ this }} set tag DEVIN_MIGRATION_DEMO.PUBLIC.RUN = 'SF_20261015_DS', DEVIN_MIGRATION_DEMO.PUBLIC.EXPIRES = '2026-10-18T02:32:20Z'"

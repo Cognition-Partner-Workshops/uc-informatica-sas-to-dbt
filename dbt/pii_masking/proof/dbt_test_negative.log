@@ -1,0 +1,37 @@
+16:59:22  Running with dbt=1.9.4
+16:59:23  Registered adapter: snowflake=1.9.4
+16:59:23  Found 2 data tests, 2 seeds, 480 macros
+16:59:23
+16:59:23  Concurrency: 4 threads (target='snowflake')
+16:59:23
+16:59:25  1 of 2 START test assert_classified_columns_are_masked ......................... [RUN]
+16:59:25  2 of 2 START test assert_classified_columns_have_pii_tag ....................... [RUN]
+16:59:31  1 of 2 FAIL 1 assert_classified_columns_are_masked ............................. [FAIL 1 in 5.72s]
+16:59:32  2 of 2 FAIL 1 assert_classified_columns_have_pii_tag ........................... [FAIL 1 in 6.71s]
+16:59:32
+16:59:32  Finished running 2 data tests in 0 hours 0 minutes and 8.69 seconds (8.69s).
+16:59:32
+16:59:32  Completed with 2 errors, 0 partial successes, and 0 warnings:
+16:59:32
+16:59:32  Failure in test assert_classified_columns_are_masked (tests/assert_classified_columns_are_masked.sql)
+16:59:32    Got 1 result, configured to fail if != 0
+16:59:32
+16:59:32    compiled code at target/compiled/pii_masking/tests/assert_classified_columns_are_masked.sql
+16:59:32
+16:59:32  Failure in test assert_classified_columns_have_pii_tag (tests/assert_classified_columns_have_pii_tag.sql)
+16:59:32    Got 1 result, configured to fail if != 0
+16:59:32
+16:59:32    compiled code at target/compiled/pii_masking/tests/assert_classified_columns_have_pii_tag.sql
+16:59:32
+16:59:32  Done. PASS=0 WARN=0 ERROR=2 SKIP=0 TOTAL=2
+16:59:44  Running with dbt=1.9.4
+16:59:44  Registered adapter: snowflake=1.9.4
+16:59:45  Found 2 data tests, 2 seeds, 1 sql operation, 480 macros
+16:59:45
+16:59:45  Concurrency: 4 threads (target='snowflake')
+16:59:45
+Previewing inline node:
+| TEST_NAME            | SCHEMA_NAME          | TABLE_NAME   | COLUMN_NAME | REASON               |
+| -------------------- | -------------------- | ------------ | ----------- | -------------------- |
+| assert_classified... | SOURCE_SF_2026101... | DEMO_SOURCE3 | FIRST_NM    | missing masking p... |
+| assert_classified... | SOURCE_SF_2026101... | DEMO_SOURCE3 | FIRST_NM    | missing PII_CATEG... |

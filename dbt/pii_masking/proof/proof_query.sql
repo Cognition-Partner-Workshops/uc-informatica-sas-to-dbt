@@ -1,0 +1,25 @@
+-- The same statement is run as SF_READER_USER (role SF_20261015_DS_READER) and as the demo user (role SF_20261015_DS_DBT).
+-- Ordered only by columns that stay clear, so both roles get the same rows.
+-- Covers every masked data type: TEXT, DATE, FLOAT, TIMESTAMP_NTZ, NUMBER. BRANCH_ID and ACCOUNT_ID are left clear by design.
+select c.ACCOUNT_ID, c.BRANCH_ID, c.CUSTOMER_ID, c.FIRST_NAME, c.LAST_NAME, c.PRIMARY_EMAIL, c.PHONE_NUMBER,
+       c.SSN_HASH, c.DATE_OF_BIRTH, c.OFFICER_ID
+from DEVIN_MIGRATION_DEMO.DBT_SF_20261015_DS.CUST_ACCOUNTS_DAILY c
+order by c.ACCOUNT_ID
+limit 5;
+
+select m.ORIGINAL_EFFECTIVE_DATE, m.MEMBER_TYPE_CODE, m.TITLE, m.FIRST_NAME, m.LAST_NAME, m.MEMBER_ID,
+       m.SOCIAL_SECURITY_NUMBER, m.BIRTH_DATE, m.GENDER_CODE
+from DEVIN_MIGRATION_DEMO.SOURCE_SF_20261015_DS.DEMO_SOURCE2 m
+order by m.ORIGINAL_EFFECTIVE_DATE, m.MEMBER_TYPE_CODE, m.RELATIONSHIP_TO_SUBSCRIBER_CODE
+limit 3;
+
+select l.SEED_ROW, l.CUST_ID, l.CRDT_SCORE
+from DEVIN_MIGRATION_DEMO.SOURCE_SF_20261015_DS.LKP_DEMO_SOURCE2 l
+order by l.SEED_ROW
+limit 3;
+
+-- Through a dbt staging view: the view selects the tagged SOURCE column, so it returns the masked value too.
+select v.CUSTOMER_ID, v.FIRST_NAME, v.PRIMARY_EMAIL, v.DATE_OF_BIRTH, v.CUSTOMER_SEGMENT
+from DEVIN_MIGRATION_DEMO.DBT_SF_20261015_DS.STG_LOAD_CUSTOMER_ACCOUNTS__CUST_DEMOGRAPHICS v
+order by v.CUSTOMER_SEGMENT
+limit 3;
