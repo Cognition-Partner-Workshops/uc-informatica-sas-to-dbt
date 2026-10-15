@@ -1,0 +1,40 @@
+name: sas_policy_valuation
+version: "1.0.0"
+config-version: 2
+
+profile: snowflake
+
+model-paths: ["models"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+test-paths: ["tests"]
+
+target-path: "target"
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+vars:
+  val_date: '2024-01-31'
+  lob: 'ALL'
+
+models:
+  sas_policy_valuation:
+    +tags: ["RUN:SF_20261015_DS"]
+    +meta:
+      legacy_unit: policy_valuation
+    staging:
+      +materialized: view
+    intermediate:
+      +materialized: ephemeral
+    marts:
+      +materialized: table
+
+seeds:
+  sas_policy_valuation:
+    +tags: ["RUN:SF_20261015_DS"]
+    +meta:
+      legacy_unit: policy_valuation
+    +column_types:
+      CODE: varchar
+      LABEL: varchar

@@ -1,0 +1,16 @@
+version: 2
+
+seeds:
+  - name: policy_valuation__fmt_poltype
+    columns:
+      - name: CODE
+        tests:
+          - not_null
+          - unique
+
+  - name: policy_valuation__fmt_riskcat
+    columns:
+      - name: CODE
+        tests:
+          - not_null
+          - unique
