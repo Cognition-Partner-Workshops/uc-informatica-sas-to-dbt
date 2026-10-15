@@ -1,4 +1,4 @@
-baseline/
+baseline/**/*.duckdb
 *.duckdb
 __pycache__/
 dbt/target/
