@@ -1,0 +1,383 @@
+[
+  {
+    "id": "S01_default_rwa_arms",
+    "description": "Default params (202401, run date 31JAN2024). One account per RISK_WEIGHT arm incl. MTG LTV <0.80 / =0.80 boundary / >0.80 / missing LTV / no LOAN row, IRA via ELSE, zero and negative weighted balances, rows dropped by SNAPSHOT_DATE (prior month-end, mid-month, missing) and a LOAN row with no account.",
+    "decision_ids": [
+      "MON-D03",
+      "MON-D06",
+      "MON-D11",
+      "MON-D13",
+      "MON-D14",
+      "MON-D16",
+      "MON-D17",
+      "MON-D19"
+    ],
+    "params": {
+      "report_month": "202401"
+    },
+    "run_date": "31JAN2024",
+    "targets": [
+      "REPORTS.MONTHLY_RWA",
+      "REPORTS.DELINQUENCY_AGING",
+      "REPORTS.LLP_COVERAGE",
+      "REPORTS.CAPITAL_ADEQUACY"
+    ],
+    "expected_outcome": "4 tables as in expected_provisional/"
+  },
+  {
+    "id": "S02_default_delinquency_buckets",
+    "description": "Default params. DAYS_PAST_DUE at every bucket edge (0,1,29,30,59,60,89,90,119,120,179,180) plus 250, missing DPD and missing PAST_DUE_AMOUNT on a LOAN row, negative DPD, a loan-type account with no LOAN row, and a deposit account excluded by the loan-type filter.",
+    "decision_ids": [
+      "MON-D13",
+      "MON-D14",
+      "MON-D15",
+      "MON-D16",
+      "MON-D17",
+      "MON-D19",
+      "MON-D22"
+    ],
+    "params": {
+      "report_month": "202401"
+    },
+    "run_date": "31JAN2024",
+    "targets": [
+      "REPORTS.MONTHLY_RWA",
+      "REPORTS.DELINQUENCY_AGING",
+      "REPORTS.LLP_COVERAGE",
+      "REPORTS.CAPITAL_ADEQUACY"
+    ],
+    "expected_outcome": "4 tables as in expected_provisional/"
+  },
+  {
+    "id": "S03_default_llp_edges",
+    "description": "Default params. LLP_COVERAGE edges: GROSS_LOANS <= 0 (credit balance), all balances missing (GROSS missing, NPL_BALANCE missing), GROSS > 0 with all ALLOWANCE_AMT missing (COVERAGE_PCT missing), normal NPL coverage, DPD missing (NPL case -> 0), and a loan-type account with no LOAN row (dropped by the INNER JOIN). Also an all-missing-balance MONTHLY_RWA group and all-missing TOTAL_PAST_DUE group.",
+    "decision_ids": [
+      "MON-D06",
+      "MON-D08",
+      "MON-D09",
+      "MON-D11",
+      "MON-D13",
+      "MON-D14",
+      "MON-D15",
+      "MON-D16",
+      "MON-D17",
+      "MON-D19",
+      "MON-D20",
+      "MON-D21",
+      "MON-D22",
+      "MON-D23"
+    ],
+    "params": {
+      "report_month": "202401"
+    },
+    "run_date": "31JAN2024",
+    "targets": [
+      "REPORTS.MONTHLY_RWA",
+      "REPORTS.DELINQUENCY_AGING",
+      "REPORTS.LLP_COVERAGE",
+      "REPORTS.CAPITAL_ADEQUACY"
+    ],
+    "expected_outcome": "4 tables as in expected_provisional/"
+  },
+  {
+    "id": "S04_default_nonstandard_values",
+    "description": "Default params. SAS-legal values that the dbt port's tests/types reject or treat differently: blank ACCOUNT_TYPE, lowercase 'mtg' (ELSE arm, not a loan type), blank CUSTOMER_SEGMENT, blank REGION_CODE, duplicate LOAN_DETAILS rows for one account (join fan-out in all three steps), non-integer DAYS_PAST_DUE in BETWEEN gaps (29.5, 89.5 -> 'Unknown').",
+    "decision_ids": [
+      "MON-D04",
+      "MON-D07",
+      "MON-D10",
+      "MON-D13",
+      "MON-D14",
+      "MON-D16",
+      "MON-D18",
+      "MON-D19"
+    ],
+    "params": {
+      "report_month": "202401"
+    },
+    "run_date": "31JAN2024",
+    "targets": [
+      "REPORTS.MONTHLY_RWA",
+      "REPORTS.DELINQUENCY_AGING",
+      "REPORTS.LLP_COVERAGE",
+      "REPORTS.CAPITAL_ADEQUACY"
+    ],
+    "expected_outcome": "4 tables as in expected_provisional/"
+  },
+  {
+    "id": "S05_default_capital_total_ratio_boundary",
+    "description": "Default params. Single LOC account so sum(RWA) = 1,000,000,000.00: TOTAL_CAPITAL_RATIO exactly 8.0 (>= inclusive -> PASS), TIER1 6.5 PASS, CET1 5.0 PASS.",
+    "decision_ids": [
+      "MON-D28"
+    ],
+    "params": {
+      "report_month": "202401"
+    },
+    "run_date": "31JAN2024",
+    "targets": [
+      "REPORTS.MONTHLY_RWA",
+      "REPORTS.DELINQUENCY_AGING",
+      "REPORTS.LLP_COVERAGE",
+      "REPORTS.CAPITAL_ADEQUACY"
+    ],
+    "expected_outcome": "4 tables as in expected_provisional/"
+  },
+  {
+    "id": "S06_default_capital_total_fail",
+    "description": "Default params. Single LOC account so sum(RWA) = 1,050,000,000.00: TOTAL 7.62 FAIL, TIER1 6.19 PASS, CET1 4.76 PASS.",
+    "decision_ids": [
+      "MON-D27"
+    ],
+    "params": {
+      "report_month": "202401"
+    },
+    "run_date": "31JAN2024",
+    "targets": [
+      "REPORTS.MONTHLY_RWA",
+      "REPORTS.DELINQUENCY_AGING",
+      "REPORTS.LLP_COVERAGE",
+      "REPORTS.CAPITAL_ADEQUACY"
+    ],
+    "expected_outcome": "4 tables as in expected_provisional/"
+  },
+  {
+    "id": "S07_default_capital_tier1_fail",
+    "description": "Default params. Single LOC account so sum(RWA) = 1,100,000,000.00: TOTAL 7.27 FAIL, TIER1 5.91 FAIL, CET1 4.55 PASS.",
+    "decision_ids": [
+      "MON-D26",
+      "MON-D27"
+    ],
+    "params": {
+      "report_month": "202401"
+    },
+    "run_date": "31JAN2024",
+    "targets": [
+      "REPORTS.MONTHLY_RWA",
+      "REPORTS.DELINQUENCY_AGING",
+      "REPORTS.LLP_COVERAGE",
+      "REPORTS.CAPITAL_ADEQUACY"
+    ],
+    "expected_outcome": "4 tables as in expected_provisional/"
+  },
+  {
+    "id": "S08_default_capital_cet1_fail",
+    "description": "Default params. Single LOC account so sum(RWA) = 1,200,000,000.00: all three ratios below threshold -> FAIL.",
+    "decision_ids": [
+      "MON-D25",
+      "MON-D26",
+      "MON-D27"
+    ],
+    "params": {
+      "report_month": "202401"
+    },
+    "run_date": "31JAN2024",
+    "targets": [
+      "REPORTS.MONTHLY_RWA",
+      "REPORTS.DELINQUENCY_AGING",
+      "REPORTS.LLP_COVERAGE",
+      "REPORTS.CAPITAL_ADEQUACY"
+    ],
+    "expected_outcome": "4 tables as in expected_provisional/"
+  },
+  {
+    "id": "S09_default_capital_zero_rwa",
+    "description": "Default params. Deposit accounts only (incl. a negative balance): sum(RWA)=0 -> ratios missing, all statuses PASS via the sum(RWA)=0 arm; DELINQUENCY_AGING and LLP_COVERAGE are created with 0 rows.",
+    "decision_ids": [
+      "MON-D24",
+      "MON-D25",
+      "MON-D26",
+      "MON-D27"
+    ],
+    "params": {
+      "report_month": "202401"
+    },
+    "run_date": "31JAN2024",
+    "targets": [
+      "REPORTS.MONTHLY_RWA",
+      "REPORTS.DELINQUENCY_AGING",
+      "REPORTS.LLP_COVERAGE",
+      "REPORTS.CAPITAL_ADEQUACY"
+    ],
+    "expected_outcome": "4 tables as in expected_provisional/"
+  },
+  {
+    "id": "S10_default_capital_negative_rwa",
+    "description": "Default params. Only a credit-balance CC account: sum(RWA) < 0 -> ratios missing, CASE falls to ratio test with a negative ratio -> all FAIL.",
+    "decision_ids": [
+      "MON-D11",
+      "MON-D20",
+      "MON-D24",
+      "MON-D25",
+      "MON-D26",
+      "MON-D27"
+    ],
+    "params": {
+      "report_month": "202401"
+    },
+    "run_date": "31JAN2024",
+    "targets": [
+      "REPORTS.MONTHLY_RWA",
+      "REPORTS.DELINQUENCY_AGING",
+      "REPORTS.LLP_COVERAGE",
+      "REPORTS.CAPITAL_ADEQUACY"
+    ],
+    "expected_outcome": "4 tables as in expected_provisional/"
+  },
+  {
+    "id": "S11_default_capital_missing_rwa",
+    "description": "Default params. Only an MTG account with missing CURRENT_BALANCE: sum(RWA) missing -> ratios missing, missing >= threshold is false -> all FAIL.",
+    "decision_ids": [
+      "MON-D08",
+      "MON-D09",
+      "MON-D20",
+      "MON-D24",
+      "MON-D25",
+      "MON-D26",
+      "MON-D27"
+    ],
+    "params": {
+      "report_month": "202401"
+    },
+    "run_date": "31JAN2024",
+    "targets": [
+      "REPORTS.MONTHLY_RWA",
+      "REPORTS.DELINQUENCY_AGING",
+      "REPORTS.LLP_COVERAGE",
+      "REPORTS.CAPITAL_ADEQUACY"
+    ],
+    "expected_outcome": "4 tables as in expected_provisional/"
+  },
+  {
+    "id": "S12_default_empty_month",
+    "description": "Default params. No account has SNAPSHOT_DATE = 31JAN2024 (all at 31DEC2023): Steps 1-3 produce 0-row tables, CAPITAL_ADEQUACY still has one row with missing TOTAL_RWA and FAIL statuses.",
+    "decision_ids": [
+      "MON-D03",
+      "MON-D24",
+      "MON-D25",
+      "MON-D26",
+      "MON-D27",
+      "MON-D29"
+    ],
+    "params": {
+      "report_month": "202401"
+    },
+    "run_date": "31JAN2024",
+    "targets": [
+      "REPORTS.MONTHLY_RWA",
+      "REPORTS.DELINQUENCY_AGING",
+      "REPORTS.LLP_COVERAGE",
+      "REPORTS.CAPITAL_ADEQUACY"
+    ],
+    "expected_outcome": "4 tables as in expected_provisional/"
+  },
+  {
+    "id": "S13_p202402_leap_month_end",
+    "description": "report_month=202402 (leap year): month_end=29FEB2024; 28FEB2024 (not a month-end in 2024) and 31JAN2024 rows are dropped.",
+    "decision_ids": [
+      "MON-D02",
+      "MON-D03"
+    ],
+    "params": {
+      "report_month": "202402"
+    },
+    "run_date": null,
+    "targets": [
+      "REPORTS.MONTHLY_RWA",
+      "REPORTS.DELINQUENCY_AGING",
+      "REPORTS.LLP_COVERAGE",
+      "REPORTS.CAPITAL_ADEQUACY"
+    ],
+    "expected_outcome": "4 tables as in expected_provisional/"
+  },
+  {
+    "id": "S14_p202302_nonleap_month_end",
+    "description": "report_month=202302 (non-leap): month_end=28FEB2023; 27FEB2023 and 31JAN2023 rows are dropped.",
+    "decision_ids": [
+      "MON-D02",
+      "MON-D03",
+      "MON-D06"
+    ],
+    "params": {
+      "report_month": "202302"
+    },
+    "run_date": null,
+    "targets": [
+      "REPORTS.MONTHLY_RWA",
+      "REPORTS.DELINQUENCY_AGING",
+      "REPORTS.LLP_COVERAGE",
+      "REPORTS.CAPITAL_ADEQUACY"
+    ],
+    "expected_outcome": "4 tables as in expected_provisional/"
+  },
+  {
+    "id": "S15_p202403_quarter_end",
+    "description": "report_month=202403 (quarter-end): month_end=31MAR2024; 30MAR2024 and 29FEB2024 rows are dropped.",
+    "decision_ids": [
+      "MON-D02",
+      "MON-D03"
+    ],
+    "params": {
+      "report_month": "202403"
+    },
+    "run_date": null,
+    "targets": [
+      "REPORTS.MONTHLY_RWA",
+      "REPORTS.DELINQUENCY_AGING",
+      "REPORTS.LLP_COVERAGE",
+      "REPORTS.CAPITAL_ADEQUACY"
+    ],
+    "expected_outcome": "4 tables as in expected_provisional/"
+  },
+  {
+    "id": "S16_p202312_year_end",
+    "description": "report_month=202312 (year-end): month_end=31DEC2023; the seed run date 31JAN2024 and 30NOV2023 rows are dropped.",
+    "decision_ids": [
+      "MON-D02",
+      "MON-D03"
+    ],
+    "params": {
+      "report_month": "202312"
+    },
+    "run_date": null,
+    "targets": [
+      "REPORTS.MONTHLY_RWA",
+      "REPORTS.DELINQUENCY_AGING",
+      "REPORTS.LLP_COVERAGE",
+      "REPORTS.CAPITAL_ADEQUACY"
+    ],
+    "expected_outcome": "4 tables as in expected_provisional/"
+  },
+  {
+    "id": "S17_p202404_30day_month_end",
+    "description": "report_month=202404 (30-day month): month_end=30APR2024; mid-month 15APR2024 and 31MAR2024 rows are dropped.",
+    "decision_ids": [
+      "MON-D02",
+      "MON-D03",
+      "MON-D15"
+    ],
+    "params": {
+      "report_month": "202404"
+    },
+    "run_date": null,
+    "targets": [
+      "REPORTS.MONTHLY_RWA",
+      "REPORTS.DELINQUENCY_AGING",
+      "REPORTS.LLP_COVERAGE",
+      "REPORTS.CAPITAL_ADEQUACY"
+    ],
+    "expected_outcome": "4 tables as in expected_provisional/"
+  },
+  {
+    "id": "S18_blank_report_month",
+    "description": "report_month= (blank). %parmv logs 'ERROR: REPORT_MONTH is required' and sets parmerr, which the program never tests; inputn('01',yymmdd8.) is missing so month_start/month_end are '.', %substr(,1,4) errors, and the PROC SQL WHERE '.'d is invalid. Expected: no REPORTS table is created or replaced; ERRORs in the log; SYSCC > 0.",
+    "decision_ids": [
+      "MON-D01"
+    ],
+    "params": {
+      "report_month": ""
+    },
+    "run_date": null,
+    "targets": [],
+    "expected_outcome": "macro/SQL ERRORs in log; no REPORTS table created or replaced"
+  }
+]
