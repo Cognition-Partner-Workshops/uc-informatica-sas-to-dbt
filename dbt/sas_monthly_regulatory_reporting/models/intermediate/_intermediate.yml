@@ -1,0 +1,9 @@
+version: 2
+
+models:
+  - name: int_monthly_regulatory_reporting__rwa_weighted
+    description: "Legacy Step 1 row-level RWA weights for month-end customer accounts."
+  - name: int_monthly_regulatory_reporting__delinquency_bucketed
+    description: "Legacy Step 2 month-end loan accounts assigned to delinquency buckets."
+  - name: int_monthly_regulatory_reporting__llp_loans
+    description: "Legacy Step 3 inner-joined month-end loan accounts for LLP coverage."

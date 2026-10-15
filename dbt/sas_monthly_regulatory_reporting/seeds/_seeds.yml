@@ -1,0 +1,21 @@
+version: 2
+
+seeds:
+  - name: monthly_regulatory_reporting__fmt_accttype
+    columns:
+      - name: code
+        data_tests:
+          - not_null
+          - unique
+  - name: monthly_regulatory_reporting__fmt_custseg
+    columns:
+      - name: code
+        data_tests:
+          - not_null
+          - unique
+  - name: monthly_regulatory_reporting__fmt_region
+    columns:
+      - name: code
+        data_tests:
+          - not_null
+          - unique
