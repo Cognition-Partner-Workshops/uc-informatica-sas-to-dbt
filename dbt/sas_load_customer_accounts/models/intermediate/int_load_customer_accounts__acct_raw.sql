@@ -24,7 +24,7 @@ select
 from {{ ref('stg_load_customer_accounts__cust_accounts') }} as a
 inner join {{ ref('stg_load_customer_accounts__cust_demographics') }} as d
     on a.CUSTOMER_ID = d.CUSTOMER_ID
-where a.ACCOUNT_STATUS not in ('W', 'C')
+where (a.ACCOUNT_STATUS is null or a.ACCOUNT_STATUS not in ('W', 'C'))
   and (
       a.OPEN_DATE <= '{{ var("run_date") }}'::date
       or a.OPEN_DATE is null

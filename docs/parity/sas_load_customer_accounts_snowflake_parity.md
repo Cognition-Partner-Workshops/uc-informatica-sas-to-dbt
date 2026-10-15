@@ -1,6 +1,6 @@
 # Parity Report
 
-Baseline: `/home/ubuntu/parity_work/baseline`  |  Actual: `/home/ubuntu/parity_work/actual`
+Baseline: `/tmp/parity_sf_6po4vvrt/baseline`  |  Actual: `/tmp/parity_sf_6po4vvrt/actual`
 
 ## ACCT_EXCEPTIONS
 - rows: baseline=32 actual=32
