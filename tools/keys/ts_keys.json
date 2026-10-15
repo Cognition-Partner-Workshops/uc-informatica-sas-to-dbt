@@ -1,0 +1,273 @@
+{
+  "CPM_CYCLE_TBL": [
+    "PROCESS_NAME"
+  ],
+  "CPM_MER_DETAIL_STG_TBL": [
+    "PP_END_YEAR",
+    "PP_NUM",
+    "MER_SSN"
+  ],
+  "CPM_MER_HEADER_STG_TBL": [
+    "PP_END_YEAR",
+    "PP_NUM"
+  ],
+  "CPM_NEWPAY_STG_ALT_TBL": [
+    "PP_END_YEAR",
+    "PP_NUM",
+    "DFAS_PSEUDO_SSN"
+  ],
+  "CPM_NEWPAY_STG_DETAIL_TBL": [
+    "PP_END_YEAR",
+    "PP_NUM",
+    "DFAS_PSEUDO_SSN"
+  ],
+  "CPM_NEWPAY_STG_TYPE_1_2_TBL": [
+    "PP_END_YEAR",
+    "PP_NUM",
+    "DFAS_PSEUDO_SSN"
+  ],
+  "CPM_NEWPAY_STG_TYPE_3_FDR_TBL": [
+    "PP_END_YEAR",
+    "PP_NUM",
+    "DFAS_PSEUDO_SSN",
+    "LINE_TYPE"
+  ],
+  "CPM_NEWPAY_STG_TYPE_3_TBL": [
+    "PP_END_YEAR",
+    "PP_NUM",
+    "DFAS_PSEUDO_SSN"
+  ],
+  "CPM_NEWPAY_STG_YTD_STATE_TBL": [
+    "PP_END_YEAR",
+    "PP_NUM",
+    "DFAS_PSEUDO_SSN"
+  ],
+  "CPM_NEWPAY_TBL": [
+    "PP_END_YEAR",
+    "PP_NUM",
+    "DFAS_PSEUDO_SSN",
+    "LINE_TYPE"
+  ],
+  "CPM_PAD_DETAIL_STG_TBL": [
+    "PP_END_YEAR",
+    "PP_NUM",
+    "PAD_SOC_SEC_NO"
+  ],
+  "CPM_PAD_HEADER_STG_TBL": [
+    "PP_END_YEAR",
+    "PP_NUM"
+  ],
+  "CPM_PM1_STG_TBL": [
+    "PP_END_YEAR",
+    "PP_NUM",
+    "PYF_EYE_ID_1"
+  ],
+  "CPM_PM2_STG_TBL": [
+    "PP_END_YEAR",
+    "PP_NUM",
+    "PYF_EYE_ID_2"
+  ],
+  "CPM_PM3_STG_TBL": [
+    "PP_END_YEAR",
+    "PP_NUM",
+    "PYF_REC_NO_PDT3",
+    "PYF_EYE_ID_PDT3",
+    "PYF_GEN_SEQ_ID"
+  ],
+  "CPM_PMH_STG_TBL": [
+    "PP_END_YEAR",
+    "PP_NUM"
+  ],
+  "CPM_YTD_DETAIL_STG_TBL": [
+    "PP_END_YEAR",
+    "PP_NUM",
+    "DYD_SSN_1"
+  ],
+  "CPM_YTD_HEADER_STG_TBL": [
+    "PP_END_YEAR",
+    "PP_NUM"
+  ],
+  "CPM_YTD_STATE_STG_TBL": [
+    "PP_END_YEAR",
+    "PP_NUM",
+    "GEN_SEQ_ID",
+    "DYD_SSN_2"
+  ],
+  "EHRP_RECS_TRACKING_TBL": [
+    "EMPLID",
+    "EMPL_RCD",
+    "EFFDT",
+    "EFFSEQ"
+  ],
+  "HI_PM_FDA_TATRAN_TBL": [
+    "FDA_BATCH_ID",
+    "FDA_TK_NO",
+    "FDA_EMP_ID",
+    "FDA_PP_YEAR",
+    "FDA_PP_NUM",
+    "FDA_REC_TYPE",
+    "FDA_SEQ"
+  ],
+  "LESC": [
+    "LESC_KEY"
+  ],
+  "LESD": [
+    "LESD_KEY"
+  ],
+  "LESL": [
+    "LESL_KEY"
+  ],
+  "LESM": [
+    "LESM_KEY"
+  ],
+  "LESR": [
+    "LESR_KEY"
+  ],
+  "LESS": [
+    "LESS_KEY"
+  ],
+  "LEST": [
+    "LEST_KEY"
+  ],
+  "LESU": [
+    "LESU_KEY"
+  ],
+  "LES_EMP_DETAIL_CURR_EARN_TBL": [
+    "PP_END_YEAR",
+    "PP_NUM",
+    "LES_NUMBER",
+    "PSEUDOSSN",
+    "CURR_EARN_ID"
+  ],
+  "LES_EMP_DETAIL_LEAVE_TBL": [
+    "PP_END_YEAR",
+    "PP_NUM",
+    "LES_NUMBER",
+    "PSEUDOSSN",
+    "LEAVE_ID"
+  ],
+  "LES_EMP_DETAIL_RECTYPE_1_TBL": [
+    "PP_END_YEAR",
+    "PP_NUM",
+    "LES_NUMBER",
+    "PSEUDOSSN"
+  ],
+  "LES_EMP_DETAIL_RECTYPE_2_TBL": [
+    "PP_END_YEAR",
+    "PP_NUM",
+    "LES_NUMBER",
+    "PSEUDOSSN"
+  ],
+  "LES_EMP_DETAIL_RECTYPE_3_TBL": [
+    "PP_END_YEAR",
+    "PP_NUM",
+    "LES_NUMBER",
+    "PSEUDOSSN"
+  ],
+  "LES_EMP_DETAIL_RECTYPE_4_TBL": [
+    "PP_END_YEAR",
+    "PP_NUM",
+    "LES_NUMBER",
+    "PSEUDOSSN"
+  ],
+  "LES_EMP_DETAIL_RECTYPE_5_TBL": [
+    "PP_END_YEAR",
+    "PP_NUM",
+    "LES_NUMBER",
+    "PSEUDOSSN"
+  ],
+  "LES_EMP_DETAIL_RECTYPE_6_TBL": [
+    "PP_END_YEAR",
+    "PP_NUM",
+    "LES_NUMBER",
+    "PSEUDOSSN"
+  ],
+  "LES_EMP_DETAIL_RECTYPE_C_TBL": [
+    "PP_END_YEAR",
+    "PP_NUM",
+    "LES_NUMBER",
+    "PSEUDOSSN",
+    "CURR_EARN_ID"
+  ],
+  "LES_EMP_DETAIL_RECTYPE_D_TBL": [
+    "PP_END_YEAR",
+    "PP_NUM",
+    "LES_NUMBER",
+    "PSEUDOSSN",
+    "DEDUCTION_ID"
+  ],
+  "LES_EMP_DETAIL_RECTYPE_L_TBL": [
+    "PP_END_YEAR",
+    "PP_NUM",
+    "LES_NUMBER",
+    "PSEUDOSSN",
+    "LEAVE_ID"
+  ],
+  "LES_EMP_DETAIL_RECTYPE_M_TBL": [
+    "PP_END_YEAR",
+    "PP_NUM",
+    "LES_NUMBER",
+    "PSEUDOSSN",
+    "REMARK_ID"
+  ],
+  "LES_EMP_DETAIL_RECTYPE_R_TBL": [
+    "PP_END_YEAR",
+    "PP_NUM",
+    "LES_NUMBER",
+    "PSEUDOSSN",
+    "RETRO_ACTIVE_ID"
+  ],
+  "LES_EMP_DETAIL_RECTYPE_T_TBL": [
+    "PP_END_YEAR",
+    "PP_NUM",
+    "LES_NUMBER",
+    "PSEUDOSSN",
+    "TIME_ATTEND_ID"
+  ],
+  "LES_EMP_DETAIL_RECTYPE_U_TBL": [
+    "PP_END_YEAR",
+    "PP_NUM",
+    "LES_NUMBER",
+    "PSEUDOSSN",
+    "EMPLOYER_CONTR_ID"
+  ],
+  "LES_EMP_DETAIL_RETRO_EARN_TBL": [
+    "PP_END_YEAR",
+    "PP_NUM",
+    "LES_NUMBER",
+    "PSEUDOSSN",
+    "RETRO_ACTIVE_ID"
+  ],
+  "LES_EMP_DETAIL_TBL": [
+    "PP_END_YEAR",
+    "PP_NUM",
+    "PSEUDOSSN",
+    "LES_NUMBER"
+  ],
+  "LES_HEADER_TBL": [
+    "PP_END_YEAR",
+    "PP_NUM"
+  ],
+  "LES_PRIMARY_DATA_TBL": [
+    "PP_END_YEAR",
+    "PP_NUM",
+    "LES_NUMBER",
+    "PSEUDOSSN"
+  ],
+  "NWK_ACTION_PRIMARY_TBL": [
+    "EMP_ID",
+    "EMPL_REC_NO",
+    "EVENT_EFF_DTE",
+    "EFFSEQ"
+  ],
+  "PAY_PERIOD": [
+    "PP_NUM",
+    "PP_END_YEAR"
+  ],
+  "PSEUDOSSN_FROM_SDA_TBL": [
+    "PSEUDOSSN"
+  ],
+  "PSEUDOSSN_TBL": [
+    "PSEUDOSSN"
+  ]
+}
