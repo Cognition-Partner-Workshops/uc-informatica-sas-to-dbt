@@ -1,0 +1,54 @@
+version: 2
+
+models:
+  - name: POLICY_VALUATION
+    columns:
+      - name: POLICY_ID
+        tests:
+          - not_null
+          - unique
+      - name: POLICY_TYPE
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['WL', 'TL', 'UL', 'VL', 'AUTO', 'HOME', 'RENT', 'UMBR', 'HLTH', 'DNTL', 'VIS', 'DISAB', 'LTCI']
+          - relationships:
+              to: ref('policy_valuation__fmt_poltype')
+              field: CODE
+      - name: RISK_CATEGORY
+        tests:
+          - accepted_values:
+              values: ['STD', 'PREF', 'SPRM', 'SUB', 'DEC']
+          - relationships:
+              to: ref('policy_valuation__fmt_riskcat')
+              field: CODE
+      - name: RENEWAL_DUE_FLAG
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['Y', 'N']
+      - name: PREMIUM_ADEQUATE
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['Y', 'N']
+      - name: POLICY_TYPE_DESC
+        tests:
+          - accepted_values:
+              values: ['Whole Life', 'Term Life', 'Universal Life', 'Variable Life', 'Auto Insurance', 'Homeowners', 'Renters', 'Umbrella', 'Health', 'Dental', 'Vision', 'Disability', 'Long-Term Care', 'Unknown']
+      - name: RISK_CATEGORY_DESC
+        tests:
+          - accepted_values:
+              values: ['Standard', 'Preferred', 'Super Preferred', 'Substandard', 'Declined', 'Unrated']
+
+  - name: LOSS_RATIO_SUMMARY
+    columns:
+      - name: POLICY_TYPE
+        tests:
+          - not_null
+          - unique
+          - accepted_values:
+              values: ['WL', 'TL', 'UL', 'VL', 'AUTO', 'HOME', 'RENT', 'UMBR', 'HLTH', 'DNTL', 'VIS', 'DISAB', 'LTCI']
+          - relationships:
+              to: ref('policy_valuation__fmt_poltype')
+              field: CODE

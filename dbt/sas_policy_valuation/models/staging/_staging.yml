@@ -1,0 +1,28 @@
+version: 2
+
+models:
+  - name: stg_policy_valuation__raw_ins_policies
+    columns:
+      - name: POLICY_ID
+        tests:
+          - not_null
+          - unique
+
+  - name: stg_policy_valuation__raw_ins_claims
+    columns:
+      - name: CLAIM_STATUS
+        tests:
+          - accepted_values:
+              values:
+                - 'NEW'
+                - 'OPEN'
+                - 'INV'
+                - 'ADJ'
+                - 'PEND'
+                - 'APPR'
+                - 'DENY'
+                - 'PAID'
+                - 'CLOS'
+                - 'REOP'
+                - 'SUSP'
+                - 'LITI'
