@@ -1,0 +1,374 @@
+[
+  {
+    "id": "S01_default_core",
+    "description": "Default run (31JAN2024, lob=ALL): WHERE boundaries on STATUS/EFFECTIVE/EXPIRATION, renewal boundary, claim/premium window boundaries, duplicate CLAIM_ID, partial/all-missing amounts, reserve status CASE, merge match/non-match both sides.",
+    "decision_ids": [
+      "POL-D01",
+      "POL-D02",
+      "POL-D03",
+      "POL-D05",
+      "POL-D06",
+      "POL-D07",
+      "POL-D08",
+      "POL-D10",
+      "POL-D11",
+      "POL-D12",
+      "POL-D15",
+      "POL-D16",
+      "POL-D17",
+      "POL-D18",
+      "POL-D19",
+      "POL-D20",
+      "POL-D21",
+      "POL-D22",
+      "POL-D23",
+      "POL-D24",
+      "POL-D25",
+      "POL-D26",
+      "POL-D27",
+      "POL-D34",
+      "POL-D35",
+      "POL-D36",
+      "POL-D37",
+      "POL-D46"
+    ],
+    "params": {
+      "val_date": "31JAN2024",
+      "lob": "ALL"
+    },
+    "targets": [
+      "POLICY_VALUATION",
+      "LOSS_RATIO_SUMMARY"
+    ],
+    "provisional": true,
+    "expected_outcome": "targets created"
+  },
+  {
+    "id": "S02_default_missing",
+    "description": "Default run: missing EFFECTIVE_DATE (passes <=, max() ignores it), missing ANNUAL_PREMIUM (YTD missing, N_POLICIES not counted, all-missing class sum), missing/unlisted POLICY_TYPE and RISK_CATEGORY format OTHER labels, missing POLICY_TYPE excluded from PROC MEANS.",
+    "decision_ids": [
+      "POL-D07",
+      "POL-D09",
+      "POL-D11",
+      "POL-D14",
+      "POL-D30",
+      "POL-D33",
+      "POL-D36",
+      "POL-D37",
+      "POL-D38",
+      "POL-D40",
+      "POL-D41",
+      "POL-D42"
+    ],
+    "params": {
+      "val_date": "31JAN2024",
+      "lob": "ALL"
+    },
+    "targets": [
+      "POLICY_VALUATION",
+      "LOSS_RATIO_SUMMARY"
+    ],
+    "provisional": true,
+    "expected_outcome": "targets created"
+  },
+  {
+    "id": "S03_default_format_class",
+    "description": "Default run: two unlisted POLICY_TYPE codes (ZZA, ZZB) both format to OTHER=Unknown and collapse into ONE PROC MEANS class level (CLASS uses formatted values).",
+    "decision_ids": [
+      "POL-D36",
+      "POL-D39"
+    ],
+    "params": {
+      "val_date": "31JAN2024",
+      "lob": "ALL"
+    },
+    "targets": [
+      "POLICY_VALUATION",
+      "LOSS_RATIO_SUMMARY"
+    ],
+    "provisional": true,
+    "expected_outcome": "targets created"
+  },
+  {
+    "id": "S04_default_merge_keys",
+    "description": "Default run: missing POLICY_ID in POLICIES/CLAIMS/PREMIUMS (DATA-step MERGE BY matches missing to missing) and a duplicated policy row (many-to-one MERGE repeats CLAIMS_EXP/PREMIUM_COLL values).",
+    "decision_ids": [
+      "POL-D26",
+      "POL-D27",
+      "POL-D28",
+      "POL-D29"
+    ],
+    "params": {
+      "val_date": "31JAN2024",
+      "lob": "ALL"
+    },
+    "targets": [
+      "POLICY_VALUATION",
+      "LOSS_RATIO_SUMMARY"
+    ],
+    "provisional": true,
+    "expected_outcome": "targets created"
+  },
+  {
+    "id": "S05_default_empty_inforce",
+    "description": "Default run: no policy passes the in-force WHERE (WORK.INFORCE has 0 obs, %nobs=0) -> both targets created with 0 observations.",
+    "decision_ids": [
+      "POL-D44"
+    ],
+    "params": {
+      "val_date": "31JAN2024",
+      "lob": "ALL"
+    },
+    "targets": [
+      "POLICY_VALUATION",
+      "LOSS_RATIO_SUMMARY"
+    ],
+    "provisional": true,
+    "expected_outcome": "targets created"
+  },
+  {
+    "id": "S06_default_empty_claims_premiums",
+    "description": "Default run: RAW_INS.CLAIMS and RAW_INS.PREMIUMS have 0 rows -> CLAIMS_EXP/PREMIUM_COLL empty, every claim/premium variable missing.",
+    "decision_ids": [
+      "POL-D45"
+    ],
+    "params": {
+      "val_date": "31JAN2024",
+      "lob": "ALL"
+    },
+    "targets": [
+      "POLICY_VALUATION",
+      "LOSS_RATIO_SUMMARY"
+    ],
+    "provisional": true,
+    "expected_outcome": "targets created"
+  },
+  {
+    "id": "S07_midmonth_15JUN2024",
+    "description": "Mid-month run 15JUN2024: positive/zero/negative/missing YTD earned premium, LOSS_RATIO with and without claims, COMBINED_RATIO <, =, > 1.0, IBNR positive vs clipped, summary TOTAL_EARNED >0/=0/<0/missing and TOTAL_INCURRED missing with TOTAL_EARNED>0.",
+    "decision_ids": [
+      "POL-D05",
+      "POL-D10",
+      "POL-D11",
+      "POL-D12",
+      "POL-D15",
+      "POL-D16",
+      "POL-D21",
+      "POL-D22",
+      "POL-D30",
+      "POL-D31",
+      "POL-D32",
+      "POL-D33",
+      "POL-D40",
+      "POL-D41",
+      "POL-D42",
+      "POL-D43"
+    ],
+    "params": {
+      "val_date": "15JUN2024",
+      "lob": "ALL"
+    },
+    "targets": [
+      "POLICY_VALUATION",
+      "LOSS_RATIO_SUMMARY"
+    ],
+    "provisional": true,
+    "expected_outcome": "targets created"
+  },
+  {
+    "id": "S08_leapday_29FEB2024",
+    "description": "Leap-day / month-end run 29FEB2024: intnx boundaries 01FEB2023 (claims), 01MAY2024 (renewal), 01JAN2024 (premiums); EFFECTIVE_DATE on the leap day; EXPIRATION_DATE = val_date.",
+    "decision_ids": [
+      "POL-D05",
+      "POL-D07",
+      "POL-D10",
+      "POL-D12",
+      "POL-D15",
+      "POL-D16",
+      "POL-D21",
+      "POL-D22",
+      "POL-D30",
+      "POL-D32"
+    ],
+    "params": {
+      "val_date": "29FEB2024",
+      "lob": "ALL"
+    },
+    "targets": [
+      "POLICY_VALUATION",
+      "LOSS_RATIO_SUMMARY"
+    ],
+    "provisional": true,
+    "expected_outcome": "targets created"
+  },
+  {
+    "id": "S09_quarterend_31MAR2024",
+    "description": "Quarter-end run 31MAR2024: claims window starts 01MAR2023, renewal boundary 01JUN2024, two months earned.",
+    "decision_ids": [
+      "POL-D05",
+      "POL-D10",
+      "POL-D15",
+      "POL-D30",
+      "POL-D32",
+      "POL-D33"
+    ],
+    "params": {
+      "val_date": "31MAR2024",
+      "lob": "ALL"
+    },
+    "targets": [
+      "POLICY_VALUATION",
+      "LOSS_RATIO_SUMMARY"
+    ],
+    "provisional": true,
+    "expected_outcome": "targets created"
+  },
+  {
+    "id": "S10_yearend_31DEC2024",
+    "description": "Year-end run 31DEC2024: claims window starts 01DEC2023, renewal boundary 01MAR2025, eleven months earned, EFFECTIVE_DATE = year start.",
+    "decision_ids": [
+      "POL-D05",
+      "POL-D10",
+      "POL-D11",
+      "POL-D15",
+      "POL-D21",
+      "POL-D30",
+      "POL-D32",
+      "POL-D33"
+    ],
+    "params": {
+      "val_date": "31DEC2024",
+      "lob": "ALL"
+    },
+    "targets": [
+      "POLICY_VALUATION",
+      "LOSS_RATIO_SUMMARY"
+    ],
+    "provisional": true,
+    "expected_outcome": "targets created"
+  },
+  {
+    "id": "S11_lob_auto",
+    "description": "lob=AUTO at 31JAN2024: %if &lob ne ALL adds POLICY_TYPE=\"AUTO\"; HOME/VL policies filtered out, their claims dropped by IF A.",
+    "decision_ids": [
+      "POL-D02",
+      "POL-D03",
+      "POL-D04"
+    ],
+    "params": {
+      "val_date": "31JAN2024",
+      "lob": "AUTO"
+    },
+    "targets": [
+      "POLICY_VALUATION",
+      "LOSS_RATIO_SUMMARY"
+    ],
+    "provisional": true,
+    "expected_outcome": "targets created"
+  },
+  {
+    "id": "S12_lob_lowercase",
+    "description": "lob=home: %parmv upcases (_case=U default) -> filter POLICY_TYPE=\"HOME\".",
+    "decision_ids": [
+      "POL-D02",
+      "POL-D03",
+      "POL-D04"
+    ],
+    "params": {
+      "val_date": "31JAN2024",
+      "lob": "home"
+    },
+    "targets": [
+      "POLICY_VALUATION",
+      "LOSS_RATIO_SUMMARY"
+    ],
+    "provisional": true,
+    "expected_outcome": "targets created"
+  },
+  {
+    "id": "S13_lob_invalid_value",
+    "description": "lob=VL (not in _val list): %parmv writes ERROR 2 and sets PARMERR=1, but the macro never checks PARMERR, so the run continues with filter POLICY_TYPE=\"VL\".",
+    "decision_ids": [
+      "POL-D02",
+      "POL-D04"
+    ],
+    "params": {
+      "val_date": "31JAN2024",
+      "lob": "VL"
+    },
+    "targets": [
+      "POLICY_VALUATION",
+      "LOSS_RATIO_SUMMARY"
+    ],
+    "provisional": true,
+    "expected_outcome": "targets created"
+  },
+  {
+    "id": "S14_lob_multiword",
+    "description": "lob=AUTO HOME: %parmv ERROR 3 (one word expected), run continues; filter POLICY_TYPE=\"AUTO HOME\" matches nothing -> 0-obs targets.",
+    "decision_ids": [
+      "POL-D02",
+      "POL-D04",
+      "POL-D44"
+    ],
+    "params": {
+      "val_date": "31JAN2024",
+      "lob": "AUTO HOME"
+    },
+    "targets": [
+      "POLICY_VALUATION",
+      "LOSS_RATIO_SUMMARY"
+    ],
+    "provisional": true,
+    "expected_outcome": "targets created"
+  },
+  {
+    "id": "S15_lob_blank",
+    "description": "lob= (blank, allowed by _req=0): \"&lob\" ne ALL is true -> filter POLICY_TYPE=\"\" keeps only missing POLICY_TYPE; that row is excluded from PROC MEANS -> 0-obs LOSS_RATIO_SUMMARY.",
+    "decision_ids": [
+      "POL-D02",
+      "POL-D04",
+      "POL-D38"
+    ],
+    "params": {
+      "val_date": "31JAN2024",
+      "lob": ""
+    },
+    "targets": [
+      "POLICY_VALUATION",
+      "LOSS_RATIO_SUMMARY"
+    ],
+    "provisional": true,
+    "expected_outcome": "targets created"
+  },
+  {
+    "id": "S16_val_date_blank",
+    "description": "val_date blank: %parmv ERROR 4 (required), then \"&val_date\"d is an invalid date constant -> PROC SQL/DATA steps fail; no target data set is created (expected: absence).",
+    "decision_ids": [
+      "POL-D01",
+      "POL-D46"
+    ],
+    "params": {
+      "val_date": "",
+      "lob": "ALL"
+    },
+    "targets": [],
+    "provisional": true,
+    "expected_outcome": "SAS ERROR; no target data set created"
+  },
+  {
+    "id": "S17_val_date_invalid",
+    "description": "val_date=31FEB2024: passes %parmv (no _val list) but \"31FEB2024\"d is an invalid date constant -> steps fail; no target data set is created (expected: absence).",
+    "decision_ids": [
+      "POL-D01",
+      "POL-D46"
+    ],
+    "params": {
+      "val_date": "31FEB2024",
+      "lob": "ALL"
+    },
+    "targets": [],
+    "provisional": true,
+    "expected_outcome": "SAS ERROR; no target data set created"
+  }
+]
