@@ -1,0 +1,247 @@
+WITH source_data AS
+(
+   SELECT
+      o_ACCT_DESC1 AS o_ACCT_DESC,
+      TX_AMT1 AS TX_AMT,
+      o_crdt_trim1 AS o_crdt_trim,
+      CLSR_DT1 AS CLSR_DT,
+      TX_ID1 AS TX_ID,
+      ACCT_STAT_CD1 AS ACCT_STAT_CD,
+      TX_DTTM1 AS TX_DTTM,
+      CR8_DT1 AS CR8_DT,
+      o_ACCT_ID1 AS o_ACCT_ID,
+      ACCT_ID1 AS ACCT_ID,
+      o_acc_trim1 AS o_acc_trim
+   FROM
+      {{ ref('int_rtr_TRANS__demo_target6_GRP') }}
+),
+aggregation AS
+(
+   SELECT
+      LAST_VALUE(o_ACCT_DESC)
+      OVER (
+      PARTITION BY (
+         ACCT_ID)
+      ORDER BY
+         o_ACCT_DESC,
+         TX_AMT,
+         o_crdt_trim,
+         CLSR_DT,
+         TX_ID,
+         ACCT_STAT_CD,
+         TX_DTTM,
+         CR8_DT,
+         o_ACCT_ID,
+         ACCT_ID,
+         o_acc_trim
+      ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS o_ACCT_DESC,
+      LAST_VALUE(TX_AMT)
+      OVER (
+      PARTITION BY (
+         ACCT_ID)
+      ORDER BY
+         o_ACCT_DESC,
+         TX_AMT,
+         o_crdt_trim,
+         CLSR_DT,
+         TX_ID,
+         ACCT_STAT_CD,
+         TX_DTTM,
+         CR8_DT,
+         o_ACCT_ID,
+         ACCT_ID,
+         o_acc_trim
+      ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS TX_AMT,
+      LAST_VALUE(o_crdt_trim)
+      OVER (
+      PARTITION BY (
+         ACCT_ID)
+      ORDER BY
+         o_ACCT_DESC,
+         TX_AMT,
+         o_crdt_trim,
+         CLSR_DT,
+         TX_ID,
+         ACCT_STAT_CD,
+         TX_DTTM,
+         CR8_DT,
+         o_ACCT_ID,
+         ACCT_ID,
+         o_acc_trim
+      ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS o_crdt_trim,
+      LAST_VALUE(CLSR_DT)
+      OVER (
+      PARTITION BY (
+         ACCT_ID)
+      ORDER BY
+         o_ACCT_DESC,
+         TX_AMT,
+         o_crdt_trim,
+         CLSR_DT,
+         TX_ID,
+         ACCT_STAT_CD,
+         TX_DTTM,
+         CR8_DT,
+         o_ACCT_ID,
+         ACCT_ID,
+         o_acc_trim
+      ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS CLSR_DT,
+      LAST_VALUE(TX_ID)
+      OVER (
+      PARTITION BY (
+         ACCT_ID)
+      ORDER BY
+         o_ACCT_DESC,
+         TX_AMT,
+         o_crdt_trim,
+         CLSR_DT,
+         TX_ID,
+         ACCT_STAT_CD,
+         TX_DTTM,
+         CR8_DT,
+         o_ACCT_ID,
+         ACCT_ID,
+         o_acc_trim
+      ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS TX_ID,
+      LAST_VALUE(ACCT_STAT_CD)
+      OVER (
+      PARTITION BY (
+         ACCT_ID)
+      ORDER BY
+         o_ACCT_DESC,
+         TX_AMT,
+         o_crdt_trim,
+         CLSR_DT,
+         TX_ID,
+         ACCT_STAT_CD,
+         TX_DTTM,
+         CR8_DT,
+         o_ACCT_ID,
+         ACCT_ID,
+         o_acc_trim
+      ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS ACCT_STAT_CD,
+      LAST_VALUE(TX_DTTM)
+      OVER (
+      PARTITION BY (
+         ACCT_ID)
+      ORDER BY
+         o_ACCT_DESC,
+         TX_AMT,
+         o_crdt_trim,
+         CLSR_DT,
+         TX_ID,
+         ACCT_STAT_CD,
+         TX_DTTM,
+         CR8_DT,
+         o_ACCT_ID,
+         ACCT_ID,
+         o_acc_trim
+      ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS TX_DTTM,
+      LAST_VALUE(CR8_DT)
+      OVER (
+      PARTITION BY (
+         ACCT_ID)
+      ORDER BY
+         o_ACCT_DESC,
+         TX_AMT,
+         o_crdt_trim,
+         CLSR_DT,
+         TX_ID,
+         ACCT_STAT_CD,
+         TX_DTTM,
+         CR8_DT,
+         o_ACCT_ID,
+         ACCT_ID,
+         o_acc_trim
+      ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS CR8_DT,
+      LAST_VALUE(o_ACCT_ID)
+      OVER (
+      PARTITION BY (
+         ACCT_ID)
+      ORDER BY
+         o_ACCT_DESC,
+         TX_AMT,
+         o_crdt_trim,
+         CLSR_DT,
+         TX_ID,
+         ACCT_STAT_CD,
+         TX_DTTM,
+         CR8_DT,
+         o_ACCT_ID,
+         ACCT_ID,
+         o_acc_trim
+      ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS o_ACCT_ID,
+      LAST_VALUE(ACCT_ID)
+      OVER (
+      PARTITION BY (
+         ACCT_ID)
+      ORDER BY
+         o_ACCT_DESC,
+         TX_AMT,
+         o_crdt_trim,
+         CLSR_DT,
+         TX_ID,
+         ACCT_STAT_CD,
+         TX_DTTM,
+         CR8_DT,
+         o_ACCT_ID,
+         ACCT_ID,
+         o_acc_trim
+      ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS ACCT_ID,
+      LAST_VALUE(o_acc_trim)
+      OVER (
+      PARTITION BY (
+         ACCT_ID)
+      ORDER BY
+         o_ACCT_DESC,
+         TX_AMT,
+         o_crdt_trim,
+         CLSR_DT,
+         TX_ID,
+         ACCT_STAT_CD,
+         TX_DTTM,
+         CR8_DT,
+         o_ACCT_ID,
+         ACCT_ID,
+         o_acc_trim
+      ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS o_acc_trim,
+      SUM(TX_AMT)
+      OVER (
+      PARTITION BY (
+         ACCT_ID)) AS o_TX_AMT
+   FROM
+      source_data
+   QUALIFY
+      --** SSC-FDM-INF0002 - ALL INPUT COLUMNS WILL BE USED TO DETERMINE GROUP ORDER. **
+      ROW_NUMBER()
+      OVER (
+      PARTITION BY (
+         ACCT_ID)
+      ORDER BY
+         o_ACCT_DESC,
+         TX_AMT,
+         o_crdt_trim,
+         CLSR_DT,
+         TX_ID,
+         ACCT_STAT_CD,
+         TX_DTTM,
+         CR8_DT,
+         o_ACCT_ID,
+         ACCT_ID,
+         o_acc_trim) = 1
+)
+SELECT
+   o_ACCT_DESC,
+   TX_AMT,
+   o_crdt_trim,
+   CLSR_DT,
+   TX_ID,
+   ACCT_STAT_CD,
+   TX_DTTM,
+   CR8_DT,
+   o_ACCT_ID,
+   ACCT_ID,
+   o_acc_trim,
+   o_TX_AMT
+FROM
+   aggregation

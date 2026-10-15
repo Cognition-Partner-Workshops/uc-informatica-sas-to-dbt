@@ -1,0 +1,13 @@
+version: 2
+sources:
+  - name: lkptrans
+    schema: "{{ var('sc_override_lkptrans_schema') }}"
+    database: "{{ var('sc_override_lkptrans_db') }}"
+    tables:
+      - name: demo_target1
+        identifier: "{{ var('sc_override_lkptrans_table') }}"
+  - name: raw
+    schema: YOUR_SCHEMA
+    database: YOUR_DB
+    tables:
+      - name: demo_source1

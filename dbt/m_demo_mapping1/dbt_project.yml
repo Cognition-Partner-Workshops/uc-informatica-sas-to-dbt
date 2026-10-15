@@ -1,0 +1,30 @@
+name: YOUR_PROJECT_NAME
+version: 1.0.0
+config-version: 2
+profile: YOUR_PROFILE_NAME
+model-paths:
+  - models
+analysis-paths:
+  - analyses
+test-paths:
+  - tests
+seed-paths:
+  - seeds
+macro-paths:
+  - macros
+snapshot-paths:
+  - snapshots
+models:
+  YOUR_PROJECT_NAME:
+    staging:
+      +materialized: view
+    intermediate:
+      +materialized: ephemeral
+    marts:
+      +materialized: incremental
+vars:
+  SESSSTARTTIME: "1753-01-01 00:00:00"
+  WORKFLOWSTARTTIME: "1753-01-01 00:00:00"
+  PMSESSIONNAME: null
+  PMWORKFLOWNAME: null
+  PMFOLDERNAME: null
