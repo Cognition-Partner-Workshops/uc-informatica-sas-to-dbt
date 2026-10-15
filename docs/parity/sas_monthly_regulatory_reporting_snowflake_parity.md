@@ -1,6 +1,6 @@
 # Parity Report
 
-Baseline: `/tmp/parity_sf_vvyswfx4/baseline`  |  Actual: `/tmp/parity_sf_vvyswfx4/actual`
+Baseline: `/tmp/parity_sf__6wz81th/baseline`  |  Actual: `/tmp/parity_sf__6wz81th/actual`
 
 ## CAPITAL_ADEQUACY
 - rows: baseline=1 actual=1

@@ -4,7 +4,7 @@ snowflake:
     snowflake:
       type: snowflake
       account: "{{ env_var('SNOWFLAKE_ACCOUNT') }}"
-      host: "{{ env_var('SNOWFLAKE_HOST') }}"
+      host: "{{ env_var('SNOWFLAKE_HOST', env_var('SNOWFLAKE_ACCOUNT') ~ '.snowflakecomputing.com') }}"
       user: "{{ env_var('SF_DEMO_USER') }}"
       password: "{{ env_var('SF_DEMO_PASSWORD') }}"
       role: "{{ env_var('SF_DEMO_ROLE') }}"

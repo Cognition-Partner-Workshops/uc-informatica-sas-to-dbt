@@ -1,5 +1,5 @@
 select
-    max(REPORT_MONTH) as REPORT_MONTH,
+    '{{ var("report_month") }}'::varchar(6) as REPORT_MONTH,
     cast(sum(RWA) as float) as TOTAL_RWA,
     50000000::number as CET1_CAPITAL,
     65000000::number as TIER1_CAPITAL,
