@@ -1,0 +1,12 @@
+version: 2
+sources:
+  - name: raw
+    database: "{{ env_var('SF_DEMO_DATABASE') }}"
+    schema: "SOURCE_{{ env_var('SF_RUN_TOKEN') }}"
+    tables:
+      - name: demo_source3
+      - name: demo_source4
+      - name: demo_source5
+      - name: lkp_demo_source1
+      - name: lkp_demo_source2
+      - name: lkp_demo_source3

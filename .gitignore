@@ -5,3 +5,7 @@ dbt/target/
 dbt/dbt_packages/
 dbt/logs/
 logs/
+dbt/*/target/
+dbt/*/logs/
+dbt/*/dbt_packages/
+dbt/*/.user.yml

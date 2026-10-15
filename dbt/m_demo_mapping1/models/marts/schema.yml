@@ -1,0 +1,19 @@
+version: 2
+models:
+  - name: DEMO_TARGET3
+    columns:
+      - name: PRODUCT_ID
+        tests: [not_null, unique]
+  - name: DEMO_TARGET5
+    columns:
+      - name: ACCT_ID
+        tests: [not_null, unique]
+  - name: DEMO_TARGET6
+    columns:
+      - name: ACCT_ID
+        tests: [not_null, unique]
+      - name: ACCT_TYP
+        tests:
+          - accepted_values:
+              arguments:
+                values: ["SB"]

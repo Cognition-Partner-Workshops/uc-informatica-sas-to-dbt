@@ -1,0 +1,13 @@
+version: 2
+sources:
+  - name: lkptrans
+    schema: "{{ var('sc_override_lkptrans_schema', 'SOURCE_' ~ env_var('SF_RUN_TOKEN')) }}"
+    database: "{{ var('sc_override_lkptrans_db', env_var('SF_DEMO_DATABASE')) }}"
+    tables:
+      - name: demo_target1
+        identifier: "{{ var('sc_override_lkptrans_table') }}"
+  - name: raw
+    database: "{{ env_var('SF_DEMO_DATABASE') }}"
+    schema: "SOURCE_{{ env_var('SF_RUN_TOKEN') }}"
+    tables:
+      - name: demo_source1

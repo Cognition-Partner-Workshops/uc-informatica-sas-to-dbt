@@ -1,0 +1,8 @@
+ParentFile,Severity,Code,Name,Count
+actstage_load.sql,Critical,SSC-EWI-0001,Error parsing the source code,46
+ehrp2biis_afterload.sql,Critical,SSC-EWI-0001,Error parsing the source code,23
+ehrp2biis_afterload.sql,Critical,SSC-EWI-0013,Exception thrown during conversion,1
+ehrp2biis_afterload.sql,Medium,SSC-EWI-0073,Pending Functional Equivalence Review,59
+ehrp2biis_afterload.sql,None,SSC-FDM-0007,Element with missing dependencies,9
+ehrp2biis_afterload.sql,None,SSC-FDM-OR0012,Commit and rollback statements require adequate setup to perform as intended,12
+ehrp2biis_preload.sql,Critical,SSC-EWI-0001,Error parsing the source code,56

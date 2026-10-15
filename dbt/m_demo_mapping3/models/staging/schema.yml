@@ -1,0 +1,7 @@
+version: 2
+models:
+  - name: stg_m_demo_mapping3__sq_demo_source2
+    columns:
+      - name: Relationship_to_Subscriber_Code_Label
+        description: Legacy EXPTRANS calls ABORT() when this is NULL; the failing test stops the build before any target is written.
+        tests: [not_null]
