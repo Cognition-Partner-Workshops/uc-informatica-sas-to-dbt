@@ -8,6 +8,7 @@ Contract for the migration helper tools. Every tool is plain Python 3 (stdlib + 
 | Tool | Input | Output |
 |---|---|---|
 | `informatica_lineage.py` | `legacy/informatica/wf_demo_mapping.XML` | `docs/stm/informatica_stm.json` + `docs/stm/informatica_stm.md` — per mapping: sources, targets, transformations, port-level lineage (target column → expression chain → source column), lookup conditions, router groups, SQL overrides |
+| `ts_lineage.py` | every folder export in `legacy/informatica_ts/` (or the files/dirs given as args) | `docs/stm/ts/<export>.json` + `.md` per workflow and `docs/stm/ts/INVENTORY.md` — same per-mapping shape as `informatica_lineage.py`, plus Normalizer, Joiner, Sorter, Sequence (start/current), Update Strategy, inline-expanded Mapplets, SQ Pre/Post SQL, VSAM/PWX definitions, workflow session order, links and Command tasks; personal identifiers redacted; exits 1 if parsed counts differ from `grep -c` of the XML |
 | `informatica_baseline.py` | XML + `legacy/informatica/data/` seed CSVs | `baseline/informatica/<target>.csv` — deterministic execution of each mapping's semantics in DuckDB |
 
 ## SAS track
