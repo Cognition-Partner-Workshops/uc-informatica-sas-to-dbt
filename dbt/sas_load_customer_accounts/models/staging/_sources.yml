@@ -1,0 +1,9 @@
+version: 2
+
+sources:
+  - name: source_sf
+    database: "{{ target.database }}"
+    schema: "SOURCE_{{ env_var('SF_RUN_TOKEN') }}"
+    tables:
+      - name: ORA_DW_CUST_ACCOUNTS
+      - name: ORA_DW_CUST_DEMOGRAPHICS

@@ -1,0 +1,11 @@
+version: 2
+
+models:
+  - name: int_load_customer_accounts__acct_raw
+    description: "Legacy Step 1 PROC SQL: inner-joins accounts and demographics and applies the status and run-date filters."
+  - name: int_load_customer_accounts__acct_derived
+    description: "Legacy Step 2 DATA step derivations: account age, inactivity, utilization, dormancy, and high-balance flags."
+  - name: int_load_customer_accounts__acct_exceptions
+    description: "Legacy Step 2 exception OUTPUT rules, retaining one row per rule fired and an internal rule lineage column."
+  - name: int_load_customer_accounts__acct_summary
+    description: "Legacy Step 4 PROC MEANS NWAY aggregation; ephemeral WORK summary, not a persistent target."

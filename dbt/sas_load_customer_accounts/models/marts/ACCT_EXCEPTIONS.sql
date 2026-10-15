@@ -1,0 +1,32 @@
+{{ config(alias='ACCT_EXCEPTIONS') }}
+
+select
+    ACCOUNT_ID,
+    CUSTOMER_ID,
+    ACCOUNT_TYPE,
+    ACCOUNT_STATUS,
+    OPEN_DATE,
+    CLOSE_DATE,
+    CURRENT_BALANCE,
+    AVAILABLE_BALANCE,
+    CREDIT_LIMIT,
+    INTEREST_RATE,
+    BRANCH_ID,
+    OFFICER_ID,
+    LAST_ACTIVITY_DATE,
+    FIRST_NAME,
+    LAST_NAME,
+    SSN_HASH,
+    DATE_OF_BIRTH,
+    CUSTOMER_SEGMENT,
+    RISK_RATING,
+    REGION_CODE,
+    PRIMARY_EMAIL,
+    PHONE_NUMBER,
+    ACCT_AGE_MONTHS,
+    DAYS_INACTIVE,
+    UTILIZATION_PCT,
+    DORMANCY_FLAG,
+    HIGH_BALANCE_FLAG,
+    cast(null as date) as SNAPSHOT_DATE
+from {{ ref('int_load_customer_accounts__acct_exceptions') }}

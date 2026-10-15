@@ -1,0 +1,7 @@
+version: 2
+
+models:
+  - name: stg_load_customer_accounts__cust_accounts
+    description: "Step 1 input staging view: explicit account source columns with date and interest-rate casts."
+  - name: stg_load_customer_accounts__cust_demographics
+    description: "Step 1 input staging view: explicit customer-demographics columns with date and risk-rating casts."
