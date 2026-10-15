@@ -1,0 +1,595 @@
+[
+  {
+    "id": "S01_default_extract_join",
+    "description": "Default params. PROC SQL join match/non-match/fan-out, missing CUSTOMER_ID joining missing, ACCOUNT_STATUS W/C/blank/lowercase filter, OPEN_DATE </=/>/missing vs run date, format OTHER and blank labels.",
+    "decision_ids": [
+      "LOA-D01",
+      "LOA-D02",
+      "LOA-D03",
+      "LOA-D04",
+      "LOA-D06",
+      "LOA-D07",
+      "LOA-D08",
+      "LOA-D09",
+      "LOA-D10",
+      "LOA-D11",
+      "LOA-D12",
+      "LOA-D13",
+      "LOA-D15",
+      "LOA-D16",
+      "LOA-D17",
+      "LOA-D18",
+      "LOA-D19",
+      "LOA-D20",
+      "LOA-D21",
+      "LOA-D22",
+      "LOA-D23",
+      "LOA-D24",
+      "LOA-D25",
+      "LOA-D26",
+      "LOA-D27",
+      "LOA-D28",
+      "LOA-D29",
+      "LOA-D30"
+    ],
+    "params": {
+      "run_date": "31JAN2024",
+      "region": "ALL"
+    },
+    "targets": [
+      "CUST_ACCOUNTS_DAILY",
+      "ACCT_EXCEPTIONS"
+    ]
+  },
+  {
+    "id": "S02_default_derivations_exceptions",
+    "description": "Default params. UTILIZATION_PCT branches (limit >0/=0/missing, non-revolving, missing balance), dormancy 366/365/non-A/missing, high-balance 250000 boundary, NEG_BAL/HIGH_UTIL/NO_RISK incl. missing balance and 95 boundary, two exceptions from one row, intck month boundary, negative DAYS_INACTIVE.",
+    "decision_ids": [
+      "LOA-D01",
+      "LOA-D02",
+      "LOA-D03",
+      "LOA-D04",
+      "LOA-D06",
+      "LOA-D07",
+      "LOA-D08",
+      "LOA-D09",
+      "LOA-D10",
+      "LOA-D11",
+      "LOA-D12",
+      "LOA-D13",
+      "LOA-D14",
+      "LOA-D15",
+      "LOA-D16",
+      "LOA-D17",
+      "LOA-D18",
+      "LOA-D19",
+      "LOA-D20",
+      "LOA-D21",
+      "LOA-D22",
+      "LOA-D23",
+      "LOA-D24",
+      "LOA-D25",
+      "LOA-D26",
+      "LOA-D27",
+      "LOA-D28",
+      "LOA-D29",
+      "LOA-D30"
+    ],
+    "params": {
+      "run_date": "31JAN2024",
+      "region": "ALL"
+    },
+    "targets": [
+      "CUST_ACCOUNTS_DAILY",
+      "ACCT_EXCEPTIONS"
+    ]
+  },
+  {
+    "id": "S03_default_no_exceptions_prior_kept",
+    "description": "Default params, no exception rows: nobs_except=0 skips the INSERT so the prior STG_BANK.ACCT_EXCEPTIONS row survives unchanged; the DATA step fully replaces the prior STG_BANK.CUST_ACCOUNTS_DAILY.",
+    "decision_ids": [
+      "LOA-D01",
+      "LOA-D02",
+      "LOA-D03",
+      "LOA-D04",
+      "LOA-D06",
+      "LOA-D07",
+      "LOA-D08",
+      "LOA-D09",
+      "LOA-D10",
+      "LOA-D11",
+      "LOA-D12",
+      "LOA-D13",
+      "LOA-D15",
+      "LOA-D16",
+      "LOA-D17",
+      "LOA-D18",
+      "LOA-D19",
+      "LOA-D20",
+      "LOA-D21",
+      "LOA-D22",
+      "LOA-D23",
+      "LOA-D24",
+      "LOA-D25",
+      "LOA-D26",
+      "LOA-D27",
+      "LOA-D28",
+      "LOA-D29",
+      "LOA-D30"
+    ],
+    "params": {
+      "run_date": "31JAN2024",
+      "region": "ALL"
+    },
+    "targets": [
+      "CUST_ACCOUNTS_DAILY",
+      "ACCT_EXCEPTIONS"
+    ]
+  },
+  {
+    "id": "S04_default_empty_extract_exit",
+    "description": "Default params, every account filtered out (W, C, future OPEN_DATE, no demographics): nobs_raw=0 -> %goto EXIT; neither target is written so the prior STG_BANK contents survive unchanged.",
+    "decision_ids": [
+      "LOA-D01",
+      "LOA-D02",
+      "LOA-D03",
+      "LOA-D04",
+      "LOA-D06",
+      "LOA-D07",
+      "LOA-D08",
+      "LOA-D09",
+      "LOA-D10"
+    ],
+    "params": {
+      "run_date": "31JAN2024",
+      "region": "ALL"
+    },
+    "targets": [
+      "CUST_ACCOUNTS_DAILY",
+      "ACCT_EXCEPTIONS"
+    ]
+  },
+  {
+    "id": "S05_default_prior_exceptions_append",
+    "description": "Default params, prior STG_BANK.ACCT_EXCEPTIONS holds one row from an earlier run: PROC SQL INSERT appends today's exception, so the target holds prior + new rows.",
+    "decision_ids": [
+      "LOA-D01",
+      "LOA-D02",
+      "LOA-D03",
+      "LOA-D04",
+      "LOA-D06",
+      "LOA-D07",
+      "LOA-D08",
+      "LOA-D09",
+      "LOA-D10",
+      "LOA-D11",
+      "LOA-D12",
+      "LOA-D13",
+      "LOA-D15",
+      "LOA-D16",
+      "LOA-D17",
+      "LOA-D18",
+      "LOA-D19",
+      "LOA-D20",
+      "LOA-D21",
+      "LOA-D22",
+      "LOA-D23",
+      "LOA-D24",
+      "LOA-D25",
+      "LOA-D26",
+      "LOA-D27",
+      "LOA-D28",
+      "LOA-D29",
+      "LOA-D30"
+    ],
+    "params": {
+      "run_date": "31JAN2024",
+      "region": "ALL"
+    },
+    "targets": [
+      "CUST_ACCOUNTS_DAILY",
+      "ACCT_EXCEPTIONS"
+    ]
+  },
+  {
+    "id": "S06_default_sendmail_over_100",
+    "description": "Default params. Customer C601 has 4 demographics rows (fan-out x4, all RISK_RATING missing) and 13 accounts, 12 of them negative CHK: 4*13 NO_RISK + 4*12 NEG_BAL = 100, plus one NEG_BAL for C602 = 101 > 100 -> %sendmail branch. 53 snapshot rows, 101 exception rows.",
+    "decision_ids": [
+      "LOA-D01",
+      "LOA-D02",
+      "LOA-D03",
+      "LOA-D04",
+      "LOA-D06",
+      "LOA-D07",
+      "LOA-D08",
+      "LOA-D09",
+      "LOA-D10",
+      "LOA-D11",
+      "LOA-D12",
+      "LOA-D13",
+      "LOA-D15",
+      "LOA-D16",
+      "LOA-D17",
+      "LOA-D18",
+      "LOA-D19",
+      "LOA-D20",
+      "LOA-D21",
+      "LOA-D22",
+      "LOA-D23",
+      "LOA-D24",
+      "LOA-D25",
+      "LOA-D26",
+      "LOA-D27",
+      "LOA-D28",
+      "LOA-D29",
+      "LOA-D30"
+    ],
+    "params": {
+      "run_date": "31JAN2024",
+      "region": "ALL"
+    },
+    "targets": [
+      "CUST_ACCOUNTS_DAILY",
+      "ACCT_EXCEPTIONS"
+    ]
+  },
+  {
+    "id": "S07_region_NE",
+    "description": "region=NE: %if &region ne ALL adds d.REGION_CODE=\"NE\"; NE rows kept, SE and missing REGION_CODE excluded (their NEG_BAL exceptions are never raised).",
+    "decision_ids": [
+      "LOA-D01",
+      "LOA-D02",
+      "LOA-D03",
+      "LOA-D04",
+      "LOA-D05",
+      "LOA-D06",
+      "LOA-D07",
+      "LOA-D08",
+      "LOA-D09",
+      "LOA-D10",
+      "LOA-D11",
+      "LOA-D12",
+      "LOA-D13",
+      "LOA-D14",
+      "LOA-D15",
+      "LOA-D16",
+      "LOA-D17",
+      "LOA-D18",
+      "LOA-D19",
+      "LOA-D20",
+      "LOA-D21",
+      "LOA-D22",
+      "LOA-D23",
+      "LOA-D24",
+      "LOA-D25",
+      "LOA-D26",
+      "LOA-D27",
+      "LOA-D28",
+      "LOA-D29",
+      "LOA-D30"
+    ],
+    "params": {
+      "run_date": "31JAN2024",
+      "region": "NE"
+    },
+    "targets": [
+      "CUST_ACCOUNTS_DAILY",
+      "ACCT_EXCEPTIONS"
+    ]
+  },
+  {
+    "id": "S08_region_lowercase_sw",
+    "description": "region=sw: %parmv(_case=U) upcases the value to SW before the filter, so SW rows are kept.",
+    "decision_ids": [
+      "LOA-D01",
+      "LOA-D02",
+      "LOA-D03",
+      "LOA-D04",
+      "LOA-D05",
+      "LOA-D06",
+      "LOA-D07",
+      "LOA-D08",
+      "LOA-D09",
+      "LOA-D10",
+      "LOA-D11",
+      "LOA-D12",
+      "LOA-D13",
+      "LOA-D15",
+      "LOA-D16",
+      "LOA-D17",
+      "LOA-D18",
+      "LOA-D19",
+      "LOA-D20",
+      "LOA-D21",
+      "LOA-D22",
+      "LOA-D23",
+      "LOA-D24",
+      "LOA-D25",
+      "LOA-D26",
+      "LOA-D27",
+      "LOA-D28",
+      "LOA-D29",
+      "LOA-D30"
+    ],
+    "params": {
+      "run_date": "31JAN2024",
+      "region": "sw"
+    },
+    "targets": [
+      "CUST_ACCOUNTS_DAILY",
+      "ACCT_EXCEPTIONS"
+    ]
+  },
+  {
+    "id": "S09_region_invalid_HQ",
+    "description": "region=HQ: not in the %parmv _val list, so ERROR is written to the log, but the program never tests &parmerr and runs with d.REGION_CODE=\"HQ\" (HQ is a valid $REGION format code: Headquarters).",
+    "decision_ids": [
+      "LOA-D01",
+      "LOA-D02",
+      "LOA-D03",
+      "LOA-D04",
+      "LOA-D05",
+      "LOA-D06",
+      "LOA-D07",
+      "LOA-D08",
+      "LOA-D09",
+      "LOA-D10",
+      "LOA-D11",
+      "LOA-D12",
+      "LOA-D13",
+      "LOA-D15",
+      "LOA-D16",
+      "LOA-D17",
+      "LOA-D18",
+      "LOA-D19",
+      "LOA-D20",
+      "LOA-D21",
+      "LOA-D22",
+      "LOA-D23",
+      "LOA-D24",
+      "LOA-D25",
+      "LOA-D26",
+      "LOA-D27",
+      "LOA-D28",
+      "LOA-D29",
+      "LOA-D30"
+    ],
+    "params": {
+      "run_date": "31JAN2024",
+      "region": "HQ"
+    },
+    "targets": [
+      "CUST_ACCOUNTS_DAILY",
+      "ACCT_EXCEPTIONS"
+    ]
+  },
+  {
+    "id": "S10_region_blank",
+    "description": "region= (blank): %parmv _req=0 accepts it, &region ne ALL is true, the filter becomes d.REGION_CODE=\"\" which matches only missing (blank) REGION_CODE.",
+    "decision_ids": [
+      "LOA-D01",
+      "LOA-D02",
+      "LOA-D03",
+      "LOA-D04",
+      "LOA-D05",
+      "LOA-D06",
+      "LOA-D07",
+      "LOA-D08",
+      "LOA-D09",
+      "LOA-D10",
+      "LOA-D11",
+      "LOA-D12",
+      "LOA-D13",
+      "LOA-D15",
+      "LOA-D16",
+      "LOA-D17",
+      "LOA-D18",
+      "LOA-D19",
+      "LOA-D20",
+      "LOA-D21",
+      "LOA-D22",
+      "LOA-D23",
+      "LOA-D24",
+      "LOA-D25",
+      "LOA-D26",
+      "LOA-D27",
+      "LOA-D28",
+      "LOA-D29",
+      "LOA-D30"
+    ],
+    "params": {
+      "run_date": "31JAN2024",
+      "region": ""
+    },
+    "targets": [
+      "CUST_ACCOUNTS_DAILY",
+      "ACCT_EXCEPTIONS"
+    ]
+  },
+  {
+    "id": "S11_run_date_mid_month",
+    "description": "run_date=15MAR2024 (mid-month): intck counts month boundaries (16FEB2024 -> 1), OPEN_DATE = run date kept, +1 day excluded, 366/365-day dormancy boundary across 29FEB2024, future LAST_ACTIVITY_DATE -> negative DAYS_INACTIVE.",
+    "decision_ids": [
+      "LOA-D01",
+      "LOA-D02",
+      "LOA-D03",
+      "LOA-D04",
+      "LOA-D06",
+      "LOA-D07",
+      "LOA-D08",
+      "LOA-D09",
+      "LOA-D10",
+      "LOA-D11",
+      "LOA-D12",
+      "LOA-D13",
+      "LOA-D14",
+      "LOA-D15",
+      "LOA-D16",
+      "LOA-D17",
+      "LOA-D18",
+      "LOA-D19",
+      "LOA-D20",
+      "LOA-D21",
+      "LOA-D22",
+      "LOA-D23",
+      "LOA-D24",
+      "LOA-D25",
+      "LOA-D26",
+      "LOA-D27",
+      "LOA-D28",
+      "LOA-D29",
+      "LOA-D30"
+    ],
+    "params": {
+      "run_date": "15MAR2024",
+      "region": "ALL"
+    },
+    "targets": [
+      "CUST_ACCOUNTS_DAILY",
+      "ACCT_EXCEPTIONS"
+    ]
+  },
+  {
+    "id": "S12_run_date_quarter_end",
+    "description": "run_date=30JUN2024 (quarter-end): month-age 3 from 31MAR2024, OPEN_DATE=run date kept, 01JUL2024 excluded, 366/365-day dormancy boundary, NEG_BAL exception.",
+    "decision_ids": [
+      "LOA-D01",
+      "LOA-D02",
+      "LOA-D03",
+      "LOA-D04",
+      "LOA-D06",
+      "LOA-D07",
+      "LOA-D08",
+      "LOA-D09",
+      "LOA-D10",
+      "LOA-D11",
+      "LOA-D12",
+      "LOA-D13",
+      "LOA-D15",
+      "LOA-D16",
+      "LOA-D17",
+      "LOA-D18",
+      "LOA-D19",
+      "LOA-D20",
+      "LOA-D21",
+      "LOA-D22",
+      "LOA-D23",
+      "LOA-D24",
+      "LOA-D25",
+      "LOA-D26",
+      "LOA-D27",
+      "LOA-D28",
+      "LOA-D29",
+      "LOA-D30"
+    ],
+    "params": {
+      "run_date": "30JUN2024",
+      "region": "ALL"
+    },
+    "targets": [
+      "CUST_ACCOUNTS_DAILY",
+      "ACCT_EXCEPTIONS"
+    ]
+  },
+  {
+    "id": "S13_run_date_year_end",
+    "description": "run_date=31DEC2024 (year-end, leap year 2024): 366/365-day dormancy boundary, month-age 0/1/120, 01JAN2025 excluded, HIGH_UTIL and 250000 high-balance boundary.",
+    "decision_ids": [
+      "LOA-D01",
+      "LOA-D02",
+      "LOA-D03",
+      "LOA-D04",
+      "LOA-D06",
+      "LOA-D07",
+      "LOA-D08",
+      "LOA-D09",
+      "LOA-D10",
+      "LOA-D11",
+      "LOA-D12",
+      "LOA-D13",
+      "LOA-D14",
+      "LOA-D15",
+      "LOA-D16",
+      "LOA-D17",
+      "LOA-D18",
+      "LOA-D19",
+      "LOA-D20",
+      "LOA-D21",
+      "LOA-D22",
+      "LOA-D23",
+      "LOA-D24",
+      "LOA-D25",
+      "LOA-D26",
+      "LOA-D27",
+      "LOA-D28",
+      "LOA-D29",
+      "LOA-D30"
+    ],
+    "params": {
+      "run_date": "31DEC2024",
+      "region": "ALL"
+    },
+    "targets": [
+      "CUST_ACCOUNTS_DAILY",
+      "ACCT_EXCEPTIONS"
+    ]
+  },
+  {
+    "id": "S14_run_date_leap_day",
+    "description": "run_date=29FEB2024 (leap day): 28FEB2023 -> 366 days dormant, 01MAR2023 -> 365 not dormant, OPEN_DATE 29FEB2020 -> 48 months, 31JAN2024 -> 1, 01MAR2024 excluded, NEG_BAL.",
+    "decision_ids": [
+      "LOA-D01",
+      "LOA-D02",
+      "LOA-D03",
+      "LOA-D04",
+      "LOA-D06",
+      "LOA-D07",
+      "LOA-D08",
+      "LOA-D09",
+      "LOA-D10",
+      "LOA-D11",
+      "LOA-D12",
+      "LOA-D13",
+      "LOA-D15",
+      "LOA-D16",
+      "LOA-D17",
+      "LOA-D18",
+      "LOA-D19",
+      "LOA-D20",
+      "LOA-D21",
+      "LOA-D22",
+      "LOA-D23",
+      "LOA-D24",
+      "LOA-D25",
+      "LOA-D26",
+      "LOA-D27",
+      "LOA-D28",
+      "LOA-D29",
+      "LOA-D30"
+    ],
+    "params": {
+      "run_date": "29FEB2024",
+      "region": "ALL"
+    },
+    "targets": [
+      "CUST_ACCOUNTS_DAILY",
+      "ACCT_EXCEPTIONS"
+    ]
+  },
+  {
+    "id": "S15_run_date_blank",
+    "description": "run_date= (blank): %parmv logs ERROR but does not stop; \"\"d is an invalid date constant so PROC SQL fails, %nobs returns blank (so the =0 abort test is false), the DATA step fails on the missing WORK.ACCT_RAW and does not replace STG_BANK.CUST_ACCOUNTS_DAILY, no INSERT. Prior state expected unchanged (low confidence).",
+    "decision_ids": [
+      "LOA-D01",
+      "LOA-D02"
+    ],
+    "params": {
+      "run_date": "",
+      "region": "ALL"
+    },
+    "targets": [
+      "CUST_ACCOUNTS_DAILY",
+      "ACCT_EXCEPTIONS"
+    ]
+  }
+]
