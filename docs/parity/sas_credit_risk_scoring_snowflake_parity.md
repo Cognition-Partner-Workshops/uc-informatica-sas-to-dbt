@@ -1,6 +1,6 @@
 # Parity Report
 
-Baseline: `/tmp/parity_sf_s7wz9bu0/baseline`  |  Actual: `/tmp/parity_sf_s7wz9bu0/actual`
+Baseline: `/tmp/parity_sf_0oe_klzb/baseline`  |  Actual: `/tmp/parity_sf_0oe_klzb/actual`
 
 ## RISK_MIGRATION
 - rows: baseline=195 actual=195
