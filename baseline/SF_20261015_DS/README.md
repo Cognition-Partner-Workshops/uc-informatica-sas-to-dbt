@@ -84,6 +84,10 @@ python3 baseline/SF_20261015_DS/load_baseline.py --token SF_20261015_DS --expire
 
 Timings: load SOURCE 11.1 s, load BASELINE 4.5 s, tags 2.2 s, proof query 2.1 s, credits 1.0 s, total 20.8 s (`reload_report.json`). Row counts are unchanged (24 targets, 21,141 rows); `min(TX_DTTM)` in `DEMO_TARGET6` reads 2024-01-14 05:49 and `GENDER` reads `F`. The reload is about twenty seconds of X-Small time, well under 0.01 credits; the monitor read 0.80 of 5.00 afterwards, and most of that came from the migration sessions' dbt builds. dbt projects built before the reload compare against the old values and need their parity re-run.
 
+## Grants added for the governance acts
+
+On 2026-10-15 the builder granted role `SF_20261015_DS_DBT` what the masking and credits acts need, from the builder's own admin credential and never from a session: `CREATE MASKING POLICY` and `CREATE TAG` on the `DBT_`, `SCAI_` and `ORACLE_` schemas, `APPLY MASKING POLICY` and `APPLY TAG` on the account, `EXECUTE DATA METRIC FUNCTION` on the account, the database roles `SNOWFLAKE.CLASSIFICATION_ADMIN`, `SNOWFLAKE.GOVERNANCE_VIEWER` and `SNOWFLAKE.USAGE_VIEWER`, and `MONITOR` and `MODIFY` on `SF_20261015_DS_WH`. The reader user's password was also reset and stored in ViewOnly as `SF_READER_USER` and `SF_READER_PASSWORD` so a session can prove masking from the reader's seat. The teardown drops the role, so these grants go with it.
+
 ## Teardown
 
 ```bash
