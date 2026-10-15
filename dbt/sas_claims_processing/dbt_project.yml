@@ -1,0 +1,35 @@
+name: sas_claims_processing
+version: "1.0.0"
+config-version: 2
+profile: snowflake
+
+model-paths: ["models"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+vars:
+  proc_date: "2024-01-31"
+
+models:
+  sas_claims_processing:
+    +tags: ["RUN:SF_20261015_DS"]
+    +meta:
+      legacy_unit: claims_processing
+    staging:
+      +materialized: view
+    intermediate:
+      +materialized: view
+    marts:
+      +materialized: table
+
+seeds:
+  sas_claims_processing:
+    +tags: ["RUN:SF_20261015_DS"]
+    +meta:
+      legacy_unit: claims_processing
+    +column_types:
+      CODE: varchar
+      LABEL: varchar

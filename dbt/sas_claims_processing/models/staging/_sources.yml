@@ -1,0 +1,10 @@
+version: 2
+
+sources:
+  - name: legacy
+    database: "{{ env_var('SF_DEMO_DATABASE') }}"
+    schema: "SOURCE_{{ env_var('SF_RUN_TOKEN') }}"
+    tables:
+      - name: RAW_INS_CLAIMS_FEED_20240131
+      - name: RAW_INS_POLICIES
+      - name: RAW_INS_FRAUD_INDICATORS

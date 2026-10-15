@@ -1,0 +1,10 @@
+select
+    CLAIM_ID,
+    POLICY_ID,
+    CLAIMANT_ID,
+    LOSS_DATE,
+    REPORTED_DATE,
+    CLAIMED_AMOUNT,
+    CAUSE_CODE,
+    DESCRIPTION
+from {{ source('legacy', 'RAW_INS_CLAIMS_FEED_20240131') }}
