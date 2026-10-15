@@ -103,9 +103,10 @@ def main():
 
             if not os.path.isdir(exp_dir):
                 # Scenarios whose expected outcome is "no target created" (no expected dir).
-                produced = [os.path.basename(f)[:-4] for f in target_csvs(act_dir) if len(pd.read_csv(f)) > 0] if os.path.isdir(act_dir) else []
+                # Any exported target (even header-only, i.e. created empty) means a table was created.
+                produced = [os.path.basename(f)[:-4] for f in target_csvs(act_dir)] if os.path.isdir(act_dir) else []
                 rows.append((kit, sid, "(none)", exp_kind, "-", "ABSENT_FAIL" if produced else "ABSENT_OK", "-",
-                             f"actual has rows in {produced}" if produced else s.get("expected_outcome", "no target expected")))
+                             f"actual created {produced}" if produced else s.get("expected_outcome", "no target expected")))
                 continue
             if not os.path.isdir(act_dir):
                 for f in target_csvs(exp_dir):

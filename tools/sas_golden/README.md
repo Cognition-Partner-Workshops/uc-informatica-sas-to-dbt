@@ -54,7 +54,8 @@ What the driver does for each scenario (details are in the header of `run_golden
 1. It creates a fresh data root under WORK with the directory layout of `legacy/sas/config/autoexec_local.sas`, sets
    `SAS_DATA_ROOT`/`SAS_REPO_ROOT` and `%include`s `autoexec_local.sas` itself. Librefs, options and global macro
    variables are therefore the ones the programs expect.
-2. It compiles `legacy/sas/formats/*.sas` into `BANKING`/`INSURANCE`, then sets `CURR_DT` (the scenario's date
+2. It compiles `legacy/sas/formats/*.sas` into that root's `BANKING`/`INSURANCE`. It uses a WORK copy that leaves
+   out each source's own `libname ... "/data/sas/formats/..."` line, which would otherwise re-point the libref. Then it sets `CURR_DT` (the scenario's date
    parameter or `run_date`, else 31JAN2024) and `PREV_YM` (`report_month`, else 202401).
 3. It reads `inputs/<libref>/<DATASET>.csv` with explicit informats. Dates are DATE9. or ISO, an empty field is
    missing, and `*_DESC` companion columns are dropped because they are not SAS variables. A CSV that is absent
@@ -113,7 +114,8 @@ python3 tools/sas_golden/compare_golden.py --actual-root <actual-root>
 
 The script prints one row per scenario/target: `MATCH`, `MISMATCH` (first differing column), `MISSING` (target not
 exported), `NO_ACTUAL`, or for scenarios whose expected outcome is "no target created" (`monthly_regulatory_reporting`
-S18, `policy_valuation` S16/S17) `ABSENT_OK`/`ABSENT_FAIL`. Some fan-out scenarios repeat a key from
+S18, `policy_valuation` S16/S17) `ABSENT_OK`/`ABSENT_FAIL`. Any exported CSV fails that check, including a
+header-only one, because the table was created. Some fan-out scenarios repeat a key from
 `sas_keys.json`, so sorting on that key is not deterministic. For those targets the script also runs parity_diff with
 all columns as the key (`ALLCOL`), and that result decides the row. The exit code is 0 only if every row passes.
 
