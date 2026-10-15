@@ -11,6 +11,8 @@ the warehouse's last metering row.
 """
 import argparse
 import os
+import sys
+import re
 
 import snowflake.connector
 
@@ -23,6 +25,15 @@ def main():
     ap.add_argument("--yes", action="store_true", help="drop the objects (default lists them)")
     args = ap.parse_args()
     tok = args.token
+    if not re.fullmatch(r"SF_[A-Z0-9]+_[A-Z]{2}", tok):
+        sys.exit(f"token {tok!r} must look like SF_20261015_DS")
+    expected = {
+        "SCHEMA": {f"{DB}.{k}_{tok}" for k in ("SOURCE", "BASELINE", "DBT", "SCAI", "ORACLE")},
+        "WAREHOUSE": {f"{tok}_WH"},
+        "RESOURCE MONITOR": {f"{tok}_MON"},
+        "USER": {f"{tok}_DEMO", f"{tok}_READER_USER"},
+        "ROLE": {f"{tok}_DBT", f"{tok}_READER"},
+    }
     cs = snowflake.connector.connect(
         account=os.environ.get("SNOWFLAKE_ACCOUNT", "yd76133.us-east-2.aws"),
         user=os.environ.get("SNOWFLAKE_USER", "SMITCHESCOGNITION"),
@@ -42,9 +53,11 @@ def main():
         ("USER", f"SHOW USERS LIKE '{tok}_%'", 0),
         ("ROLE", f"SHOW ROLES LIKE '{tok}_%'", 1),
     ):
+        # SHOW ... LIKE treats "_" as a one-character wildcard, so keep only the exact names
         for row in q(sql):
-            name = row[col]
-            found.append((kind, f"{DB}.{name}" if kind == "SCHEMA" else name))
+            name = f"{DB}.{row[col]}" if kind == "SCHEMA" else row[col]
+            if name in expected[kind]:
+                found.append((kind, name))
 
     print(f"objects named for {tok}:")
     for kind, name in found:
@@ -69,13 +82,15 @@ def main():
             q(f"DROP {kind} IF EXISTS {name}")
         print("\nafter teardown:")
         for kind, sql, col in (
-            ("schemas", f"SHOW SCHEMAS LIKE '%_{tok}' IN DATABASE {DB}", 1),
-            ("warehouses", f"SHOW WAREHOUSES LIKE '{tok}_WH'", 0),
-            ("users", f"SHOW USERS LIKE '{tok}_%'", 0),
-            ("roles", f"SHOW ROLES LIKE '{tok}_%'", 1),
-            ("monitors", f"SHOW RESOURCE MONITORS LIKE '{tok}_MON'", 0),
+            ("SCHEMA", f"SHOW SCHEMAS LIKE '%_{tok}' IN DATABASE {DB}", 1),
+            ("WAREHOUSE", f"SHOW WAREHOUSES LIKE '{tok}_WH'", 0),
+            ("USER", f"SHOW USERS LIKE '{tok}_%'", 0),
+            ("ROLE", f"SHOW ROLES LIKE '{tok}_%'", 1),
+            ("RESOURCE MONITOR", f"SHOW RESOURCE MONITORS LIKE '{tok}_MON'", 0),
         ):
-            print(f"  {kind}: {len(q(sql))}")
+            left = [r[col] for r in q(sql)
+                    if (f"{DB}.{r[col]}" if kind == "SCHEMA" else r[col]) in expected[kind]]
+            print(f"  {kind.lower()}s: {len(left)}")
 
     n = q("""select count(*) from snowflake.account_usage.tag_references
         where tag_name in ('RUN','EXPIRES') and tag_value like 'SF_%'""")[0][0]

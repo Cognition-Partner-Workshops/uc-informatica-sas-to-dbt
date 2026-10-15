@@ -15,6 +15,7 @@ needed when the account is a bare locator), SF_DEMO_USER, SF_DEMO_PASSWORD, SF_D
 SF_DEMO_WAREHOUSE, SF_DEMO_DATABASE, SF_RUN_TOKEN.
 """
 import argparse
+import glob
 import os
 import subprocess
 import sys
@@ -87,8 +88,11 @@ def main():
     targets = [t.strip().upper() for t in args.targets.split(",") if t.strip()]
     work = args.workdir or tempfile.mkdtemp(prefix="parity_sf_")
     base_dir, act_dir = os.path.join(work, "baseline"), os.path.join(work, "actual")
-    os.makedirs(base_dir, exist_ok=True)
-    os.makedirs(act_dir, exist_ok=True)
+    for d in (base_dir, act_dir):
+        os.makedirs(d, exist_ok=True)
+        # parity_diff compares every CSV it finds, so a reused workdir must start clean
+        for old in glob.glob(os.path.join(d, "*.csv")):
+            os.remove(old)
 
     database = os.environ["SF_DEMO_DATABASE"]
     con = connect()

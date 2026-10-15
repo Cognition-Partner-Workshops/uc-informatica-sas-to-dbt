@@ -20,6 +20,7 @@ import datetime as dt
 import glob
 import json
 import os
+import re
 import secrets
 import sys
 import tempfile
@@ -326,6 +327,8 @@ def main():
     ap.add_argument("--reload", action="store_true", help="reload --tables in place; skip tags, warehouse, schemas, roles and users")
     args = ap.parse_args()
     args.tables = {t.strip().upper() for t in args.tables.split(",") if t.strip()}
+    if not re.fullmatch(r"SF_[A-Z0-9]+_[A-Z]{2}", args.token):
+        ap.error(f"token {args.token!r} must look like SF_20261015_DS (it is spliced into object names)")
     args.creds_out = args.creds_out or f"/dev/shm/sf_{args.token}.env"
     Runner(args).run()
 
