@@ -1,0 +1,145 @@
+version: 2
+
+models:
+  - name: CUST_ACCOUNTS_DAILY
+    description: "Legacy Step 2 DATA step persistent account snapshot; adds format descriptions and the deterministic run-date snapshot."
+    columns:
+      - name: ACCOUNT_ID
+        data_tests:
+          - not_null
+          - unique
+      - name: ACCOUNT_TYPE
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [CHK, SAV, MMA, CD, IRA, LOC, MTG, AUTO, PERS, CC, HELC]
+          - relationships:
+              arguments:
+                to: ref('load_customer_accounts__fmt_accttype')
+                field: code
+      - name: ACCOUNT_STATUS
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [A, C, D, F, R, S, P, W]
+          - relationships:
+              arguments:
+                to: ref('load_customer_accounts__fmt_acctstat')
+                field: code
+      - name: RISK_RATING
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [1, 2, 3, 4, 5, 6, 7]
+                quote: false
+          - relationships:
+              arguments:
+                to: ref('load_customer_accounts__fmt_riskrate')
+                field: code
+      - name: CUSTOMER_SEGMENT
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [RET, PREM, PB, SMB, COMM, CORP]
+          - relationships:
+              arguments:
+                to: ref('load_customer_accounts__fmt_custseg')
+                field: code
+      - name: REGION_CODE
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [NE, SE, MW, SW, W, NW, HQ]
+          - relationships:
+              arguments:
+                to: ref('load_customer_accounts__fmt_region')
+                field: code
+      - name: DORMANCY_FLAG
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [Y, N]
+      - name: HIGH_BALANCE_FLAG
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [Y, N]
+  - name: ACCT_EXCEPTIONS
+    description: "Legacy Step 2 exception OUTPUT rows appended by Step 3; prior STG_BANK state is absent from SOURCE_ and is modeled as empty."
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+              - ACCOUNT_ID
+              - UTILIZATION_PCT
+              - RISK_RATING
+              - CURRENT_BALANCE
+    columns:
+      - name: ACCOUNT_ID
+        data_tests:
+          - not_null
+      - name: UTILIZATION_PCT
+        data_tests:
+          - not_null
+      - name: RISK_RATING
+        data_tests:
+          - not_null
+      - name: CURRENT_BALANCE
+        data_tests:
+          - not_null
+      - name: ACCOUNT_TYPE
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [CHK, SAV, MMA, CD, IRA, LOC, MTG, AUTO, PERS, CC, HELC]
+          - relationships:
+              arguments:
+                to: ref('load_customer_accounts__fmt_accttype')
+                field: code
+      - name: ACCOUNT_STATUS
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [A, C, D, F, R, S, P, W]
+          - relationships:
+              arguments:
+                to: ref('load_customer_accounts__fmt_acctstat')
+                field: code
+      - name: RISK_RATING
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [1, 2, 3, 4, 5, 6, 7]
+                quote: false
+          - relationships:
+              arguments:
+                to: ref('load_customer_accounts__fmt_riskrate')
+                field: code
+      - name: CUSTOMER_SEGMENT
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [RET, PREM, PB, SMB, COMM, CORP]
+          - relationships:
+              arguments:
+                to: ref('load_customer_accounts__fmt_custseg')
+                field: code
+      - name: REGION_CODE
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [NE, SE, MW, SW, W, NW, HQ]
+          - relationships:
+              arguments:
+                to: ref('load_customer_accounts__fmt_region')
+                field: code
+      - name: DORMANCY_FLAG
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [Y, N]
+      - name: HIGH_BALANCE_FLAG
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [Y, N]

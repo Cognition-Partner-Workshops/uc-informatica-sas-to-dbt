@@ -1,0 +1,33 @@
+version: 2
+
+seeds:
+  - name: load_customer_accounts__fmt_accttype
+    columns:
+      - name: code
+        data_tests:
+          - not_null
+          - unique
+  - name: load_customer_accounts__fmt_acctstat
+    columns:
+      - name: code
+        data_tests:
+          - not_null
+          - unique
+  - name: load_customer_accounts__fmt_riskrate
+    columns:
+      - name: code
+        data_tests:
+          - not_null
+          - unique
+  - name: load_customer_accounts__fmt_custseg
+    columns:
+      - name: code
+        data_tests:
+          - not_null
+          - unique
+  - name: load_customer_accounts__fmt_region
+    columns:
+      - name: code
+        data_tests:
+          - not_null
+          - unique

@@ -1,0 +1,58 @@
+name: sas_load_customer_accounts
+version: "1.0.0"
+config-version: 2
+
+profile: snowflake
+
+model-paths: ["models"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+test-paths: ["tests"]
+analysis-paths: ["analyses"]
+snapshot-paths: ["snapshots"]
+clean-targets:
+  - target
+  - dbt_packages
+  - logs
+
+vars:
+  run_date: "2024-01-31"
+
+models:
+  sas_load_customer_accounts:
+    +tags: ["RUN:SF_20261015_DS"]
+    +meta:
+      legacy_unit: load_customer_accounts
+    staging:
+      +materialized: view
+    intermediate:
+      +materialized: ephemeral
+    marts:
+      +materialized: table
+
+seeds:
+  sas_load_customer_accounts:
+    +tags: ["RUN:SF_20261015_DS"]
+    +meta:
+      legacy_unit: load_customer_accounts
+    +quote_columns: false
+    load_customer_accounts__fmt_accttype:
+      +column_types:
+        code: varchar
+        label: varchar
+    load_customer_accounts__fmt_acctstat:
+      +column_types:
+        code: varchar
+        label: varchar
+    load_customer_accounts__fmt_riskrate:
+      +column_types:
+        code: number
+        label: varchar
+    load_customer_accounts__fmt_custseg:
+      +column_types:
+        code: varchar
+        label: varchar
+    load_customer_accounts__fmt_region:
+      +column_types:
+        code: varchar
+        label: varchar
