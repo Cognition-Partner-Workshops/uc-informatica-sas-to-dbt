@@ -1,0 +1,17 @@
+version: 2
+
+seeds:
+  - name: credit_risk_scoring__fmt_accttype
+    description: "PROC FORMAT $ACCTTYPE (legacy/sas/formats/banking_formats.sas); OTHER='Unknown' is a fallback, not a code."
+    columns:
+      - name: code
+        data_tests:
+          - not_null
+          - unique
+  - name: credit_risk_scoring__fmt_riskrate
+    description: "PROC FORMAT RISKRATE (legacy/sas/formats/banking_formats.sas); OTHER='Not Rated' is a fallback, not a code."
+    columns:
+      - name: code
+        data_tests:
+          - not_null
+          - unique

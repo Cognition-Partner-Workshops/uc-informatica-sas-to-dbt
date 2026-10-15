@@ -1,0 +1,16 @@
+version: 2
+
+sources:
+  - name: source_sf
+    database: "{{ target.database }}"
+    schema: "SOURCE_{{ env_var('SF_RUN_TOKEN') }}"
+    tables:
+      - name: ORA_DW_BUREAU_SCORES
+      - name: ORA_DW_PAYMENT_HISTORY
+      - name: ORA_DW_COLLATERAL
+  - name: upstream_dbt
+    description: "Persistent outputs of upstream SAS units built by their own dbt projects (load_customer_accounts -> STG_BANK.CUST_ACCOUNTS_DAILY)."
+    database: "{{ target.database }}"
+    schema: "DBT_{{ env_var('SF_RUN_TOKEN') }}"
+    tables:
+      - name: CUST_ACCOUNTS_DAILY

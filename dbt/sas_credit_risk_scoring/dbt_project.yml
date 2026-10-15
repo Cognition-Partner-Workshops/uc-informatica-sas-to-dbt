@@ -1,0 +1,45 @@
+name: sas_credit_risk_scoring
+version: "1.0.0"
+config-version: 2
+
+profile: snowflake
+
+model-paths: ["models"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+test-paths: ["tests"]
+clean-targets:
+  - target
+  - dbt_packages
+  - logs
+
+vars:
+  score_date: "2024-01-31"
+  model_id: "CRM-2023-Q4-v2"
+
+models:
+  sas_credit_risk_scoring:
+    +tags: ["RUN:SF_20261015_DS"]
+    +meta:
+      legacy_unit: credit_risk_scoring
+    staging:
+      +materialized: view
+    intermediate:
+      +materialized: ephemeral
+    marts:
+      +materialized: table
+
+seeds:
+  sas_credit_risk_scoring:
+    +tags: ["RUN:SF_20261015_DS"]
+    +meta:
+      legacy_unit: credit_risk_scoring
+    +quote_columns: false
+    credit_risk_scoring__fmt_accttype:
+      +column_types:
+        code: varchar
+        label: varchar
+    credit_risk_scoring__fmt_riskrate:
+      +column_types:
+        code: number
+        label: varchar

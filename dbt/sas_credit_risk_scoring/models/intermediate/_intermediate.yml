@@ -1,0 +1,11 @@
+version: 2
+
+models:
+  - name: int_credit_risk_scoring__score_input
+    description: "Step 1 PROC SQL WORK.SCORE_INPUT: accounts on the score date joined to latest bureau score (<= score date), payment history and collateral; LTV."
+  - name: int_credit_risk_scoring__scored
+    description: "Step 2 DATA step WORK.SCORED: WOE scorecard, PD/LGD/EAD/EXPECTED_LOSS, NEW_RISK_RATING, SCORE_DATE, MODEL_ID (SCORE_TIMESTAMP wall-clock omitted)."
+  - name: int_credit_risk_scoring__risk_migration
+    description: "Step 3 PROC SQL WORK.RISK_MIGRATION: accounts whose rating changed or had no prior rating."
+  - name: int_credit_risk_scoring__risk_summary
+    description: "Step 5 PROC MEANS NWAY CLASS ACCOUNT_TYPE x NEW_RISK_RATING over WORK.SCORED."
