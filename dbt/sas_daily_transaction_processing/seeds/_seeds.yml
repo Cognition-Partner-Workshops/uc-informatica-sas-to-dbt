@@ -1,0 +1,13 @@
+version: 2
+
+seeds:
+  - name: daily_transaction_processing__fmt_txncat
+    description: "Legacy $TXNCAT transaction type recodes."
+    columns:
+      - name: code
+        description: "Transaction type code."
+        data_tests:
+          - not_null
+          - unique
+      - name: label
+        description: "Human-readable transaction type label."

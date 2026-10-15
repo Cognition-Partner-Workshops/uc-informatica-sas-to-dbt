@@ -1,0 +1,14 @@
+snowflake:
+  target: snowflake
+  outputs:
+    snowflake:
+      type: snowflake
+      account: "{{ env_var('SNOWFLAKE_ACCOUNT') }}"
+      host: "{{ env_var('SNOWFLAKE_HOST') }}"
+      user: "{{ env_var('SF_DEMO_USER') }}"
+      password: "{{ env_var('SF_DEMO_PASSWORD') }}"
+      role: "{{ env_var('SF_DEMO_ROLE') }}"
+      warehouse: "{{ env_var('SF_DEMO_WAREHOUSE') }}"
+      database: "{{ env_var('SF_DEMO_DATABASE') }}"
+      schema: "DBT_{{ env_var('SF_RUN_TOKEN') }}"
+      threads: 4

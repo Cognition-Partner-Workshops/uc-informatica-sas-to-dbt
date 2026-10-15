@@ -1,0 +1,42 @@
+name: sas_daily_transaction_processing
+version: "1.0.0"
+config-version: 2
+
+profile: snowflake
+
+model-paths: ["models"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+test-paths: ["tests"]
+analysis-paths: ["analyses"]
+snapshot-paths: ["snapshots"]
+clean-targets:
+  - target
+  - dbt_packages
+  - logs
+
+vars:
+  txn_date: "2024-01-31"
+
+models:
+  sas_daily_transaction_processing:
+    +tags: ["RUN:SF_20261015_DS"]
+    +meta:
+      legacy_unit: daily_transaction_processing
+    staging:
+      +materialized: view
+    intermediate:
+      +materialized: ephemeral
+    marts:
+      +materialized: table
+
+seeds:
+  sas_daily_transaction_processing:
+    +tags: ["RUN:SF_20261015_DS"]
+    +meta:
+      legacy_unit: daily_transaction_processing
+    +quote_columns: false
+    daily_transaction_processing__fmt_txncat:
+      +column_types:
+        code: varchar
+        label: varchar

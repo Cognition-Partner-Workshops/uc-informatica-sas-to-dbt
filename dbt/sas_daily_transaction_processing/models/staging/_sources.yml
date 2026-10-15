@@ -1,0 +1,45 @@
+version: 2
+
+sources:
+  - name: source_sf
+    database: "{{ target.database }}"
+    schema: "SOURCE_{{ env_var('SF_RUN_TOKEN') }}"
+    tables:
+      - name: RAW_BANK_TXN_FEED_20240131
+        columns:
+          - name: TRANSACTION_ID
+          - name: ACCOUNT_ID
+          - name: TRANSACTION_DATE
+          - name: TRANSACTION_TYPE
+          - name: TRANSACTION_AMOUNT
+          - name: CHANNEL
+          - name: MERCHANT_CATEGORY
+          - name: DESCRIPTION
+          - name: POST_DATE
+          - name: CURRENCY_CODE
+      - name: CURATED_DAILY_TRANSACTIONS
+        columns:
+          - name: TRANSACTION_ID
+          - name: ACCOUNT_ID
+          - name: TRANSACTION_DATE
+          - name: TRANSACTION_TYPE
+          - name: TRANSACTION_AMOUNT
+          - name: CHANNEL
+          - name: MERCHANT_CATEGORY
+          - name: DESCRIPTION
+          - name: POST_DATE
+          - name: CURRENCY_CODE
+  - name: upstream_dbt
+    database: "{{ target.database }}"
+    schema: "DBT_{{ env_var('SF_RUN_TOKEN') }}"
+    tables:
+      - name: CUST_ACCOUNTS_DAILY
+        columns:
+          - name: ACCOUNT_ID
+          - name: ACCOUNT_TYPE
+          - name: CUSTOMER_ID
+          - name: CUSTOMER_SEGMENT
+          - name: REGION_CODE
+          - name: BRANCH_ID
+          - name: CURRENT_BALANCE
+          - name: RISK_RATING

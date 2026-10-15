@@ -1,0 +1,13 @@
+version: 2
+
+models:
+  - name: int_daily_transaction_processing__txn_validated
+    description: "Legacy Step 1 validation filters applied to the incoming transaction feed."
+  - name: int_daily_transaction_processing__txn_enriched
+    description: "Legacy Step 2 left join to the upstream customer account snapshot and balance derivation."
+  - name: int_daily_transaction_processing__txn_with_balance
+    description: "Legacy Step 3 account-ordered cumulative running balance calculation."
+  - name: int_daily_transaction_processing__txn_stats
+    description: "Legacy Step 4 90-day transaction statistics over pre-existing curated history."
+  - name: int_daily_transaction_processing__txn_anomalies
+    description: "Legacy Step 4 prioritized anomaly classification over the current run's transactions."
