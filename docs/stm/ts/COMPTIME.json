@@ -1,0 +1,2271 @@
+{
+  "counts": {
+    "MAPPING": 3,
+    "MAPPLET": 0,
+    "SESSION": 3,
+    "SOURCE": 2,
+    "TARGET": 4,
+    "TRANSFORMATION": 19,
+    "WORKFLOW": 1
+  },
+  "counts_match": true,
+  "folder": "COMP_TIME",
+  "grep_counts": {
+    "MAPPING": 3,
+    "MAPPLET": 0,
+    "SESSION": 3,
+    "SOURCE": 2,
+    "TARGET": 4,
+    "TRANSFORMATION": 19,
+    "WORKFLOW": 1
+  },
+  "grep_transformations_by_type": {
+    "Aggregator": 1,
+    "Expression": 11,
+    "Filter": 2,
+    "Lookup Procedure": 2,
+    "Source Qualifier": 3
+  },
+  "mapping_order": [
+    "m_COMPTIME_Current_Pay_Period",
+    "m_COMPTIME_Load_COMP_TIME_DAILY_TBL",
+    "m_COMPTIME_Build_Message_Counters"
+  ],
+  "mappings": [
+    {
+      "aggregator_groupby_ports": {},
+      "joiners": [],
+      "lookup_details": [],
+      "mapping_variables": [
+        {
+          "AGGFUNCTION": "MAX",
+          "DATATYPE": "string",
+          "DEFAULTVALUE": "",
+          "ISEXPRESSIONVARIABLE": "NO",
+          "ISPARAM": "NO",
+          "NAME": "$$MAP_PP_YEAR_NUM",
+          "PRECISION": "6",
+          "SCALE": "0",
+          "USERDEFINED": "YES"
+        },
+        {
+          "AGGFUNCTION": "MAX",
+          "DATATYPE": "integer",
+          "DEFAULTVALUE": "",
+          "ISEXPRESSIONVARIABLE": "NO",
+          "ISPARAM": "NO",
+          "NAME": "$$MAP_PP_END_YEAR",
+          "PRECISION": "10",
+          "SCALE": "0",
+          "USERDEFINED": "YES"
+        },
+        {
+          "AGGFUNCTION": "MAX",
+          "DATATYPE": "integer",
+          "DEFAULTVALUE": "",
+          "ISEXPRESSIONVARIABLE": "NO",
+          "ISPARAM": "NO",
+          "NAME": "$$MAP_PP_NUM",
+          "PRECISION": "10",
+          "SCALE": "0",
+          "USERDEFINED": "YES"
+        }
+      ],
+      "mapplet_expansions": [],
+      "name": "m_COMPTIME_Current_Pay_Period",
+      "normalizers": [],
+      "physical_target_instances": {
+        "COMP_TIME_DATE_FILE": [
+          "COMP_TIME_DATE_FILE"
+        ]
+      },
+      "sequence_generators": [],
+      "sessions": [
+        {
+          "position": 1,
+          "session": "s_COMPTIME_Current_Pay_Period",
+          "workflow": "wf_COMPTIME"
+        }
+      ],
+      "sorters": [],
+      "source_qualifiers": [
+        {
+          "post_sql": null,
+          "pre_sql": null,
+          "select_distinct": "NO",
+          "sorted_ports": "0",
+          "source_filter": "CURR_PP_FLAG = 'Y'",
+          "sources": [
+            "PAY_PERIOD"
+          ],
+          "sql_query": null,
+          "transformation": "SQ_PAY_PERIOD",
+          "user_defined_join": null
+        }
+      ],
+      "source_tables": {
+        "PAY_PERIOD": "PAY_PERIOD"
+      },
+      "sources": [
+        "PAY_PERIOD"
+      ],
+      "sql_overrides": [],
+      "target_instance_attributes": {},
+      "target_lineage": {
+        "COMP_TIME_DATE_FILE": {
+          "columns": [
+            {
+              "chain": [
+                "exp_Final.PAY_PERIOD",
+                "exp_Build_Pay_Period.o_PAY_PERIOD = TO_CHAR(PP_END_YEAR) || v_PP_NUM",
+                "SQ_PAY_PERIOD.PP_END_YEAR",
+                "PAY_PERIOD.PP_END_YEAR",
+                "exp_Build_Pay_Period.v_PP_NUM = IIF(PP_NUM < 10,\r\n       LPAD(TO_CHAR(PP_NUM), 2, '0'),\r\n    TO_CHAR(PP_NUM)\r\n)",
+                "SQ_PAY_PERIOD.PP_NUM",
+                "PAY_PERIOD.PP_NUM"
+              ],
+              "column": "PAY_PERIOD",
+              "rule": "exp_Final.PAY_PERIOD",
+              "sources": [
+                "PAY_PERIOD.PP_END_YEAR",
+                "PAY_PERIOD.PP_NUM"
+              ]
+            }
+          ],
+          "target_table": "COMP_TIME_DATE_FILE"
+        }
+      },
+      "target_load_order": [
+        {
+          "ORDER": "1",
+          "TARGETINSTANCE": "COMP_TIME_DATE_FILE"
+        }
+      ],
+      "targets": [
+        "COMP_TIME_DATE_FILE"
+      ],
+      "transformations": {
+        "SQ_PAY_PERIOD": {
+          "attributes": {
+            "Number Of Sorted Ports": "0",
+            "Select Distinct": "NO",
+            "Source Filter": "CURR_PP_FLAG = 'Y'"
+          },
+          "expression_evaluation_order": [
+            "PP_NUM",
+            "PP_END_YEAR",
+            "PP_START_DTE",
+            "PP_END_DTE",
+            "LV_NUM",
+            "LV_YEAR",
+            "PAY_DTE",
+            "CURR_PP_FLAG"
+          ],
+          "expressions": {},
+          "router_groups": [],
+          "type": "Source Qualifier"
+        },
+        "exp_Build_Pay_Period": {
+          "attributes": {},
+          "expression_evaluation_order": [
+            "PP_NUM",
+            "PP_END_YEAR",
+            "v_PP_NUM",
+            "o_PAY_PERIOD",
+            "v_PAY_PERIOD",
+            "o_MAP_PP_YEAR_NUM",
+            "o_PP_END_YEAR",
+            "o_PP_NUM"
+          ],
+          "expressions": {
+            "o_MAP_PP_YEAR_NUM": "SETVARIABLE($$MAP_PP_YEAR_NUM, v_PAY_PERIOD)",
+            "o_PAY_PERIOD": "TO_CHAR(PP_END_YEAR) || v_PP_NUM",
+            "o_PP_END_YEAR": "SETVARIABLE($$MAP_PP_END_YEAR, PP_END_YEAR)",
+            "o_PP_NUM": "SETVARIABLE($$MAP_PP_NUM, PP_NUM)",
+            "v_PAY_PERIOD": "TO_CHAR(PP_END_YEAR) || v_PP_NUM",
+            "v_PP_NUM": "IIF(PP_NUM < 10,\r\n       LPAD(TO_CHAR(PP_NUM), 2, '0'),\r\n    TO_CHAR(PP_NUM)\r\n)"
+          },
+          "router_groups": [],
+          "type": "Expression"
+        },
+        "exp_Final": {
+          "attributes": {},
+          "expression_evaluation_order": [
+            "PAY_PERIOD",
+            "MAP_PP_YEAR_NUM",
+            "PP_END_YEAR",
+            "PP_NUM"
+          ],
+          "expressions": {},
+          "router_groups": [],
+          "type": "Expression"
+        }
+      },
+      "unconnected_lkp_calls": [],
+      "unpopulated_target_columns": {
+        "COMP_TIME_DATE_FILE": []
+      },
+      "update_strategies": []
+    },
+    {
+      "aggregator_groupby_ports": {},
+      "joiners": [],
+      "lookup_details": [
+        {
+          "condition": "CURR_PP_FLAG = in_CURR_PP_FLAG",
+          "exists_in_export": true,
+          "multiple_match_policy": "Use Any Value",
+          "ports": [
+            "CURR_PP_FLAG",
+            "LV_NUM",
+            "LV_YEAR",
+            "PAY_DTE",
+            "PP_END_DTE",
+            "PP_END_YEAR",
+            "PP_NUM",
+            "PP_START_DTE",
+            "in_CURR_PP_FLAG"
+          ],
+          "source_filter": null,
+          "sql_override": null,
+          "table": "PAY_PERIOD",
+          "transformation": "lkp_PAY_PERIOD"
+        }
+      ],
+      "mapping_variables": [],
+      "mapplet_expansions": [],
+      "name": "m_COMPTIME_Load_COMP_TIME_DAILY_TBL",
+      "normalizers": [],
+      "physical_target_instances": {
+        "COMP_TIME_DAILY_TBL": [
+          "COMP_TIME_DAILY_TBL"
+        ]
+      },
+      "sequence_generators": [],
+      "sessions": [
+        {
+          "position": 2,
+          "session": "s_COMPTIME_Load_COMP_TIME_DAILY_TBL",
+          "workflow": "wf_COMPTIME"
+        }
+      ],
+      "sorters": [],
+      "source_qualifiers": [
+        {
+          "post_sql": null,
+          "pre_sql": null,
+          "select_distinct": null,
+          "sorted_ports": "0",
+          "source_filter": null,
+          "sources": [
+            "U0287D01"
+          ],
+          "sql_query": null,
+          "transformation": "SQ_U0287D01",
+          "user_defined_join": null
+        }
+      ],
+      "source_tables": {
+        "U0287D01": "U0287D01"
+      },
+      "sources": [
+        "U0287D01"
+      ],
+      "sql_overrides": [],
+      "target_instance_attributes": {},
+      "target_lineage": {
+        "COMP_TIME_DAILY_TBL": {
+          "columns": [
+            {
+              "chain": [
+                "exp_Final.PP_END_YEAR",
+                "exp_Convert.o_PP_END_YEAR = lkp_PP_END_YEAR\r\n",
+                "lkp_PAY_PERIOD.PP_END_YEAR [lookup PAY_PERIOD.PP_END_YEAR ON CURR_PP_FLAG = in_CURR_PP_FLAG]"
+              ],
+              "column": "PP_END_YEAR",
+              "rule": "exp_Final.PP_END_YEAR",
+              "sources": [
+                "PAY_PERIOD.PP_END_YEAR (lookup)",
+                "literal/expression: 'Y' (lookup key)"
+              ]
+            },
+            {
+              "chain": [
+                "exp_Final.PP_NUM",
+                "exp_Convert.o_PP_NUM = lkp_PP_NUM\r\n",
+                "lkp_PAY_PERIOD.PP_NUM [lookup PAY_PERIOD.PP_NUM ON CURR_PP_FLAG = in_CURR_PP_FLAG]"
+              ],
+              "column": "PP_NUM",
+              "rule": "exp_Final.PP_NUM",
+              "sources": [
+                "PAY_PERIOD.PP_NUM (lookup)",
+                "literal/expression: 'Y' (lookup key)"
+              ]
+            },
+            {
+              "chain": [
+                "exp_Final.PP_YEAR_NUM",
+                "exp_Convert.o_PP_YEAR_NUM = TO_DECIMAL(\r\nTO_CHAR(lkp_PP_END_YEAR) || \r\nLPAD(TO_CHAR(lkp_PP_NUM), 2, '0'))\r\n",
+                "lkp_PAY_PERIOD.PP_END_YEAR [lookup PAY_PERIOD.PP_END_YEAR ON CURR_PP_FLAG = in_CURR_PP_FLAG]",
+                "lkp_PAY_PERIOD.PP_NUM [lookup PAY_PERIOD.PP_NUM ON CURR_PP_FLAG = in_CURR_PP_FLAG]"
+              ],
+              "column": "PP_YEAR_NUM",
+              "rule": "exp_Final.PP_YEAR_NUM",
+              "sources": [
+                "PAY_PERIOD.PP_END_YEAR (lookup)",
+                "PAY_PERIOD.PP_NUM (lookup)",
+                "literal/expression: 'Y' (lookup key)"
+              ]
+            },
+            {
+              "chain": [
+                "exp_Final.SSN",
+                "exp_Convert.SSN",
+                "fil_Valid_Records.SSN",
+                "exp_Initial.SSN",
+                "SQ_U0287D01.SSN",
+                "U0287D01.SSN"
+              ],
+              "column": "SSN",
+              "rule": "exp_Final.SSN",
+              "sources": [
+                "U0287D01.SSN"
+              ]
+            },
+            {
+              "chain": [
+                "exp_Final.NAME",
+                "exp_Convert.NAME",
+                "fil_Valid_Records.NAME",
+                "exp_Initial.NAME",
+                "SQ_U0287D01.NAME",
+                "U0287D01.NAME"
+              ],
+              "column": "NAME",
+              "rule": "exp_Final.NAME",
+              "sources": [
+                "U0287D01.NAME"
+              ]
+            },
+            {
+              "chain": [
+                "exp_Final.CURRENT_ACCT",
+                "exp_Convert.CURRENT_ACCT",
+                "fil_Valid_Records.CURRENT_ACCT",
+                "exp_Initial.CURRENT_ACCT",
+                "SQ_U0287D01.CURRENT_ACCT",
+                "U0287D01.CURRENT_ACCT"
+              ],
+              "column": "CURRENT_ACCT",
+              "rule": "exp_Final.CURRENT_ACCT",
+              "sources": [
+                "U0287D01.CURRENT_ACCT"
+              ]
+            },
+            {
+              "chain": [
+                "exp_Final.CURRENT_ORG",
+                "exp_Convert.CURRENT_ORG",
+                "fil_Valid_Records.CURRENT_ORG",
+                "exp_Initial.CURRENT_ORG",
+                "SQ_U0287D01.CURRENT_ORG",
+                "U0287D01.CURRENT_ORG"
+              ],
+              "column": "CURRENT_ORG",
+              "rule": "exp_Final.CURRENT_ORG",
+              "sources": [
+                "U0287D01.CURRENT_ORG"
+              ]
+            },
+            {
+              "chain": [
+                "exp_Final.FLSA_STATUS",
+                "exp_Convert.FLSA_STATUS",
+                "fil_Valid_Records.FLSA_STATUS",
+                "exp_Initial.FLSA_STATUS",
+                "SQ_U0287D01.FLSA_STATUS",
+                "U0287D01.FLSA_STATUS"
+              ],
+              "column": "FLSA_STATUS",
+              "rule": "exp_Final.FLSA_STATUS",
+              "sources": [
+                "U0287D01.FLSA_STATUS"
+              ]
+            },
+            {
+              "chain": [
+                "exp_Final.COMP_TIME_CUR_BAL",
+                "exp_Convert.COMP_TIME_CUR_BAL",
+                "fil_Valid_Records.COMP_TIME_CUR_BAL",
+                "exp_Initial.COMP_TIME_CUR_BAL",
+                "SQ_U0287D01.COMP_TIME_CUR_BAL",
+                "U0287D01.COMP_TIME_CUR_BAL"
+              ],
+              "column": "COMP_TIME_CUR_BAL",
+              "rule": "exp_Final.COMP_TIME_CUR_BAL",
+              "sources": [
+                "U0287D01.COMP_TIME_CUR_BAL"
+              ]
+            },
+            {
+              "chain": [
+                "exp_Final.COMP_TIME_YEAR_EARNED",
+                "exp_Convert.COMP_TIME_YEAR_EARNED",
+                "fil_Valid_Records.COMP_TIME_YEAR_EARNED",
+                "exp_Initial.COMP_TIME_YEAR_EARNED",
+                "SQ_U0287D01.COMP_TIME_YEAR_EARNED",
+                "U0287D01.COMP_TIME_YEAR_EARNED"
+              ],
+              "column": "COMP_TIME_YEAR_EARNED",
+              "rule": "exp_Final.COMP_TIME_YEAR_EARNED",
+              "sources": [
+                "U0287D01.COMP_TIME_YEAR_EARNED"
+              ]
+            },
+            {
+              "chain": [
+                "exp_Final.PP_END_DATE",
+                "exp_Convert.o_PP_END_DATE = IIF(IS_DATE(PP_END_DATE, 'YYYYMMDD'),\r\n                                   TO_DATE(PP_END_DATE, 'YYYYMMDD')\r\n       )",
+                "fil_Valid_Records.PP_END_DATE",
+                "exp_Initial.PP_END_DATE",
+                "SQ_U0287D01.PP_END_DATE",
+                "U0287D01.PP_END_DATE"
+              ],
+              "column": "PP_END_DATE",
+              "rule": "exp_Final.PP_END_DATE",
+              "sources": [
+                "U0287D01.PP_END_DATE"
+              ]
+            },
+            {
+              "chain": [
+                "exp_Final.DAILY_DATE_EARNED",
+                "exp_Convert.o_DAILY_DATE_EARNED = IIF(IS_DATE(DAILY_DATE_EARNED, 'YYYYMMDD'),\r\n                                   TO_DATE(DAILY_DATE_EARNED, 'YYYYMMDD')\r\n       )",
+                "fil_Valid_Records.DAILY_DATE_EARNED",
+                "exp_Initial.DAILY_DATE_EARNED",
+                "SQ_U0287D01.DAILY_DATE_EARNED",
+                "U0287D01.DAILY_DATE_EARNED"
+              ],
+              "column": "DAILY_DATE_EARNED",
+              "rule": "exp_Final.DAILY_DATE_EARNED",
+              "sources": [
+                "U0287D01.DAILY_DATE_EARNED"
+              ]
+            },
+            {
+              "chain": [
+                "exp_Final.COMP_TIME_RATE",
+                "exp_Convert.COMP_TIME_RATE",
+                "fil_Valid_Records.COMP_TIME_RATE",
+                "exp_Initial.COMP_TIME_RATE",
+                "SQ_U0287D01.COMP_TIME_RATE",
+                "U0287D01.COMP_TIME_RATE"
+              ],
+              "column": "COMP_TIME_RATE",
+              "rule": "exp_Final.COMP_TIME_RATE",
+              "sources": [
+                "U0287D01.COMP_TIME_RATE"
+              ]
+            },
+            {
+              "chain": [
+                "exp_Final.COMP_TIME_HOURS",
+                "exp_Convert.COMP_TIME_HOURS",
+                "fil_Valid_Records.COMP_TIME_HOURS",
+                "exp_Initial.COMP_TIME_HOURS",
+                "SQ_U0287D01.COMP_TIME_HOURS",
+                "U0287D01.COMP_TIME_HOURS"
+              ],
+              "column": "COMP_TIME_HOURS",
+              "rule": "exp_Final.COMP_TIME_HOURS",
+              "sources": [
+                "U0287D01.COMP_TIME_HOURS"
+              ]
+            },
+            {
+              "chain": [
+                "exp_Final.COMP_TIME_UNDEF",
+                "exp_Convert.COMP_TIME_UNDEF",
+                "fil_Valid_Records.COMP_TIME_UNDEF",
+                "exp_Initial.COMP_TIME_UNDEF",
+                "SQ_U0287D01.COMP_TIME_UNDEF",
+                "U0287D01.COMP_TIME_UNDEF"
+              ],
+              "column": "COMP_TIME_UNDEF",
+              "rule": "exp_Final.COMP_TIME_UNDEF",
+              "sources": [
+                "U0287D01.COMP_TIME_UNDEF"
+              ]
+            }
+          ],
+          "target_table": "COMP_TIME_DAILY_TBL"
+        }
+      },
+      "target_load_order": [
+        {
+          "ORDER": "1",
+          "TARGETINSTANCE": "COMP_TIME_DAILY_TBL"
+        }
+      ],
+      "targets": [
+        "COMP_TIME_DAILY_TBL"
+      ],
+      "transformations": {
+        "SQ_U0287D01": {
+          "attributes": {
+            "Number Of Sorted Ports": "0"
+          },
+          "expression_evaluation_order": [
+            "SSN",
+            "NAME",
+            "CURRENT_ACCT",
+            "CURRENT_ORG",
+            "FLSA_STATUS",
+            "COMP_TIME_CUR_BAL",
+            "COMP_TIME_YEAR_EARNED",
+            "PP_END_DATE",
+            "DAILY_DATE_EARNED",
+            "COMP_TIME_RATE",
+            "COMP_TIME_HOURS",
+            "COMP_TIME_UNDEF"
+          ],
+          "expressions": {},
+          "router_groups": [],
+          "type": "Source Qualifier"
+        },
+        "exp_Convert": {
+          "attributes": {},
+          "expression_evaluation_order": [
+            "SSN",
+            "NAME",
+            "CURRENT_ACCT",
+            "CURRENT_ORG",
+            "FLSA_STATUS",
+            "COMP_TIME_CUR_BAL",
+            "COMP_TIME_YEAR_EARNED",
+            "PP_END_DATE",
+            "o_PP_END_DATE",
+            "DAILY_DATE_EARNED",
+            "o_DAILY_DATE_EARNED",
+            "COMP_TIME_RATE",
+            "COMP_TIME_HOURS",
+            "COMP_TIME_UNDEF",
+            "lkp_PP_NUM",
+            "lkp_PP_END_YEAR",
+            "o_PP_END_YEAR",
+            "o_PP_NUM",
+            "o_PP_YEAR_NUM"
+          ],
+          "expressions": {
+            "o_DAILY_DATE_EARNED": "IIF(IS_DATE(DAILY_DATE_EARNED, 'YYYYMMDD'),\r\n                                   TO_DATE(DAILY_DATE_EARNED, 'YYYYMMDD')\r\n       )",
+            "o_PP_END_DATE": "IIF(IS_DATE(PP_END_DATE, 'YYYYMMDD'),\r\n                                   TO_DATE(PP_END_DATE, 'YYYYMMDD')\r\n       )",
+            "o_PP_END_YEAR": "lkp_PP_END_YEAR\r\n",
+            "o_PP_NUM": "lkp_PP_NUM\r\n",
+            "o_PP_YEAR_NUM": "TO_DECIMAL(\r\nTO_CHAR(lkp_PP_END_YEAR) || \r\nLPAD(TO_CHAR(lkp_PP_NUM), 2, '0'))\r\n"
+          },
+          "router_groups": [],
+          "type": "Expression"
+        },
+        "exp_Final": {
+          "attributes": {},
+          "expression_evaluation_order": [
+            "PP_END_YEAR",
+            "PP_NUM",
+            "PP_YEAR_NUM",
+            "SSN",
+            "NAME",
+            "CURRENT_ACCT",
+            "CURRENT_ORG",
+            "FLSA_STATUS",
+            "COMP_TIME_CUR_BAL",
+            "COMP_TIME_YEAR_EARNED",
+            "PP_END_DATE",
+            "DAILY_DATE_EARNED",
+            "COMP_TIME_RATE",
+            "COMP_TIME_HOURS",
+            "COMP_TIME_UNDEF"
+          ],
+          "expressions": {},
+          "router_groups": [],
+          "type": "Expression"
+        },
+        "exp_Initial": {
+          "attributes": {},
+          "expression_evaluation_order": [
+            "SSN",
+            "NAME",
+            "CURRENT_ACCT",
+            "CURRENT_ORG",
+            "FLSA_STATUS",
+            "COMP_TIME_CUR_BAL",
+            "COMP_TIME_YEAR_EARNED",
+            "PP_END_DATE",
+            "DAILY_DATE_EARNED",
+            "COMP_TIME_RATE",
+            "COMP_TIME_HOURS",
+            "COMP_TIME_UNDEF",
+            "o_CURR_PP_FLAG",
+            "o_VALID_RECORD_FLAG"
+          ],
+          "expressions": {
+            "o_CURR_PP_FLAG": "'Y'",
+            "o_VALID_RECORD_FLAG": "DECODE (TRUE, IS_NUMBER(SSN), 1,\r\n                                    0)\r\n                       "
+          },
+          "router_groups": [],
+          "type": "Expression"
+        },
+        "fil_Valid_Records": {
+          "attributes": {
+            "Filter Condition": "VALID_RECORD_FLAG = TRUE"
+          },
+          "expression_evaluation_order": [
+            "SSN",
+            "NAME",
+            "CURRENT_ACCT",
+            "CURRENT_ORG",
+            "FLSA_STATUS",
+            "COMP_TIME_CUR_BAL",
+            "COMP_TIME_YEAR_EARNED",
+            "PP_END_DATE",
+            "DAILY_DATE_EARNED",
+            "COMP_TIME_RATE",
+            "COMP_TIME_HOURS",
+            "COMP_TIME_UNDEF",
+            "CURR_PP_FLAG",
+            "VALID_RECORD_FLAG"
+          ],
+          "expressions": {},
+          "router_groups": [],
+          "type": "Filter"
+        },
+        "lkp_PAY_PERIOD": {
+          "attributes": {
+            "Dynamic Lookup Cache": "NO",
+            "Lookup condition": "CURR_PP_FLAG = in_CURR_PP_FLAG",
+            "Lookup policy on multiple match": "Use Any Value",
+            "Lookup table name": "PAY_PERIOD",
+            "Source Type": "Database"
+          },
+          "expression_evaluation_order": [
+            "in_CURR_PP_FLAG",
+            "PP_NUM",
+            "PP_END_YEAR",
+            "PP_START_DTE",
+            "PP_END_DTE",
+            "LV_NUM",
+            "LV_YEAR",
+            "PAY_DTE",
+            "CURR_PP_FLAG"
+          ],
+          "expressions": {},
+          "router_groups": [],
+          "type": "Lookup Procedure"
+        }
+      },
+      "unconnected_lkp_calls": [],
+      "unpopulated_target_columns": {
+        "COMP_TIME_DAILY_TBL": []
+      },
+      "update_strategies": []
+    },
+    {
+      "aggregator_groupby_ports": {
+        "agg_ALL_RECORDS": []
+      },
+      "joiners": [],
+      "lookup_details": [
+        {
+          "condition": "CURR_PP_FLAG = in_CURR_PP_FLAG",
+          "exists_in_export": true,
+          "multiple_match_policy": "Use Any Value",
+          "ports": [
+            "CURR_PP_FLAG",
+            "LV_NUM",
+            "LV_YEAR",
+            "PAY_DTE",
+            "PP_END_DTE",
+            "PP_END_YEAR",
+            "PP_NUM",
+            "PP_START_DTE",
+            "in_CURR_PP_FLAG"
+          ],
+          "source_filter": null,
+          "sql_override": null,
+          "table": "PAY_PERIOD",
+          "transformation": "lkp_PAY_PERIOD"
+        }
+      ],
+      "mapping_variables": [
+        {
+          "AGGFUNCTION": "MAX",
+          "DATATYPE": "string",
+          "DEFAULTVALUE": "0",
+          "ISEXPRESSIONVARIABLE": "NO",
+          "ISPARAM": "NO",
+          "NAME": "$$MAP_MESSAGE",
+          "PRECISION": "300",
+          "SCALE": "0",
+          "USERDEFINED": "YES"
+        },
+        {
+          "AGGFUNCTION": "MAX",
+          "DATATYPE": "string",
+          "DEFAULTVALUE": "0",
+          "ISEXPRESSIONVARIABLE": "NO",
+          "ISPARAM": "NO",
+          "NAME": "$$MAP_SUBJECT",
+          "PRECISION": "100",
+          "SCALE": "0",
+          "USERDEFINED": "YES"
+        }
+      ],
+      "mapplet_expansions": [],
+      "name": "m_COMPTIME_Build_Message_Counters",
+      "normalizers": [],
+      "physical_target_instances": {
+        "COMPTIME_MESSAGE_FILE": [
+          "COMPTIME_MESSAGE_FILE"
+        ],
+        "COUNTER_TBL": [
+          "COUNTER_TBL"
+        ]
+      },
+      "sequence_generators": [],
+      "sessions": [
+        {
+          "position": 3,
+          "session": "s_COMPTIME_Build_Message_Counters",
+          "workflow": "wf_COMPTIME"
+        }
+      ],
+      "sorters": [],
+      "source_qualifiers": [
+        {
+          "post_sql": null,
+          "pre_sql": null,
+          "select_distinct": "NO",
+          "sorted_ports": "0",
+          "source_filter": null,
+          "sources": [
+            "U0287D01"
+          ],
+          "sql_query": null,
+          "transformation": "SQ_U0287D01",
+          "user_defined_join": null
+        }
+      ],
+      "source_tables": {
+        "U0287D01": "U0287D01"
+      },
+      "sources": [
+        "U0287D01"
+      ],
+      "sql_overrides": [],
+      "target_instance_attributes": {},
+      "target_lineage": {
+        "COMPTIME_MESSAGE_FILE": {
+          "columns": [
+            {
+              "chain": [
+                "exp_Final_Message.SUBJECT",
+                "exp_Build_Message.o_SUBJECT = SETVARIABLE($$MAP_SUBJECT, v_SUBJECT)",
+                "exp_Build_Message.v_SUBJECT = v_ENVIRONMENT ||\r\n'Comp Time File loaded successfully for Pay Period:  ' || \r\nTO_CHAR(PP_END_YEAR) || '-' || v_PP_NUM",
+                "exp_Build_Message.v_ENVIRONMENT = DECODE(SUBSTR($PMRepositoryServiceName, 1, 4),\r\n                       'Dev_', 'Dev: ',\r\n                       'Test',   'Test: ',\r\n                       'Prod',  'Prod: ')\r\n",
+                "exp_Counters.lkp_PP_END_YEAR",
+                "lkp_PAY_PERIOD.PP_END_YEAR [lookup PAY_PERIOD.PP_END_YEAR ON CURR_PP_FLAG = in_CURR_PP_FLAG]",
+                "exp_Build_Message.v_PP_NUM = IIF(PP_NUM < 10,\r\n       LPAD(TO_CHAR(PP_NUM), 2, '0'),\r\n    TO_CHAR(PP_NUM)\r\n)",
+                "exp_Counters.lkp_PP_NUM",
+                "lkp_PAY_PERIOD.PP_NUM [lookup PAY_PERIOD.PP_NUM ON CURR_PP_FLAG = in_CURR_PP_FLAG]"
+              ],
+              "column": "SUBJECT",
+              "rule": "exp_Final_Message.SUBJECT",
+              "sources": [
+                "PAY_PERIOD.PP_END_YEAR (lookup)",
+                "PAY_PERIOD.PP_NUM (lookup)",
+                "literal/expression: 'Y' (lookup key)",
+                "literal/expression: DECODE(SUBSTR($PMRepositoryServiceName, 1, 4),\r\n                       'Dev_', 'Dev: ',\r\n                       'Test',   'Test: ',\r\n                       'Prod',  'Prod: ')\r\n"
+              ]
+            },
+            {
+              "chain": [
+                "exp_Final_Message.MESSAGE",
+                "exp_Build_Message.o_MESSAGE = SETVARIABLE($$MAP_MESSAGE, v_MESSAGE)",
+                "exp_Build_Message.v_MESSAGE = 'Number of Detail Records from Comp Time file\t= ' || TO_CHAR(COUNTER_1)",
+                "exp_Counters.DETAIL_RECORD_COUNT",
+                "exp_Detail_Count.DETAIL_RECORD_COUNT",
+                "agg_ALL_RECORDS.o_DETAIL_RECORD_COUNT = COUNT(SSN)",
+                "fil_Detail.SSN",
+                "exp_Initial.SSN",
+                "SQ_U0287D01.SSN",
+                "U0287D01.SSN"
+              ],
+              "column": "MESSAGE",
+              "rule": "exp_Final_Message.MESSAGE",
+              "sources": [
+                "U0287D01.SSN"
+              ]
+            }
+          ],
+          "target_table": "COMPTIME_MESSAGE_FILE"
+        },
+        "COUNTER_TBL": {
+          "columns": [
+            {
+              "chain": [
+                "exp_Final.o_RUN_DATE = SESSSTARTTIME"
+              ],
+              "column": "RUN_DATE",
+              "rule": "exp_Final.o_RUN_DATE = SESSSTARTTIME",
+              "sources": [
+                "literal/expression: SESSSTARTTIME"
+              ]
+            },
+            {
+              "chain": [
+                "exp_Final.o_PROCESS_NAME = $PMMappingName"
+              ],
+              "column": "PROCESS_NAME",
+              "rule": "exp_Final.o_PROCESS_NAME = $PMMappingName",
+              "sources": [
+                "literal/expression: $PMMappingName"
+              ]
+            },
+            {
+              "chain": [
+                "exp_Final.COUNTER_DESCRIPTION",
+                "exp_Counters.o_COUNTER_DESCRIPTION_1 = 'Number of detail records from the COMP TIME file.'"
+              ],
+              "column": "COUNTER_DESCRIPTION",
+              "rule": "exp_Final.COUNTER_DESCRIPTION",
+              "sources": [
+                "literal/expression: 'Number of detail records from the COMP TIME file.'"
+              ]
+            },
+            {
+              "chain": [
+                "exp_Final.COUNTER_VALUE",
+                "exp_Counters.DETAIL_RECORD_COUNT",
+                "exp_Detail_Count.DETAIL_RECORD_COUNT",
+                "agg_ALL_RECORDS.o_DETAIL_RECORD_COUNT = COUNT(SSN)",
+                "fil_Detail.SSN",
+                "exp_Initial.SSN",
+                "SQ_U0287D01.SSN",
+                "U0287D01.SSN"
+              ],
+              "column": "COUNTER_VALUE",
+              "rule": "exp_Final.COUNTER_VALUE",
+              "sources": [
+                "U0287D01.SSN"
+              ]
+            },
+            {
+              "chain": [],
+              "column": "PP_END_YEAR",
+              "rule": "(not connected — NULL)",
+              "sources": []
+            },
+            {
+              "chain": [],
+              "column": "PP_NUM",
+              "rule": "(not connected — NULL)",
+              "sources": []
+            },
+            {
+              "chain": [],
+              "column": "CYCLE_ID",
+              "rule": "(not connected — NULL)",
+              "sources": []
+            }
+          ],
+          "target_table": "COUNTER_TBL"
+        }
+      },
+      "target_load_order": [
+        {
+          "ORDER": "1",
+          "TARGETINSTANCE": "COUNTER_TBL"
+        },
+        {
+          "ORDER": "1",
+          "TARGETINSTANCE": "COMPTIME_MESSAGE_FILE"
+        }
+      ],
+      "targets": [
+        "COMPTIME_MESSAGE_FILE",
+        "COUNTER_TBL"
+      ],
+      "transformations": {
+        "SQ_U0287D01": {
+          "attributes": {
+            "Number Of Sorted Ports": "0",
+            "Select Distinct": "NO"
+          },
+          "expression_evaluation_order": [
+            "SSN",
+            "NAME",
+            "CURRENT_ACCT",
+            "CURRENT_ORG",
+            "FLSA_STATUS",
+            "COMP_TIME_CUR_BAL",
+            "COMP_TIME_YEAR_EARNED",
+            "PP_END_DATE",
+            "DAILY_DATE_EARNED",
+            "COMP_TIME_RATE",
+            "COMP_TIME_HOURS",
+            "COMP_TIME_UNDEF"
+          ],
+          "expressions": {},
+          "router_groups": [],
+          "type": "Source Qualifier"
+        },
+        "agg_ALL_RECORDS": {
+          "attributes": {
+            "Sorted Input": "NO"
+          },
+          "expression_evaluation_order": [
+            "SSN",
+            "RECORD_TYPE_FLAG",
+            "RECORD_TYPE",
+            "o_DETAIL_RECORD_COUNT"
+          ],
+          "expressions": {
+            "o_DETAIL_RECORD_COUNT": "COUNT(SSN)"
+          },
+          "router_groups": [],
+          "type": "Aggregator"
+        },
+        "exp_Build_Message": {
+          "attributes": {},
+          "expression_evaluation_order": [
+            "COUNTER_DESCRIPTION_1",
+            "COUNTER_1",
+            "PP_NUM",
+            "PP_END_YEAR",
+            "v_PP_NUM",
+            "v_ENVIRONMENT",
+            "v_SUBJECT",
+            "o_SUBJECT",
+            "v_MESSAGE",
+            "o_MESSAGE"
+          ],
+          "expressions": {
+            "o_MESSAGE": "SETVARIABLE($$MAP_MESSAGE, v_MESSAGE)",
+            "o_SUBJECT": "SETVARIABLE($$MAP_SUBJECT, v_SUBJECT)",
+            "v_ENVIRONMENT": "DECODE(SUBSTR($PMRepositoryServiceName, 1, 4),\r\n                       'Dev_', 'Dev: ',\r\n                       'Test',   'Test: ',\r\n                       'Prod',  'Prod: ')\r\n",
+            "v_MESSAGE": "'Number of Detail Records from Comp Time file\t= ' || TO_CHAR(COUNTER_1)",
+            "v_PP_NUM": "IIF(PP_NUM < 10,\r\n       LPAD(TO_CHAR(PP_NUM), 2, '0'),\r\n    TO_CHAR(PP_NUM)\r\n)",
+            "v_SUBJECT": "v_ENVIRONMENT ||\r\n'Comp Time File loaded successfully for Pay Period:  ' || \r\nTO_CHAR(PP_END_YEAR) || '-' || v_PP_NUM"
+          },
+          "router_groups": [],
+          "type": "Expression"
+        },
+        "exp_Counters": {
+          "attributes": {},
+          "expression_evaluation_order": [
+            "o_COUNTER_DESCRIPTION_1",
+            "DETAIL_RECORD_COUNT",
+            "lkp_PP_NUM",
+            "lkp_PP_END_YEAR"
+          ],
+          "expressions": {
+            "o_COUNTER_DESCRIPTION_1": "'Number of detail records from the COMP TIME file.'"
+          },
+          "router_groups": [],
+          "type": "Expression"
+        },
+        "exp_Detail_Count": {
+          "attributes": {},
+          "expression_evaluation_order": [
+            "DETAIL_RECORD_COUNT",
+            "o_CURR_PP_FLAG"
+          ],
+          "expressions": {
+            "o_CURR_PP_FLAG": "'Y'"
+          },
+          "router_groups": [],
+          "type": "Expression"
+        },
+        "exp_Final": {
+          "attributes": {},
+          "expression_evaluation_order": [
+            "o_RUN_DATE",
+            "o_PROCESS_NAME",
+            "COUNTER_DESCRIPTION",
+            "COUNTER_VALUE"
+          ],
+          "expressions": {
+            "o_PROCESS_NAME": "$PMMappingName",
+            "o_RUN_DATE": "SESSSTARTTIME"
+          },
+          "router_groups": [],
+          "type": "Expression"
+        },
+        "exp_Final_Message": {
+          "attributes": {},
+          "expression_evaluation_order": [
+            "SUBJECT",
+            "MESSAGE"
+          ],
+          "expressions": {},
+          "router_groups": [],
+          "type": "Expression"
+        },
+        "exp_Initial": {
+          "attributes": {},
+          "expression_evaluation_order": [
+            "SSN",
+            "NAME",
+            "o_RECORD_TYPE_FLAG"
+          ],
+          "expressions": {
+            "o_RECORD_TYPE_FLAG": "DECODE(TRUE,\r\n\t\t\t   IS_NUMBER(SSN), 'D',\r\n\t\t\t  'NO')"
+          },
+          "router_groups": [],
+          "type": "Expression"
+        },
+        "fil_Detail": {
+          "attributes": {
+            "Filter Condition": "RECORD_TYPE_FLAG = 'D'\r\n\r\n--RECORD_TYPE_FLAG = 'H' OR"
+          },
+          "expression_evaluation_order": [
+            "SSN",
+            "RECORD_TYPE_FLAG",
+            "RECORD_TYPE",
+            "DETAIL_CONSTANT"
+          ],
+          "expressions": {},
+          "router_groups": [],
+          "type": "Filter"
+        },
+        "lkp_PAY_PERIOD": {
+          "attributes": {
+            "Dynamic Lookup Cache": "NO",
+            "Lookup condition": "CURR_PP_FLAG = in_CURR_PP_FLAG",
+            "Lookup policy on multiple match": "Use Any Value",
+            "Lookup table name": "PAY_PERIOD",
+            "Source Type": "Database"
+          },
+          "expression_evaluation_order": [
+            "in_CURR_PP_FLAG",
+            "PP_NUM",
+            "PP_END_YEAR",
+            "PP_START_DTE",
+            "PP_END_DTE",
+            "LV_NUM",
+            "LV_YEAR",
+            "PAY_DTE",
+            "CURR_PP_FLAG"
+          ],
+          "expressions": {},
+          "router_groups": [],
+          "type": "Lookup Procedure"
+        }
+      },
+      "unconnected_lkp_calls": [],
+      "unpopulated_target_columns": {
+        "COMPTIME_MESSAGE_FILE": [],
+        "COUNTER_TBL": [
+          "PP_END_YEAR",
+          "PP_NUM",
+          "CYCLE_ID"
+        ]
+      },
+      "update_strategies": []
+    }
+  ],
+  "mapplets": [],
+  "repository_file": "legacy/informatica_ts/COMPTIME",
+  "sources": {
+    "PAY_PERIOD": {
+      "database_type": "Oracle",
+      "dbd_name": "ORA_BIIS",
+      "fields": [
+        {
+          "datatype": "number(p,s)",
+          "field_type": "ELEMITEM",
+          "key": "PRIMARY KEY",
+          "length": "2",
+          "level": "0",
+          "name": "PP_NUM",
+          "nullable": "NOTNULL",
+          "occurs": "0",
+          "offset": "0",
+          "path": "PP_NUM",
+          "precision": "2",
+          "scale": "0"
+        },
+        {
+          "datatype": "number(p,s)",
+          "field_type": "ELEMITEM",
+          "key": "PRIMARY KEY",
+          "length": "4",
+          "level": "0",
+          "name": "PP_END_YEAR",
+          "nullable": "NOTNULL",
+          "occurs": "0",
+          "offset": "2",
+          "path": "PP_END_YEAR",
+          "precision": "4",
+          "scale": "0"
+        },
+        {
+          "datatype": "date",
+          "field_type": "ELEMITEM",
+          "key": "NOT A KEY",
+          "length": "19",
+          "level": "0",
+          "name": "PP_START_DTE",
+          "nullable": "NULL",
+          "occurs": "0",
+          "offset": "6",
+          "path": "PP_START_DTE",
+          "precision": "19",
+          "scale": "0"
+        },
+        {
+          "datatype": "date",
+          "field_type": "ELEMITEM",
+          "key": "NOT A KEY",
+          "length": "19",
+          "level": "0",
+          "name": "PP_END_DTE",
+          "nullable": "NULL",
+          "occurs": "0",
+          "offset": "25",
+          "path": "PP_END_DTE",
+          "precision": "19",
+          "scale": "0"
+        },
+        {
+          "datatype": "number(p,s)",
+          "field_type": "ELEMITEM",
+          "key": "NOT A KEY",
+          "length": "2",
+          "level": "0",
+          "name": "LV_NUM",
+          "nullable": "NULL",
+          "occurs": "0",
+          "offset": "44",
+          "path": "LV_NUM",
+          "precision": "2",
+          "scale": "0"
+        },
+        {
+          "datatype": "number(p,s)",
+          "field_type": "ELEMITEM",
+          "key": "NOT A KEY",
+          "length": "4",
+          "level": "0",
+          "name": "LV_YEAR",
+          "nullable": "NULL",
+          "occurs": "0",
+          "offset": "46",
+          "path": "LV_YEAR",
+          "precision": "4",
+          "scale": "0"
+        },
+        {
+          "datatype": "date",
+          "field_type": "ELEMITEM",
+          "key": "NOT A KEY",
+          "length": "19",
+          "level": "0",
+          "name": "PAY_DTE",
+          "nullable": "NULL",
+          "occurs": "0",
+          "offset": "50",
+          "path": "PAY_DTE",
+          "precision": "19",
+          "scale": "0"
+        },
+        {
+          "datatype": "varchar2",
+          "field_type": "ELEMITEM",
+          "key": "NOT A KEY",
+          "length": "1",
+          "level": "0",
+          "name": "CURR_PP_FLAG",
+          "nullable": "NULL",
+          "occurs": "0",
+          "offset": "69",
+          "path": "CURR_PP_FLAG",
+          "precision": "1",
+          "scale": "0"
+        },
+        {
+          "datatype": "date",
+          "field_type": "ELEMITEM",
+          "key": "NOT A KEY",
+          "length": "19",
+          "level": "0",
+          "name": "HOLIDAY_1",
+          "nullable": "NULL",
+          "occurs": "0",
+          "offset": "70",
+          "path": "HOLIDAY_1",
+          "precision": "19",
+          "scale": "0"
+        },
+        {
+          "datatype": "date",
+          "field_type": "ELEMITEM",
+          "key": "NOT A KEY",
+          "length": "19",
+          "level": "0",
+          "name": "HOLIDAY_2",
+          "nullable": "NULL",
+          "occurs": "0",
+          "offset": "89",
+          "path": "HOLIDAY_2",
+          "precision": "19",
+          "scale": "0"
+        }
+      ],
+      "flatfile": null,
+      "owner_name": "HISTDBA"
+    },
+    "U0287D01": {
+      "database_type": "Flat File",
+      "dbd_name": "FlatFile",
+      "fields": [
+        {
+          "datatype": "string",
+          "field_type": "ELEMITEM",
+          "key": "NOT A KEY",
+          "length": "9",
+          "level": "0",
+          "name": "SSN",
+          "nullable": "NULL",
+          "occurs": "0",
+          "offset": "0",
+          "path": "SSN",
+          "precision": "9",
+          "scale": "0"
+        },
+        {
+          "datatype": "string",
+          "field_type": "ELEMITEM",
+          "key": "NOT A KEY",
+          "length": "30",
+          "level": "0",
+          "name": "NAME",
+          "nullable": "NULL",
+          "occurs": "0",
+          "offset": "9",
+          "path": "NAME",
+          "precision": "30",
+          "scale": "0"
+        },
+        {
+          "datatype": "string",
+          "field_type": "ELEMITEM",
+          "key": "NOT A KEY",
+          "length": "6",
+          "level": "0",
+          "name": "CURRENT_ACCT",
+          "nullable": "NULL",
+          "occurs": "0",
+          "offset": "39",
+          "path": "CURRENT_ACCT",
+          "precision": "6",
+          "scale": "0"
+        },
+        {
+          "datatype": "string",
+          "field_type": "ELEMITEM",
+          "key": "NOT A KEY",
+          "length": "7",
+          "level": "0",
+          "name": "CURRENT_ORG",
+          "nullable": "NULL",
+          "occurs": "0",
+          "offset": "45",
+          "path": "CURRENT_ORG",
+          "precision": "7",
+          "scale": "0"
+        },
+        {
+          "datatype": "string",
+          "field_type": "ELEMITEM",
+          "key": "NOT A KEY",
+          "length": "1",
+          "level": "0",
+          "name": "FLSA_STATUS",
+          "nullable": "NULL",
+          "occurs": "0",
+          "offset": "52",
+          "path": "FLSA_STATUS",
+          "precision": "1",
+          "scale": "0"
+        },
+        {
+          "datatype": "number",
+          "field_type": "ELEMITEM",
+          "key": "NOT A KEY",
+          "length": "8",
+          "level": "0",
+          "name": "COMP_TIME_CUR_BAL",
+          "nullable": "NULL",
+          "occurs": "0",
+          "offset": "53",
+          "path": "COMP_TIME_CUR_BAL",
+          "precision": "8",
+          "scale": "2"
+        },
+        {
+          "datatype": "number",
+          "field_type": "ELEMITEM",
+          "key": "NOT A KEY",
+          "length": "4",
+          "level": "0",
+          "name": "COMP_TIME_YEAR_EARNED",
+          "nullable": "NULL",
+          "occurs": "0",
+          "offset": "61",
+          "path": "COMP_TIME_YEAR_EARNED",
+          "precision": "4",
+          "scale": "0"
+        },
+        {
+          "datatype": "string",
+          "field_type": "ELEMITEM",
+          "key": "NOT A KEY",
+          "length": "8",
+          "level": "0",
+          "name": "PP_END_DATE",
+          "nullable": "NULL",
+          "occurs": "0",
+          "offset": "65",
+          "path": "PP_END_DATE",
+          "precision": "8",
+          "scale": "0"
+        },
+        {
+          "datatype": "string",
+          "field_type": "ELEMITEM",
+          "key": "NOT A KEY",
+          "length": "8",
+          "level": "0",
+          "name": "DAILY_DATE_EARNED",
+          "nullable": "NULL",
+          "occurs": "0",
+          "offset": "73",
+          "path": "DAILY_DATE_EARNED",
+          "precision": "8",
+          "scale": "0"
+        },
+        {
+          "datatype": "number",
+          "field_type": "ELEMITEM",
+          "key": "NOT A KEY",
+          "length": "6",
+          "level": "0",
+          "name": "COMP_TIME_RATE",
+          "nullable": "NULL",
+          "occurs": "0",
+          "offset": "81",
+          "path": "COMP_TIME_RATE",
+          "precision": "6",
+          "scale": "2"
+        },
+        {
+          "datatype": "number",
+          "field_type": "ELEMITEM",
+          "key": "NOT A KEY",
+          "length": "8",
+          "level": "0",
+          "name": "COMP_TIME_HOURS",
+          "nullable": "NULL",
+          "occurs": "0",
+          "offset": "87",
+          "path": "COMP_TIME_HOURS",
+          "precision": "8",
+          "scale": "2"
+        },
+        {
+          "datatype": "number",
+          "field_type": "ELEMITEM",
+          "key": "NOT A KEY",
+          "length": "6",
+          "level": "0",
+          "name": "COMP_TIME_UNDEF",
+          "nullable": "NULL",
+          "occurs": "0",
+          "offset": "95",
+          "path": "COMP_TIME_UNDEF",
+          "precision": "6",
+          "scale": "0"
+        }
+      ],
+      "flatfile": {
+        "CODEPAGE": "MS1252",
+        "CONSECDELIMITERSASONE": "NO",
+        "DELIMITED": "YES",
+        "DELIMITERS": ",",
+        "ESCAPE_CHARACTER": "",
+        "KEEPESCAPECHAR": "NO",
+        "LINESEQUENTIAL": "NO",
+        "MULTIDELIMITERSASAND": "NO",
+        "NULLCHARTYPE": "ASCII",
+        "NULL_CHARACTER": "*",
+        "PADBYTES": "1",
+        "QUOTE_CHARACTER": "DOUBLE",
+        "REPEATABLE": "NO",
+        "ROWDELIMITER": "0",
+        "SHIFTSENSITIVEDATA": "NO",
+        "SKIPROWS": "0",
+        "STRIPTRAILINGBLANKS": "NO"
+      },
+      "owner_name": ""
+    }
+  },
+  "targets": {
+    "COMPTIME_MESSAGE_FILE": {
+      "database_type": "Flat File",
+      "fields": [
+        {
+          "datatype": "string",
+          "key": "NOT A KEY",
+          "name": "SUBJECT",
+          "nullable": "NULL",
+          "path": "SUBJECT",
+          "precision": "100",
+          "scale": "0"
+        },
+        {
+          "datatype": "string",
+          "key": "NOT A KEY",
+          "name": "MESSAGE",
+          "nullable": "NULL",
+          "path": "MESSAGE",
+          "precision": "300",
+          "scale": "0"
+        }
+      ],
+      "groups": [],
+      "pwx_metadata": {}
+    },
+    "COMP_TIME_DAILY_TBL": {
+      "database_type": "Oracle",
+      "fields": [
+        {
+          "datatype": "number(p,s)",
+          "key": "NOT A KEY",
+          "name": "PP_END_YEAR",
+          "nullable": "NULL",
+          "path": "PP_END_YEAR",
+          "precision": "4",
+          "scale": "0"
+        },
+        {
+          "datatype": "number(p,s)",
+          "key": "NOT A KEY",
+          "name": "PP_NUM",
+          "nullable": "NULL",
+          "path": "PP_NUM",
+          "precision": "2",
+          "scale": "0"
+        },
+        {
+          "datatype": "number(p,s)",
+          "key": "NOT A KEY",
+          "name": "PP_YEAR_NUM",
+          "nullable": "NULL",
+          "path": "PP_YEAR_NUM",
+          "precision": "6",
+          "scale": "0"
+        },
+        {
+          "datatype": "varchar2",
+          "key": "NOT A KEY",
+          "name": "SSN",
+          "nullable": "NULL",
+          "path": "SSN",
+          "precision": "9",
+          "scale": "0"
+        },
+        {
+          "datatype": "varchar2",
+          "key": "NOT A KEY",
+          "name": "NAME",
+          "nullable": "NULL",
+          "path": "NAME",
+          "precision": "30",
+          "scale": "0"
+        },
+        {
+          "datatype": "varchar2",
+          "key": "NOT A KEY",
+          "name": "CURRENT_ACCT",
+          "nullable": "NULL",
+          "path": "CURRENT_ACCT",
+          "precision": "6",
+          "scale": "0"
+        },
+        {
+          "datatype": "varchar2",
+          "key": "NOT A KEY",
+          "name": "CURRENT_ORG",
+          "nullable": "NULL",
+          "path": "CURRENT_ORG",
+          "precision": "7",
+          "scale": "0"
+        },
+        {
+          "datatype": "varchar2",
+          "key": "NOT A KEY",
+          "name": "FLSA_STATUS",
+          "nullable": "NULL",
+          "path": "FLSA_STATUS",
+          "precision": "1",
+          "scale": "0"
+        },
+        {
+          "datatype": "number(p,s)",
+          "key": "NOT A KEY",
+          "name": "COMP_TIME_CUR_BAL",
+          "nullable": "NULL",
+          "path": "COMP_TIME_CUR_BAL",
+          "precision": "8",
+          "scale": "2"
+        },
+        {
+          "datatype": "number(p,s)",
+          "key": "NOT A KEY",
+          "name": "COMP_TIME_YEAR_EARNED",
+          "nullable": "NULL",
+          "path": "COMP_TIME_YEAR_EARNED",
+          "precision": "4",
+          "scale": "0"
+        },
+        {
+          "datatype": "date",
+          "key": "NOT A KEY",
+          "name": "PP_END_DATE",
+          "nullable": "NULL",
+          "path": "PP_END_DATE",
+          "precision": "19",
+          "scale": "0"
+        },
+        {
+          "datatype": "date",
+          "key": "NOT A KEY",
+          "name": "DAILY_DATE_EARNED",
+          "nullable": "NULL",
+          "path": "DAILY_DATE_EARNED",
+          "precision": "19",
+          "scale": "0"
+        },
+        {
+          "datatype": "number(p,s)",
+          "key": "NOT A KEY",
+          "name": "COMP_TIME_RATE",
+          "nullable": "NULL",
+          "path": "COMP_TIME_RATE",
+          "precision": "6",
+          "scale": "2"
+        },
+        {
+          "datatype": "number(p,s)",
+          "key": "NOT A KEY",
+          "name": "COMP_TIME_HOURS",
+          "nullable": "NULL",
+          "path": "COMP_TIME_HOURS",
+          "precision": "8",
+          "scale": "2"
+        },
+        {
+          "datatype": "number(p,s)",
+          "key": "NOT A KEY",
+          "name": "COMP_TIME_UNDEF",
+          "nullable": "NULL",
+          "path": "COMP_TIME_UNDEF",
+          "precision": "6",
+          "scale": "0"
+        }
+      ],
+      "groups": [],
+      "pwx_metadata": {}
+    },
+    "COMP_TIME_DATE_FILE": {
+      "database_type": "Flat File",
+      "fields": [
+        {
+          "datatype": "string",
+          "key": "NOT A KEY",
+          "name": "PAY_PERIOD",
+          "nullable": "NULL",
+          "path": "PAY_PERIOD",
+          "precision": "6",
+          "scale": "0"
+        }
+      ],
+      "groups": [],
+      "pwx_metadata": {}
+    },
+    "COUNTER_TBL": {
+      "database_type": "Oracle",
+      "fields": [
+        {
+          "datatype": "date",
+          "key": "NOT A KEY",
+          "name": "RUN_DATE",
+          "nullable": "NULL",
+          "path": "RUN_DATE",
+          "precision": "19",
+          "scale": "0"
+        },
+        {
+          "datatype": "varchar2",
+          "key": "NOT A KEY",
+          "name": "PROCESS_NAME",
+          "nullable": "NULL",
+          "path": "PROCESS_NAME",
+          "precision": "100",
+          "scale": "0"
+        },
+        {
+          "datatype": "varchar2",
+          "key": "NOT A KEY",
+          "name": "COUNTER_DESCRIPTION",
+          "nullable": "NULL",
+          "path": "COUNTER_DESCRIPTION",
+          "precision": "200",
+          "scale": "0"
+        },
+        {
+          "datatype": "number",
+          "key": "NOT A KEY",
+          "name": "COUNTER_VALUE",
+          "nullable": "NULL",
+          "path": "COUNTER_VALUE",
+          "precision": "15",
+          "scale": "0"
+        },
+        {
+          "datatype": "number(p,s)",
+          "key": "NOT A KEY",
+          "name": "PP_END_YEAR",
+          "nullable": "NULL",
+          "path": "PP_END_YEAR",
+          "precision": "4",
+          "scale": "0"
+        },
+        {
+          "datatype": "number(p,s)",
+          "key": "NOT A KEY",
+          "name": "PP_NUM",
+          "nullable": "NULL",
+          "path": "PP_NUM",
+          "precision": "2",
+          "scale": "0"
+        },
+        {
+          "datatype": "number(p,s)",
+          "key": "NOT A KEY",
+          "name": "CYCLE_ID",
+          "nullable": "NULL",
+          "path": "CYCLE_ID",
+          "precision": "1",
+          "scale": "0"
+        }
+      ],
+      "groups": [],
+      "pwx_metadata": {}
+    }
+  },
+  "transformations_by_type": {
+    "Aggregator": 1,
+    "Expression": 11,
+    "Filter": 2,
+    "Lookup Procedure": 2,
+    "Source Qualifier": 3
+  },
+  "workflows": [
+    {
+      "attributes": {
+        "Parameter Filename": "/data/BIISINT/control/BIIS_parms.iparms",
+        "Workflow Log File Name": "wf_COMPTIME_Load_COMP_TIME_DAILY_TBL.log"
+      },
+      "command_tasks": [
+        {
+          "attributes": {
+            "Fail task if any command fails": "NO",
+            "Recovery Strategy": "Fail task and continue workflow"
+          },
+          "commands": [
+            {
+              "name": "$$MAP_PP_END_YEAR",
+              "order": "1",
+              "value": "$$WF_PP_END_YEAR"
+            },
+            {
+              "name": "$$MAP_PP_NUM",
+              "order": "2",
+              "value": "$$WF_PP_NUM"
+            },
+            {
+              "name": "$$MAP_PP_YEAR_NUM",
+              "order": "3",
+              "value": "$$WF_PP_YEAR_NUM"
+            }
+          ],
+          "component": "Pre-session variable assignment",
+          "name": "presession_variable_assignment",
+          "scope": "s_COMPTIME_Current_Pay_Period"
+        },
+        {
+          "attributes": {
+            "Fail task if any command fails": "NO",
+            "Recovery Strategy": "Fail task and continue workflow"
+          },
+          "commands": [
+            {
+              "name": "$$WF_PP_END_YEAR",
+              "order": "1",
+              "value": "$$MAP_PP_END_YEAR"
+            },
+            {
+              "name": "$$WF_PP_NUM",
+              "order": "2",
+              "value": "$$MAP_PP_NUM"
+            },
+            {
+              "name": "$$WF_PP_YEAR_NUM",
+              "order": "3",
+              "value": "$$MAP_PP_YEAR_NUM"
+            }
+          ],
+          "component": "Post-session success variable assignment",
+          "name": "postsession_success_variable_assignment",
+          "scope": "s_COMPTIME_Current_Pay_Period"
+        },
+        {
+          "attributes": {
+            "Fail task if any command fails": "NO",
+            "Recovery Strategy": "Fail task and continue workflow"
+          },
+          "commands": [],
+          "component": "Post-session failure variable assignment",
+          "name": "postsession_failure_variable_assignment",
+          "scope": "s_COMPTIME_Current_Pay_Period"
+        },
+        {
+          "attributes": {
+            "Fail task if any command fails": "NO",
+            "Recovery Strategy": "Fail task and continue workflow"
+          },
+          "commands": [
+            {
+              "name": "Command1",
+              "order": "1",
+              "value": "mv $Param_Root_Directory/data/int/in/COMPTIME/$Param_COMPTIME_filename  $Param_Root_Directory/data/archive/COMPTIME/u0827d01_P$$WF_PP_YEAR_NUM.txt"
+            }
+          ],
+          "component": "Post-session success command",
+          "name": "post_session_success_command",
+          "scope": "s_COMPTIME_Build_Message_Counters"
+        },
+        {
+          "attributes": {
+            "Fail task if any command fails": "NO",
+            "Recovery Strategy": "Fail task and continue workflow"
+          },
+          "commands": [
+            {
+              "name": "$$MAP_SUBJECT",
+              "order": "1",
+              "value": "$$WF_SUBJECT"
+            },
+            {
+              "name": "$$MAP_MESSAGE",
+              "order": "2",
+              "value": "$$WF_MESSAGE"
+            }
+          ],
+          "component": "Pre-session variable assignment",
+          "name": "presession_variable_assignment",
+          "scope": "s_COMPTIME_Build_Message_Counters"
+        },
+        {
+          "attributes": {
+            "Fail task if any command fails": "NO",
+            "Recovery Strategy": "Fail task and continue workflow"
+          },
+          "commands": [
+            {
+              "name": "$$WF_SUBJECT",
+              "order": "1",
+              "value": "$$MAP_SUBJECT"
+            },
+            {
+              "name": "$$WF_MESSAGE",
+              "order": "2",
+              "value": "$$MAP_MESSAGE"
+            }
+          ],
+          "component": "Post-session success variable assignment",
+          "name": "postsession_success_variable_assignment",
+          "scope": "s_COMPTIME_Build_Message_Counters"
+        },
+        {
+          "attributes": {
+            "Fail task if any command fails": "NO",
+            "Recovery Strategy": "Fail task and continue workflow"
+          },
+          "commands": [],
+          "component": "Post-session failure variable assignment",
+          "name": "postsession_failure_variable_assignment",
+          "scope": "s_COMPTIME_Build_Message_Counters"
+        },
+        {
+          "attributes": {
+            "Fail task if any command fails": "NO",
+            "Recovery Strategy": "Fail task and continue workflow"
+          },
+          "commands": [],
+          "component": "Pre-session variable assignment",
+          "name": "presession_variable_assignment",
+          "scope": "s_COMPTIME_Load_COMP_TIME_DAILY_TBL"
+        },
+        {
+          "attributes": {
+            "Fail task if any command fails": "NO",
+            "Recovery Strategy": "Fail task and continue workflow"
+          },
+          "commands": [],
+          "component": "Post-session success variable assignment",
+          "name": "postsession_success_variable_assignment",
+          "scope": "s_COMPTIME_Load_COMP_TIME_DAILY_TBL"
+        },
+        {
+          "attributes": {
+            "Fail task if any command fails": "NO",
+            "Recovery Strategy": "Fail task and continue workflow"
+          },
+          "commands": [],
+          "component": "Post-session failure variable assignment",
+          "name": "postsession_failure_variable_assignment",
+          "scope": "s_COMPTIME_Load_COMP_TIME_DAILY_TBL"
+        }
+      ],
+      "email_tasks": [
+        {
+          "name": "email_COMPTIME_Complete",
+          "scope": "workflow"
+        }
+      ],
+      "execution_order": [
+        "Start",
+        "s_COMPTIME_Current_Pay_Period",
+        "s_COMPTIME_Load_COMP_TIME_DAILY_TBL",
+        "s_COMPTIME_Build_Message_Counters",
+        "email_COMPTIME_Complete"
+      ],
+      "links": [
+        {
+          "condition": "",
+          "from": "Start",
+          "to": "s_COMPTIME_Current_Pay_Period"
+        },
+        {
+          "condition": "$s_COMPTIME_Load_COMP_TIME_DAILY_TBL.Status  = Succeeded",
+          "from": "s_COMPTIME_Load_COMP_TIME_DAILY_TBL",
+          "to": "s_COMPTIME_Build_Message_Counters"
+        },
+        {
+          "condition": "$s_COMPTIME_Current_Pay_Period.Status = Succeeded",
+          "from": "s_COMPTIME_Current_Pay_Period",
+          "to": "s_COMPTIME_Load_COMP_TIME_DAILY_TBL"
+        },
+        {
+          "condition": "$s_COMPTIME_Build_Message_Counters.Status = Succeeded",
+          "from": "s_COMPTIME_Build_Message_Counters",
+          "to": "email_COMPTIME_Complete"
+        }
+      ],
+      "name": "wf_COMPTIME",
+      "session_order": [
+        "s_COMPTIME_Current_Pay_Period",
+        "s_COMPTIME_Load_COMP_TIME_DAILY_TBL",
+        "s_COMPTIME_Build_Message_Counters"
+      ],
+      "sessions": [
+        {
+          "attributes": {
+            "Commit Interval": "10000",
+            "Commit Type": "Target",
+            "Parameter Filename": "",
+            "Pushdown Optimization": "None",
+            "Treat source rows as": "Insert"
+          },
+          "components": [
+            {
+              "task": "presession_variable_assignment",
+              "type": "Pre-session variable assignment",
+              "values": [
+                {
+                  "name": "$$MAP_PP_END_YEAR",
+                  "order": "1",
+                  "value": "$$WF_PP_END_YEAR"
+                },
+                {
+                  "name": "$$MAP_PP_NUM",
+                  "order": "2",
+                  "value": "$$WF_PP_NUM"
+                },
+                {
+                  "name": "$$MAP_PP_YEAR_NUM",
+                  "order": "3",
+                  "value": "$$WF_PP_YEAR_NUM"
+                }
+              ]
+            },
+            {
+              "task": "postsession_success_variable_assignment",
+              "type": "Post-session success variable assignment",
+              "values": [
+                {
+                  "name": "$$WF_PP_END_YEAR",
+                  "order": "1",
+                  "value": "$$MAP_PP_END_YEAR"
+                },
+                {
+                  "name": "$$WF_PP_NUM",
+                  "order": "2",
+                  "value": "$$MAP_PP_NUM"
+                },
+                {
+                  "name": "$$WF_PP_YEAR_NUM",
+                  "order": "3",
+                  "value": "$$MAP_PP_YEAR_NUM"
+                }
+              ]
+            },
+            {
+              "task": "postsession_failure_variable_assignment",
+              "type": "Post-session failure variable assignment",
+              "values": []
+            }
+          ],
+          "mapping": "m_COMPTIME_Current_Pay_Period",
+          "name": "s_COMPTIME_Current_Pay_Period",
+          "readers_writers": [
+            {
+              "attributes": {},
+              "connection_subtype": null,
+              "connection_type": null,
+              "instance": "PAY_PERIOD",
+              "kind": "READER",
+              "subtype": "Relational Reader"
+            },
+            {
+              "attributes": {},
+              "connection_subtype": "Oracle",
+              "connection_type": "Relational",
+              "instance": "SQ_PAY_PERIOD",
+              "kind": "READER",
+              "subtype": "Relational Reader"
+            },
+            {
+              "attributes": {
+                "Append if Exists": "NO",
+                "Output Type": "File",
+                "Output file directory": "$PMTargetFileDir\\",
+                "Output filename": "comp_time_date_file.txt"
+              },
+              "connection_subtype": "",
+              "connection_type": "",
+              "instance": "COMP_TIME_DATE_FILE",
+              "kind": "WRITER",
+              "subtype": "File Writer"
+            }
+          ],
+          "transformation_overrides": {}
+        },
+        {
+          "attributes": {
+            "Commit Interval": "10000",
+            "Commit Type": "Target",
+            "Parameter Filename": "",
+            "Pushdown Optimization": "None",
+            "Treat source rows as": "Insert"
+          },
+          "components": [
+            {
+              "task": "presession_variable_assignment",
+              "type": "Pre-session variable assignment",
+              "values": []
+            },
+            {
+              "task": "postsession_success_variable_assignment",
+              "type": "Post-session success variable assignment",
+              "values": []
+            },
+            {
+              "task": "postsession_failure_variable_assignment",
+              "type": "Post-session failure variable assignment",
+              "values": []
+            }
+          ],
+          "mapping": "m_COMPTIME_Load_COMP_TIME_DAILY_TBL",
+          "name": "s_COMPTIME_Load_COMP_TIME_DAILY_TBL",
+          "readers_writers": [
+            {
+              "attributes": {
+                "Input Type": "File",
+                "Source file directory": "$Param_Root_Directory/data/int/in/COMPTIME",
+                "Source filename": "$Param_COMPTIME_filename"
+              },
+              "connection_subtype": "",
+              "connection_type": "",
+              "instance": "U0287D01",
+              "kind": "READER",
+              "subtype": "File Reader"
+            },
+            {
+              "attributes": {},
+              "connection_subtype": null,
+              "connection_type": null,
+              "instance": "SQ_U0287D01",
+              "kind": "READER",
+              "subtype": "File Reader"
+            },
+            {
+              "attributes": {
+                "Delete": "YES",
+                "Insert": "YES",
+                "Target load type": "Normal",
+                "Truncate target table option": "NO",
+                "Update as Insert": "NO",
+                "Update as Update": "YES",
+                "Update else Insert": "NO"
+              },
+              "connection_subtype": "Oracle",
+              "connection_type": "Relational",
+              "instance": "COMP_TIME_DAILY_TBL",
+              "kind": "WRITER",
+              "subtype": "Relational Writer"
+            },
+            {
+              "attributes": {},
+              "connection_subtype": "",
+              "connection_type": "Relational",
+              "instance": "lkp_PAY_PERIOD",
+              "kind": "LOOKUPEXTENSION",
+              "subtype": "Relational Lookup"
+            }
+          ],
+          "transformation_overrides": {}
+        },
+        {
+          "attributes": {
+            "Commit Interval": "10000",
+            "Commit Type": "Target",
+            "Parameter Filename": "",
+            "Pushdown Optimization": "None",
+            "Treat source rows as": "Insert"
+          },
+          "components": [
+            {
+              "task": "post_session_success_command",
+              "type": "Post-session success command",
+              "values": []
+            },
+            {
+              "task": "presession_variable_assignment",
+              "type": "Pre-session variable assignment",
+              "values": [
+                {
+                  "name": "$$MAP_SUBJECT",
+                  "order": "1",
+                  "value": "$$WF_SUBJECT"
+                },
+                {
+                  "name": "$$MAP_MESSAGE",
+                  "order": "2",
+                  "value": "$$WF_MESSAGE"
+                }
+              ]
+            },
+            {
+              "task": "postsession_success_variable_assignment",
+              "type": "Post-session success variable assignment",
+              "values": [
+                {
+                  "name": "$$WF_SUBJECT",
+                  "order": "1",
+                  "value": "$$MAP_SUBJECT"
+                },
+                {
+                  "name": "$$WF_MESSAGE",
+                  "order": "2",
+                  "value": "$$MAP_MESSAGE"
+                }
+              ]
+            },
+            {
+              "task": "postsession_failure_variable_assignment",
+              "type": "Post-session failure variable assignment",
+              "values": []
+            }
+          ],
+          "mapping": "m_COMPTIME_Build_Message_Counters",
+          "name": "s_COMPTIME_Build_Message_Counters",
+          "readers_writers": [
+            {
+              "attributes": {
+                "Delete": "YES",
+                "Insert": "YES",
+                "Target load type": "Normal",
+                "Truncate target table option": "NO",
+                "Update as Insert": "NO",
+                "Update as Update": "YES",
+                "Update else Insert": "NO"
+              },
+              "connection_subtype": "Oracle",
+              "connection_type": "Relational",
+              "instance": "COUNTER_TBL",
+              "kind": "WRITER",
+              "subtype": "Relational Writer"
+            },
+            {
+              "attributes": {
+                "Append if Exists": "NO",
+                "Output Type": "File",
+                "Output file directory": "$PMTargetFileDir\\",
+                "Output filename": "comptime_message_file.txt"
+              },
+              "connection_subtype": "",
+              "connection_type": "",
+              "instance": "COMPTIME_MESSAGE_FILE",
+              "kind": "WRITER",
+              "subtype": "File Writer"
+            },
+            {
+              "attributes": {
+                "Input Type": "File",
+                "Source file directory": "$Param_Root_Directory/data/int/in/COMPTIME",
+                "Source filename": "$Param_COMPTIME_filename"
+              },
+              "connection_subtype": "",
+              "connection_type": "",
+              "instance": "U0287D01",
+              "kind": "READER",
+              "subtype": "File Reader"
+            },
+            {
+              "attributes": {},
+              "connection_subtype": null,
+              "connection_type": null,
+              "instance": "SQ_U0287D01",
+              "kind": "READER",
+              "subtype": "File Reader"
+            },
+            {
+              "attributes": {},
+              "connection_subtype": "",
+              "connection_type": "Relational",
+              "instance": "lkp_PAY_PERIOD",
+              "kind": "LOOKUPEXTENSION",
+              "subtype": "Relational Lookup"
+            }
+          ],
+          "transformation_overrides": {}
+        }
+      ],
+      "task_instances": [
+        {
+          "enabled": "YES",
+          "fail_parent_if_fails": "YES",
+          "name": "s_COMPTIME_Current_Pay_Period",
+          "task_name": "s_COMPTIME_Current_Pay_Period",
+          "task_type": "Session",
+          "treat_input_links_as_and": "YES"
+        },
+        {
+          "enabled": "YES",
+          "fail_parent_if_fails": "YES",
+          "name": "s_COMPTIME_Build_Message_Counters",
+          "task_name": "s_COMPTIME_Build_Message_Counters",
+          "task_type": "Session",
+          "treat_input_links_as_and": "YES"
+        },
+        {
+          "enabled": "YES",
+          "fail_parent_if_fails": "YES",
+          "name": "s_COMPTIME_Load_COMP_TIME_DAILY_TBL",
+          "task_name": "s_COMPTIME_Load_COMP_TIME_DAILY_TBL",
+          "task_type": "Session",
+          "treat_input_links_as_and": "YES"
+        },
+        {
+          "enabled": "YES",
+          "fail_parent_if_fails": null,
+          "name": "Start",
+          "task_name": "Start",
+          "task_type": "Start",
+          "treat_input_links_as_and": null
+        },
+        {
+          "enabled": "YES",
+          "fail_parent_if_fails": "NO",
+          "name": "email_COMPTIME_Complete",
+          "task_name": "email_COMPTIME_Complete",
+          "task_type": "Email",
+          "treat_input_links_as_and": "YES"
+        }
+      ],
+      "user_variables": [
+        {
+          "DATATYPE": "nstring",
+          "DEFAULTVALUE": "",
+          "ISNULL": "NO",
+          "ISPERSISTENT": "NO",
+          "NAME": "$$WF_PP_YEAR_NUM",
+          "USERDEFINED": "YES"
+        },
+        {
+          "DATATYPE": "nstring",
+          "DEFAULTVALUE": "",
+          "ISNULL": "NO",
+          "ISPERSISTENT": "NO",
+          "NAME": "$$WF_COMPTIME_EMAIL_LIST",
+          "USERDEFINED": "YES"
+        },
+        {
+          "DATATYPE": "nstring",
+          "DEFAULTVALUE": "",
+          "ISNULL": "NO",
+          "ISPERSISTENT": "NO",
+          "NAME": "$$WF_SUBJECT",
+          "USERDEFINED": "YES"
+        },
+        {
+          "DATATYPE": "nstring",
+          "DEFAULTVALUE": "",
+          "ISNULL": "NO",
+          "ISPERSISTENT": "NO",
+          "NAME": "$$WF_MESSAGE",
+          "USERDEFINED": "YES"
+        },
+        {
+          "DATATYPE": "integer",
+          "DEFAULTVALUE": "",
+          "ISNULL": "NO",
+          "ISPERSISTENT": "NO",
+          "NAME": "$$WF_PP_END_YEAR",
+          "USERDEFINED": "YES"
+        },
+        {
+          "DATATYPE": "integer",
+          "DEFAULTVALUE": "",
+          "ISNULL": "NO",
+          "ISPERSISTENT": "NO",
+          "NAME": "$$WF_PP_NUM",
+          "USERDEFINED": "YES"
+        }
+      ]
+    }
+  ]
+}

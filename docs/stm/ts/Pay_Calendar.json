@@ -1,0 +1,2124 @@
+{
+  "counts": {
+    "MAPPING": 4,
+    "MAPPLET": 0,
+    "SESSION": 4,
+    "SOURCE": 1,
+    "TARGET": 3,
+    "TRANSFORMATION": 21,
+    "WORKFLOW": 1
+  },
+  "counts_match": true,
+  "folder": "Pay_Calendar",
+  "grep_counts": {
+    "MAPPING": 4,
+    "MAPPLET": 0,
+    "SESSION": 4,
+    "SOURCE": 1,
+    "TARGET": 3,
+    "TRANSFORMATION": 21,
+    "WORKFLOW": 1
+  },
+  "grep_transformations_by_type": {
+    "Expression": 10,
+    "Lookup Procedure": 3,
+    "Router": 1,
+    "Source Qualifier": 4,
+    "Update Strategy": 3
+  },
+  "mapping_order": [
+    "m_Pay_Calendar_Reset_Pay_Calendar",
+    "m_Pay_Calendar_Set_Pay_Calendar",
+    "m_Pay_Calendar_Verify_Pay_Calendar",
+    "m_Pay_Calendar_Build_Message"
+  ],
+  "mappings": [
+    {
+      "aggregator_groupby_ports": {},
+      "joiners": [],
+      "lookup_details": [],
+      "mapping_variables": [],
+      "mapplet_expansions": [],
+      "name": "m_Pay_Calendar_Reset_Pay_Calendar",
+      "normalizers": [],
+      "physical_target_instances": {
+        "PAY_PERIOD": [
+          "RESET_PAY_PERIOD"
+        ]
+      },
+      "sequence_generators": [],
+      "sessions": [
+        {
+          "position": 1,
+          "session": "s_Pay_Calendar_Reset_Pay_Calendar",
+          "workflow": "wf_Pay_Calendar"
+        }
+      ],
+      "sorters": [],
+      "source_qualifiers": [
+        {
+          "post_sql": null,
+          "pre_sql": null,
+          "select_distinct": "NO",
+          "sorted_ports": "0",
+          "source_filter": "PAY_PERIOD.CURR_PP_FLAG = 'Y'",
+          "sources": [
+            "PAY_PERIOD1"
+          ],
+          "sql_query": null,
+          "transformation": "SQ_PAY_PERIOD_RESET",
+          "user_defined_join": null
+        }
+      ],
+      "source_tables": {
+        "PAY_PERIOD1": "PAY_PERIOD"
+      },
+      "sources": [
+        "PAY_PERIOD1"
+      ],
+      "sql_overrides": [],
+      "target_instance_attributes": {},
+      "target_lineage": {
+        "RESET_PAY_PERIOD": {
+          "columns": [
+            {
+              "chain": [
+                "upd_Reset_Current_PP.PP_NUM",
+                "exp_Initial.PP_NUM",
+                "SQ_PAY_PERIOD_RESET.PP_NUM",
+                "PAY_PERIOD1.PP_NUM"
+              ],
+              "column": "PP_NUM",
+              "rule": "upd_Reset_Current_PP.PP_NUM",
+              "sources": [
+                "PAY_PERIOD1.PP_NUM"
+              ]
+            },
+            {
+              "chain": [
+                "upd_Reset_Current_PP.PP_END_YEAR",
+                "exp_Initial.PP_END_YEAR",
+                "SQ_PAY_PERIOD_RESET.PP_END_YEAR",
+                "PAY_PERIOD1.PP_END_YEAR"
+              ],
+              "column": "PP_END_YEAR",
+              "rule": "upd_Reset_Current_PP.PP_END_YEAR",
+              "sources": [
+                "PAY_PERIOD1.PP_END_YEAR"
+              ]
+            },
+            {
+              "chain": [],
+              "column": "PP_START_DTE",
+              "rule": "(not connected — NULL)",
+              "sources": []
+            },
+            {
+              "chain": [],
+              "column": "PP_END_DTE",
+              "rule": "(not connected — NULL)",
+              "sources": []
+            },
+            {
+              "chain": [],
+              "column": "LV_NUM",
+              "rule": "(not connected — NULL)",
+              "sources": []
+            },
+            {
+              "chain": [],
+              "column": "LV_YEAR",
+              "rule": "(not connected — NULL)",
+              "sources": []
+            },
+            {
+              "chain": [],
+              "column": "PAY_DTE",
+              "rule": "(not connected — NULL)",
+              "sources": []
+            },
+            {
+              "chain": [
+                "upd_Reset_Current_PP.CURR_PP_FLAG",
+                "exp_Initial.o_CURR_PP_FLAG = NULL"
+              ],
+              "column": "CURR_PP_FLAG",
+              "rule": "upd_Reset_Current_PP.CURR_PP_FLAG",
+              "sources": [
+                "literal/expression: NULL"
+              ]
+            }
+          ],
+          "target_table": "PAY_PERIOD"
+        }
+      },
+      "target_load_order": [
+        {
+          "ORDER": "1",
+          "TARGETINSTANCE": "RESET_PAY_PERIOD"
+        }
+      ],
+      "targets": [
+        "RESET_PAY_PERIOD"
+      ],
+      "transformations": {
+        "SQ_PAY_PERIOD_RESET": {
+          "attributes": {
+            "Number Of Sorted Ports": "0",
+            "Select Distinct": "NO",
+            "Source Filter": "PAY_PERIOD.CURR_PP_FLAG = 'Y'"
+          },
+          "expression_evaluation_order": [
+            "PP_NUM",
+            "PP_END_YEAR",
+            "PP_START_DTE",
+            "PP_END_DTE",
+            "LV_NUM",
+            "LV_YEAR",
+            "PAY_DTE",
+            "CURR_PP_FLAG"
+          ],
+          "expressions": {},
+          "router_groups": [],
+          "type": "Source Qualifier"
+        },
+        "exp_Initial": {
+          "attributes": {},
+          "expression_evaluation_order": [
+            "PP_NUM",
+            "PP_END_YEAR",
+            "CURR_PP_FLAG",
+            "o_CURR_PP_FLAG"
+          ],
+          "expressions": {
+            "o_CURR_PP_FLAG": "NULL"
+          },
+          "router_groups": [],
+          "type": "Expression"
+        },
+        "upd_Reset_Current_PP": {
+          "attributes": {
+            "Forward Rejected Rows": "YES",
+            "Update Strategy Expression": "DD_UPDATE"
+          },
+          "expression_evaluation_order": [
+            "PP_NUM",
+            "PP_END_YEAR",
+            "CURR_PP_FLAG"
+          ],
+          "expressions": {},
+          "router_groups": [],
+          "type": "Update Strategy"
+        }
+      },
+      "unconnected_lkp_calls": [],
+      "unpopulated_target_columns": {
+        "RESET_PAY_PERIOD": [
+          "PP_START_DTE",
+          "PP_END_DTE",
+          "LV_NUM",
+          "LV_YEAR",
+          "PAY_DTE"
+        ]
+      },
+      "update_strategies": [
+        {
+          "expression": "DD_UPDATE",
+          "forward_rejected_rows": "YES",
+          "targets": [
+            "RESET_PAY_PERIOD"
+          ],
+          "transformation": "upd_Reset_Current_PP"
+        }
+      ]
+    },
+    {
+      "aggregator_groupby_ports": {},
+      "joiners": [],
+      "lookup_details": [
+        {
+          "condition": "PP_NUM = in_PARAM_PP_NUM AND PP_END_YEAR = in_PARAM_PP_END_YEAR",
+          "exists_in_export": true,
+          "multiple_match_policy": "Use Any Value",
+          "ports": [
+            "CURR_PP_FLAG",
+            "LV_NUM",
+            "LV_YEAR",
+            "PAY_DTE",
+            "PP_END_DTE",
+            "PP_END_YEAR",
+            "PP_NUM",
+            "PP_START_DTE",
+            "in_PARAM_PP_END_YEAR",
+            "in_PARAM_PP_NUM"
+          ],
+          "source_filter": null,
+          "sql_override": null,
+          "table": "PAY_PERIOD",
+          "transformation": "lkp_Existing_Pay_Period"
+        },
+        {
+          "condition": "PP_START_DTE <= in_CURRENT_DATE AND PP_END_DTE >= in_CURRENT_DATE",
+          "exists_in_export": true,
+          "multiple_match_policy": "Use Any Value",
+          "ports": [
+            "CURR_PP_FLAG",
+            "LV_NUM",
+            "LV_YEAR",
+            "PAY_DTE",
+            "PP_END_DTE",
+            "PP_END_YEAR",
+            "PP_NUM",
+            "PP_START_DTE",
+            "in_CURRENT_DATE"
+          ],
+          "source_filter": null,
+          "sql_override": null,
+          "table": "PAY_PERIOD",
+          "transformation": "lkp_New_Current_Pay_Period"
+        }
+      ],
+      "mapping_variables": [
+        {
+          "DATATYPE": "string",
+          "DEFAULTVALUE": "",
+          "ISEXPRESSIONVARIABLE": "NO",
+          "ISPARAM": "YES",
+          "NAME": "$$PP_END_YEAR",
+          "PRECISION": "10",
+          "SCALE": "0",
+          "USERDEFINED": "YES"
+        },
+        {
+          "DATATYPE": "string",
+          "DEFAULTVALUE": "",
+          "ISEXPRESSIONVARIABLE": "NO",
+          "ISPARAM": "YES",
+          "NAME": "$$PP_NUM",
+          "PRECISION": "10",
+          "SCALE": "0",
+          "USERDEFINED": "YES"
+        }
+      ],
+      "mapplet_expansions": [],
+      "name": "m_Pay_Calendar_Set_Pay_Calendar",
+      "normalizers": [],
+      "physical_target_instances": {
+        "PAY_PERIOD": [
+          "PAY_PERIOD",
+          "PAY_PERIOD_PARAM"
+        ]
+      },
+      "sequence_generators": [],
+      "sessions": [
+        {
+          "position": 2,
+          "session": "s_Pay_Calendar_Set_Pay_Calendar",
+          "workflow": "wf_Pay_Calendar"
+        }
+      ],
+      "sorters": [],
+      "source_qualifiers": [
+        {
+          "post_sql": null,
+          "pre_sql": null,
+          "select_distinct": "NO",
+          "sorted_ports": "0",
+          "source_filter": null,
+          "sources": [
+            "PAY_PERIOD1"
+          ],
+          "sql_query": "SELECT \r\n\tMAX(PAY_PERIOD.PP_NUM) PP_NUM , \r\n\tMAX(PAY_PERIOD.PP_END_YEAR) PP_END_YEAR \r\nFROM\r\n PAY_PERIOD",
+          "transformation": "SQ_PAY_PERIOD",
+          "user_defined_join": null
+        }
+      ],
+      "source_tables": {
+        "PAY_PERIOD1": "PAY_PERIOD"
+      },
+      "sources": [
+        "PAY_PERIOD1"
+      ],
+      "sql_overrides": [
+        {
+          "positional_bindings": [
+            {
+              "expression": "MAX(PAY_PERIOD.PP_NUM) PP_NUM",
+              "port": "PP_NUM",
+              "position": 1
+            },
+            {
+              "expression": "MAX(PAY_PERIOD.PP_END_YEAR) PP_END_YEAR",
+              "port": "PP_END_YEAR",
+              "position": 2
+            }
+          ],
+          "sql": "SELECT \r\n\tMAX(PAY_PERIOD.PP_NUM) PP_NUM , \r\n\tMAX(PAY_PERIOD.PP_END_YEAR) PP_END_YEAR \r\nFROM\r\n PAY_PERIOD",
+          "transformation": "SQ_PAY_PERIOD"
+        }
+      ],
+      "target_instance_attributes": {},
+      "target_lineage": {
+        "PAY_PERIOD": {
+          "columns": [
+            {
+              "chain": [
+                "upd_Set_Current_PP_Non_Param.PP_NUM",
+                "exp_Set_Current_Pay_Period_Non_Param.lkp_PP_NUM",
+                "lkp_New_Current_Pay_Period.PP_NUM [lookup PAY_PERIOD.PP_NUM ON PP_START_DTE <= in_CURRENT_DATE AND PP_END_DTE >= in_CURRENT_DATE]"
+              ],
+              "column": "PP_NUM",
+              "rule": "upd_Set_Current_PP_Non_Param.PP_NUM",
+              "sources": [
+                "PAY_PERIOD.PP_NUM (lookup)",
+                "literal/expression: TRUNC(SESSSTARTTIME) (lookup key)"
+              ]
+            },
+            {
+              "chain": [
+                "upd_Set_Current_PP_Non_Param.PP_END_YEAR",
+                "exp_Set_Current_Pay_Period_Non_Param.lkp_PP_END_YEAR",
+                "lkp_New_Current_Pay_Period.PP_END_YEAR [lookup PAY_PERIOD.PP_END_YEAR ON PP_START_DTE <= in_CURRENT_DATE AND PP_END_DTE >= in_CURRENT_DATE]"
+              ],
+              "column": "PP_END_YEAR",
+              "rule": "upd_Set_Current_PP_Non_Param.PP_END_YEAR",
+              "sources": [
+                "PAY_PERIOD.PP_END_YEAR (lookup)",
+                "literal/expression: TRUNC(SESSSTARTTIME) (lookup key)"
+              ]
+            },
+            {
+              "chain": [],
+              "column": "PP_START_DTE",
+              "rule": "(not connected — NULL)",
+              "sources": []
+            },
+            {
+              "chain": [],
+              "column": "PP_END_DTE",
+              "rule": "(not connected — NULL)",
+              "sources": []
+            },
+            {
+              "chain": [],
+              "column": "LV_NUM",
+              "rule": "(not connected — NULL)",
+              "sources": []
+            },
+            {
+              "chain": [],
+              "column": "LV_YEAR",
+              "rule": "(not connected — NULL)",
+              "sources": []
+            },
+            {
+              "chain": [],
+              "column": "PAY_DTE",
+              "rule": "(not connected — NULL)",
+              "sources": []
+            },
+            {
+              "chain": [
+                "upd_Set_Current_PP_Non_Param.CURR_PP_FLAG",
+                "exp_Set_Current_Pay_Period_Non_Param.o_CURR_PP_FLAG = 'Y'"
+              ],
+              "column": "CURR_PP_FLAG",
+              "rule": "upd_Set_Current_PP_Non_Param.CURR_PP_FLAG",
+              "sources": [
+                "literal/expression: 'Y'"
+              ]
+            }
+          ],
+          "target_table": "PAY_PERIOD"
+        },
+        "PAY_PERIOD_PARAM": {
+          "columns": [
+            {
+              "chain": [
+                "upd_Set_Current_PP_Param.PP_NUM",
+                "exp_Set_Current_Pay_Period_Param.PP_NUM",
+                "rtr_Parameter_Non_Parameter.PARAM_PP_NUM1 [router group PARAMETERS_EXIST WHERE PARAM_EXISTS_FLAG = TRUE]",
+                "exp_Determine_Parameters_Exist.PARAM_PP_NUM",
+                "exp_Initial.o_PARAM_PP_NUM = v_PARAM_PP_NUM",
+                "exp_Initial.v_PARAM_PP_NUM = IIF(NOT IS_NUMBER($$PP_NUM), 0, \r\n\tTO_DECIMAL($$PP_NUM))",
+                "SQ_PAY_PERIOD.PP_NUM",
+                "PAY_PERIOD1.PP_NUM"
+              ],
+              "column": "PP_NUM",
+              "rule": "upd_Set_Current_PP_Param.PP_NUM",
+              "sources": [
+                "PAY_PERIOD1.PP_NUM"
+              ]
+            },
+            {
+              "chain": [
+                "upd_Set_Current_PP_Param.PP_END_YEAR",
+                "exp_Set_Current_Pay_Period_Param.PP_END_YEAR",
+                "rtr_Parameter_Non_Parameter.PARAM_PP_END_YEAR1 [router group PARAMETERS_EXIST WHERE PARAM_EXISTS_FLAG = TRUE]",
+                "exp_Determine_Parameters_Exist.PARAM_PP_END_YEAR",
+                "exp_Initial.o_PARAM_PP_END_YEAR = v_PARAM_PP_END_YEAR",
+                "exp_Initial.v_PARAM_PP_END_YEAR = IIF(NOT IS_NUMBER($$PP_END_YEAR), 0, \r\n\tTO_DECIMAL($$PP_END_YEAR))",
+                "SQ_PAY_PERIOD.PP_END_YEAR",
+                "PAY_PERIOD1.PP_END_YEAR"
+              ],
+              "column": "PP_END_YEAR",
+              "rule": "upd_Set_Current_PP_Param.PP_END_YEAR",
+              "sources": [
+                "PAY_PERIOD1.PP_END_YEAR"
+              ]
+            },
+            {
+              "chain": [],
+              "column": "PP_START_DTE",
+              "rule": "(not connected — NULL)",
+              "sources": []
+            },
+            {
+              "chain": [],
+              "column": "PP_END_DTE",
+              "rule": "(not connected — NULL)",
+              "sources": []
+            },
+            {
+              "chain": [],
+              "column": "LV_NUM",
+              "rule": "(not connected — NULL)",
+              "sources": []
+            },
+            {
+              "chain": [],
+              "column": "LV_YEAR",
+              "rule": "(not connected — NULL)",
+              "sources": []
+            },
+            {
+              "chain": [],
+              "column": "PAY_DTE",
+              "rule": "(not connected — NULL)",
+              "sources": []
+            },
+            {
+              "chain": [
+                "upd_Set_Current_PP_Param.CURR_PP_FLAG",
+                "exp_Set_Current_Pay_Period_Param.o_CURR_PP_FLAG = 'Y'"
+              ],
+              "column": "CURR_PP_FLAG",
+              "rule": "upd_Set_Current_PP_Param.CURR_PP_FLAG",
+              "sources": [
+                "literal/expression: 'Y'"
+              ]
+            }
+          ],
+          "target_table": "PAY_PERIOD"
+        }
+      },
+      "target_load_order": [
+        {
+          "ORDER": "1",
+          "TARGETINSTANCE": "PAY_PERIOD_PARAM"
+        },
+        {
+          "ORDER": "1",
+          "TARGETINSTANCE": "PAY_PERIOD"
+        }
+      ],
+      "targets": [
+        "PAY_PERIOD",
+        "PAY_PERIOD_PARAM"
+      ],
+      "transformations": {
+        "SQ_PAY_PERIOD": {
+          "attributes": {
+            "Number Of Sorted Ports": "0",
+            "Select Distinct": "NO",
+            "Sql Query": "SELECT \r\n\tMAX(PAY_PERIOD.PP_NUM) PP_NUM , \r\n\tMAX(PAY_PERIOD.PP_END_YEAR) PP_END_YEAR \r\nFROM\r\n PAY_PERIOD"
+          },
+          "expression_evaluation_order": [
+            "PP_NUM",
+            "PP_END_YEAR",
+            "PP_START_DTE",
+            "PP_END_DTE",
+            "LV_NUM",
+            "LV_YEAR",
+            "PAY_DTE",
+            "CURR_PP_FLAG"
+          ],
+          "expressions": {},
+          "router_groups": [],
+          "type": "Source Qualifier"
+        },
+        "exp_Determine_Parameters_Exist": {
+          "attributes": {},
+          "expression_evaluation_order": [
+            "PP_NUM",
+            "PP_END_YEAR",
+            "v_CURR_PP_FLAG",
+            "v_TEN_DAYS_AGO",
+            "PARAM_PP_END_YEAR",
+            "PARAM_PP_NUM",
+            "lkp_PP_NUM",
+            "o_PARAM_EXISTS_FLAG"
+          ],
+          "expressions": {
+            "o_PARAM_EXISTS_FLAG": "IIF(NOT ISNULL(lkp_PP_NUM),\r\nTRUE,\r\nFALSE)",
+            "v_CURR_PP_FLAG": "NULL",
+            "v_TEN_DAYS_AGO": "ADD_TO_DATE(SESSSTARTTIME, 'D', -10)"
+          },
+          "router_groups": [],
+          "type": "Expression"
+        },
+        "exp_Initial": {
+          "attributes": {},
+          "expression_evaluation_order": [
+            "PP_NUM",
+            "PP_END_YEAR",
+            "CURR_PP_FLAG",
+            "v_TEN_DAYS_AGO",
+            "v_PARAM_PP_END_YEAR",
+            "v_PARAM_PP_NUM",
+            "o_PARAM_PP_END_YEAR",
+            "o_PARAM_PP_NUM"
+          ],
+          "expressions": {
+            "o_PARAM_PP_END_YEAR": "v_PARAM_PP_END_YEAR",
+            "o_PARAM_PP_NUM": "v_PARAM_PP_NUM",
+            "v_PARAM_PP_END_YEAR": "IIF(NOT IS_NUMBER($$PP_END_YEAR), 0, \r\n\tTO_DECIMAL($$PP_END_YEAR))",
+            "v_PARAM_PP_NUM": "IIF(NOT IS_NUMBER($$PP_NUM), 0, \r\n\tTO_DECIMAL($$PP_NUM))",
+            "v_TEN_DAYS_AGO": "ADD_TO_DATE(SESSSTARTTIME, 'D', -10)"
+          },
+          "router_groups": [],
+          "type": "Expression"
+        },
+        "exp_Set_Current_Pay_Period_Non_Param": {
+          "attributes": {},
+          "expression_evaluation_order": [
+            "lkp_PP_NUM",
+            "lkp_PP_END_YEAR",
+            "lkp_CURR_PP_FLAG",
+            "o_CURR_PP_FLAG"
+          ],
+          "expressions": {
+            "o_CURR_PP_FLAG": "'Y'"
+          },
+          "router_groups": [],
+          "type": "Expression"
+        },
+        "exp_Set_Current_Pay_Period_Param": {
+          "attributes": {},
+          "expression_evaluation_order": [
+            "PP_NUM",
+            "PP_END_YEAR",
+            "lkp_CURR_PP_FLAG",
+            "o_CURR_PP_FLAG"
+          ],
+          "expressions": {
+            "o_CURR_PP_FLAG": "'Y'"
+          },
+          "router_groups": [],
+          "type": "Expression"
+        },
+        "exp_Set_Date": {
+          "attributes": {},
+          "expression_evaluation_order": [
+            "PP_NUM",
+            "o_CURRENT_DATE"
+          ],
+          "expressions": {
+            "o_CURRENT_DATE": "TRUNC(SESSSTARTTIME)"
+          },
+          "router_groups": [],
+          "type": "Expression"
+        },
+        "lkp_Existing_Pay_Period": {
+          "attributes": {
+            "Dynamic Lookup Cache": "NO",
+            "Lookup condition": "PP_NUM = in_PARAM_PP_NUM AND PP_END_YEAR = in_PARAM_PP_END_YEAR",
+            "Lookup policy on multiple match": "Use Any Value",
+            "Lookup table name": "PAY_PERIOD",
+            "Source Type": "Database"
+          },
+          "expression_evaluation_order": [
+            "in_PARAM_PP_NUM",
+            "in_PARAM_PP_END_YEAR",
+            "PP_NUM",
+            "PP_END_YEAR",
+            "PP_START_DTE",
+            "PP_END_DTE",
+            "LV_NUM",
+            "LV_YEAR",
+            "PAY_DTE",
+            "CURR_PP_FLAG"
+          ],
+          "expressions": {},
+          "router_groups": [],
+          "type": "Lookup Procedure"
+        },
+        "lkp_New_Current_Pay_Period": {
+          "attributes": {
+            "Dynamic Lookup Cache": "NO",
+            "Lookup condition": "PP_START_DTE <= in_CURRENT_DATE AND PP_END_DTE >= in_CURRENT_DATE",
+            "Lookup policy on multiple match": "Use Any Value",
+            "Lookup table name": "PAY_PERIOD",
+            "Source Type": "Database"
+          },
+          "expression_evaluation_order": [
+            "in_CURRENT_DATE",
+            "PP_NUM",
+            "PP_END_YEAR",
+            "PP_START_DTE",
+            "PP_END_DTE",
+            "LV_NUM",
+            "LV_YEAR",
+            "PAY_DTE",
+            "CURR_PP_FLAG"
+          ],
+          "expressions": {},
+          "router_groups": [],
+          "type": "Lookup Procedure"
+        },
+        "rtr_Parameter_Non_Parameter": {
+          "attributes": {},
+          "expression_evaluation_order": [
+            "PP_NUM",
+            "PP_END_YEAR",
+            "PARAM_PP_END_YEAR",
+            "PARAM_PP_NUM",
+            "PARAM_EXISTS_FLAG",
+            "PP_NUM1",
+            "PP_END_YEAR1",
+            "PARAM_PP_END_YEAR1",
+            "PARAM_PP_NUM1",
+            "PARAM_EXISTS_FLAG1",
+            "PP_NUM3",
+            "PP_END_YEAR3",
+            "PARAM_PP_END_YEAR3",
+            "PARAM_PP_NUM3",
+            "PARAM_EXISTS_FLAG3",
+            "PP_NUM2",
+            "PP_END_YEAR2",
+            "PARAM_PP_END_YEAR2",
+            "PARAM_PP_NUM2",
+            "PARAM_EXISTS_FLAG2"
+          ],
+          "expressions": {},
+          "router_groups": [
+            {
+              "expression": null,
+              "name": "INPUT",
+              "type": "INPUT"
+            },
+            {
+              "expression": "PARAM_EXISTS_FLAG = TRUE",
+              "name": "PARAMETERS_EXIST",
+              "type": "OUTPUT"
+            },
+            {
+              "expression": null,
+              "name": "DEFAULT1",
+              "type": "OUTPUT/DEFAULT"
+            },
+            {
+              "expression": "PARAM_EXISTS_FLAG = FALSE",
+              "name": "PARAMETERS_NOT_EXIST",
+              "type": "OUTPUT"
+            }
+          ],
+          "type": "Router"
+        },
+        "upd_Set_Current_PP_Non_Param": {
+          "attributes": {
+            "Forward Rejected Rows": "YES",
+            "Update Strategy Expression": "DD_UPDATE"
+          },
+          "expression_evaluation_order": [
+            "PP_NUM",
+            "PP_END_YEAR",
+            "CURR_PP_FLAG"
+          ],
+          "expressions": {},
+          "router_groups": [],
+          "type": "Update Strategy"
+        },
+        "upd_Set_Current_PP_Param": {
+          "attributes": {
+            "Forward Rejected Rows": "YES",
+            "Update Strategy Expression": "DD_UPDATE"
+          },
+          "expression_evaluation_order": [
+            "PP_NUM",
+            "PP_END_YEAR",
+            "CURR_PP_FLAG"
+          ],
+          "expressions": {},
+          "router_groups": [],
+          "type": "Update Strategy"
+        }
+      },
+      "unconnected_lkp_calls": [],
+      "unpopulated_target_columns": {
+        "PAY_PERIOD": [
+          "PP_START_DTE",
+          "PP_END_DTE",
+          "LV_NUM",
+          "LV_YEAR",
+          "PAY_DTE"
+        ],
+        "PAY_PERIOD_PARAM": [
+          "PP_START_DTE",
+          "PP_END_DTE",
+          "LV_NUM",
+          "LV_YEAR",
+          "PAY_DTE"
+        ]
+      },
+      "update_strategies": [
+        {
+          "expression": "DD_UPDATE",
+          "forward_rejected_rows": "YES",
+          "targets": [
+            "PAY_PERIOD"
+          ],
+          "transformation": "upd_Set_Current_PP_Non_Param"
+        },
+        {
+          "expression": "DD_UPDATE",
+          "forward_rejected_rows": "YES",
+          "targets": [
+            "PAY_PERIOD_PARAM"
+          ],
+          "transformation": "upd_Set_Current_PP_Param"
+        }
+      ]
+    },
+    {
+      "aggregator_groupby_ports": {},
+      "joiners": [],
+      "lookup_details": [
+        {
+          "condition": "COUNT_CURRENT >= in_MIN_PP_NUM",
+          "exists_in_export": true,
+          "multiple_match_policy": "Use Any Value",
+          "ports": [
+            "COUNT_CURRENT",
+            "CURR_PP_FLAG",
+            "LV_NUM",
+            "LV_YEAR",
+            "PAY_DTE",
+            "PP_END_DTE",
+            "PP_END_YEAR",
+            "PP_NUM",
+            "PP_START_DTE",
+            "in_MIN_PP_NUM"
+          ],
+          "source_filter": null,
+          "sql_override": "SELECT \r\n\tCOUNT(*) as COUNT_CURRENT\r\nFROM \r\n\tPAY_PERIOD\r\nWHERE\r\n\tCURR_PP_FLAG = 'Y'",
+          "table": "PAY_PERIOD",
+          "transformation": "lkp_Current_Pay_Period"
+        }
+      ],
+      "mapping_variables": [],
+      "mapplet_expansions": [],
+      "name": "m_Pay_Calendar_Verify_Pay_Calendar",
+      "normalizers": [],
+      "physical_target_instances": {
+        "PAY_PERIOD_VERIFY_FILE": [
+          "PAY_PERIOD_VERIFY_FILE"
+        ]
+      },
+      "sequence_generators": [],
+      "sessions": [
+        {
+          "position": 3,
+          "session": "s_Pay_Calendar_Verify_Pay_Calendar",
+          "workflow": "wf_Pay_Calendar"
+        }
+      ],
+      "sorters": [],
+      "source_qualifiers": [
+        {
+          "post_sql": null,
+          "pre_sql": null,
+          "select_distinct": "NO",
+          "sorted_ports": "0",
+          "source_filter": null,
+          "sources": [
+            "PAY_PERIOD1"
+          ],
+          "sql_query": "SELECT \r\n\tMAX(PAY_PERIOD.PP_NUM) PP_NUM , \r\n\tMAX(PAY_PERIOD.PP_END_YEAR) PP_END_YEAR \r\nFROM\r\n PAY_PERIOD",
+          "transformation": "SQ_PAY_PERIOD",
+          "user_defined_join": null
+        }
+      ],
+      "source_tables": {
+        "PAY_PERIOD1": "PAY_PERIOD"
+      },
+      "sources": [
+        "PAY_PERIOD1"
+      ],
+      "sql_overrides": [
+        {
+          "positional_bindings": [
+            {
+              "expression": "MAX(PAY_PERIOD.PP_NUM) PP_NUM",
+              "port": "PP_NUM",
+              "position": 1
+            },
+            {
+              "expression": "MAX(PAY_PERIOD.PP_END_YEAR) PP_END_YEAR",
+              "port": "PP_END_YEAR",
+              "position": 2
+            }
+          ],
+          "sql": "SELECT \r\n\tMAX(PAY_PERIOD.PP_NUM) PP_NUM , \r\n\tMAX(PAY_PERIOD.PP_END_YEAR) PP_END_YEAR \r\nFROM\r\n PAY_PERIOD",
+          "transformation": "SQ_PAY_PERIOD"
+        }
+      ],
+      "target_instance_attributes": {},
+      "target_lineage": {
+        "PAY_PERIOD_VERIFY_FILE": {
+          "columns": [
+            {
+              "chain": [
+                "exp_Check_Current_Flag.o_CURRENT_FLAG_SET = DECODE(TRUE,\r\n\t\t\t\tv_CURRENT_FLAG_SET = TRUE, \r\n\t\t\t\t\t\t'!!!! Current flag has been properly set',\r\n\r\n\r\n\t\t\t\tv_CURRENT_FLAG_SET = FALSE AND \r\n\t\t\t\t(ISNULL (lkp_COUNT_CURRENT) OR lkp_COUNT_CURRENT = 0), \r\n\t\t\t\t\t       ABORT('!!!! There is no pay period set.'),\r\n\r\n\r\n\t\t\t\tv_CURRENT_FLAG_SET = FALSE AND \r\n\t\t\t\t\t\tlkp_COUNT_CURRENT > 1, \r\n       ABORT('!!!! There are more than one pay periods set to current.')\r\n)",
+                "exp_Check_Current_Flag.v_CURRENT_FLAG_SET = IIF(lkp_COUNT_CURRENT =  1, \r\n       TRUE,\r\n        FALSE)",
+                "lkp_Current_Pay_Period.COUNT_CURRENT [lookup PAY_PERIOD.COUNT_CURRENT ON COUNT_CURRENT >= in_MIN_PP_NUM]"
+              ],
+              "column": "SUBJECT",
+              "rule": "exp_Check_Current_Flag.o_CURRENT_FLAG_SET = DECODE(TRUE,\r\n\t\t\t\tv_CURRENT_FLAG_SET = TRUE, \r\n\t\t\t\t\t\t'!!!! Current flag has been properly set',\r\n\r\n\r\n\t\t\t\tv_CURRENT_FLAG_SET = FALSE AND \r\n\t\t\t\t(ISNULL (lkp_COUNT_CURRENT) OR lkp_COUNT_CURRENT = 0), \r\n\t\t\t\t\t       ABORT('!!!! There is no pay period set.'),\r\n\r\n\r\n\t\t\t\tv_CURRENT_FLAG_SET = FALSE AND \r\n\t\t\t\t\t\tlkp_COUNT_CURRENT > 1, \r\n       ABORT('!!!! There are more than one pay periods set to current.')\r\n)",
+              "sources": [
+                "PAY_PERIOD.COUNT_CURRENT (lookup)",
+                "literal/expression: 1 (lookup key)"
+              ]
+            }
+          ],
+          "target_table": "PAY_PERIOD_VERIFY_FILE"
+        }
+      },
+      "target_load_order": [
+        {
+          "ORDER": "1",
+          "TARGETINSTANCE": "PAY_PERIOD_VERIFY_FILE"
+        }
+      ],
+      "targets": [
+        "PAY_PERIOD_VERIFY_FILE"
+      ],
+      "transformations": {
+        "SQ_PAY_PERIOD": {
+          "attributes": {
+            "Number Of Sorted Ports": "0",
+            "Select Distinct": "NO",
+            "Sql Query": "SELECT \r\n\tMAX(PAY_PERIOD.PP_NUM) PP_NUM , \r\n\tMAX(PAY_PERIOD.PP_END_YEAR) PP_END_YEAR \r\nFROM\r\n PAY_PERIOD"
+          },
+          "expression_evaluation_order": [
+            "PP_NUM",
+            "PP_END_YEAR",
+            "PP_START_DTE",
+            "PP_END_DTE",
+            "LV_NUM",
+            "LV_YEAR",
+            "PAY_DTE",
+            "CURR_PP_FLAG"
+          ],
+          "expressions": {},
+          "router_groups": [],
+          "type": "Source Qualifier"
+        },
+        "exp_Check_Current_Flag": {
+          "attributes": {},
+          "expression_evaluation_order": [
+            "PP_NUM",
+            "lkp_PP_NUM",
+            "lkp_COUNT_CURRENT",
+            "v_CURRENT_FLAG_SET",
+            "o_CURRENT_FLAG_SET"
+          ],
+          "expressions": {
+            "o_CURRENT_FLAG_SET": "DECODE(TRUE,\r\n\t\t\t\tv_CURRENT_FLAG_SET = TRUE, \r\n\t\t\t\t\t\t'!!!! Current flag has been properly set',\r\n\r\n\r\n\t\t\t\tv_CURRENT_FLAG_SET = FALSE AND \r\n\t\t\t\t(ISNULL (lkp_COUNT_CURRENT) OR lkp_COUNT_CURRENT = 0), \r\n\t\t\t\t\t       ABORT('!!!! There is no pay period set.'),\r\n\r\n\r\n\t\t\t\tv_CURRENT_FLAG_SET = FALSE AND \r\n\t\t\t\t\t\tlkp_COUNT_CURRENT > 1, \r\n       ABORT('!!!! There are more than one pay periods set to current.')\r\n)",
+            "v_CURRENT_FLAG_SET": "IIF(lkp_COUNT_CURRENT =  1, \r\n       TRUE,\r\n        FALSE)"
+          },
+          "router_groups": [],
+          "type": "Expression"
+        },
+        "exp_Initial": {
+          "attributes": {},
+          "expression_evaluation_order": [
+            "PP_NUM",
+            "PP_END_YEAR",
+            "CURR_PP_FLAG",
+            "o_CURR_PP_FLAG",
+            "o_MIN_PP_NUM"
+          ],
+          "expressions": {
+            "o_CURR_PP_FLAG": "NULL",
+            "o_MIN_PP_NUM": "1"
+          },
+          "router_groups": [],
+          "type": "Expression"
+        },
+        "lkp_Current_Pay_Period": {
+          "attributes": {
+            "Dynamic Lookup Cache": "NO",
+            "Lookup Sql Override": "SELECT \r\n\tCOUNT(*) as COUNT_CURRENT\r\nFROM \r\n\tPAY_PERIOD\r\nWHERE\r\n\tCURR_PP_FLAG = 'Y'",
+            "Lookup condition": "COUNT_CURRENT >= in_MIN_PP_NUM",
+            "Lookup policy on multiple match": "Use Any Value",
+            "Lookup table name": "PAY_PERIOD",
+            "Source Type": "Database"
+          },
+          "expression_evaluation_order": [
+            "in_MIN_PP_NUM",
+            "PP_NUM",
+            "PP_END_YEAR",
+            "PP_START_DTE",
+            "PP_END_DTE",
+            "LV_NUM",
+            "LV_YEAR",
+            "PAY_DTE",
+            "CURR_PP_FLAG",
+            "COUNT_CURRENT"
+          ],
+          "expressions": {},
+          "router_groups": [],
+          "type": "Lookup Procedure"
+        }
+      },
+      "unconnected_lkp_calls": [],
+      "unpopulated_target_columns": {
+        "PAY_PERIOD_VERIFY_FILE": []
+      },
+      "update_strategies": []
+    },
+    {
+      "aggregator_groupby_ports": {},
+      "joiners": [],
+      "lookup_details": [],
+      "mapping_variables": [
+        {
+          "AGGFUNCTION": "MAX",
+          "DATATYPE": "string",
+          "DEFAULTVALUE": "0",
+          "ISEXPRESSIONVARIABLE": "NO",
+          "ISPARAM": "NO",
+          "NAME": "$$MAP_MESSAGE",
+          "PRECISION": "300",
+          "SCALE": "0",
+          "USERDEFINED": "YES"
+        },
+        {
+          "AGGFUNCTION": "MAX",
+          "DATATYPE": "string",
+          "DEFAULTVALUE": "0",
+          "ISEXPRESSIONVARIABLE": "NO",
+          "ISPARAM": "NO",
+          "NAME": "$$MAP_SUBJECT",
+          "PRECISION": "100",
+          "SCALE": "0",
+          "USERDEFINED": "YES"
+        }
+      ],
+      "mapplet_expansions": [],
+      "name": "m_Pay_Calendar_Build_Message",
+      "normalizers": [],
+      "physical_target_instances": {
+        "PAY_PERIOD_MESSAGE_FILE": [
+          "PAY_PERIOD_MESSAGE_FILE"
+        ]
+      },
+      "sequence_generators": [],
+      "sessions": [
+        {
+          "position": 4,
+          "session": "s_Pay_Calendar_Build_Message",
+          "workflow": "wf_Pay_Calendar"
+        }
+      ],
+      "sorters": [],
+      "source_qualifiers": [
+        {
+          "post_sql": null,
+          "pre_sql": null,
+          "select_distinct": "NO",
+          "sorted_ports": "0",
+          "source_filter": "PAY_PERIOD.CURR_PP_FLAG = 'Y'",
+          "sources": [
+            "PAY_PERIOD1"
+          ],
+          "sql_query": null,
+          "transformation": "SQ_PAY_PERIOD",
+          "user_defined_join": null
+        }
+      ],
+      "source_tables": {
+        "PAY_PERIOD1": "PAY_PERIOD"
+      },
+      "sources": [
+        "PAY_PERIOD1"
+      ],
+      "sql_overrides": [],
+      "target_instance_attributes": {},
+      "target_lineage": {
+        "PAY_PERIOD_MESSAGE_FILE": {
+          "columns": [
+            {
+              "chain": [
+                "exp_Final.SUBJECT",
+                "exp_Initial.o_SUBJECT = SETVARIABLE($$MAP_SUBJECT, v_SUBJECT)",
+                "exp_Initial.v_SUBJECT = v_ENVIRONMENT ||\r\n'Pay Calendar Process Completed Successfully for: ' || \r\nTO_CHAR(PP_END_YEAR) || '-' || v_PP_NUM",
+                "exp_Initial.v_ENVIRONMENT = DECODE(SUBSTR($PMRepositoryServiceName, 1, 4),\r\n                       'Dev_', 'Dev: ',\r\n                       'Test',   'Test: ',\r\n                       'Prod',  'Prod: ')\r\n",
+                "SQ_PAY_PERIOD.PP_END_YEAR",
+                "PAY_PERIOD1.PP_END_YEAR",
+                "exp_Initial.v_PP_NUM = IIF(PP_NUM < 10,\r\n       LPAD(TO_CHAR(PP_NUM), 2, '0'),\r\n    TO_CHAR(PP_NUM)\r\n)",
+                "SQ_PAY_PERIOD.PP_NUM",
+                "PAY_PERIOD1.PP_NUM"
+              ],
+              "column": "SUBJECT",
+              "rule": "exp_Final.SUBJECT",
+              "sources": [
+                "PAY_PERIOD1.PP_END_YEAR",
+                "PAY_PERIOD1.PP_NUM",
+                "literal/expression: DECODE(SUBSTR($PMRepositoryServiceName, 1, 4),\r\n                       'Dev_', 'Dev: ',\r\n                       'Test',   'Test: ',\r\n                       'Prod',  'Prod: ')\r\n"
+              ]
+            },
+            {
+              "chain": [
+                "exp_Final.MESSAGE",
+                "exp_Initial.o_MESSAGE = SETVARIABLE($$MAP_MESSAGE, v_MESSAGE)",
+                "exp_Initial.v_MESSAGE = 'Current Pay Period = ' || v_PP_NUM || \r\n\r\nCHR(10)  || \r\n\r\n'Begin Date         = ' || TO_CHAR(PP_START_DTE, 'MM/DD/YYYY') || \r\n\r\nCHR(10)  || \r\n\r\n'End Date           = ' || TO_CHAR(PP_END_DTE, 'MM/DD/YYYY') ",
+                "exp_Initial.v_PP_NUM = IIF(PP_NUM < 10,\r\n       LPAD(TO_CHAR(PP_NUM), 2, '0'),\r\n    TO_CHAR(PP_NUM)\r\n)",
+                "SQ_PAY_PERIOD.PP_NUM",
+                "PAY_PERIOD1.PP_NUM",
+                "SQ_PAY_PERIOD.PP_START_DTE",
+                "PAY_PERIOD1.PP_START_DTE",
+                "SQ_PAY_PERIOD.PP_END_DTE",
+                "PAY_PERIOD1.PP_END_DTE"
+              ],
+              "column": "MESSAGE",
+              "rule": "exp_Final.MESSAGE",
+              "sources": [
+                "PAY_PERIOD1.PP_END_DTE",
+                "PAY_PERIOD1.PP_NUM",
+                "PAY_PERIOD1.PP_START_DTE"
+              ]
+            }
+          ],
+          "target_table": "PAY_PERIOD_MESSAGE_FILE"
+        }
+      },
+      "target_load_order": [
+        {
+          "ORDER": "1",
+          "TARGETINSTANCE": "PAY_PERIOD_MESSAGE_FILE"
+        }
+      ],
+      "targets": [
+        "PAY_PERIOD_MESSAGE_FILE"
+      ],
+      "transformations": {
+        "SQ_PAY_PERIOD": {
+          "attributes": {
+            "Number Of Sorted Ports": "0",
+            "Select Distinct": "NO",
+            "Source Filter": "PAY_PERIOD.CURR_PP_FLAG = 'Y'"
+          },
+          "expression_evaluation_order": [
+            "PP_NUM",
+            "PP_END_YEAR",
+            "PP_START_DTE",
+            "PP_END_DTE",
+            "LV_NUM",
+            "LV_YEAR",
+            "PAY_DTE",
+            "CURR_PP_FLAG"
+          ],
+          "expressions": {},
+          "router_groups": [],
+          "type": "Source Qualifier"
+        },
+        "exp_Final": {
+          "attributes": {},
+          "expression_evaluation_order": [
+            "SUBJECT",
+            "MESSAGE"
+          ],
+          "expressions": {},
+          "router_groups": [],
+          "type": "Expression"
+        },
+        "exp_Initial": {
+          "attributes": {},
+          "expression_evaluation_order": [
+            "PP_NUM",
+            "PP_END_YEAR",
+            "PP_START_DTE",
+            "PP_END_DTE",
+            "PAY_DTE",
+            "CURR_PP_FLAG",
+            "v_PP_NUM",
+            "v_ENVIRONMENT",
+            "v_SUBJECT",
+            "o_SUBJECT",
+            "v_MESSAGE",
+            "o_MESSAGE"
+          ],
+          "expressions": {
+            "o_MESSAGE": "SETVARIABLE($$MAP_MESSAGE, v_MESSAGE)",
+            "o_SUBJECT": "SETVARIABLE($$MAP_SUBJECT, v_SUBJECT)",
+            "v_ENVIRONMENT": "DECODE(SUBSTR($PMRepositoryServiceName, 1, 4),\r\n                       'Dev_', 'Dev: ',\r\n                       'Test',   'Test: ',\r\n                       'Prod',  'Prod: ')\r\n",
+            "v_MESSAGE": "'Current Pay Period = ' || v_PP_NUM || \r\n\r\nCHR(10)  || \r\n\r\n'Begin Date         = ' || TO_CHAR(PP_START_DTE, 'MM/DD/YYYY') || \r\n\r\nCHR(10)  || \r\n\r\n'End Date           = ' || TO_CHAR(PP_END_DTE, 'MM/DD/YYYY') ",
+            "v_PP_NUM": "IIF(PP_NUM < 10,\r\n       LPAD(TO_CHAR(PP_NUM), 2, '0'),\r\n    TO_CHAR(PP_NUM)\r\n)",
+            "v_SUBJECT": "v_ENVIRONMENT ||\r\n'Pay Calendar Process Completed Successfully for: ' || \r\nTO_CHAR(PP_END_YEAR) || '-' || v_PP_NUM"
+          },
+          "router_groups": [],
+          "type": "Expression"
+        }
+      },
+      "unconnected_lkp_calls": [],
+      "unpopulated_target_columns": {
+        "PAY_PERIOD_MESSAGE_FILE": []
+      },
+      "update_strategies": []
+    }
+  ],
+  "mapplets": [],
+  "repository_file": "legacy/informatica_ts/Pay_Calendar",
+  "sources": {
+    "PAY_PERIOD": {
+      "database_type": "Oracle",
+      "dbd_name": "ORA_BIIS",
+      "fields": [
+        {
+          "datatype": "number(p,s)",
+          "field_type": "ELEMITEM",
+          "key": "PRIMARY KEY",
+          "length": "2",
+          "level": "0",
+          "name": "PP_NUM",
+          "nullable": "NOTNULL",
+          "occurs": "0",
+          "offset": "0",
+          "path": "PP_NUM",
+          "precision": "2",
+          "scale": "0"
+        },
+        {
+          "datatype": "number(p,s)",
+          "field_type": "ELEMITEM",
+          "key": "PRIMARY KEY",
+          "length": "4",
+          "level": "0",
+          "name": "PP_END_YEAR",
+          "nullable": "NOTNULL",
+          "occurs": "0",
+          "offset": "2",
+          "path": "PP_END_YEAR",
+          "precision": "4",
+          "scale": "0"
+        },
+        {
+          "datatype": "date",
+          "field_type": "ELEMITEM",
+          "key": "NOT A KEY",
+          "length": "19",
+          "level": "0",
+          "name": "PP_START_DTE",
+          "nullable": "NULL",
+          "occurs": "0",
+          "offset": "6",
+          "path": "PP_START_DTE",
+          "precision": "19",
+          "scale": "0"
+        },
+        {
+          "datatype": "date",
+          "field_type": "ELEMITEM",
+          "key": "NOT A KEY",
+          "length": "19",
+          "level": "0",
+          "name": "PP_END_DTE",
+          "nullable": "NULL",
+          "occurs": "0",
+          "offset": "25",
+          "path": "PP_END_DTE",
+          "precision": "19",
+          "scale": "0"
+        },
+        {
+          "datatype": "number(p,s)",
+          "field_type": "ELEMITEM",
+          "key": "NOT A KEY",
+          "length": "2",
+          "level": "0",
+          "name": "LV_NUM",
+          "nullable": "NULL",
+          "occurs": "0",
+          "offset": "44",
+          "path": "LV_NUM",
+          "precision": "2",
+          "scale": "0"
+        },
+        {
+          "datatype": "number(p,s)",
+          "field_type": "ELEMITEM",
+          "key": "NOT A KEY",
+          "length": "4",
+          "level": "0",
+          "name": "LV_YEAR",
+          "nullable": "NULL",
+          "occurs": "0",
+          "offset": "46",
+          "path": "LV_YEAR",
+          "precision": "4",
+          "scale": "0"
+        },
+        {
+          "datatype": "date",
+          "field_type": "ELEMITEM",
+          "key": "NOT A KEY",
+          "length": "19",
+          "level": "0",
+          "name": "PAY_DTE",
+          "nullable": "NULL",
+          "occurs": "0",
+          "offset": "50",
+          "path": "PAY_DTE",
+          "precision": "19",
+          "scale": "0"
+        },
+        {
+          "datatype": "varchar2",
+          "field_type": "ELEMITEM",
+          "key": "NOT A KEY",
+          "length": "1",
+          "level": "0",
+          "name": "CURR_PP_FLAG",
+          "nullable": "NULL",
+          "occurs": "0",
+          "offset": "69",
+          "path": "CURR_PP_FLAG",
+          "precision": "1",
+          "scale": "0"
+        },
+        {
+          "datatype": "date",
+          "field_type": "ELEMITEM",
+          "key": "NOT A KEY",
+          "length": "19",
+          "level": "0",
+          "name": "HOLIDAY_1",
+          "nullable": "NULL",
+          "occurs": "0",
+          "offset": "70",
+          "path": "HOLIDAY_1",
+          "precision": "19",
+          "scale": "0"
+        },
+        {
+          "datatype": "date",
+          "field_type": "ELEMITEM",
+          "key": "NOT A KEY",
+          "length": "19",
+          "level": "0",
+          "name": "HOLIDAY_2",
+          "nullable": "NULL",
+          "occurs": "0",
+          "offset": "89",
+          "path": "HOLIDAY_2",
+          "precision": "19",
+          "scale": "0"
+        }
+      ],
+      "flatfile": null,
+      "owner_name": "HISTDBA"
+    }
+  },
+  "targets": {
+    "PAY_PERIOD": {
+      "database_type": "Oracle",
+      "fields": [
+        {
+          "datatype": "number(p,s)",
+          "key": "PRIMARY KEY",
+          "name": "PP_NUM",
+          "nullable": "NOTNULL",
+          "path": "PP_NUM",
+          "precision": "2",
+          "scale": "0"
+        },
+        {
+          "datatype": "number(p,s)",
+          "key": "PRIMARY KEY",
+          "name": "PP_END_YEAR",
+          "nullable": "NOTNULL",
+          "path": "PP_END_YEAR",
+          "precision": "4",
+          "scale": "0"
+        },
+        {
+          "datatype": "date",
+          "key": "NOT A KEY",
+          "name": "PP_START_DTE",
+          "nullable": "NULL",
+          "path": "PP_START_DTE",
+          "precision": "19",
+          "scale": "0"
+        },
+        {
+          "datatype": "date",
+          "key": "NOT A KEY",
+          "name": "PP_END_DTE",
+          "nullable": "NULL",
+          "path": "PP_END_DTE",
+          "precision": "19",
+          "scale": "0"
+        },
+        {
+          "datatype": "number(p,s)",
+          "key": "NOT A KEY",
+          "name": "LV_NUM",
+          "nullable": "NULL",
+          "path": "LV_NUM",
+          "precision": "2",
+          "scale": "0"
+        },
+        {
+          "datatype": "number(p,s)",
+          "key": "NOT A KEY",
+          "name": "LV_YEAR",
+          "nullable": "NULL",
+          "path": "LV_YEAR",
+          "precision": "4",
+          "scale": "0"
+        },
+        {
+          "datatype": "date",
+          "key": "NOT A KEY",
+          "name": "PAY_DTE",
+          "nullable": "NULL",
+          "path": "PAY_DTE",
+          "precision": "19",
+          "scale": "0"
+        },
+        {
+          "datatype": "varchar2",
+          "key": "NOT A KEY",
+          "name": "CURR_PP_FLAG",
+          "nullable": "NULL",
+          "path": "CURR_PP_FLAG",
+          "precision": "1",
+          "scale": "0"
+        }
+      ],
+      "groups": [],
+      "pwx_metadata": {}
+    },
+    "PAY_PERIOD_MESSAGE_FILE": {
+      "database_type": "Flat File",
+      "fields": [
+        {
+          "datatype": "string",
+          "key": "NOT A KEY",
+          "name": "SUBJECT",
+          "nullable": "NULL",
+          "path": "SUBJECT",
+          "precision": "100",
+          "scale": "0"
+        },
+        {
+          "datatype": "string",
+          "key": "NOT A KEY",
+          "name": "MESSAGE",
+          "nullable": "NULL",
+          "path": "MESSAGE",
+          "precision": "300",
+          "scale": "0"
+        }
+      ],
+      "groups": [],
+      "pwx_metadata": {}
+    },
+    "PAY_PERIOD_VERIFY_FILE": {
+      "database_type": "Flat File",
+      "fields": [
+        {
+          "datatype": "string",
+          "key": "NOT A KEY",
+          "name": "SUBJECT",
+          "nullable": "NULL",
+          "path": "SUBJECT",
+          "precision": "100",
+          "scale": "0"
+        }
+      ],
+      "groups": [],
+      "pwx_metadata": {}
+    }
+  },
+  "transformations_by_type": {
+    "Expression": 10,
+    "Lookup Procedure": 3,
+    "Router": 1,
+    "Source Qualifier": 4,
+    "Update Strategy": 3
+  },
+  "workflows": [
+    {
+      "attributes": {
+        "Parameter Filename": "/data/BIISINT/control/BIIS_parms.iparms",
+        "Workflow Log File Name": "wf_Pay_Calendar.log"
+      },
+      "command_tasks": [
+        {
+          "attributes": {
+            "Fail task if any command fails": "NO",
+            "Recovery Strategy": "Fail task and continue workflow"
+          },
+          "commands": [],
+          "component": "Pre-session variable assignment",
+          "name": "presession_variable_assignment",
+          "scope": "s_Pay_Calendar_Reset_Pay_Calendar"
+        },
+        {
+          "attributes": {
+            "Fail task if any command fails": "NO",
+            "Recovery Strategy": "Fail task and continue workflow"
+          },
+          "commands": [],
+          "component": "Post-session success variable assignment",
+          "name": "postsession_success_variable_assignment",
+          "scope": "s_Pay_Calendar_Reset_Pay_Calendar"
+        },
+        {
+          "attributes": {
+            "Fail task if any command fails": "NO",
+            "Recovery Strategy": "Fail task and continue workflow"
+          },
+          "commands": [],
+          "component": "Post-session failure variable assignment",
+          "name": "postsession_failure_variable_assignment",
+          "scope": "s_Pay_Calendar_Reset_Pay_Calendar"
+        },
+        {
+          "attributes": {
+            "Fail task if any command fails": "NO",
+            "Recovery Strategy": "Fail task and continue workflow"
+          },
+          "commands": [
+            {
+              "name": "$$MAP_SUBJECT",
+              "order": "1",
+              "value": "$$WF_SUBJECT"
+            },
+            {
+              "name": "$$MAP_MESSAGE",
+              "order": "2",
+              "value": "$$WF_MESSAGE"
+            }
+          ],
+          "component": "Pre-session variable assignment",
+          "name": "presession_variable_assignment",
+          "scope": "s_Pay_Calendar_Build_Message"
+        },
+        {
+          "attributes": {
+            "Fail task if any command fails": "NO",
+            "Recovery Strategy": "Fail task and continue workflow"
+          },
+          "commands": [
+            {
+              "name": "$$WF_SUBJECT",
+              "order": "1",
+              "value": "$$MAP_SUBJECT"
+            },
+            {
+              "name": "$$WF_MESSAGE",
+              "order": "2",
+              "value": "$$MAP_MESSAGE"
+            }
+          ],
+          "component": "Post-session success variable assignment",
+          "name": "postsession_success_variable_assignment",
+          "scope": "s_Pay_Calendar_Build_Message"
+        },
+        {
+          "attributes": {
+            "Fail task if any command fails": "NO",
+            "Recovery Strategy": "Fail task and continue workflow"
+          },
+          "commands": [],
+          "component": "Post-session failure variable assignment",
+          "name": "postsession_failure_variable_assignment",
+          "scope": "s_Pay_Calendar_Build_Message"
+        },
+        {
+          "attributes": {
+            "Fail task if any command fails": "NO",
+            "Recovery Strategy": "Fail task and continue workflow"
+          },
+          "commands": [
+            {
+              "name": "$$PP_END_YEAR",
+              "order": "1",
+              "value": "$$WF_PP_END_YEAR"
+            },
+            {
+              "name": "$$PP_NUM",
+              "order": "2",
+              "value": "$$WF_PP_NUM"
+            }
+          ],
+          "component": "Pre-session variable assignment",
+          "name": "presession_variable_assignment",
+          "scope": "s_Pay_Calendar_Set_Pay_Calendar"
+        },
+        {
+          "attributes": {
+            "Fail task if any command fails": "NO",
+            "Recovery Strategy": "Fail task and continue workflow"
+          },
+          "commands": [
+            {
+              "name": "$$WF_PP_END_YEAR",
+              "order": "1",
+              "value": "$$PP_END_YEAR"
+            },
+            {
+              "name": "$$WF_PP_NUM",
+              "order": "2",
+              "value": "$$PP_NUM"
+            }
+          ],
+          "component": "Post-session success variable assignment",
+          "name": "postsession_success_variable_assignment",
+          "scope": "s_Pay_Calendar_Set_Pay_Calendar"
+        },
+        {
+          "attributes": {
+            "Fail task if any command fails": "NO",
+            "Recovery Strategy": "Fail task and continue workflow"
+          },
+          "commands": [],
+          "component": "Post-session failure variable assignment",
+          "name": "postsession_failure_variable_assignment",
+          "scope": "s_Pay_Calendar_Set_Pay_Calendar"
+        },
+        {
+          "attributes": {
+            "Fail task if any command fails": "NO",
+            "Recovery Strategy": "Fail task and continue workflow"
+          },
+          "commands": [],
+          "component": "Pre-session variable assignment",
+          "name": "presession_variable_assignment",
+          "scope": "s_Pay_Calendar_Verify_Pay_Calendar"
+        },
+        {
+          "attributes": {
+            "Fail task if any command fails": "NO",
+            "Recovery Strategy": "Fail task and continue workflow"
+          },
+          "commands": [],
+          "component": "Post-session success variable assignment",
+          "name": "postsession_success_variable_assignment",
+          "scope": "s_Pay_Calendar_Verify_Pay_Calendar"
+        },
+        {
+          "attributes": {
+            "Fail task if any command fails": "NO",
+            "Recovery Strategy": "Fail task and continue workflow"
+          },
+          "commands": [],
+          "component": "Post-session failure variable assignment",
+          "name": "postsession_failure_variable_assignment",
+          "scope": "s_Pay_Calendar_Verify_Pay_Calendar"
+        }
+      ],
+      "email_tasks": [
+        {
+          "name": "Email_Pay_Calendar",
+          "scope": "workflow"
+        },
+        {
+          "component": "Failure Email",
+          "name": "on_failure_mail",
+          "scope": "s_Pay_Calendar_Reset_Pay_Calendar"
+        },
+        {
+          "component": "Failure Email",
+          "name": "on_failure_mail",
+          "scope": "s_Pay_Calendar_Set_Pay_Calendar"
+        },
+        {
+          "component": "Failure Email",
+          "name": "on_failure_mail",
+          "scope": "s_Pay_Calendar_Verify_Pay_Calendar"
+        }
+      ],
+      "execution_order": [
+        "Start",
+        "s_Pay_Calendar_Reset_Pay_Calendar",
+        "s_Pay_Calendar_Set_Pay_Calendar",
+        "s_Pay_Calendar_Verify_Pay_Calendar",
+        "s_Pay_Calendar_Build_Message",
+        "Email_Pay_Calendar"
+      ],
+      "links": [
+        {
+          "condition": "",
+          "from": "Start",
+          "to": "s_Pay_Calendar_Reset_Pay_Calendar"
+        },
+        {
+          "condition": "$s_Pay_Calendar_Build_Message.Status = Succeeded",
+          "from": "s_Pay_Calendar_Build_Message",
+          "to": "Email_Pay_Calendar"
+        },
+        {
+          "condition": "$s_Pay_Calendar_Verify_Pay_Calendar.Status = Succeeded",
+          "from": "s_Pay_Calendar_Verify_Pay_Calendar",
+          "to": "s_Pay_Calendar_Build_Message"
+        },
+        {
+          "condition": "$s_Pay_Calendar_Reset_Pay_Calendar.Status = Succeeded",
+          "from": "s_Pay_Calendar_Reset_Pay_Calendar",
+          "to": "s_Pay_Calendar_Set_Pay_Calendar"
+        },
+        {
+          "condition": "$s_Pay_Calendar_Set_Pay_Calendar.Status = Succeeded",
+          "from": "s_Pay_Calendar_Set_Pay_Calendar",
+          "to": "s_Pay_Calendar_Verify_Pay_Calendar"
+        }
+      ],
+      "name": "wf_Pay_Calendar",
+      "session_order": [
+        "s_Pay_Calendar_Reset_Pay_Calendar",
+        "s_Pay_Calendar_Set_Pay_Calendar",
+        "s_Pay_Calendar_Verify_Pay_Calendar",
+        "s_Pay_Calendar_Build_Message"
+      ],
+      "sessions": [
+        {
+          "attributes": {
+            "Commit Interval": "10000",
+            "Commit Type": "Target",
+            "Parameter Filename": "",
+            "Pushdown Optimization": "None",
+            "Treat source rows as": "Data driven"
+          },
+          "components": [
+            {
+              "task": "presession_variable_assignment",
+              "type": "Pre-session variable assignment",
+              "values": []
+            },
+            {
+              "task": "postsession_success_variable_assignment",
+              "type": "Post-session success variable assignment",
+              "values": []
+            },
+            {
+              "task": "postsession_failure_variable_assignment",
+              "type": "Post-session failure variable assignment",
+              "values": []
+            }
+          ],
+          "mapping": "m_Pay_Calendar_Reset_Pay_Calendar",
+          "name": "s_Pay_Calendar_Reset_Pay_Calendar",
+          "readers_writers": [
+            {
+              "attributes": {
+                "Delete": "YES",
+                "Insert": "YES",
+                "Target load type": "Normal",
+                "Truncate target table option": "NO",
+                "Update as Insert": "NO",
+                "Update as Update": "YES",
+                "Update else Insert": "NO"
+              },
+              "connection_subtype": "Oracle",
+              "connection_type": "Relational",
+              "instance": "RESET_PAY_PERIOD",
+              "kind": "WRITER",
+              "subtype": "Relational Writer"
+            },
+            {
+              "attributes": {},
+              "connection_subtype": null,
+              "connection_type": null,
+              "instance": "PAY_PERIOD1",
+              "kind": "READER",
+              "subtype": "Relational Reader"
+            },
+            {
+              "attributes": {},
+              "connection_subtype": "Oracle",
+              "connection_type": "Relational",
+              "instance": "SQ_PAY_PERIOD_RESET",
+              "kind": "READER",
+              "subtype": "Relational Reader"
+            }
+          ],
+          "transformation_overrides": {}
+        },
+        {
+          "attributes": {
+            "Commit Interval": "10000",
+            "Commit Type": "Target",
+            "Parameter Filename": "",
+            "Pushdown Optimization": "None",
+            "Treat source rows as": "Data driven"
+          },
+          "components": [
+            {
+              "task": "presession_variable_assignment",
+              "type": "Pre-session variable assignment",
+              "values": [
+                {
+                  "name": "$$PP_END_YEAR",
+                  "order": "1",
+                  "value": "$$WF_PP_END_YEAR"
+                },
+                {
+                  "name": "$$PP_NUM",
+                  "order": "2",
+                  "value": "$$WF_PP_NUM"
+                }
+              ]
+            },
+            {
+              "task": "postsession_success_variable_assignment",
+              "type": "Post-session success variable assignment",
+              "values": [
+                {
+                  "name": "$$WF_PP_END_YEAR",
+                  "order": "1",
+                  "value": "$$PP_END_YEAR"
+                },
+                {
+                  "name": "$$WF_PP_NUM",
+                  "order": "2",
+                  "value": "$$PP_NUM"
+                }
+              ]
+            },
+            {
+              "task": "postsession_failure_variable_assignment",
+              "type": "Post-session failure variable assignment",
+              "values": []
+            }
+          ],
+          "mapping": "m_Pay_Calendar_Set_Pay_Calendar",
+          "name": "s_Pay_Calendar_Set_Pay_Calendar",
+          "readers_writers": [
+            {
+              "attributes": {
+                "Delete": "YES",
+                "Insert": "YES",
+                "Target load type": "Normal",
+                "Truncate target table option": "NO",
+                "Update as Insert": "NO",
+                "Update as Update": "YES",
+                "Update else Insert": "NO"
+              },
+              "connection_subtype": "Oracle",
+              "connection_type": "Relational",
+              "instance": "PAY_PERIOD_PARAM",
+              "kind": "WRITER",
+              "subtype": "Relational Writer"
+            },
+            {
+              "attributes": {
+                "Delete": "YES",
+                "Insert": "YES",
+                "Target load type": "Normal",
+                "Truncate target table option": "NO",
+                "Update as Insert": "NO",
+                "Update as Update": "YES",
+                "Update else Insert": "NO"
+              },
+              "connection_subtype": "Oracle",
+              "connection_type": "Relational",
+              "instance": "PAY_PERIOD",
+              "kind": "WRITER",
+              "subtype": "Relational Writer"
+            },
+            {
+              "attributes": {},
+              "connection_subtype": "",
+              "connection_type": "Relational",
+              "instance": "lkp_New_Current_Pay_Period",
+              "kind": "LOOKUPEXTENSION",
+              "subtype": "Relational Lookup"
+            },
+            {
+              "attributes": {},
+              "connection_subtype": null,
+              "connection_type": null,
+              "instance": "PAY_PERIOD1",
+              "kind": "READER",
+              "subtype": "Relational Reader"
+            },
+            {
+              "attributes": {},
+              "connection_subtype": "Oracle",
+              "connection_type": "Relational",
+              "instance": "SQ_PAY_PERIOD",
+              "kind": "READER",
+              "subtype": "Relational Reader"
+            },
+            {
+              "attributes": {},
+              "connection_subtype": "",
+              "connection_type": "Relational",
+              "instance": "lkp_Existing_Pay_Period",
+              "kind": "LOOKUPEXTENSION",
+              "subtype": "Relational Lookup"
+            }
+          ],
+          "transformation_overrides": {}
+        },
+        {
+          "attributes": {
+            "Commit Interval": "10000",
+            "Commit Type": "Target",
+            "Parameter Filename": "",
+            "Pushdown Optimization": "None",
+            "Treat source rows as": "Insert"
+          },
+          "components": [
+            {
+              "task": "presession_variable_assignment",
+              "type": "Pre-session variable assignment",
+              "values": []
+            },
+            {
+              "task": "postsession_success_variable_assignment",
+              "type": "Post-session success variable assignment",
+              "values": []
+            },
+            {
+              "task": "postsession_failure_variable_assignment",
+              "type": "Post-session failure variable assignment",
+              "values": []
+            }
+          ],
+          "mapping": "m_Pay_Calendar_Verify_Pay_Calendar",
+          "name": "s_Pay_Calendar_Verify_Pay_Calendar",
+          "readers_writers": [
+            {
+              "attributes": {},
+              "connection_subtype": null,
+              "connection_type": null,
+              "instance": "PAY_PERIOD1",
+              "kind": "READER",
+              "subtype": "Relational Reader"
+            },
+            {
+              "attributes": {},
+              "connection_subtype": "Oracle",
+              "connection_type": "Relational",
+              "instance": "SQ_PAY_PERIOD",
+              "kind": "READER",
+              "subtype": "Relational Reader"
+            },
+            {
+              "attributes": {},
+              "connection_subtype": "",
+              "connection_type": "Relational",
+              "instance": "lkp_Current_Pay_Period",
+              "kind": "LOOKUPEXTENSION",
+              "subtype": "Relational Lookup"
+            },
+            {
+              "attributes": {
+                "Append if Exists": "NO",
+                "Output Type": "File",
+                "Output file directory": "$PMTargetFileDir\\",
+                "Output filename": "pay_period_verify_file.txt"
+              },
+              "connection_subtype": "",
+              "connection_type": "",
+              "instance": "PAY_PERIOD_VERIFY_FILE",
+              "kind": "WRITER",
+              "subtype": "File Writer"
+            }
+          ],
+          "transformation_overrides": {}
+        },
+        {
+          "attributes": {
+            "Commit Interval": "10000",
+            "Commit Type": "Target",
+            "Parameter Filename": "",
+            "Pushdown Optimization": "None",
+            "Treat source rows as": "Insert"
+          },
+          "components": [
+            {
+              "task": "presession_variable_assignment",
+              "type": "Pre-session variable assignment",
+              "values": [
+                {
+                  "name": "$$MAP_SUBJECT",
+                  "order": "1",
+                  "value": "$$WF_SUBJECT"
+                },
+                {
+                  "name": "$$MAP_MESSAGE",
+                  "order": "2",
+                  "value": "$$WF_MESSAGE"
+                }
+              ]
+            },
+            {
+              "task": "postsession_success_variable_assignment",
+              "type": "Post-session success variable assignment",
+              "values": [
+                {
+                  "name": "$$WF_SUBJECT",
+                  "order": "1",
+                  "value": "$$MAP_SUBJECT"
+                },
+                {
+                  "name": "$$WF_MESSAGE",
+                  "order": "2",
+                  "value": "$$MAP_MESSAGE"
+                }
+              ]
+            },
+            {
+              "task": "postsession_failure_variable_assignment",
+              "type": "Post-session failure variable assignment",
+              "values": []
+            }
+          ],
+          "mapping": "m_Pay_Calendar_Build_Message",
+          "name": "s_Pay_Calendar_Build_Message",
+          "readers_writers": [
+            {
+              "attributes": {},
+              "connection_subtype": null,
+              "connection_type": null,
+              "instance": "PAY_PERIOD1",
+              "kind": "READER",
+              "subtype": "Relational Reader"
+            },
+            {
+              "attributes": {},
+              "connection_subtype": "Oracle",
+              "connection_type": "Relational",
+              "instance": "SQ_PAY_PERIOD",
+              "kind": "READER",
+              "subtype": "Relational Reader"
+            },
+            {
+              "attributes": {
+                "Append if Exists": "NO",
+                "Output Type": "File",
+                "Output file directory": "$PMTargetFileDir\\",
+                "Output filename": "pay_period_message_file.txt"
+              },
+              "connection_subtype": "",
+              "connection_type": "",
+              "instance": "PAY_PERIOD_MESSAGE_FILE",
+              "kind": "WRITER",
+              "subtype": "File Writer"
+            }
+          ],
+          "transformation_overrides": {}
+        }
+      ],
+      "task_instances": [
+        {
+          "enabled": "YES",
+          "fail_parent_if_fails": "YES",
+          "name": "s_Pay_Calendar_Reset_Pay_Calendar",
+          "task_name": "s_Pay_Calendar_Reset_Pay_Calendar",
+          "task_type": "Session",
+          "treat_input_links_as_and": "YES"
+        },
+        {
+          "enabled": "YES",
+          "fail_parent_if_fails": "YES",
+          "name": "Email_Pay_Calendar",
+          "task_name": "Email_Pay_Calendar",
+          "task_type": "Email",
+          "treat_input_links_as_and": "YES"
+        },
+        {
+          "enabled": "YES",
+          "fail_parent_if_fails": "YES",
+          "name": "s_Pay_Calendar_Build_Message",
+          "task_name": "s_Pay_Calendar_Build_Message",
+          "task_type": "Session",
+          "treat_input_links_as_and": "YES"
+        },
+        {
+          "enabled": "YES",
+          "fail_parent_if_fails": null,
+          "name": "Start",
+          "task_name": "Start",
+          "task_type": "Start",
+          "treat_input_links_as_and": null
+        },
+        {
+          "enabled": "YES",
+          "fail_parent_if_fails": "YES",
+          "name": "s_Pay_Calendar_Set_Pay_Calendar",
+          "task_name": "s_Pay_Calendar_Set_Pay_Calendar",
+          "task_type": "Session",
+          "treat_input_links_as_and": "YES"
+        },
+        {
+          "enabled": "YES",
+          "fail_parent_if_fails": "NO",
+          "name": "s_Pay_Calendar_Verify_Pay_Calendar",
+          "task_name": "s_Pay_Calendar_Verify_Pay_Calendar",
+          "task_type": "Session",
+          "treat_input_links_as_and": "YES"
+        }
+      ],
+      "user_variables": [
+        {
+          "DATATYPE": "nstring",
+          "DEFAULTVALUE": "",
+          "ISNULL": "NO",
+          "ISPERSISTENT": "NO",
+          "NAME": "$$WF_PAY_CALENDAR_EMAIL_LIST",
+          "USERDEFINED": "YES"
+        },
+        {
+          "DATATYPE": "nstring",
+          "DEFAULTVALUE": "0",
+          "ISNULL": "NO",
+          "ISPERSISTENT": "NO",
+          "NAME": "$$WF_SUBJECT",
+          "USERDEFINED": "YES"
+        },
+        {
+          "DATATYPE": "nstring",
+          "DEFAULTVALUE": "0",
+          "ISNULL": "NO",
+          "ISPERSISTENT": "NO",
+          "NAME": "$$WF_MESSAGE",
+          "USERDEFINED": "YES"
+        },
+        {
+          "DATATYPE": "nstring",
+          "DEFAULTVALUE": "",
+          "ISNULL": "NO",
+          "ISPERSISTENT": "NO",
+          "NAME": "$$WF_PP_END_YEAR",
+          "USERDEFINED": "YES"
+        },
+        {
+          "DATATYPE": "nstring",
+          "DEFAULTVALUE": "",
+          "ISNULL": "NO",
+          "ISPERSISTENT": "NO",
+          "NAME": "$$WF_PP_NUM",
+          "USERDEFINED": "YES"
+        }
+      ]
+    }
+  ]
+}
