@@ -1,0 +1,170 @@
+{
+  "token": "SF_20261015_DS",
+  "expires": "2026-10-18T02:32:20Z",
+  "run_at": "2026-10-15T02:34:54+00:00",
+  "timings_seconds": {
+    "tags": 0.8,
+    "warehouse and resource monitor": 1.5,
+    "schemas": 1.0,
+    "roles and grants": 31.0,
+    "users": 3.9,
+    "load SOURCE": 50.6,
+    "load BASELINE": 58.7,
+    "tags on objects": 2.8,
+    "proof query": 2.5,
+    "credits": 0.8
+  },
+  "source_rows": {
+    "DEMO_SOURCE1": 7,
+    "DEMO_SOURCE2": 7,
+    "DEMO_SOURCE3": 6,
+    "DEMO_SOURCE4": 5,
+    "DEMO_SOURCE5": 4,
+    "DEMO_TARGET1": 5,
+    "LKP_DEMO_SOURCE1": 6,
+    "LKP_DEMO_SOURCE2": 6,
+    "LKP_DEMO_SOURCE3": 6,
+    "ORA_DW_BUREAU_SCORES": 500,
+    "ORA_DW_COLLATERAL": 114,
+    "ORA_DW_CUST_ACCOUNTS": 487,
+    "ORA_DW_CUST_DEMOGRAPHICS": 250,
+    "ORA_DW_LOAN_DETAILS": 248,
+    "ORA_DW_PAYMENT_HISTORY": 248,
+    "RAW_BANK_DAILY_RATES": 455,
+    "RAW_BANK_TXN_FEED_20240131": 622,
+    "RAW_INS_CLAIMS": 286,
+    "RAW_INS_CLAIMS_FEED_20240131": 260,
+    "RAW_INS_FRAUD_INDICATORS": 102,
+    "RAW_INS_POLICIES": 320,
+    "RAW_INS_PREMIUMS": 732,
+    "CURATED_DAILY_TRANSACTIONS": 18293
+  },
+  "baseline_rows": {
+    "DEMO_TARGET1_INS": 4,
+    "DEMO_TARGET1_UPD": 3,
+    "DEMO_TARGET2": 3,
+    "DEMO_TARGET21": 3,
+    "DEMO_TARGET3": 4,
+    "DEMO_TARGET5": 2,
+    "DEMO_TARGET6": 2,
+    "ACCT_EXCEPTIONS": 32,
+    "CAPITAL_ADEQUACY": 1,
+    "CLAIMS_REGISTER": 190,
+    "CLAIMS_REVIEW_QUEUE": 101,
+    "CUST_ACCOUNTS_DAILY": 466,
+    "DAILY_TRANSACTIONS": 18903,
+    "DELINQUENCY_AGING": 70,
+    "FRAUD_ALERTS": 19,
+    "LLP_COVERAGE": 6,
+    "LOSS_RATIO_SUMMARY": 8,
+    "MONTHLY_RWA": 59,
+    "POLICY_VALUATION": 166,
+    "RISK_MIGRATION": 195,
+    "RISK_SCORES": 236,
+    "RISK_SUMMARY": 12,
+    "RUNNING_BALANCES": 610,
+    "TXN_ANOMALIES": 46
+  },
+  "proof": [
+    [
+      "ACCT_EXCEPTIONS",
+      32
+    ],
+    [
+      "CAPITAL_ADEQUACY",
+      1
+    ],
+    [
+      "CLAIMS_REGISTER",
+      190
+    ],
+    [
+      "CLAIMS_REVIEW_QUEUE",
+      101
+    ],
+    [
+      "CUST_ACCOUNTS_DAILY",
+      466
+    ],
+    [
+      "DAILY_TRANSACTIONS",
+      18903
+    ],
+    [
+      "DELINQUENCY_AGING",
+      70
+    ],
+    [
+      "DEMO_TARGET1_INS",
+      4
+    ],
+    [
+      "DEMO_TARGET1_UPD",
+      3
+    ],
+    [
+      "DEMO_TARGET2",
+      3
+    ],
+    [
+      "DEMO_TARGET21",
+      3
+    ],
+    [
+      "DEMO_TARGET3",
+      4
+    ],
+    [
+      "DEMO_TARGET5",
+      2
+    ],
+    [
+      "DEMO_TARGET6",
+      2
+    ],
+    [
+      "FRAUD_ALERTS",
+      19
+    ],
+    [
+      "LLP_COVERAGE",
+      6
+    ],
+    [
+      "LOSS_RATIO_SUMMARY",
+      8
+    ],
+    [
+      "MONTHLY_RWA",
+      59
+    ],
+    [
+      "POLICY_VALUATION",
+      166
+    ],
+    [
+      "RISK_MIGRATION",
+      195
+    ],
+    [
+      "RISK_SCORES",
+      236
+    ],
+    [
+      "RISK_SUMMARY",
+      12
+    ],
+    [
+      "RUNNING_BALANCES",
+      610
+    ],
+    [
+      "TXN_ANOMALIES",
+      46
+    ]
+  ],
+  "credits": {
+    "monitor_used_credits": "0.00",
+    "metering_rows": []
+  }
+}

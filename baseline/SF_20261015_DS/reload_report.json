@@ -1,0 +1,151 @@
+{
+  "token": "SF_20261015_DS",
+  "reload_at": "2026-10-15T04:30:23+00:00",
+  "tables": [
+    "DEMO_SOURCE2",
+    "DEMO_SOURCE3",
+    "DEMO_TARGET1",
+    "DEMO_TARGET21",
+    "DEMO_TARGET6"
+  ],
+  "timings_seconds": {
+    "load SOURCE": 11.1,
+    "load BASELINE": 4.5,
+    "tags on objects": 2.2,
+    "proof query": 2.1,
+    "credits": 1.0
+  },
+  "source_rows": {
+    "DEMO_SOURCE2": 7,
+    "DEMO_SOURCE3": 6,
+    "DEMO_TARGET1": 5
+  },
+  "baseline_rows": {
+    "DEMO_TARGET21": 3,
+    "DEMO_TARGET6": 2
+  },
+  "proof": [
+    [
+      "ACCT_EXCEPTIONS",
+      32
+    ],
+    [
+      "CAPITAL_ADEQUACY",
+      1
+    ],
+    [
+      "CLAIMS_REGISTER",
+      190
+    ],
+    [
+      "CLAIMS_REVIEW_QUEUE",
+      101
+    ],
+    [
+      "CUST_ACCOUNTS_DAILY",
+      466
+    ],
+    [
+      "DAILY_TRANSACTIONS",
+      18903
+    ],
+    [
+      "DELINQUENCY_AGING",
+      70
+    ],
+    [
+      "DEMO_TARGET1_INS",
+      4
+    ],
+    [
+      "DEMO_TARGET1_UPD",
+      3
+    ],
+    [
+      "DEMO_TARGET2",
+      3
+    ],
+    [
+      "DEMO_TARGET21",
+      3
+    ],
+    [
+      "DEMO_TARGET3",
+      4
+    ],
+    [
+      "DEMO_TARGET5",
+      2
+    ],
+    [
+      "DEMO_TARGET6",
+      2
+    ],
+    [
+      "FRAUD_ALERTS",
+      19
+    ],
+    [
+      "LLP_COVERAGE",
+      6
+    ],
+    [
+      "LOSS_RATIO_SUMMARY",
+      8
+    ],
+    [
+      "MONTHLY_RWA",
+      59
+    ],
+    [
+      "POLICY_VALUATION",
+      166
+    ],
+    [
+      "RISK_MIGRATION",
+      195
+    ],
+    [
+      "RISK_SCORES",
+      236
+    ],
+    [
+      "RISK_SUMMARY",
+      12
+    ],
+    [
+      "RUNNING_BALANCES",
+      610
+    ],
+    [
+      "TXN_ANOMALIES",
+      46
+    ]
+  ],
+  "credits": {
+    "monitor_used_credits": "0.80",
+    "metering_rows": [
+      [
+        "2026-10-14 18:30:22-07:00",
+        "2026-10-14 19:30:22-07:00",
+        "0.016207500",
+        "0E-9",
+        "0.016207500"
+      ],
+      [
+        "2026-10-14 19:30:22-07:00",
+        "2026-10-14 20:30:22-07:00",
+        "0.102481111",
+        "0.100486111",
+        "0.001995000"
+      ],
+      [
+        "2026-10-14 20:30:22-07:00",
+        "2026-10-14 21:30:22-07:00",
+        "0.678775834",
+        "0.600590278",
+        "0.078185556"
+      ]
+    ]
+  }
+}
