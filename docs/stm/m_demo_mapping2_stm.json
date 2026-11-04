@@ -1,0 +1,744 @@
+{
+  "mappings": [
+    {
+      "aggregator_groupby_ports": {},
+      "lookup_details": [
+        {
+          "condition": "ID = ID1",
+          "exists_in_export": true,
+          "multiple_match_policy": "Use Any Value",
+          "ports": [
+            "ACTIVE_FLAG",
+            "BRANCH_CO_MNE",
+            "CREATED_BY",
+            "CREATED_TIME",
+            "DESCRIPTION",
+            "END_DATE",
+            "ID",
+            "ID1",
+            "Key",
+            "LEAD_CO_MNE",
+            "MIS_DATE",
+            "SHORT_NAME",
+            "START_DATE",
+            "UPDATED_BY",
+            "UPDATED_TIME"
+          ],
+          "table": "demo_target1",
+          "transformation": "LKPTRANS"
+        }
+      ],
+      "name": "m_demo_mapping2",
+      "physical_target_instances": {
+        "demo_target1": [
+          "demo_target1_INS",
+          "demo_target1_UPD"
+        ]
+      },
+      "sources": [
+        "demo_source1"
+      ],
+      "sql_overrides": [],
+      "target_lineage": {
+        "demo_target1_INS": {
+          "columns": [
+            {
+              "chain": [
+                "SEQTRANS.NEXTVAL [sequence start=0 increment=1 current=57 cycle=NO]"
+              ],
+              "column": "Key",
+              "rule": "SEQTRANS.NEXTVAL [sequence start=0 increment=1 current=57 cycle=NO]",
+              "sources": [
+                "SEQTRANS (generated)"
+              ]
+            },
+            {
+              "chain": [
+                "RTRTRANS.LEAD_CO_MNE2 [router group Insert WHERE New_Flag='Insert']",
+                "EXPTRANS.LEAD_CO_MNE",
+                "SQ_demo_source1.LEAD_CO_MNE",
+                "demo_source1.LEAD_CO_MNE"
+              ],
+              "column": "LEAD_CO_MNE",
+              "rule": "RTRTRANS.LEAD_CO_MNE2 [router group Insert WHERE New_Flag='Insert']",
+              "sources": [
+                "demo_source1.LEAD_CO_MNE"
+              ]
+            },
+            {
+              "chain": [
+                "RTRTRANS.BRANCH_CO_MNE2 [router group Insert WHERE New_Flag='Insert']",
+                "EXPTRANS.BRANCH_CO_MNE",
+                "SQ_demo_source1.BRANCH_CO_MNE",
+                "demo_source1.BRANCH_CO_MNE"
+              ],
+              "column": "BRANCH_CO_MNE",
+              "rule": "RTRTRANS.BRANCH_CO_MNE2 [router group Insert WHERE New_Flag='Insert']",
+              "sources": [
+                "demo_source1.BRANCH_CO_MNE"
+              ]
+            },
+            {
+              "chain": [
+                "RTRTRANS.MIS_DATE2 [router group Insert WHERE New_Flag='Insert']",
+                "EXPTRANS.MIS_DATE",
+                "SQ_demo_source1.MIS_DATE",
+                "demo_source1.MIS_DATE"
+              ],
+              "column": "MIS_DATE",
+              "rule": "RTRTRANS.MIS_DATE2 [router group Insert WHERE New_Flag='Insert']",
+              "sources": [
+                "demo_source1.MIS_DATE"
+              ]
+            },
+            {
+              "chain": [
+                "RTRTRANS.ID1 [router group Insert WHERE New_Flag='Insert']",
+                "EXPTRANS.ID",
+                "SQ_demo_source1.ID",
+                "demo_source1.ID"
+              ],
+              "column": "ID",
+              "rule": "RTRTRANS.ID1 [router group Insert WHERE New_Flag='Insert']",
+              "sources": [
+                "demo_source1.ID"
+              ]
+            },
+            {
+              "chain": [
+                "RTRTRANS.DESCRIPTION2 [router group Insert WHERE New_Flag='Insert']",
+                "EXPTRANS.DESCRIPTION",
+                "SQ_demo_source1.DESCRIPTION",
+                "demo_source1.DESCRIPTION"
+              ],
+              "column": "DESCRIPTION",
+              "rule": "RTRTRANS.DESCRIPTION2 [router group Insert WHERE New_Flag='Insert']",
+              "sources": [
+                "demo_source1.DESCRIPTION"
+              ]
+            },
+            {
+              "chain": [
+                "RTRTRANS.SHORT_NAME2 [router group Insert WHERE New_Flag='Insert']",
+                "EXPTRANS.SHORT_NAME",
+                "SQ_demo_source1.SHORT_NAME",
+                "demo_source1.SHORT_NAME"
+              ],
+              "column": "SHORT_NAME",
+              "rule": "RTRTRANS.SHORT_NAME2 [router group Insert WHERE New_Flag='Insert']",
+              "sources": [
+                "demo_source1.SHORT_NAME"
+              ]
+            },
+            {
+              "chain": [
+                "RTRTRANS.o_CREATED_BY1 [router group Insert WHERE New_Flag='Insert']",
+                "EXPTRANS.o_CREATED_BY = 'IDWUSER'"
+              ],
+              "column": "CREATED_BY",
+              "rule": "RTRTRANS.o_CREATED_BY1 [router group Insert WHERE New_Flag='Insert']",
+              "sources": [
+                "literal/expression: 'IDWUSER'"
+              ]
+            },
+            {
+              "chain": [
+                "RTRTRANS.o_CREATED_TIME1 [router group Insert WHERE New_Flag='Insert']",
+                "EXPTRANS.o_CREATED_TIME = SYSDATE"
+              ],
+              "column": "CREATED_TIME",
+              "rule": "RTRTRANS.o_CREATED_TIME1 [router group Insert WHERE New_Flag='Insert']",
+              "sources": [
+                "literal/expression: SYSDATE"
+              ]
+            },
+            {
+              "chain": [],
+              "column": "UPDATED_BY",
+              "rule": "(not connected \u2014 NULL)",
+              "sources": []
+            },
+            {
+              "chain": [],
+              "column": "UPDATED_TIME",
+              "rule": "(not connected \u2014 NULL)",
+              "sources": []
+            },
+            {
+              "chain": [],
+              "column": "ACTIVE_FLAG",
+              "rule": "(not connected \u2014 NULL)",
+              "sources": []
+            },
+            {
+              "chain": [],
+              "column": "START_DATE",
+              "rule": "(not connected \u2014 NULL)",
+              "sources": []
+            },
+            {
+              "chain": [],
+              "column": "END_DATE",
+              "rule": "(not connected \u2014 NULL)",
+              "sources": []
+            }
+          ],
+          "target_table": "demo_target1"
+        },
+        "demo_target1_UPD": {
+          "columns": [
+            {
+              "chain": [
+                "UPDTRANS.Key2",
+                "RTRTRANS.Key3 [router group Update WHERE Changed_Flag='Update']",
+                "EXPTRANS.Key",
+                "LKPTRANS.Key [lookup demo_target1.Key ON ID = ID1]"
+              ],
+              "column": "Key",
+              "rule": "UPDTRANS.Key2",
+              "sources": [
+                "demo_source1.ID (lookup key)",
+                "demo_target1.Key (lookup)"
+              ]
+            },
+            {
+              "chain": [
+                "UPDTRANS.LEAD_CO_MNE3",
+                "RTRTRANS.LEAD_CO_MNE4 [router group Update WHERE Changed_Flag='Update']",
+                "EXPTRANS.LEAD_CO_MNE",
+                "SQ_demo_source1.LEAD_CO_MNE",
+                "demo_source1.LEAD_CO_MNE"
+              ],
+              "column": "LEAD_CO_MNE",
+              "rule": "UPDTRANS.LEAD_CO_MNE3",
+              "sources": [
+                "demo_source1.LEAD_CO_MNE"
+              ]
+            },
+            {
+              "chain": [
+                "UPDTRANS.BRANCH_CO_MNE3",
+                "RTRTRANS.BRANCH_CO_MNE4 [router group Update WHERE Changed_Flag='Update']",
+                "EXPTRANS.BRANCH_CO_MNE",
+                "SQ_demo_source1.BRANCH_CO_MNE",
+                "demo_source1.BRANCH_CO_MNE"
+              ],
+              "column": "BRANCH_CO_MNE",
+              "rule": "UPDTRANS.BRANCH_CO_MNE3",
+              "sources": [
+                "demo_source1.BRANCH_CO_MNE"
+              ]
+            },
+            {
+              "chain": [
+                "UPDTRANS.MIS_DATE3",
+                "RTRTRANS.MIS_DATE4 [router group Update WHERE Changed_Flag='Update']",
+                "EXPTRANS.MIS_DATE",
+                "SQ_demo_source1.MIS_DATE",
+                "demo_source1.MIS_DATE"
+              ],
+              "column": "MIS_DATE",
+              "rule": "UPDTRANS.MIS_DATE3",
+              "sources": [
+                "demo_source1.MIS_DATE"
+              ]
+            },
+            {
+              "chain": [
+                "UPDTRANS.ID2",
+                "RTRTRANS.ID3 [router group Update WHERE Changed_Flag='Update']",
+                "EXPTRANS.ID",
+                "SQ_demo_source1.ID",
+                "demo_source1.ID"
+              ],
+              "column": "ID",
+              "rule": "UPDTRANS.ID2",
+              "sources": [
+                "demo_source1.ID"
+              ]
+            },
+            {
+              "chain": [
+                "UPDTRANS.DESCRIPTION3",
+                "RTRTRANS.DESCRIPTION4 [router group Update WHERE Changed_Flag='Update']",
+                "EXPTRANS.DESCRIPTION",
+                "SQ_demo_source1.DESCRIPTION",
+                "demo_source1.DESCRIPTION"
+              ],
+              "column": "DESCRIPTION",
+              "rule": "UPDTRANS.DESCRIPTION3",
+              "sources": [
+                "demo_source1.DESCRIPTION"
+              ]
+            },
+            {
+              "chain": [
+                "UPDTRANS.SHORT_NAME3",
+                "RTRTRANS.SHORT_NAME4 [router group Update WHERE Changed_Flag='Update']",
+                "EXPTRANS.SHORT_NAME",
+                "SQ_demo_source1.SHORT_NAME",
+                "demo_source1.SHORT_NAME"
+              ],
+              "column": "SHORT_NAME",
+              "rule": "UPDTRANS.SHORT_NAME3",
+              "sources": [
+                "demo_source1.SHORT_NAME"
+              ]
+            },
+            {
+              "chain": [],
+              "column": "CREATED_BY",
+              "rule": "(not connected \u2014 NULL)",
+              "sources": []
+            },
+            {
+              "chain": [],
+              "column": "CREATED_TIME",
+              "rule": "(not connected \u2014 NULL)",
+              "sources": []
+            },
+            {
+              "chain": [
+                "UPDTRANS.o_UPDATED_BY2",
+                "RTRTRANS.o_UPDATED_BY3 [router group Update WHERE Changed_Flag='Update']",
+                "EXPTRANS.o_UPDATED_BY = 'IDWUSER'"
+              ],
+              "column": "UPDATED_BY",
+              "rule": "UPDTRANS.o_UPDATED_BY2",
+              "sources": [
+                "literal/expression: 'IDWUSER'"
+              ]
+            },
+            {
+              "chain": [
+                "UPDTRANS.o_UPDATED_TIME2",
+                "RTRTRANS.o_UPDATED_TIME3 [router group Update WHERE Changed_Flag='Update']",
+                "EXPTRANS.o_UPDATED_TIME = SYSDATE"
+              ],
+              "column": "UPDATED_TIME",
+              "rule": "UPDTRANS.o_UPDATED_TIME2",
+              "sources": [
+                "literal/expression: SYSDATE"
+              ]
+            },
+            {
+              "chain": [],
+              "column": "ACTIVE_FLAG",
+              "rule": "(not connected \u2014 NULL)",
+              "sources": []
+            },
+            {
+              "chain": [],
+              "column": "START_DATE",
+              "rule": "(not connected \u2014 NULL)",
+              "sources": []
+            },
+            {
+              "chain": [],
+              "column": "END_DATE",
+              "rule": "(not connected \u2014 NULL)",
+              "sources": []
+            }
+          ],
+          "target_table": "demo_target1"
+        }
+      },
+      "targets": [
+        "demo_target1_INS",
+        "demo_target1_UPD"
+      ],
+      "transformations": {
+        "EXPTRANS": {
+          "attributes": {},
+          "expression_evaluation_order": [
+            "LEAD_CO_MNE",
+            "BRANCH_CO_MNE",
+            "MIS_DATE",
+            "ID",
+            "DESCRIPTION",
+            "SHORT_NAME",
+            "Key",
+            "LEAD_CO_MNE1",
+            "BRANCH_CO_MNE1",
+            "MIS_DATE1",
+            "DESCRIPTION1",
+            "SHORT_NAME1",
+            "New_Flag",
+            "MD5_src",
+            "MD5_tgt",
+            "Changed_Flag",
+            "o_CREATED_BY",
+            "o_CREATED_TIME",
+            "o_UPDATED_BY",
+            "o_UPDATED_TIME"
+          ],
+          "expressions": {
+            "Changed_Flag": "IIF(NOT ISNULL(Key) AND  (MD5_tgt != MD5_src),'Update')",
+            "MD5_src": "AES_DECRYPT(LEAD_CO_MNE1, SUBSTR(SHORT_NAME,1,3), 256)",
+            "MD5_tgt": "MD5(LEAD_CO_MNE || BRANCH_CO_MNE || MIS_DATE || DESCRIPTION || SHORT_NAME)",
+            "New_Flag": "IIF(ISNULL(Key),'Insert')",
+            "o_CREATED_BY": "'IDWUSER'",
+            "o_CREATED_TIME": "SYSDATE",
+            "o_UPDATED_BY": "'IDWUSER'",
+            "o_UPDATED_TIME": "SYSDATE"
+          },
+          "router_groups": [],
+          "type": "Expression"
+        },
+        "LKPTRANS": {
+          "attributes": {
+            "Lookup Source Filter": "",
+            "Lookup Sql Override": "",
+            "Lookup condition": "ID = ID1",
+            "Lookup policy on multiple match": "Use Any Value",
+            "Lookup table name": "demo_target1"
+          },
+          "expression_evaluation_order": [
+            "Key",
+            "LEAD_CO_MNE",
+            "BRANCH_CO_MNE",
+            "MIS_DATE",
+            "ID",
+            "DESCRIPTION",
+            "SHORT_NAME",
+            "CREATED_BY",
+            "CREATED_TIME",
+            "UPDATED_BY",
+            "UPDATED_TIME",
+            "ACTIVE_FLAG",
+            "START_DATE",
+            "END_DATE",
+            "ID1"
+          ],
+          "expressions": {},
+          "router_groups": [],
+          "type": "Lookup Procedure"
+        },
+        "RTRTRANS": {
+          "attributes": {},
+          "expression_evaluation_order": [
+            "LEAD_CO_MNE",
+            "BRANCH_CO_MNE",
+            "MIS_DATE",
+            "ID",
+            "DESCRIPTION",
+            "SHORT_NAME",
+            "LEAD_CO_MNE1",
+            "BRANCH_CO_MNE1",
+            "MIS_DATE1",
+            "DESCRIPTION1",
+            "SHORT_NAME1",
+            "New_Flag",
+            "Changed_Flag",
+            "o_CREATED_BY",
+            "o_CREATED_TIME",
+            "o_UPDATED_BY",
+            "o_UPDATED_TIME",
+            "Key",
+            "LEAD_CO_MNE2",
+            "BRANCH_CO_MNE2",
+            "MIS_DATE2",
+            "ID1",
+            "DESCRIPTION2",
+            "SHORT_NAME2",
+            "LEAD_CO_MNE11",
+            "BRANCH_CO_MNE11",
+            "MIS_DATE11",
+            "DESCRIPTION11",
+            "SHORT_NAME11",
+            "New_Flag1",
+            "Changed_Flag1",
+            "o_CREATED_BY1",
+            "o_CREATED_TIME1",
+            "o_UPDATED_BY1",
+            "o_UPDATED_TIME1",
+            "Key1",
+            "LEAD_CO_MNE4",
+            "BRANCH_CO_MNE4",
+            "MIS_DATE4",
+            "ID3",
+            "DESCRIPTION4",
+            "SHORT_NAME4",
+            "LEAD_CO_MNE13",
+            "BRANCH_CO_MNE13",
+            "MIS_DATE13",
+            "DESCRIPTION13",
+            "SHORT_NAME13",
+            "New_Flag3",
+            "Changed_Flag3",
+            "o_CREATED_BY3",
+            "o_CREATED_TIME3",
+            "o_UPDATED_BY3",
+            "o_UPDATED_TIME3",
+            "Key3",
+            "LEAD_CO_MNE3",
+            "BRANCH_CO_MNE3",
+            "MIS_DATE3",
+            "ID2",
+            "DESCRIPTION3",
+            "SHORT_NAME3",
+            "LEAD_CO_MNE12",
+            "BRANCH_CO_MNE12",
+            "MIS_DATE12",
+            "DESCRIPTION12",
+            "SHORT_NAME12",
+            "New_Flag2",
+            "Changed_Flag2",
+            "o_CREATED_BY2",
+            "o_CREATED_TIME2",
+            "o_UPDATED_BY2",
+            "o_UPDATED_TIME2",
+            "Key2"
+          ],
+          "expressions": {},
+          "router_groups": [
+            {
+              "expression": null,
+              "name": "INPUT",
+              "type": "INPUT"
+            },
+            {
+              "expression": "New_Flag='Insert'",
+              "name": "Insert",
+              "type": "OUTPUT"
+            },
+            {
+              "expression": null,
+              "name": "DEFAULT1",
+              "type": "OUTPUT/DEFAULT"
+            },
+            {
+              "expression": "Changed_Flag='Update'",
+              "name": "Update",
+              "type": "OUTPUT"
+            }
+          ],
+          "type": "Router"
+        },
+        "SEQTRANS": {
+          "attributes": {
+            "Current Value": "57",
+            "Cycle": "NO",
+            "End Value": "9223372036854775807",
+            "Increment By": "1",
+            "Start Value": "0"
+          },
+          "expression_evaluation_order": [
+            "NEXTVAL",
+            "CURRVAL"
+          ],
+          "expressions": {},
+          "router_groups": [],
+          "type": "Sequence"
+        },
+        "SQ_demo_source1": {
+          "attributes": {
+            "Source Filter": "",
+            "Sql Query": "",
+            "User Defined Join": ""
+          },
+          "expression_evaluation_order": [
+            "LEAD_CO_MNE",
+            "BRANCH_CO_MNE",
+            "MIS_DATE",
+            "ID",
+            "DESCRIPTION",
+            "SHORT_NAME"
+          ],
+          "expressions": {},
+          "router_groups": [],
+          "type": "Source Qualifier"
+        },
+        "UPDTRANS": {
+          "attributes": {
+            "Forward Rejected Rows": "YES",
+            "Update Strategy Expression": "DD_UPDATE"
+          },
+          "expression_evaluation_order": [
+            "LEAD_CO_MNE3",
+            "BRANCH_CO_MNE3",
+            "MIS_DATE3",
+            "ID2",
+            "DESCRIPTION3",
+            "SHORT_NAME3",
+            "New_Flag2",
+            "Changed_Flag2",
+            "o_CREATED_BY2",
+            "o_CREATED_TIME2",
+            "o_UPDATED_BY2",
+            "o_UPDATED_TIME2",
+            "Key2"
+          ],
+          "expressions": {},
+          "router_groups": [],
+          "type": "Update Strategy"
+        }
+      },
+      "unconnected_lkp_calls": [],
+      "unpopulated_target_columns": {
+        "demo_target1_INS": [
+          "UPDATED_BY",
+          "UPDATED_TIME",
+          "ACTIVE_FLAG",
+          "START_DATE",
+          "END_DATE"
+        ],
+        "demo_target1_UPD": [
+          "CREATED_BY",
+          "CREATED_TIME",
+          "ACTIVE_FLAG",
+          "START_DATE",
+          "END_DATE"
+        ]
+      }
+    }
+  ],
+  "repository_file": "legacy/informatica/wf_demo_mapping.XML",
+  "sources": {
+    "demo_source1": {
+      "database_type": "Flat File",
+      "fields": [
+        {
+          "datatype": "string",
+          "name": "LEAD_CO_MNE",
+          "precision": "50",
+          "scale": "0"
+        },
+        {
+          "datatype": "string",
+          "name": "BRANCH_CO_MNE",
+          "precision": "50",
+          "scale": "0"
+        },
+        {
+          "datatype": "string",
+          "name": "MIS_DATE",
+          "precision": "29",
+          "scale": "0"
+        },
+        {
+          "datatype": "string",
+          "name": "ID",
+          "precision": "50",
+          "scale": "0"
+        },
+        {
+          "datatype": "string",
+          "name": "DESCRIPTION",
+          "precision": "120",
+          "scale": "0"
+        },
+        {
+          "datatype": "string",
+          "name": "SHORT_NAME",
+          "precision": "50",
+          "scale": "0"
+        }
+      ]
+    }
+  },
+  "targets": {
+    "demo_target1": {
+      "fields": [
+        {
+          "datatype": "number",
+          "key": "PRIMARY KEY",
+          "name": "Key",
+          "precision": "15",
+          "scale": "0"
+        },
+        {
+          "datatype": "varchar2",
+          "key": "NOT A KEY",
+          "name": "LEAD_CO_MNE",
+          "precision": "50",
+          "scale": "0"
+        },
+        {
+          "datatype": "varchar2",
+          "key": "NOT A KEY",
+          "name": "BRANCH_CO_MNE",
+          "precision": "50",
+          "scale": "0"
+        },
+        {
+          "datatype": "varchar2",
+          "key": "NOT A KEY",
+          "name": "MIS_DATE",
+          "precision": "50",
+          "scale": "0"
+        },
+        {
+          "datatype": "varchar2",
+          "key": "NOT A KEY",
+          "name": "ID",
+          "precision": "50",
+          "scale": "0"
+        },
+        {
+          "datatype": "varchar2",
+          "key": "NOT A KEY",
+          "name": "DESCRIPTION",
+          "precision": "120",
+          "scale": "0"
+        },
+        {
+          "datatype": "varchar2",
+          "key": "NOT A KEY",
+          "name": "SHORT_NAME",
+          "precision": "50",
+          "scale": "0"
+        },
+        {
+          "datatype": "varchar2",
+          "key": "NOT A KEY",
+          "name": "CREATED_BY",
+          "precision": "50",
+          "scale": "0"
+        },
+        {
+          "datatype": "timestamp",
+          "key": "NOT A KEY",
+          "name": "CREATED_TIME",
+          "precision": "26",
+          "scale": "6"
+        },
+        {
+          "datatype": "varchar2",
+          "key": "NOT A KEY",
+          "name": "UPDATED_BY",
+          "precision": "50",
+          "scale": "0"
+        },
+        {
+          "datatype": "timestamp",
+          "key": "NOT A KEY",
+          "name": "UPDATED_TIME",
+          "precision": "26",
+          "scale": "6"
+        },
+        {
+          "datatype": "varchar2",
+          "key": "NOT A KEY",
+          "name": "ACTIVE_FLAG",
+          "precision": "1",
+          "scale": "0"
+        },
+        {
+          "datatype": "timestamp",
+          "key": "NOT A KEY",
+          "name": "START_DATE",
+          "precision": "26",
+          "scale": "6"
+        },
+        {
+          "datatype": "timestamp",
+          "key": "NOT A KEY",
+          "name": "END_DATE",
+          "precision": "26",
+          "scale": "6"
+        }
+      ]
+    }
+  }
+}

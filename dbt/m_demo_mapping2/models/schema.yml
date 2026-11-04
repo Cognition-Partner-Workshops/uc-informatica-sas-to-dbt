@@ -1,0 +1,61 @@
+version: 2
+models:
+  - name: stg_m_demo_mapping2__demo_source1
+    columns:
+      - name: ID
+        data_tests: [not_null, unique]
+  - name: int_m_demo_mapping2__lkptrans
+    columns:
+      - name: ID
+        data_tests: [not_null, unique]
+  - name: int_m_demo_mapping2__exptrans
+    columns:
+      - name: NEW_FLAG
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['Insert']
+      - name: CHANGED_FLAG
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['Update']
+  - name: int_m_demo_mapping2__updtrans
+    columns:
+      - name: UPDATE_STRATEGY
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['DD_UPDATE']
+  - name: DEMO_TARGET1_INS
+    description: Insert branch, not a merged SCD2 dimension. Unconnected target ports remain NULL.
+    columns:
+      - name: ID
+        data_tests:
+          - not_null
+          - unique
+          - relationships:
+              arguments:
+                to: ref('stg_m_demo_mapping2__demo_source1')
+                field: ID
+      - name: CREATED_BY
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['IDWUSER']
+  - name: DEMO_TARGET1_UPD
+    description: DD_UPDATE payload. Every matched lookup key updates, preserving the documented legacy anomaly.
+    columns:
+      - name: ID
+        data_tests:
+          - not_null
+          - unique
+          - relationships:
+              arguments:
+                to: ref('int_m_demo_mapping2__lkptrans')
+                field: ID
+      - name: UPDATED_BY
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['IDWUSER']
