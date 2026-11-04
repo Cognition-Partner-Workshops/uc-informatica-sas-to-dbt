@@ -77,4 +77,3 @@ Physical target instance groups: `demo_target1` = demo_target1_INS, demo_target1
 | demo_target1_UPD | ACTIVE_FLAG | (not connected — NULL) | — |
 | demo_target1_UPD | START_DATE | (not connected — NULL) | — |
 | demo_target1_UPD | END_DATE | (not connected — NULL) | — |
-
