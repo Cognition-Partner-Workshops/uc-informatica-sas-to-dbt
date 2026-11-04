@@ -1,0 +1,52 @@
+{
+  "job": "informatica_account_dim",
+  "outputs": [
+    {
+      "table": "DEMO_TARGET1_INS",
+      "legacy_fqn": "SFNFR_20261104.INFA_ACCTDIM_LEGACY_SFNFR_20261104.DEMO_TARGET1_INS",
+      "new_fqn": "SFNFR_20261104.INFA_ACCTDIM_SF_SFNFR_20261104.DEMO_TARGET1_INS",
+      "key_columns": [
+        "ID"
+      ],
+      "rows_in": 12,
+      "legacy_rows": 4,
+      "legacy_checksum": "-8099959845793173784",
+      "new_rows": 4,
+      "new_checksum": "-8099959845793173784",
+      "keyed_mismatches": 0,
+      "legacy_only": 0,
+      "new_only": 0,
+      "mismatches": 0,
+      "profile_matches": true
+    },
+    {
+      "table": "DEMO_TARGET1_UPD",
+      "legacy_fqn": "SFNFR_20261104.INFA_ACCTDIM_LEGACY_SFNFR_20261104.DEMO_TARGET1_UPD",
+      "new_fqn": "SFNFR_20261104.INFA_ACCTDIM_SF_SFNFR_20261104.DEMO_TARGET1_UPD",
+      "key_columns": [
+        "ID"
+      ],
+      "rows_in": 12,
+      "legacy_rows": 3,
+      "legacy_checksum": "-4703698863453485522",
+      "new_rows": 3,
+      "new_checksum": "-4703698863453485522",
+      "keyed_mismatches": 0,
+      "legacy_only": 0,
+      "new_only": 0,
+      "mismatches": 0,
+      "profile_matches": true
+    }
+  ],
+  "input_tables": [
+    "SFNFR_20261104.INFA_ACCTDIM_SRC_SFNFR_20261104.DEMO_SOURCE1",
+    "SFNFR_20261104.INFA_ACCTDIM_SRC_SFNFR_20261104.DEMO_TARGET1"
+  ],
+  "input_counts": {
+    "DEMO_SOURCE1": 7,
+    "DEMO_TARGET1": 5
+  },
+  "parity_diff_exit_code": 0,
+  "dbt_summary": "PASS=32 TOTAL=32",
+  "explained_mismatches": "None"
+}
