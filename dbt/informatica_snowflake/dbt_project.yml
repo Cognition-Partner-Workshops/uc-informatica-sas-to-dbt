@@ -1,0 +1,46 @@
+name: informatica_snowflake
+version: "1.0.0"
+config-version: 2
+profile: snowflake
+model-paths: ["models"]
+macro-paths: ["macros"]
+clean-targets: ["target", "dbt_packages"]
+models:
+  informatica_snowflake:
+    +tags: ["RUN:FSX_20261105"]
+    staging:
+      +materialized: view
+      stg_informatica__demo_source1:
+        +meta: {legacy_unit: m_demo_mapping2}
+      stg_informatica__demo_source2:
+        +meta: {legacy_unit: m_demo_mapping3}
+      stg_informatica__demo_source3:
+        +meta: {legacy_unit: m_demo_mapping1}
+      stg_informatica__demo_source4:
+        +meta: {legacy_unit: m_demo_mapping1}
+      stg_informatica__demo_source5:
+        +meta: {legacy_unit: m_demo_mapping1}
+      stg_informatica__demo_target1:
+        +meta: {legacy_unit: m_demo_mapping2}
+      stg_informatica__lkp_demo_source1:
+        +meta: {legacy_unit: m_demo_mapping1}
+      stg_informatica__lkp_demo_source2:
+        +meta: {legacy_unit: m_demo_mapping1}
+      stg_informatica__lkp_demo_source3:
+        +meta: {legacy_unit: m_demo_mapping1}
+    intermediate:
+      +materialized: view
+      m_demo_mapping1:
+        +meta: {legacy_unit: m_demo_mapping1}
+      m_demo_mapping2:
+        +meta: {legacy_unit: m_demo_mapping2}
+      m_demo_mapping3:
+        +meta: {legacy_unit: m_demo_mapping3}
+    marts:
+      +materialized: table
+      m_demo_mapping1:
+        +meta: {legacy_unit: m_demo_mapping1}
+      m_demo_mapping2:
+        +meta: {legacy_unit: m_demo_mapping2}
+      m_demo_mapping3:
+        +meta: {legacy_unit: m_demo_mapping3}

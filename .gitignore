@@ -8,3 +8,6 @@ logs/
 .pytest_cache/
 .ruff_cache/
 .warehouse-exit/
+dbt/informatica_snowflake/target/
+dbt/informatica_snowflake/logs/
+dbt/informatica_snowflake/dbt_packages/

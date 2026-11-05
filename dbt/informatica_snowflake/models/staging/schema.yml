@@ -1,0 +1,197 @@
+version: 2
+models:
+  - name: stg_informatica__demo_source1
+    description: "Source input from INFA_SOURCE.DEMO_SOURCE1; casts only, with no business transformations."
+    columns:
+      - name: lead_co_mne
+        description: "DEMO_SOURCE1.LEAD_CO_MNE, preserved as VARCHAR."
+      - name: branch_co_mne
+        description: "DEMO_SOURCE1.BRANCH_CO_MNE, preserved as VARCHAR."
+      - name: mis_date
+        description: "DEMO_SOURCE1.MIS_DATE, preserved as VARCHAR."
+      - name: id
+        description: "DEMO_SOURCE1.ID, preserved as VARCHAR."
+      - name: description
+        description: "DEMO_SOURCE1.DESCRIPTION, preserved as VARCHAR."
+      - name: short_name
+        description: "DEMO_SOURCE1.SHORT_NAME, preserved as VARCHAR."
+  - name: stg_informatica__demo_source2
+    description: "Source input from INFA_SOURCE.DEMO_SOURCE2; casts only, with no business transformations."
+    columns:
+      - name: title
+        description: "DEMO_SOURCE2.TITLE, preserved as VARCHAR."
+      - name: first_name
+        description: "DEMO_SOURCE2.FIRST_NAME, preserved as VARCHAR."
+      - name: middle_name
+        description: "DEMO_SOURCE2.MIDDLE_NAME, preserved as VARCHAR."
+      - name: last_name
+        description: "DEMO_SOURCE2.LAST_NAME, preserved as VARCHAR."
+      - name: member_id
+        description: "DEMO_SOURCE2.MEMBER_ID, preserved as FLOAT."
+      - name: member_suffix
+        description: "DEMO_SOURCE2.MEMBER_SUFFIX, preserved as VARCHAR."
+      - name: birth_date
+        description: "DEMO_SOURCE2.BIRTH_DATE, preserved as TIMESTAMP_NTZ."
+      - name: gender_code
+        description: "DEMO_SOURCE2.GENDER_CODE, preserved as VARCHAR."
+      - name: member_record_number
+        description: "DEMO_SOURCE2.MEMBER_RECORD_NUMBER, preserved as FLOAT."
+      - name: social_security_number
+        description: "DEMO_SOURCE2.SOCIAL_SECURITY_NUMBER, preserved as FLOAT."
+      - name: member_type_code
+        description: "DEMO_SOURCE2.MEMBER_TYPE_CODE, preserved as FLOAT."
+      - name: original_effective_date
+        description: "DEMO_SOURCE2.ORIGINAL_EFFECTIVE_DATE, preserved as TIMESTAMP_NTZ."
+      - name: relationship_to_subscriber_code
+        description: "DEMO_SOURCE2.RELATIONSHIP_TO_SUBSCRIBER_CODE, preserved as FLOAT."
+      - name: relationship_to_subscriber_code_label
+        description: "DEMO_SOURCE2.RELATIONSHIP_TO_SUBSCRIBER_CODE_LABEL, preserved as VARCHAR."
+  - name: stg_informatica__demo_source3
+    description: "Source input from INFA_SOURCE.DEMO_SOURCE3; casts only, with no business transformations."
+    columns:
+      - name: tx_id
+        description: "DEMO_SOURCE3.TX_ID, preserved as NUMBER(38,0)."
+      - name: acct_id
+        description: "DEMO_SOURCE3.ACCT_ID, preserved as NUMBER(38,0)."
+      - name: first_nm
+        description: "DEMO_SOURCE3.FIRST_NM, preserved as VARCHAR."
+      - name: last_nm
+        description: "DEMO_SOURCE3.LAST_NM, preserved as VARCHAR."
+      - name: tx_dttm
+        description: "DEMO_SOURCE3.TX_DTTM, preserved as TIMESTAMP_NTZ."
+      - name: tx_amt
+        description: "DEMO_SOURCE3.TX_AMT, preserved as FLOAT."
+      - name: tx_type_cd
+        description: "DEMO_SOURCE3.TX_TYPE_CD, preserved as VARCHAR."
+      - name: bal_amt
+        description: "DEMO_SOURCE3.BAL_AMT, preserved as FLOAT."
+      - name: tx_desc
+        description: "DEMO_SOURCE3.TX_DESC, preserved as VARCHAR."
+      - name: crdt_score
+        description: "DEMO_SOURCE3.CRDT_SCORE, preserved as NUMBER(38,0)."
+      - name: cust_id
+        description: "DEMO_SOURCE3.CUST_ID, preserved as NUMBER(38,0)."
+  - name: stg_informatica__demo_source4
+    description: "Source input from INFA_SOURCE.DEMO_SOURCE4; casts only, with no business transformations."
+    columns:
+      - name: acct_id
+        description: "DEMO_SOURCE4.ACCT_ID, preserved as NUMBER(38,0)."
+      - name: acct_typ
+        description: "DEMO_SOURCE4.ACCT_TYP, preserved as VARCHAR."
+      - name: acct_desc
+        description: "DEMO_SOURCE4.ACCT_DESC, preserved as VARCHAR."
+      - name: crdt_ln
+        description: "DEMO_SOURCE4.CRDT_LN, preserved as VARCHAR."
+      - name: cr8_dt
+        description: "DEMO_SOURCE4.CR8_DT, preserved as DATE."
+      - name: clsr_dt
+        description: "DEMO_SOURCE4.CLSR_DT, preserved as DATE."
+      - name: acct_stat_cd
+        description: "DEMO_SOURCE4.ACCT_STAT_CD, preserved as VARCHAR."
+  - name: stg_informatica__demo_source5
+    description: "Source input from INFA_SOURCE.DEMO_SOURCE5; casts only, with no business transformations."
+    columns:
+      - name: product_id
+        description: "DEMO_SOURCE5.PRODUCT_ID, preserved as VARCHAR."
+      - name: product_nm
+        description: "DEMO_SOURCE5.PRODUCT_NM, preserved as VARCHAR."
+      - name: product_no
+        description: "DEMO_SOURCE5.PRODUCT_NO, preserved as VARCHAR."
+      - name: color
+        description: "DEMO_SOURCE5.COLOR, preserved as VARCHAR."
+      - name: std_cost
+        description: "DEMO_SOURCE5.STD_COST, preserved as VARCHAR."
+      - name: list_price
+        description: "DEMO_SOURCE5.LIST_PRICE, preserved as VARCHAR."
+      - name: sell_st_dt
+        description: "DEMO_SOURCE5.SELL_ST_DT, preserved as VARCHAR."
+      - name: sell_ed_dt
+        description: "DEMO_SOURCE5.SELL_ED_DT, preserved as VARCHAR."
+  - name: stg_informatica__demo_target1
+    description: "Duplicate-preserving target pre-state from INFA_SOURCE.DEMO_TARGET1; casts only, with no business transformations."
+    columns:
+      - name: seed_row
+        description: "Physical seed order retained for lookup ties and duplicate pre-state rows."
+      - name: key
+        description: "DEMO_TARGET1.KEY, preserved as FLOAT."
+      - name: lead_co_mne
+        description: "DEMO_TARGET1.LEAD_CO_MNE, preserved as VARCHAR."
+      - name: branch_co_mne
+        description: "DEMO_TARGET1.BRANCH_CO_MNE, preserved as VARCHAR."
+      - name: mis_date
+        description: "DEMO_TARGET1.MIS_DATE, preserved as VARCHAR."
+      - name: id
+        description: "DEMO_TARGET1.ID, preserved as VARCHAR."
+      - name: description
+        description: "DEMO_TARGET1.DESCRIPTION, preserved as VARCHAR."
+      - name: short_name
+        description: "DEMO_TARGET1.SHORT_NAME, preserved as VARCHAR."
+      - name: created_by
+        description: "DEMO_TARGET1.CREATED_BY, preserved as VARCHAR."
+      - name: created_time
+        description: "DEMO_TARGET1.CREATED_TIME, preserved as TIMESTAMP_NTZ."
+      - name: updated_by
+        description: "DEMO_TARGET1.UPDATED_BY, preserved as VARCHAR."
+      - name: updated_time
+        description: "DEMO_TARGET1.UPDATED_TIME, preserved as TIMESTAMP_NTZ."
+      - name: active_flag
+        description: "DEMO_TARGET1.ACTIVE_FLAG, preserved as VARCHAR."
+      - name: start_date
+        description: "DEMO_TARGET1.START_DATE, preserved as TIMESTAMP_NTZ."
+      - name: end_date
+        description: "DEMO_TARGET1.END_DATE, preserved as TIMESTAMP_NTZ."
+  - name: stg_informatica__lkp_demo_source1
+    description: "Order-preserving lookup input from INFA_SOURCE.LKP_DEMO_SOURCE1; casts only, with no business transformations."
+    columns:
+      - name: seed_row
+        description: "Physical seed order retained for lookup ties and duplicate pre-state rows."
+      - name: acct_id
+        description: "LKP_DEMO_SOURCE1.ACCT_ID, preserved as NUMBER(38,0)."
+      - name: cust_id
+        description: "LKP_DEMO_SOURCE1.CUST_ID, preserved as NUMBER(38,0)."
+      - name: first_nm
+        description: "LKP_DEMO_SOURCE1.FIRST_NM, preserved as VARCHAR."
+      - name: last_nm
+        description: "LKP_DEMO_SOURCE1.LAST_NM, preserved as VARCHAR."
+      - name: cust_addr
+        description: "LKP_DEMO_SOURCE1.CUST_ADDR, preserved as VARCHAR."
+      - name: cust_phn
+        description: "LKP_DEMO_SOURCE1.CUST_PHN, preserved as VARCHAR."
+      - name: cust_eml_addr
+        description: "LKP_DEMO_SOURCE1.CUST_EML_ADDR, preserved as VARCHAR."
+      - name: age
+        description: "LKP_DEMO_SOURCE1.AGE, preserved as VARCHAR."
+      - name: dob
+        description: "LKP_DEMO_SOURCE1.DOB, preserved as VARCHAR."
+      - name: cust_typ
+        description: "LKP_DEMO_SOURCE1.CUST_TYP, preserved as VARCHAR."
+  - name: stg_informatica__lkp_demo_source2
+    description: "Order-preserving lookup input from INFA_SOURCE.LKP_DEMO_SOURCE2; casts only, with no business transformations."
+    columns:
+      - name: seed_row
+        description: "Physical seed order retained for lookup ties and duplicate pre-state rows."
+      - name: cust_id
+        description: "LKP_DEMO_SOURCE2.CUST_ID, preserved as NUMBER(38,0)."
+      - name: crdt_score
+        description: "LKP_DEMO_SOURCE2.CRDT_SCORE, preserved as NUMBER(38,0)."
+      - name: max_crdt_score
+        description: "LKP_DEMO_SOURCE2.MAX_CRDT_SCORE, preserved as NUMBER(38,0)."
+      - name: min_crdt_score
+        description: "LKP_DEMO_SOURCE2.MIN_CRDT_SCORE, preserved as NUMBER(38,0)."
+      - name: max_crdt_lmt
+        description: "LKP_DEMO_SOURCE2.MAX_CRDT_LMT, preserved as NUMBER(38,0)."
+      - name: curr_crdt_bal_amt
+        description: "LKP_DEMO_SOURCE2.CURR_CRDT_BAL_AMT, preserved as FLOAT."
+      - name: avg_inc_amt
+        description: "LKP_DEMO_SOURCE2.AVG_INC_AMT, preserved as FLOAT."
+  - name: stg_informatica__lkp_demo_source3
+    description: "Order-preserving lookup input from INFA_SOURCE.LKP_DEMO_SOURCE3; casts only, with no business transformations."
+    columns:
+      - name: seed_row
+        description: "Physical seed order retained for lookup ties and duplicate pre-state rows."
+      - name: acct_id
+        description: "LKP_DEMO_SOURCE3.ACCT_ID, preserved as NUMBER(38,0)."
+      - name: tx_type_cd
+        description: "LKP_DEMO_SOURCE3.TX_TYPE_CD, preserved as VARCHAR."
+      - name: tx_type_desc
+        description: "LKP_DEMO_SOURCE3.TX_TYPE_DESC, preserved as VARCHAR."
