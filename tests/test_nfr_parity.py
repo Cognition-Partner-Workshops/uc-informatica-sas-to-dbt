@@ -10,7 +10,7 @@ import duckdb
 import pandas as pd
 
 from licence_status import markdown, status
-from parity_diff import load_baseline
+from parity_diff import load_actual, load_baseline
 from parity_nfr import ROOT, compare, frame, reconcile, snowflake_report
 
 
@@ -141,3 +141,31 @@ def test_old_password_connection_path_is_unchanged(monkeypatch):
     assert mock.call_args.kwargs['account'] == 'legacy-account'
     assert mock.call_args.kwargs['host'] == 'fixture-host'
     assert 'private_key' not in mock.call_args.kwargs
+
+
+def test_literal_null_marker_from_duckdb_and_snowflake_stays_text(tmp_path):
+    baseline = tmp_path / 'baseline'
+    baseline.mkdir()
+    (baseline / 'EXAMPLE.csv').write_text('ID,VALUE\n1,\n')
+    base = load_baseline(str(baseline))
+    keys = {'EXAMPLE': ['ID']}
+    database = tmp_path / 'target.duckdb'
+    with duckdb.connect(str(database)) as con:
+        con.execute('CREATE TABLE EXAMPLE (ID BIGINT, VALUE VARCHAR)')
+        con.execute('INSERT INTO EXAMPLE VALUES (1, ?)', [r'\N'])
+    actual = load_actual(str(database), 'main')
+    report = reconcile(base, actual, keys)
+    assert not report['full_match']
+    assert report['tables']['EXAMPLE']['column_differences'] == {'VALUE': 1}
+    frames = {
+        'SELECT * FROM "FSX_20261105_DB"."INFA_BASELINE"."EXAMPLE"': pd.DataFrame([{'ID': 1, 'VALUE': None}]),
+        'SELECT * FROM "FSX_20261105_DB"."INFA_TARGET"."EXAMPLE"': actual['EXAMPLE'],
+    }
+    connection = MagicMock()
+    connection.cursor.side_effect = lambda: FakeCursor(frames)
+    report = snowflake_report(connection, 'FSX_20261105', keys)
+    assert not report['full_match']
+    assert report['tables']['EXAMPLE']['status'] == 'RED'
+    assert report['tables']['EXAMPLE']['column_differences'] == {'VALUE': 1}
+    frames['SELECT * FROM "FSX_20261105_DB"."INFA_TARGET"."EXAMPLE"'].loc[0, 'VALUE'] = None
+    assert snowflake_report(connection, 'FSX_20261105', keys)['full_match']
