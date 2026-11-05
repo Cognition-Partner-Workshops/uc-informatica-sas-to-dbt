@@ -23,6 +23,11 @@ group and are dropped; agg_TRANS pass-through ports take the highest `TX_ID` row
 account; `ACCT_KEY` starts at SEQ_GEN Current Value 281; `SELL_ST_DT` is NULL because
 `TO_DATE(TO_CHAR(SYSDATE),'DD/MM/YYYY')` does not parse. Values keep the baseline's
 types (e.g. `TX_AMT` keeps decimals although the Oracle target is `number(38,0)`).
+Other accepted deviations from the Oracle target DDL: `ACCT_DESC` values exceed
+`varchar2(10)` and DEMO_TARGET3 `number(15)` columns carry non-numeric text. A malformed
+`SELL_ED_DT` fails the build (PowerCenter would reject only the row). Full XML re-derivation
+and the baseline-vs-XML divergence list: `docs/semantics_review.md`; singular tests in
+`tests/` pin the 1005 router drop and the lkp_TRANS1 last-value tie (1002 -> `DR`).
 
 ## Run
 

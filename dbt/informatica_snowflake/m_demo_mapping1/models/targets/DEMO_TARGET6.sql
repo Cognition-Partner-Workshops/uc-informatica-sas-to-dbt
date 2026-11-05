@@ -13,7 +13,7 @@ agg_trans as (
     select
         *,
         sum(TX_AMT) over (partition by ACCT_ID) as o_TX_AMT,
-        row_number() over (partition by ACCT_ID order by TX_ID desc) as group_last_rn
+        row_number() over (partition by ACCT_ID order by TX_ID desc nulls last, TX_DTTM desc nulls last) as group_last_rn
     from sb
 )
 
