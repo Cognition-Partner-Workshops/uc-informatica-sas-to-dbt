@@ -217,6 +217,8 @@ def verify_manifest(path):
     manifest = json.loads(Path(path).read_text())
     if manifest["business_date"] != "2024-01-31" or manifest["input_digest"] != digest(manifest["inputs"]):
         raise ValueError("Invalid manifest")
+    if manifest.get("source_commit") != published_commit():
+        raise ValueError("Manifest source_commit differs from current published HEAD; re-run freeze")
     if frozen_section() != manifest["inputs"]:
         raise ValueError("Frozen input mismatch")
     return manifest

@@ -136,7 +136,7 @@ class ManifestTests(unittest.TestCase):
                          job.digest({"a": {"x": 3, "y": 2}, "b": 1}))
 
     def test_roundtrip_and_mismatch_abort(self):
-        with tempfile.TemporaryDirectory() as directory:
+        with tempfile.TemporaryDirectory() as directory, patch.object(job, "published_commit", return_value=job.git("rev-parse", "HEAD")):
             manifest = job.freeze(directory)
             path = Path(directory) / "manifest.json"
             self.assertEqual(job.verify_manifest(path), manifest)
@@ -148,6 +148,17 @@ class ManifestTests(unittest.TestCase):
             path.write_text(json.dumps(manifest))
             with self.assertRaisesRegex(ValueError, "Invalid manifest"):
                 job.verify_manifest(path)
+
+    def test_manifest_from_different_published_head_requires_freeze(self):
+        with tempfile.TemporaryDirectory() as directory:
+            manifest = job.freeze(directory)
+            path = Path(directory) / "manifest.json"
+            manifest["source_commit"] = "a" * 40
+            path.write_text(json.dumps(manifest))
+            with patch.object(job, "published_commit", return_value="b" * 40) as published:
+                with self.assertRaisesRegex(ValueError, "current published HEAD; re-run freeze"):
+                    job.verify_manifest(path)
+            published.assert_called_once_with()
 
     def test_counts_include_physical_duplicates(self):
         counts = job.frozen_section()["row_counts"]
