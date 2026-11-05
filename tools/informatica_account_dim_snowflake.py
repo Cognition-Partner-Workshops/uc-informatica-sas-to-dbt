@@ -182,11 +182,14 @@ def frozen_section():
     target = xml.find(".//TARGET[@NAME='demo_target1']")
     if target is None or [f.attrib["NAME"].upper() for f in target.findall("TARGETFIELD")] != [c for c, _ in TARGET_COLUMNS]:
         raise ValueError("Configured columns differ from XML target order")
+    tracked = [ROOT / name for name in git(
+        "ls-files", "-z", "--", str(PROJECT.relative_to(ROOT))
+    ).split("\0") if name]
     files = [ROOT / "legacy/informatica/wf_demo_mapping.XML",
              *(input_path(t) for t in INPUTS), *(baseline_path(t) for t in OUTPUTS),
              ROOT / "tools/informatica_baseline.py",
-             *(p for p in PROJECT.rglob("*") if p.is_file()
-               and not {"target", "logs"}.intersection(p.relative_to(PROJECT).parts))]
+             *(p for p in tracked
+               if not {"target", "logs"}.intersection(p.relative_to(PROJECT).parts))]
     hashes = {str(p.relative_to(ROOT)): hashlib.sha256(p.read_bytes()).hexdigest() for p in files}
     counts = {}
     for table in INPUTS:

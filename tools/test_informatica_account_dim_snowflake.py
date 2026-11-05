@@ -3,6 +3,8 @@
 import csv
 import hashlib
 import json
+import shutil
+import subprocess
 import tempfile
 import unittest
 from datetime import datetime
@@ -101,6 +103,34 @@ class CanonicalTests(unittest.TestCase):
 
 
 class ManifestTests(unittest.TestCase):
+    def test_only_git_tracked_project_files_are_hashed(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            project = root / "dbt/m_demo_mapping2"
+            for name in job.frozen_section()["file_hashes"]:
+                if name.startswith("dbt/"):
+                    continue
+                destination = root / name
+                destination.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copyfile(job.ROOT / name, destination)
+            project.mkdir(parents=True)
+            tracked = project / "dbt_project.yml"
+            tracked.write_text("name: tracked\n")
+            (root / ".gitignore").write_text(".user.yml\n")
+            subprocess.run(["git", "init", "--quiet"], cwd=root, check=True)
+            subprocess.run(["git", "add", "--", "dbt/m_demo_mapping2/dbt_project.yml"], cwd=root, check=True)
+            with patch.object(job, "ROOT", root), patch.object(job, "PROJECT", project):
+                before = job.frozen_section()
+                (project / "untracked.sql").write_text("select 1\n")
+                (project / ".user.yml").write_text("id: locally-generated\n")
+                subprocess.run(["git", "check-ignore", "--quiet", "dbt/m_demo_mapping2/.user.yml"], cwd=root, check=True)
+                after = job.frozen_section()
+            self.assertEqual(before, after)
+            self.assertEqual(
+                [name for name in after["file_hashes"] if name.startswith("dbt/")],
+                ["dbt/m_demo_mapping2/dbt_project.yml"],
+            )
+
     def test_digest_determinism(self):
         self.assertEqual(job.digest({"b": 1, "a": {"y": 2, "x": 3}}),
                          job.digest({"a": {"x": 3, "y": 2}, "b": 1}))
