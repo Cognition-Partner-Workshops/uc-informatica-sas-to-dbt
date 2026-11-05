@@ -1,8 +1,9 @@
 # Informatica Snowflake scaffold
 
 This project stages nine frozen inputs from FSX_20261105_DB.INFA_SOURCE as
-views in exactly INFA_TARGET. No mapping transformations or target marts are
-implemented yet. Intermediate and mart folders reserve each mapping's scope.
+views in exactly INFA_TARGET. Mappings 2 and 3 implement the ledger insert/update
+and validated member streams. Mapping 1 remains reserved for separate work.
+See docs/stm/m_demo_mapping2.md and docs/stm/m_demo_mapping3.md for lineage.
 
 ## Run from the repository root
 

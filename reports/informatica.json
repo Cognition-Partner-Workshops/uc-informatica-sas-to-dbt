@@ -1,0 +1,81 @@
+{
+  "full_match": false,
+  "tables": {
+    "DEMO_TARGET1_INS": {
+      "actual_rows": 4,
+      "baseline_rows": 4,
+      "column_differences": {},
+      "duplicate_actual_keys": [],
+      "duplicate_baseline_keys": [],
+      "extra_columns": [],
+      "extra_keys": [],
+      "matched_rows": 4,
+      "missing_columns": [],
+      "missing_keys": [],
+      "status": "GREEN"
+    },
+    "DEMO_TARGET1_UPD": {
+      "actual_rows": 3,
+      "baseline_rows": 3,
+      "column_differences": {},
+      "duplicate_actual_keys": [],
+      "duplicate_baseline_keys": [],
+      "extra_columns": [],
+      "extra_keys": [],
+      "matched_rows": 3,
+      "missing_columns": [],
+      "missing_keys": [],
+      "status": "GREEN"
+    },
+    "DEMO_TARGET2": {
+      "actual_rows": 3,
+      "baseline_rows": 3,
+      "column_differences": {},
+      "duplicate_actual_keys": [],
+      "duplicate_baseline_keys": [],
+      "extra_columns": [],
+      "extra_keys": [],
+      "matched_rows": 3,
+      "missing_columns": [],
+      "missing_keys": [],
+      "status": "GREEN"
+    },
+    "DEMO_TARGET21": {
+      "actual_rows": 3,
+      "baseline_rows": 3,
+      "column_differences": {},
+      "duplicate_actual_keys": [],
+      "duplicate_baseline_keys": [],
+      "extra_columns": [],
+      "extra_keys": [],
+      "matched_rows": 3,
+      "missing_columns": [],
+      "missing_keys": [],
+      "status": "GREEN"
+    },
+    "DEMO_TARGET3": {
+      "baseline_rows": 4,
+      "error": "Missing target",
+      "query_errors": {
+        "target": "ProgrammingError"
+      },
+      "status": "RED"
+    },
+    "DEMO_TARGET5": {
+      "baseline_rows": 2,
+      "error": "Missing target",
+      "query_errors": {
+        "target": "ProgrammingError"
+      },
+      "status": "RED"
+    },
+    "DEMO_TARGET6": {
+      "baseline_rows": 2,
+      "error": "Missing target",
+      "query_errors": {
+        "target": "ProgrammingError"
+      },
+      "status": "RED"
+    }
+  }
+}
