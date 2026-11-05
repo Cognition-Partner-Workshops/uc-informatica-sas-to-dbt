@@ -47,7 +47,7 @@ MODEL_ID = "CRM-2023-Q4-v2"
 def fmt_case(fmt_name, col, formats, other_label):
     """Render a PROC FORMAT value mapping as a SQL CASE expression."""
     mapping = formats[fmt_name]["mapping"]
-    parts = [f"case"]
+    parts = ["case"]
     for code, label in mapping.items():
         if code.upper() == "OTHER":
             continue
