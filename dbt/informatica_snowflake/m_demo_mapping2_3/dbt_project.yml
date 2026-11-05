@@ -1,0 +1,13 @@
+name: infa_m23
+version: '1.0.0'
+config-version: 2
+profile: infa_m23
+model-paths: ["models"]
+macro-paths: ["macros"]
+test-paths: ["tests"]
+models:
+  infa_m23:
+    +materialized: table
+    +schema: main
+    intermediate:
+      +materialized: ephemeral
