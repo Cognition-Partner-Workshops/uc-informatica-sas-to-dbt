@@ -1,5 +1,5 @@
 {
-  "full_match": false,
+  "full_match": true,
   "tables": {
     "DEMO_TARGET1_INS": {
       "actual_rows": 4,
@@ -54,28 +54,43 @@
       "status": "GREEN"
     },
     "DEMO_TARGET3": {
+      "actual_rows": 4,
       "baseline_rows": 4,
-      "error": "Missing target",
-      "query_errors": {
-        "target": "ProgrammingError"
-      },
-      "status": "RED"
+      "column_differences": {},
+      "duplicate_actual_keys": [],
+      "duplicate_baseline_keys": [],
+      "extra_columns": [],
+      "extra_keys": [],
+      "matched_rows": 4,
+      "missing_columns": [],
+      "missing_keys": [],
+      "status": "GREEN"
     },
     "DEMO_TARGET5": {
+      "actual_rows": 2,
       "baseline_rows": 2,
-      "error": "Missing target",
-      "query_errors": {
-        "target": "ProgrammingError"
-      },
-      "status": "RED"
+      "column_differences": {},
+      "duplicate_actual_keys": [],
+      "duplicate_baseline_keys": [],
+      "extra_columns": [],
+      "extra_keys": [],
+      "matched_rows": 2,
+      "missing_columns": [],
+      "missing_keys": [],
+      "status": "GREEN"
     },
     "DEMO_TARGET6": {
+      "actual_rows": 2,
       "baseline_rows": 2,
-      "error": "Missing target",
-      "query_errors": {
-        "target": "ProgrammingError"
-      },
-      "status": "RED"
+      "column_differences": {},
+      "duplicate_actual_keys": [],
+      "duplicate_baseline_keys": [],
+      "extra_columns": [],
+      "extra_keys": [],
+      "matched_rows": 2,
+      "missing_columns": [],
+      "missing_keys": [],
+      "status": "GREEN"
     }
   }
 }
