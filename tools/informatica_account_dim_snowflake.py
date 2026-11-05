@@ -1,25 +1,27 @@
 #!/usr/bin/env python3
-"""Load and dual-run m_demo_mapping2 in its pre-provisioned SFNFR schemas.
-
-Run from the repository root with SFNFR_ACCOUNT/USER/ROLE/PRIVATE_KEY bound.
-No infrastructure is created. CSV types and timestamp formats are explicit.
-The baseline is replayed from SRC, not independently reread seed inputs.
-"""
+"""Frozen-input dual run; freeze and offline never connect to Snowflake."""
 
 import argparse
 import csv
+import hashlib
+import io
 import json
 import os
 import subprocess
 import sys
-import tempfile
+from collections import Counter
 from datetime import datetime
 from decimal import Decimal
 from pathlib import Path
+from typing import Any
+from unittest.mock import patch
+from xml.etree import ElementTree
 
 import duckdb
 import informatica_baseline as baseline
+import sf_attribution as sf
 import snowflake.connector
+from dbt.cli.main import dbtRunner
 from cryptography.hazmat.primitives.serialization import (
     Encoding,
     NoEncryption,
@@ -28,11 +30,11 @@ from cryptography.hazmat.primitives.serialization import (
 )
 
 ROOT = Path(__file__).resolve().parents[1]
-DATABASE = "SFNFR_20261104"
-SRC = "INFA_ACCTDIM_SRC_SFNFR_20261104"
-LEGACY = "INFA_ACCTDIM_LEGACY_SFNFR_20261104"
-SF = "INFA_ACCTDIM_SF_SFNFR_20261104"
-WAREHOUSE = "WH_INFA_ACCTDIM"
+DATABASE = sf.database_name("mig_inf")
+SRC = f"INFA_ACCTDIM_SRC_{sf.RUN_TOKEN}"
+LEGACY = f"INFA_ACCTDIM_LEGACY_{sf.RUN_TOKEN}"
+TARGET = f"INFA_ACCTDIM_TARGET_{sf.RUN_TOKEN}"
+WAREHOUSE = "WH_MIG_INF_ACCOUNT_DIMENSION"
 SOURCE_COLUMNS = [
     (c, "VARCHAR")
     for c in (
@@ -59,31 +61,170 @@ TARGET_COLUMNS = (
 )
 OUTPUTS = ("DEMO_TARGET1_INS", "DEMO_TARGET1_UPD")
 INPUTS = ("DEMO_SOURCE1", "DEMO_TARGET1")
-REPORT = ROOT / "docs/parity/m_demo_mapping2_snowflake_parity.md"
+
+PROJECT = ROOT / "dbt/m_demo_mapping2"
+EP = sf.endpoint("cs_mig_inf_account_dimension")
+MONITOR = sf.resource_monitor_name("mig_inf")
+EMULATOR = "emulator: tools/informatica_baseline.py on DuckDB; PowerCenter engine unavailable"
+NORMALIZATIONS = {
+    "null": r"\N",
+    "strings": "No trim; escape backslash by doubling, then pipe with backslash",
+    "key": "NUMBER(38,0) integer text",
+    "timestamps": "YYYY-MM-DD HH24:MI:SS.FF6",
+    "metadata": "INFORMATION_SCHEMA types compared in XML order; DATETIME_PRECISION is not applicable in Snowflake",
+    "row": "XML target column order; pipe-delimited",
+    "checksum": "SHA-256 of UTF-8 sorted canonical rows joined by newline, no trailing newline; duplicates retained",
+    "csv": "Empty fields become NULL; target physical order retained in __SEED_ROW",
+}
+
+
+def git(*args):
+    return subprocess.check_output(["git", *args], cwd=ROOT, text=True).strip()
+
+
+def published_commit():
+    commit = sf.resolve_commit()
+    if commit != git("rev-parse", "HEAD") or git("status", "--porcelain"):
+        raise ValueError("Resolved commit must be clean HEAD")
+    if not git("branch", "-r", "--contains", commit):
+        raise ValueError("HEAD must be contained in a remote branch")
+    return commit
+
+
+def attributed_options():
+    params = sf.connection_params(
+        EP, phase="dev", account=os.environ["SNOWFLAKE_EXT_ACCOUNT"],
+        private_key_file="unused", commit=published_commit(),
+        run_id=os.environ.get("SF_RUN_ID") or sf.make_run_id("mig_inf", "dev"),
+        session_url=os.environ.get("DEVIN_SESSION_URL"), role="DEVIN_EXT_ROLE",
+    )
+    return params
+
+
+def connection_options():
+    params = attributed_options()
+    params.pop("private_key_file")
+    params["user"] = os.environ["SNOWFLAKE_EXT_USER"]
+    key = load_pem_private_key(os.environ["SNOWFLAKE_EXT_PRIVATE_KEY"].encode(), password=None)
+    params["private_key"] = key.private_bytes(Encoding.DER, PrivateFormat.PKCS8, NoEncryption())
+    params.update(database=DATABASE, warehouse=WAREHOUSE)
+    return params
 
 
 def connect():
-    key = load_pem_private_key(os.environ["SFNFR_PRIVATE_KEY"].encode(), password=None)
-    return snowflake.connector.connect(
-        account=os.environ["SFNFR_ACCOUNT"],
-        user=os.environ["SFNFR_USER"],
-        role=os.environ["SFNFR_ROLE"],
-        private_key=key.private_bytes(
-            Encoding.DER, PrivateFormat.PKCS8, NoEncryption()
-        ),
-        authenticator="SNOWFLAKE_JWT",
-        database=DATABASE,
-        warehouse=WAREHOUSE,
-        session_parameters={"QUERY_TAG": "RUN:SFNFR_20261104;m_demo_mapping2"},
-    )
+    return snowflake.connector.connect(**connection_options())
+
+
+class Queries:
+    def __init__(self, cursor):
+        self.cursor = cursor
+        self.query_ids: list[str] = []
+
+    def execute(self, *args):
+        try:
+            self.cursor.execute(*args)
+        finally:
+            if self.cursor.sfqid:
+                self.query_ids.append(self.cursor.sfqid)
+        return self.cursor
+
+    def executemany(self, sql, rows):
+        for row in rows:
+            self.execute(sql, row)
+
+
+def compute_guard(cur, require_tag=True):
+    cursor = cur.execute(f"SHOW WAREHOUSES LIKE '{WAREHOUSE}'")
+    names = [d[0].lower() for d in cursor.description]
+    rows = [dict(zip(names, row)) for row in cursor.fetchall()]
+    wh = next((r for r in rows if r["name"] == WAREHOUSE), None)
+    if not wh or str(wh.get("resource_monitor", "")).upper() != MONITOR.upper():
+        raise ValueError("Warehouse missing or not attached to the required resource monitor; ask a control connection to attach it")
+    if str(wh.get("size", "")).upper().replace("-", "") != "XSMALL" or int(wh["auto_suspend"]) != 60:
+        raise ValueError("Warehouse must be X-Small with auto_suspend 60")
+    if require_tag:
+        tag = cur.execute(
+            "SELECT SYSTEM$GET_TAG('DEVIN_GOVERNANCE.TAGS.DEVIN_CSID', %s, 'warehouse')",
+            (WAREHOUSE,),
+        ).fetchone()[0]
+        if tag != EP.csid:
+            raise ValueError("Warehouse DEVIN_CSID mismatch")
+
+
+def setup(cur):
+    compute_guard(cur, require_tag=False)
+    comment = sf.external_comment(workload="mig_inf", csid=EP.csid, job="account_dimension").replace("'", "''")
+    cur.execute(f"CREATE DATABASE IF NOT EXISTS {DATABASE} COMMENT = '{comment}'")
+    for schema in (SRC, LEGACY, TARGET):
+        cur.execute(f"CREATE SCHEMA IF NOT EXISTS {DATABASE}.{schema} COMMENT = '{comment}'")
+    cur.execute(f"ALTER WAREHOUSE {WAREHOUSE} SET TAG DEVIN_GOVERNANCE.TAGS.DEVIN_CSID = '{EP.csid}'")
+    compute_guard(cur)
+
+
+def outside_repo(directory):
+    path = Path(directory).expanduser().resolve()
+    if path == ROOT or ROOT in path.parents:
+        raise ValueError("Output must be outside the repository")
+    path.mkdir(parents=True, exist_ok=True)
+    return path
+
+
+def input_path(table):
+    return ROOT / "legacy/informatica/data" / f"{table.lower()}.csv"
+
+
+def baseline_path(table):
+    return ROOT / "baseline/informatica" / f"{table.lower()[:-3]}{table[-3:]}.csv"
+
+
+def frozen_section():
+    xml = ElementTree.parse(ROOT / "legacy/informatica/wf_demo_mapping.XML")
+    target = xml.find(".//TARGET[@NAME='demo_target1']")
+    if target is None or [f.attrib["NAME"].upper() for f in target.findall("TARGETFIELD")] != [c for c, _ in TARGET_COLUMNS]:
+        raise ValueError("Configured columns differ from XML target order")
+    files = [ROOT / "legacy/informatica/wf_demo_mapping.XML",
+             *(input_path(t) for t in INPUTS), *(baseline_path(t) for t in OUTPUTS),
+             ROOT / "tools/informatica_baseline.py",
+             *(p for p in PROJECT.rglob("*") if p.is_file()
+               and not {"target", "logs"}.intersection(p.relative_to(PROJECT).parts))]
+    hashes = {str(p.relative_to(ROOT)): hashlib.sha256(p.read_bytes()).hexdigest() for p in files}
+    counts = {}
+    for table in INPUTS:
+        rows = csv.reader(io.StringIO(input_path(table).read_bytes().decode("utf-8")))
+        next(rows)
+        counts[table] = sum(1 for _ in rows)
+    return {"file_hashes": hashes, "row_counts": counts}
+
+
+def digest(section):
+    return hashlib.sha256(json.dumps(section, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+
+
+def freeze(directory):
+    section = frozen_section()
+    manifest = {"source_commit": git("rev-parse", "HEAD"), "business_date": "2024-01-31",
+                "inputs": section, "input_digest": digest(section)}
+    path = outside_repo(directory) / "manifest.json"
+    path.write_text(json.dumps(manifest, indent=2) + "\n")
+    print(f"Frozen manifest: {path}")
+    return manifest
+
+
+def verify_manifest(path):
+    manifest = json.loads(Path(path).read_text())
+    if manifest["business_date"] != "2024-01-31" or manifest["input_digest"] != digest(manifest["inputs"]):
+        raise ValueError("Invalid manifest")
+    if frozen_section() != manifest["inputs"]:
+        raise ValueError("Frozen input mismatch")
+    return manifest
 
 
 def fqn(schema, table):
     return f"{DATABASE}.{schema}.{table}"
 
 
-def csv_rows(path, columns):
-    with path.open(newline="") as stream:
+def csv_rows(path, columns, data=None):
+    with io.StringIO((data if data is not None else path.read_bytes()).decode("utf-8"), newline="") as stream:
         reader = csv.DictReader(stream)
         if [c.upper() for c in (reader.fieldnames or [])] != [c for c, _ in columns]:
             raise ValueError(f"Unexpected column order: {path}")
@@ -161,313 +302,236 @@ def replay_from_src(cur):
         baseline.mapping2(con)
 
 
-def load(cur):
-    subprocess.run(
-        [sys.executable, "tools/informatica_baseline.py"], cwd=ROOT, check=True
-    )
-    seeded = {
-        t: (
-            ROOT / "baseline/informatica" / f"{t.lower()[:-3]}{t[-3:]}.csv"
-        ).read_bytes()
-        for t in OUTPUTS
-    }
-    for table, columns in (
-        ("DEMO_SOURCE1", SOURCE_COLUMNS),
-        ("DEMO_TARGET1", TARGET_COLUMNS),
-    ):
-        rows = csv_rows(
-            ROOT / "legacy/informatica/data" / f"{table.lower()}.csv", columns
-        )
+
+def load(cur, manifest):
+    subprocess.run([sys.executable, "tools/informatica_baseline.py"], cwd=ROOT, check=True)
+    subprocess.run(["git", "diff", "--exit-code", "--", "baseline/informatica"], cwd=ROOT, check=True)
+    seeded = {t: baseline_path(t).read_bytes() for t in OUTPUTS}
+    for table, columns in (("DEMO_SOURCE1", SOURCE_COLUMNS), ("DEMO_TARGET1", TARGET_COLUMNS)):
+        data = input_path(table).read_bytes()
+        if hashlib.sha256(data).hexdigest() != manifest["inputs"]["file_hashes"][str(input_path(table).relative_to(ROOT))]:
+            raise ValueError(f"Frozen input mismatch: {table}")
+        rows = csv_rows(input_path(table), columns, data)
         if table == "DEMO_TARGET1":
             columns = columns + [("__SEED_ROW", "NUMBER(38,0)")]
-            rows = [row + [i] for i, row in enumerate(rows, start=1)]
+            rows = [row + [i] for i, row in enumerate(rows, 1)]
         load_table(cur, SRC, table, columns, rows)
+        count = cur.execute(f"SELECT COUNT(*) FROM {fqn(SRC, table)}").fetchone()[0]
+        if count != manifest["inputs"]["row_counts"][table]:
+            raise ValueError(f"SRC count mismatch: {table}")
     replay_from_src(cur)
     for table in OUTPUTS:
-        path = ROOT / "baseline/informatica" / f"{table.lower()[:-3]}{table[-3:]}.csv"
-        if path.read_bytes() != seeded[table]:
-            raise ValueError(
-                f"SRC replay differs from the frozen seed baseline: {table}"
-            )
-        load_table(cur, LEGACY, table, TARGET_COLUMNS, csv_rows(path, TARGET_COLUMNS))
+        if baseline_path(table).read_bytes() != seeded[table]:
+            raise ValueError(f"SRC replay differs from independent baseline: {table}")
+        load_table(cur, LEGACY, table, TARGET_COLUMNS, csv_rows(baseline_path(table), TARGET_COLUMNS))
+    print(EMULATOR)
 
 
-def canonical_sql(schema, table):
+def canonical_row(row):
+    if len(row) != len(TARGET_COLUMNS):
+        raise ValueError("Wrong canonical row width")
     cells = []
-    for column, kind in TARGET_COLUMNS:
-        col = f'"{column}"'
+    for value, (_, kind) in zip(row, TARGET_COLUMNS):
+        if value is None:
+            cells.append(r"\N")
+            continue
         if kind.startswith("NUMBER"):
-            value = f"TO_VARCHAR(ROUND(CAST({col} AS NUMBER(38,6)), 6))"
+            number = Decimal(value)
+            if number != number.to_integral_value():
+                raise ValueError("KEY must be an integer")
+            value = format(number, ".0f")
         elif kind.startswith("TIMESTAMP"):
-            value = f"TO_CHAR({col}, 'YYYY-MM-DD HH24:MI:SS.FF6')"
-        else:
-            value = f"TRIM({col})"
-        cells.append(f"COALESCE({value}, '\\\\N')")
-    return f"SELECT ID, CONCAT_WS('|', {', '.join(cells)}) AS canonical FROM {fqn(schema, table)}"
+            value = value.strftime("%Y-%m-%d %H:%M:%S.%f")
+        cells.append(str(value).replace("\\", "\\\\").replace("|", r"\|"))
+    return "|".join(cells)
 
 
-def profile(cur, schema, table):
-    expressions = []
-    for col, kind in TARGET_COLUMNS:
-        c = f'"{col}"'
-        expressions.extend(
-            [f"COUNT({c})", f"COUNT(DISTINCT {c})", f"MIN({c})", f"MAX({c})"]
-        )
-        expressions.append(
-            f"SUM({c})"
-            if kind.startswith("NUMBER")
-            else f"SUM(LENGTH({c}))"
-            if kind == "VARCHAR"
-            else "NULL"
-        )
-    return cur.execute(
-        f"SELECT {', '.join(expressions)} FROM {fqn(schema, table)}"
-    ).fetchone()
+def multiset_diff(left, right):
+    def occurrences(rows):
+        return {(v, i) for v, count in Counter(rows).items() for i in range(1, count + 1)}
+    a, b = occurrences(left), occurrences(right)
+    return {"legacy_only": sorted(a - b), "target_only": sorted(b - a)}
 
 
-def canonical_diff(cur, table, rows_in):
-    expected_columns = [c for c, _ in TARGET_COLUMNS]
-    for schema in (LEGACY, SF):
-        columns = cur.execute(
-            f"SELECT COLUMN_NAME FROM {DATABASE}.INFORMATION_SCHEMA.COLUMNS "
-            "WHERE TABLE_SCHEMA = %s AND TABLE_NAME = %s ORDER BY ORDINAL_POSITION",
-            (schema, table),
-        ).fetchall()
-        if [row[0] for row in columns] != expected_columns:
-            raise ValueError(f"Legacy column order mismatch: {fqn(schema, table)}")
-    left, right = canonical_sql(LEGACY, table), canonical_sql(SF, table)
-    result = {
-        "table": table,
-        "legacy_fqn": fqn(LEGACY, table),
-        "new_fqn": fqn(SF, table),
-        "key_columns": ["ID"],
-        "rows_in": rows_in,
-    }
-    for label, query in (("legacy", left), ("new", right)):
-        count, checksum = cur.execute(
-            f"SELECT COUNT(*), HASH_AGG(canonical) FROM ({query})"
-        ).fetchone()
-        result[f"{label}_rows"] = count
-        result[f"{label}_checksum"] = str(checksum)
-    keyed = cur.execute(f"""WITH b AS ({left}), a AS ({right})
-        SELECT COUNT(*) FROM b FULL OUTER JOIN a ON EQUAL_NULL(b.ID, a.ID)
-        WHERE b.canonical IS NULL OR a.canonical IS NULL
-           OR MD5(b.canonical) != MD5(a.canonical)""").fetchone()[0]
-    bag = f"""WITH b AS ({left}), a AS ({right}),
-        bm AS (SELECT canonical, ROW_NUMBER() OVER (
-            PARTITION BY canonical ORDER BY canonical) occurrence FROM b),
-        am AS (SELECT canonical, ROW_NUMBER() OVER (
-            PARTITION BY canonical ORDER BY canonical) occurrence FROM a)"""
-    removed = cur.execute(
-        bag + " SELECT COUNT(*) FROM (SELECT * FROM bm EXCEPT SELECT * FROM am)"
-    ).fetchone()[0]
-    added = cur.execute(
-        bag + " SELECT COUNT(*) FROM (SELECT * FROM am EXCEPT SELECT * FROM bm)"
-    ).fetchone()[0]
-    result.update(
-        keyed_mismatches=keyed,
-        legacy_only=removed,
-        new_only=added,
-        mismatches=max(keyed, removed, added),
-        profile_matches=profile(cur, LEGACY, table) == profile(cur, SF, table),
-    )
-    return result
-
-
-def export(cur, schema, table, path):
-    names = ", ".join(f'"{c}"' for c, _ in TARGET_COLUMNS)
-    rows = cur.execute(
-        f"SELECT {names} FROM {fqn(schema, table)} ORDER BY ID"
+def table_evidence(cur, schema, table):
+    metadata = cur.execute(
+        f"SELECT COLUMN_NAME, DATA_TYPE, NUMERIC_PRECISION, NUMERIC_SCALE, DATETIME_PRECISION, CHARACTER_MAXIMUM_LENGTH "
+        f"FROM {DATABASE}.INFORMATION_SCHEMA.COLUMNS "
+        "WHERE TABLE_SCHEMA = %s AND TABLE_NAME = %s ORDER BY ORDINAL_POSITION",
+        (schema, table),
     ).fetchall()
-    with path.open("w", newline="") as stream:
-        writer = csv.writer(stream)
-        writer.writerow(c for c, _ in TARGET_COLUMNS)
-        for row in rows:
-            writer.writerow(
-                value.isoformat(sep=" ") if isinstance(value, datetime) else value
-                for value in row
-            )
+    if [r[0] for r in metadata] != [c for c, _ in TARGET_COLUMNS]:
+        raise ValueError(f"XML target order mismatch: {fqn(schema, table)}")
+    for row, (_, kind) in zip(metadata, TARGET_COLUMNS):
+        if kind.startswith("NUMBER"):
+            valid = row[1] in ("NUMBER", "FIXED") and tuple(row[2:4]) == (38, 0)
+        elif kind.startswith("TIMESTAMP"):
+            valid = row[1] == "TIMESTAMP_NTZ"
+        else:
+            valid = row[1] in ("TEXT", "VARCHAR")
+        if not valid:
+            raise ValueError(f"Unexpected target type: {row}")
+    count = cur.execute(f"SELECT COUNT(*) FROM {fqn(schema, table)}").fetchone()[0]
+    names = ", ".join(f'"{c}"' for c, _ in TARGET_COLUMNS)
+    rows = [canonical_row(r) for r in cur.execute(f"SELECT {names} FROM {fqn(schema, table)}").fetchall()]
+    if count != len(rows):
+        raise ValueError("Table changed during parity")
+    return {"fqn": fqn(schema, table), "columns_and_types": metadata, "count": count,
+            "sha256": hashlib.sha256("\n".join(sorted(rows)).encode()).hexdigest()}, rows
 
 
-def parity(cur):
-    counts = {
-        t: cur.execute(f"SELECT COUNT(*) FROM {fqn(SRC, t)}").fetchone()[0]
-        for t in INPUTS
-    }
-    results = [canonical_diff(cur, table, sum(counts.values())) for table in OUTPUTS]
-    run_results = json.loads(
-        (ROOT / "dbt/m_demo_mapping2/target/run_results.json").read_text()
-    )["results"]
-    dbt_ok = all(r["status"] in ("success", "pass") for r in run_results)
-    dbt_summary = f"PASS={sum(r['status'] in ('success', 'pass') for r in run_results)} TOTAL={len(run_results)}"
-    REPORT.parent.mkdir(parents=True, exist_ok=True)
-    with tempfile.TemporaryDirectory(prefix="infa_acctdim_parity_") as work:
-        base, actual = Path(work) / "legacy", Path(work) / "new"
-        base.mkdir()
-        actual.mkdir()
-        for table in OUTPUTS:
-            export(cur, LEGACY, table, base / f"{table}.csv")
-            export(cur, SF, table, actual / f"{table}.csv")
-        tool_report = Path(work) / "parity_diff.md"
-        process = subprocess.run(
-            [
-                sys.executable,
-                "tools/parity_diff.py",
-                "--baseline",
-                str(base),
-                "--actual",
-                str(actual),
-                "--keys",
-                "tools/keys/informatica_keys.json",
-                "--report",
-                str(tool_report),
-            ],
-            cwd=ROOT,
-            check=False,
-        )
-        comparison = (
-            tool_report.read_text()
-            .replace(str(base), "LEGACY export")
-            .replace(str(actual), "SF export")
-        )
-    payload = {
-        "job": "informatica_account_dim",
-        "outputs": results,
-        "input_tables": [fqn(SRC, t) for t in INPUTS],
-        "input_counts": counts,
-        "parity_diff_exit_code": process.returncode,
-        "dbt_summary": dbt_summary,
-        "explained_mismatches": "None",
-    }
-    REPORT.with_suffix(".json").write_text(json.dumps(payload, indent=2) + "\n")
-    lines = [
-        "# m_demo_mapping2 — Snowflake dual-run parity",
-        "",
-        "Frozen business date: **2024-01-31**. Warehouse: `WH_INFA_ACCTDIM`.",
-        "",
-        "## Input identity",
-        "",
-        "The loader runs the unchanged baseline on the seeds, loads typed SRC tables,",
-        "replays `informatica_baseline.mapping2` from those exact Snowflake SRC rows,",
-        "and asserts byte-identical output before loading LEGACY. dbt reads the same SRC.",
-        "",
-        *[f"- `{fqn(SRC, t)}`: {n} rows" for t, n in counts.items()],
-        "",
-        "`rows in` is the total physical input cardinality, including the duplicate lookup row.",
-        "",
-        f"LEGACY: `{DATABASE}.{LEGACY}`. New: `{DATABASE}.{SF}`.",
-        "",
-        "## Canonical Snowflake comparison",
-        "",
-        "| output | rows in | legacy rows | new rows | mismatches | legacy checksum | new checksum |",
-        "|---|---:|---:|---:|---:|---:|---:|",
-    ]
-    for r in results:
-        lines.append(
-            "| "
-            + " | ".join(
-                str(r[k])
-                for k in (
-                    "table",
-                    "rows_in",
-                    "legacy_rows",
-                    "new_rows",
-                    "mismatches",
-                    "legacy_checksum",
-                    "new_checksum",
-                )
-            )
-            + " |"
-        )
-    lines += [
-        "",
-        "Business key: `ID` for both outputs. Columns follow the XML target order.",
-        "",
-        "Each canonical row uses NULL → `\\N`, numbers → `TO_VARCHAR(ROUND(CAST(x AS NUMBER(38,6)),6))`,",
-        "timestamps → `YYYY-MM-DD HH24:MI:SS.FF6`, strings → `TRIM(x)`, joined by `|`.",
-        "Table checksum is Snowflake `HASH_AGG(canonical)`; row hash is `MD5(canonical)`.",
-        "A keyed full outer join compares row hashes. Both multiset EXCEPT directions",
-        "compare `(canonical, occurrence)` to retain duplicate multiplicity.",
-        "",
-        "| output | keyed diff | legacy-only multiset | new-only multiset | L2 profiles equal |",
-        "|---|---:|---:|---:|---|",
-    ]
-    for r in results:
-        lines.append(
-            f"| {r['table']} | {r['keyed_mismatches']} | {r['legacy_only']} | "
-            f"{r['new_only']} | {r['profile_matches']} |"
-        )
-    lines += [
-        "",
-        "L2 compares non-null counts, distinct counts, min/max for every column,",
-        "numeric sums and string total lengths. L4: no differing rows when all counts are zero.",
-        "Stored column names and order are checked against the legacy target definition.",
-        "",
-        "## dbt build",
-        "",
-        f"`{dbt_summary}` (from local `target/run_results.json`).",
-        "The build includes key/domain/relationship tests and unit fixtures for the legacy",
-        "always-update anomaly and duplicate lookup selection.",
-        "",
-        "## Legacy anomalies (not mismatches)",
-        "",
-        "- XML EXPTRANS compares AES_DECRYPT output to MD5. As documented by the supplied",
-        "  baseline, every lookup-matched row updates; this is not repaired into normal SCD2 logic.",
-        "- LKPTRANS Use Any Value is frozen to highest Key, then last physical seed row.",
-        "- SEQTRANS Current Value 57 yields insert keys starting at 57 in ID order.",
-        "- Unconnected ports remain NULL: ACTIVE_FLAG/START_DATE/END_DATE in both branches,",
-        "  UPDATED_* on inserts and CREATED_* on updates. No dimension merge is performed.",
-        "- MIS_DATE remains VARCHAR; source state END_DATE 9999-12-31 is TIMESTAMP_NTZ(6).",
-        "",
-        "Explained mismatches: none.",
-        "",
-        "## Unchanged parity_diff.py result",
-        "",
-        comparison,
-        "## Exact canonical SQL (legacy; change only schema to compare new)",
-        "",
-        "```sql",
-        canonical_sql(LEGACY, OUTPUTS[0]) + ";",
-        "```",
-        "",
-        "## Rerun",
-        "",
-        "Bind SFNFR_ACCOUNT, SFNFR_USER, SFNFR_ROLE and SFNFR_PRIVATE_KEY securely,",
-        "then run from the repository root (no secrets are written to disk):",
-        "",
-        "```sh",
-        "~/sfenv/bin/python tools/informatica_account_dim_snowflake.py load",
-        "~/dbtenv/bin/dbt build --project-dir dbt/m_demo_mapping2 --profiles-dir dbt/m_demo_mapping2 --target snowflake",
-        "~/sfenv/bin/python tools/informatica_account_dim_snowflake.py parity",
-        "```",
-        "",
-    ]
-    REPORT.write_text("\n".join(lines))
-    print(json.dumps(payload, indent=2))
-    if (
-        not dbt_ok
-        or process.returncode
-        or any(
-            r["mismatches"]
-            or not r["profile_matches"]
-            or r["legacy_rows"] != r["new_rows"]
-            or r["legacy_checksum"] != r["new_checksum"]
-            for r in results
+def parity(cur, manifest, directory, history):
+    counts = {t: cur.execute(f"SELECT COUNT(*) FROM {fqn(SRC, t)}").fetchone()[0] for t in INPUTS}
+    results = []
+    for table in OUTPUTS:
+        left, a = table_evidence(cur, LEGACY, table)
+        right, b = table_evidence(cur, TARGET, table)
+        differences = multiset_diff(a, b)
+        match = (left["columns_and_types"] == right["columns_and_types"]
+                 and left["count"] == right["count"] and left["sha256"] == right["sha256"]
+                 and not any(differences.values()))
+        results.append({"table": table, "legacy": left, "target": right,
+                        "rows_in": counts, "differences": differences, "match": match})
+    runs = [h for h in history if h["action"] in ("load", "run")]
+    tested = bool(runs and runs[-1]["action"] == "run" and runs[-1]["success"]
+                  and runs[-1]["input_digest"] == manifest["input_digest"])
+    loaded = any(h["action"] == "load" and h["success"] and h["input_digest"] == manifest["input_digest"] for h in runs)
+    passed = loaded and tested and counts == manifest["inputs"]["row_counts"] and all(r["match"] for r in results)
+    payload = {"manifest": manifest, "legacy_engine": EMULATOR, "normalizations": NORMALIZATIONS,
+               "application": "Devin_Demo (unregistered)", "query_ids": cur.query_ids,
+               "outputs": results, "converted_tests_passed": tested, "history": history, "match": passed}
+    directory = outside_repo(directory)
+    encoded = json.dumps(payload, indent=2, default=str)
+    (directory / "evidence.json").write_text(encoded + "\n")
+    (directory / "evidence.md").write_text(
+        "# Frozen account dimension parity\n\n" + EMULATOR + "\n\n"
+        + ("PASS" if passed else "FAIL") + "\n\n"
+        + "```json\n" + encoded + "\n```\n")
+    print("PASS" if passed else "FAIL")
+    return passed
+
+
+def offline(directory):
+    directory = outside_repo(directory)
+    database = directory / "account_dimension.duckdb"
+    with duckdb.connect(str(database)) as con:
+        con.execute("CREATE SCHEMA IF NOT EXISTS src")
+        for table, columns in (("DEMO_SOURCE1", SOURCE_COLUMNS), ("DEMO_TARGET1", TARGET_COLUMNS)):
+            fields = columns + ([("__SEED_ROW", "NUMBER(38,0)")] if table == "DEMO_TARGET1" else [])
+            rows = csv_rows(input_path(table), columns)
+            if table == "DEMO_TARGET1":
+                rows = [row + [i] for i, row in enumerate(rows, 1)]
+            definition = ", ".join(f'"{c}" {t.replace("NUMBER", "DECIMAL").replace("TIMESTAMP_NTZ(6)", "TIMESTAMP")}' for c, t in fields)
+            con.execute(f"CREATE OR REPLACE TABLE src.{table} ({definition})")
+            if rows:
+                con.executemany(f"INSERT INTO src.{table} VALUES ({','.join('?' for _ in fields)})", rows)
+    env = dict(os.environ, DBT_DUCKDB_PATH=str(database), DBT_QUERY_TAG="offline-duckdb")
+    subprocess.run([str(Path(sys.executable).parent / "dbt"), "build", "--project-dir", str(PROJECT),
+                    "--profiles-dir", str(PROJECT), "--target", "duckdb"], env=env, cwd=ROOT, check=True)
+
+
+def compile_models(manifest, directory):
+    directory = outside_repo(directory)
+    env = {"DBT_QUERY_TAG": attributed_options()["session_parameters"]["QUERY_TAG"],
+           "DBT_SF_DATABASE": DATABASE, "DBT_SF_TARGET_SCHEMA": TARGET, "DBT_SF_SOURCE_SCHEMA": SRC}
+    # Fail closed if any adapter path attempts to open a Snowflake connection.
+    with patch.dict(os.environ, env), patch(
+        "snowflake.connector.connect", side_effect=RuntimeError(
+            "dbt compile needs a Snowflake connection; no connection was made. Ask the operator to compile."
         )
     ):
-        raise SystemExit(1)
+        result = dbtRunner().invoke([
+            "compile", "--project-dir", str(PROJECT), "--profiles-dir", str(PROJECT),
+            "--target", "snowflake", "--target-path", str(directory),
+            "--no-introspect", "--no-populate-cache", "--exclude", "resource_type:unit_test",
+        ])
+    if not result.success:
+        raise RuntimeError("Connection-blocked dbt compile failed; see dbt output")
+    artifact = directory / "manifest.json"
+    (directory / "frozen_compile.json").write_text(json.dumps({
+        "input_digest": manifest["input_digest"],
+        "manifest_sha256": hashlib.sha256(artifact.read_bytes()).hexdigest(),
+    }))
+
+
+def converted(cur, artifacts, frozen):
+    receipt = json.loads((Path(artifacts) / "frozen_compile.json").read_text())
+    if receipt != {"input_digest": frozen["input_digest"], "manifest_sha256": hashlib.sha256(
+        (Path(artifacts) / "manifest.json").read_bytes()).hexdigest()}:
+        raise ValueError("Compiled artifact does not match frozen inputs")
+    manifest = json.loads((Path(artifacts) / "manifest.json").read_text())
+    nodes = {k: n for k, n in manifest["nodes"].items() if n["resource_type"] in ("model", "test")}
+    executed = 0
+    while nodes:
+        ready = [(k, n) for k, n in nodes.items() if not (set(n["depends_on"]["nodes"]) & nodes.keys())]
+        if not ready:
+            raise ValueError("Cyclic dbt dependencies")
+        for key, node in ready:
+            sql = node.get("compiled_code")
+            if not sql or node.get("database") != DATABASE or node.get("schema", "").upper() != TARGET:
+                raise ValueError(f"Missing compiled SQL or incorrect target: {key}")
+            if node["resource_type"] == "model":
+                materialization = node["config"]["materialized"].upper()
+                if materialization not in ("VIEW", "TABLE"):
+                    raise ValueError(f"Unsupported materialization: {materialization}")
+                cur.execute(f'CREATE OR REPLACE {materialization} {fqn(TARGET, node["alias"])} AS {sql}')
+            elif cur.execute(sql).fetchall():
+                raise ValueError(f"dbt data test failed: {key}")
+            executed += 1
+            del nodes[key]
+    if not executed:
+        raise ValueError("No compiled nodes")
+    print(f"Executed {executed} compiled models/data tests")
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("action", choices=("load", "parity"))
+    parser.add_argument("action", choices=("setup", "freeze", "load", "compile", "run", "parity", "offline"))
+    parser.add_argument("--manifest")
+    parser.add_argument("--out")
+    parser.add_argument("--artifacts", default=str(PROJECT / "target"))
     args = parser.parse_args()
     os.chdir(ROOT)
-    with connect() as con, con.cursor() as cur:
-        if args.action == "load":
-            load(cur)
-        else:
-            parity(cur)
+    if args.action in ("freeze", "offline"):
+        if not args.out:
+            parser.error("--out is required")
+        (freeze if args.action == "freeze" else offline)(args.out)
+        return
+    if args.action in ("load", "compile", "run", "parity") and not args.manifest:
+        parser.error("--manifest is required")
+    if args.action == "parity" and not args.out:
+        parser.error("--out is required")
+    manifest: Any = verify_manifest(args.manifest) if args.manifest else None
+    if args.action == "compile":
+        if not args.out:
+            parser.error("--out is required")
+        compile_models(manifest, args.out)
+        return
+    if args.action == "setup" and not args.out:
+        parser.error("setup requires --out to record query IDs outside the repository")
+    history_dir = Path(args.manifest).resolve().parent if args.manifest else args.out
+    history_path = outside_repo(history_dir) / "query_history.json"
+    history = json.loads(history_path.read_text()) if history_path and history_path.exists() else []
+    with connect() as con, con.cursor() as cursor:
+        cur = Queries(cursor)
+        success = False
+        try:
+            if args.action == "setup":
+                setup(cur)
+            else:
+                compute_guard(cur)
+                if args.action == "load":
+                    load(cur, manifest)
+                elif args.action == "run":
+                    converted(cur, args.artifacts, manifest)
+                elif not parity(cur, manifest, args.out, history):
+                    raise SystemExit(1)
+            success = True
+        finally:
+            history.append({"action": args.action, "input_digest": manifest["input_digest"] if manifest else None,
+                            "success": success, "query_ids": cur.query_ids})
+            history_path.write_text(json.dumps(history, indent=2) + "\n")
+            print(json.dumps({"query_ids": cur.query_ids}))
 
 
 if __name__ == "__main__":

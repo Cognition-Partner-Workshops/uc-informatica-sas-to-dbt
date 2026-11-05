@@ -1,8 +1,8 @@
 version: 2
 sources:
   - name: infa_acctdim_src
-    database: "{{ env_var('SFNFR_DATABASE', 'SFNFR_20261104') }}"
-    schema: "{{ env_var('SFNFR_ACCTDIM_SRC_SCHEMA', 'INFA_ACCTDIM_SRC_SFNFR_20261104') }}"
+    database: "{{ target.database }}"
+    schema: "{{ 'src' if target.type == 'duckdb' else env_var('DBT_SF_SOURCE_SCHEMA', 'INFA_ACCTDIM_SRC_SFEXT_20261105A') }}"
     tables:
       - name: DEMO_SOURCE1
         description: Frozen incoming general-ledger account dimension records.
