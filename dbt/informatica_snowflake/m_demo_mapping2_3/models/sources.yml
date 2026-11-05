@@ -1,0 +1,8 @@
+version: 2
+sources:
+  - name: infa_m23
+    schema: infa_src_infa_m23
+    tables:
+      - name: demo_source1
+      - name: demo_source2
+      - name: demo_target1

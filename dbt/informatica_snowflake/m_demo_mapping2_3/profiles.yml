@@ -1,0 +1,8 @@
+infa_m23:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: "{{ env_var('INFA_DUCKDB_PATH', 'target/infa.duckdb') }}"
+      schema: main
+      threads: 1
