@@ -1,0 +1,8 @@
+infa_m_demo_mapping1:
+  target: duckdb
+  outputs:
+    duckdb:
+      type: duckdb
+      path: "{{ env_var('INFA_DUCKDB_PATH', 'target/infa.duckdb') }}"
+      schema: main
+      threads: 1
