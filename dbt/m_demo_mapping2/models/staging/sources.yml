@@ -1,0 +1,10 @@
+version: 2
+sources:
+  - name: infa_acctdim_src
+    database: "{{ target.database }}"
+    schema: "{{ 'src' if target.type == 'duckdb' else env_var('DBT_SF_SOURCE_SCHEMA', 'INFA_ACCTDIM_SRC_SFEXT_20261105A') }}"
+    tables:
+      - name: DEMO_SOURCE1
+        description: Frozen incoming general-ledger account dimension records.
+      - name: DEMO_TARGET1
+        description: Pre-existing dimension lookup state, including duplicate IDs and physical seed order.

@@ -1,0 +1,23 @@
+snowflake:
+  target: snowflake
+  outputs:
+    snowflake:
+      type: snowflake
+      account: "{{ env_var('SNOWFLAKE_EXT_ACCOUNT', 'offline_compile') }}"
+      user: "{{ env_var('SNOWFLAKE_EXT_USER', 'offline_compile') }}"
+      role: DEVIN_EXT_ROLE
+      private_key: "{{ env_var('SNOWFLAKE_EXT_PRIVATE_KEY', 'offline_compile') }}"
+      authenticator: snowflake_jwt
+      warehouse: WH_MIG_INF_ACCOUNT_DIMENSION
+      database: "{{ env_var('DBT_SF_DATABASE', 'DB_MIG_INF_SFEXT_20261105A') }}"
+      schema: "{{ env_var('DBT_SF_TARGET_SCHEMA', 'INFA_ACCTDIM_TARGET_SFEXT_20261105A') }}"
+      threads: 1
+      query_tag: "{{ env_var('DBT_QUERY_TAG') }}"
+      session_parameters:
+        TIMESTAMP_TYPE_MAPPING: TIMESTAMP_NTZ
+        TIMEZONE: UTC
+    duckdb:
+      type: duckdb
+      path: "{{ env_var('DBT_DUCKDB_PATH', '/home/ubuntu/work/evidence/account_dimension.duckdb') }}"
+      schema: main
+      threads: 1
