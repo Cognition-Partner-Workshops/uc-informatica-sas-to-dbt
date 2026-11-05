@@ -1,0 +1,26 @@
+version: 2
+models:
+  - name: DEMO_TARGET2
+    description: Member stream with null social security number.
+    columns:
+      - name: MEMBER_IDENTIFIER
+        data_tests: [not_null, unique]
+      - name: GENDER
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['M', 'F']
+      - name: RELATIONSHIP_TO_SUBSCRIBER_CODE_LABEL
+        data_tests: [not_null]
+  - name: DEMO_TARGET21
+    description: Member stream with non-null social security number.
+    columns:
+      - name: MEMBER_IDENTIFIER
+        data_tests: [not_null, unique]
+      - name: GENDER
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['M', 'F']
+      - name: RELATIONSHIP_TO_SUBSCRIBER_CODE_LABEL
+        data_tests: [not_null]

@@ -1,0 +1,16 @@
+version: 2
+sources:
+  - name: infa_source
+    description: Frozen Informatica inputs, including the DEMO_TARGET1 pre-state.
+    database: FSX_20261105_DB
+    schema: INFA_SOURCE
+    tables:
+      - name: DEMO_SOURCE1
+      - name: DEMO_SOURCE2
+      - name: DEMO_SOURCE3
+      - name: DEMO_SOURCE4
+      - name: DEMO_SOURCE5
+      - name: DEMO_TARGET1
+      - name: LKP_DEMO_SOURCE1
+      - name: LKP_DEMO_SOURCE2
+      - name: LKP_DEMO_SOURCE3

@@ -1,0 +1,28 @@
+version: 2
+models:
+  - name: DEMO_TARGET1_INS
+    description: Insert stream with deterministic sequence starting at 57.
+    columns:
+      - name: ID
+        data_tests: [not_null, unique]
+      - name: CREATED_BY
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['IDWUSER']
+  - name: DEMO_TARGET1_UPD
+    description: Update stream preserving the selected pre-state key.
+    columns:
+      - name: ID
+        data_tests:
+          - not_null
+          - unique
+          - relationships:
+              arguments:
+                to: ref('int_m_demo_mapping2__lookup')
+                field: id
+      - name: UPDATED_BY
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['IDWUSER']

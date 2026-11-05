@@ -1,0 +1,14 @@
+snowflake:
+  target: snowflake
+  outputs:
+    snowflake:
+      type: snowflake
+      account: "{{ env_var('SNOWFLAKE_NFR_ACCOUNT') }}"
+      user: "{{ env_var('SNOWFLAKE_NFR_USER') }}"
+      private_key: "{{ env_var('SNOWFLAKE_NFR_PRIVATE_KEY') }}"
+      authenticator: snowflake_jwt
+      role: "{{ env_var('SNOWFLAKE_NFR_ROLE') }}"
+      warehouse: "{{ env_var('SNOWFLAKE_NFR_WAREHOUSE') }}"
+      database: FSX_20261105_DB
+      schema: INFA_TARGET
+      threads: 4
