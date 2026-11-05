@@ -1,0 +1,31 @@
+version: 2
+unit_tests:
+  - name: matched_rows_update_even_when_attributes_are_unchanged
+    model: int_m_demo_mapping2__exptrans
+    given:
+      - input: ref('int_m_demo_mapping2__sq_demo_source1')
+        rows:
+          - {ID: unchanged, LEAD_CO_MNE: BNK, BRANCH_CO_MNE: BR, MIS_DATE: '2024-01-31', DESCRIPTION: same, SHORT_NAME: GL}
+          - {ID: new, LEAD_CO_MNE: BNK, BRANCH_CO_MNE: BR, MIS_DATE: '2024-01-31', DESCRIPTION: new, SHORT_NAME: GL}
+          - {ID: missing_attr, LEAD_CO_MNE: null, BRANCH_CO_MNE: BR, MIS_DATE: '2024-01-31', DESCRIPTION: same, SHORT_NAME: GL}
+      - input: ref('int_m_demo_mapping2__lkptrans')
+        rows:
+          - {ID: unchanged, DIM_KEY: 99, LEAD_CO_MNE: BNK, BRANCH_CO_MNE: BR, MIS_DATE: '2024-01-31', DESCRIPTION: same, SHORT_NAME: GL}
+          - {ID: missing_attr, DIM_KEY: 100, LEAD_CO_MNE: null, BRANCH_CO_MNE: BR, MIS_DATE: '2024-01-31', DESCRIPTION: same, SHORT_NAME: GL}
+    expect:
+      rows:
+        - {ID: unchanged, DIM_KEY: 99, NEW_FLAG: null, CHANGED_FLAG: Update}
+        - {ID: new, DIM_KEY: null, NEW_FLAG: Insert, CHANGED_FLAG: null}
+        - {ID: missing_attr, DIM_KEY: 100, NEW_FLAG: null, CHANGED_FLAG: Update}
+  - name: lookup_selects_highest_key_then_last_seed_row
+    model: int_m_demo_mapping2__lkptrans
+    given:
+      - input: ref('stg_m_demo_mapping2__demo_target1')
+        rows:
+          - {ID: duplicate, DIM_KEY: 1, SEED_ROW: 1, DESCRIPTION: old}
+          - {ID: duplicate, DIM_KEY: 99, SEED_ROW: 2, DESCRIPTION: higher_key}
+          - {ID: duplicate, DIM_KEY: 99, SEED_ROW: 3, DESCRIPTION: last_tie}
+          - {ID: duplicate, DIM_KEY: null, SEED_ROW: 4, DESCRIPTION: null_key}
+    expect:
+      rows:
+        - {ID: duplicate, DIM_KEY: 99, DESCRIPTION: last_tie}

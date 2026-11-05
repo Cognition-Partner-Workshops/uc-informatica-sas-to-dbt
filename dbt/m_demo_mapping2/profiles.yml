@@ -1,0 +1,18 @@
+snowflake:
+  target: snowflake
+  outputs:
+    snowflake:
+      type: snowflake
+      account: "{{ env_var('SFNFR_ACCOUNT') }}"
+      user: "{{ env_var('SFNFR_USER') }}"
+      role: "{{ env_var('SFNFR_ROLE') }}"
+      private_key: "{{ env_var('SFNFR_PRIVATE_KEY') }}"
+      authenticator: snowflake_jwt
+      warehouse: "{{ env_var('SFNFR_WAREHOUSE', 'WH_INFA_ACCTDIM') }}"
+      database: "{{ env_var('SFNFR_DATABASE', 'SFNFR_20261104') }}"
+      schema: "{{ env_var('SFNFR_ACCTDIM_SCHEMA', 'INFA_ACCTDIM_SF_SFNFR_20261104') }}"
+      threads: 2
+      query_tag: 'RUN:SFNFR_20261104;m_demo_mapping2'
+      session_parameters:
+        TIMESTAMP_TYPE_MAPPING: TIMESTAMP_NTZ
+        TIMEZONE: UTC

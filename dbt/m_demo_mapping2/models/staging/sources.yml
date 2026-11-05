@@ -1,0 +1,10 @@
+version: 2
+sources:
+  - name: infa_acctdim_src
+    database: "{{ env_var('SFNFR_DATABASE', 'SFNFR_20261104') }}"
+    schema: "{{ env_var('SFNFR_ACCTDIM_SRC_SCHEMA', 'INFA_ACCTDIM_SRC_SFNFR_20261104') }}"
+    tables:
+      - name: DEMO_SOURCE1
+        description: Frozen incoming general-ledger account dimension records.
+      - name: DEMO_TARGET1
+        description: Pre-existing dimension lookup state, including duplicate IDs and physical seed order.
