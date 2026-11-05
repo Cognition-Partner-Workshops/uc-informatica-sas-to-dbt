@@ -1,0 +1,52 @@
+version: 2
+models:
+  - name: DEMO_TARGET3
+    description: Product output from m_demo_mapping1, preserving the legacy null start date.
+    columns:
+      - name: PRODUCT_ID
+        data_tests: [not_null, unique]
+  - name: DEMO_TARGET5
+    description: Non-SB credit summary, excluding null account types.
+    columns:
+      - name: ACCT_ID
+        data_tests:
+          - not_null
+          - unique
+          - relationships:
+              arguments:
+                to: ref('int_m_demo_mapping1__lkp_trans2')
+                field: acct_id
+      - name: FIRST_NM
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('int_m_demo_mapping1__lkp_trans2')
+                field: first_nm
+      - name: CRDT_SCORE
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('int_m_demo_mapping1__lkp_trans3')
+                field: crdt_score
+  - name: DEMO_TARGET6
+    description: SB account totals with highest-TX_ID nonaggregate ports.
+    columns:
+      - name: ACCT_ID
+        data_tests:
+          - not_null
+          - unique
+          - relationships:
+              arguments:
+                to: ref('int_m_demo_mapping1__lkp_trans1')
+                field: acct_id
+      - name: ACCT_TYP
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['SB']
+      - name: TX_TYPE_CD
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('int_m_demo_mapping1__lkp_trans1')
+                field: tx_type_cd
