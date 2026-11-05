@@ -1,0 +1,19 @@
+version: 2
+
+sources:
+  - name: infa_src
+    description: m_demo_mapping1 seed inputs landed by `dbt run-operation load_infa_inputs`.
+    schema: "{{ var('infa_source_schema') }}"
+    tables:
+      - name: DEMO_SOURCE3
+        description: Transactions (Oracle source demo_source3).
+      - name: DEMO_SOURCE4
+        description: Accounts (Oracle source demo_source4).
+      - name: DEMO_SOURCE5
+        description: Products (flat file demo_source5).
+      - name: LKP_DEMO_SOURCE1
+        description: Customer lookup for lkp_TRANS2; SEED_ROW is physical seed order.
+      - name: LKP_DEMO_SOURCE2
+        description: Credit lookup for lkp_TRANS3; SEED_ROW is physical seed order.
+      - name: LKP_DEMO_SOURCE3
+        description: Transaction type lookup for lkp_TRANS1; SEED_ROW is physical seed order.

@@ -1,0 +1,51 @@
+version: 2
+
+models:
+  - name: DEMO_TARGET3
+    description: Product table in ODS layer (m_demo_mapping1, demo_target3). Key PRODUCT_ID.
+    columns:
+      - name: PRODUCT_ID
+        tests: [unique, not_null]
+      - name: PRODUCT_NM
+      - name: PRODUCT_NO
+      - name: COLOR
+      - name: STD_COST
+      - name: LIST_PRICE
+      - name: SELL_ST_DT
+        description: Always NULL; the legacy TO_DATE(TO_CHAR(SYSDATE),'DD/MM/YYYY') does not parse.
+      - name: SELL_ED_DT
+  - name: DEMO_TARGET5
+    description: Credit summary (m_demo_mapping1, demo_target5), rtr_TRANS ACCT_TYP != 'SB'. Key ACCT_ID.
+    columns:
+      - name: ACCT_ID
+        tests: [unique, not_null]
+      - name: FIRST_NM
+        description: lkp_TRANS2 (lkp_demo_source1 by ACCT_ID, Use Last Value).
+      - name: LAST_NM
+      - name: BAL_AMT
+      - name: CRDT_SCORE
+        description: lkp_TRANS3 (lkp_demo_source2 by CUST_ID, Use Last Value).
+  - name: DEMO_TARGET6
+    description: Customer detail summary (m_demo_mapping1, demo_target6), rtr_TRANS ACCT_TYP = 'SB' aggregated by ACCT_ID. Key ACCT_ID.
+    columns:
+      - name: ACCT_ID
+        tests: [unique, not_null]
+      - name: ACCT_TYP
+        tests:
+          - accepted_values:
+              values: ['SB']
+      - name: ACCT_DESC
+      - name: CR8_DT
+        description: Pinned SYSTIMESTAMP from the sq_demo_source4 override.
+      - name: CRDT_LN
+      - name: CLSR_DT
+      - name: ACCT_STAT_CD
+      - name: TX_ID
+      - name: ACCT_KEY
+        description: SEQ_GEN NEXTVAL starting at Current Value 281.
+        tests: [unique, not_null]
+      - name: TX_DTTM
+      - name: TX_AMT
+        description: SUM(TX_AMT) per ACCT_ID.
+      - name: TX_TYPE_CD
+        description: lkp_TRANS1 return TX_TYPE_CD (lkp_demo_source3 by ACCT_ID, Use Last Value).

@@ -1,0 +1,30 @@
+name: infa_m_demo_mapping1
+version: "1.0.0"
+config-version: 2
+profile: infa_m_demo_mapping1
+
+model-paths: ["models"]
+macro-paths: ["macros"]
+test-paths: ["tests"]
+target-path: "target"
+clean-targets: ["target", "dbt_packages", "logs"]
+
+vars:
+  # Pinned business date standing in for SYSDATE / SYSTIMESTAMP.
+  business_date: "2024-01-31"
+  # Schema holding the landed seed inputs for this group (never `main`).
+  infa_source_schema: infa_src_infa_m1
+  # Directory of legacy seed CSVs, relative to this project directory.
+  infa_data_dir: "{{ env_var('INFA_DATA_DIR', '../../../legacy/informatica/data') }}"
+
+models:
+  infa_m_demo_mapping1:
+    staging:
+      +materialized: view
+      +schema: infa_stg_infa_m1
+    intermediate:
+      +materialized: view
+      +schema: infa_stg_infa_m1
+    targets:
+      +materialized: table
+      +schema: main
