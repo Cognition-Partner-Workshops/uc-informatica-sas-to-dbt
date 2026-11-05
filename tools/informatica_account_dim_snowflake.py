@@ -468,9 +468,11 @@ def converted(cur, artifacts, frozen):
             raise ValueError("Cyclic dbt dependencies")
         for key, node in ready:
             sql = node.get("compiled_code")
-            if not sql or node.get("database") != DATABASE or node.get("schema", "").upper() != TARGET:
+            if not sql or node.get("database") != DATABASE:
                 raise ValueError(f"Missing compiled SQL or incorrect target: {key}")
             if node["resource_type"] == "model":
+                if node.get("schema", "").upper() != TARGET:
+                    raise ValueError(f"Incorrect model target schema: {key}")
                 materialization = node["config"]["materialized"].upper()
                 if materialization not in ("VIEW", "TABLE"):
                     raise ValueError(f"Unsupported materialization: {materialization}")

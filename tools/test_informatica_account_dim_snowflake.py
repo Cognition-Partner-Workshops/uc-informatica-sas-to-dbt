@@ -179,7 +179,7 @@ class ExecutionTests(unittest.TestCase):
     def test_compiled_dependency_order_and_tests(self):
         base = {"database": job.DATABASE, "schema": job.TARGET}
         nodes = {
-            "test": dict(base, resource_type="test", compiled_code="SELECT 1 WHERE FALSE", depends_on={"nodes": ["model"]}),
+            "test": dict(base, schema=job.TARGET + "_dbt_test__audit", resource_type="test", compiled_code="SELECT 1 WHERE FALSE", depends_on={"nodes": ["model"]}),
             "model": dict(base, resource_type="model", compiled_code="SELECT 1", alias="M", config={"materialized": "table"}, depends_on={"nodes": []}),
         }
         with tempfile.TemporaryDirectory() as directory:
